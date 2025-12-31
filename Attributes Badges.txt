@@ -1,0 +1,308 @@
+Writing & Rapping Attributes		
+Lyricism	Ability to write impactful and complex lyrics.	1-10
+Wordplay	Skill in using puns, punches, metaphors, and clever language.	1-10
+Creativity	Ability to generate original and engaging content.	1-10
+Flow	Smoothness and rhythm of the lyrics.	1-10
+		
+Performance Attributes:		
+Stage Presence 	Effectiveness on stage and delivery strength.	1-10
+Crowd Control	Ability to engage and sway the audience.	1-10
+Delivery	Strength and clarity of delivery.	1-10
+		
+		
+Personal Attributes:		
+Financial Stability:	Level of financial security and stability.	1-10
+Reputation	Overall standing and respect within the battle rap community.	1-10
+Family Bond	Strength of personal relationships and emotional support.	1-10
+Preparation	Ability to commit rhymes to memory and prepare written material for performing	1-10
+
+
+Content badges:
+Content	Personal Attacks	Angles	Focused on personal attacks, exposing opponent's weaknesses or secrets.
+Content	Personal Attacks	Personals	Directly targeting personal aspects of the opponent’s life.
+Content	Personal Attacks	Disrespect	Employing sharp criticisms to challenge the opponent's credibility.
+Content	Humor	Comedy	Uses humor and wit to entertain and undermine opponents.
+Content	Humor	Jokes	Relies on humorous punchlines and clever wordplay.
+Content	Humor	Sarcasm	Uses mocking or ironic statements to undermine opponents.
+Content	Humor	Self-deprecating	Uses humor to make fun of oneself, often to disarm opponents.
+Content	Humor	Dry Humor	Subtle and understated wit.
+Content	Humor	Slapstick	Physical and exaggerated comedy.
+Content	Creative Themes	Concept Battles	Creative themes and unique approaches to battle content.
+Content	Style	Gritty	Raw and unpolished style, often reflecting street life.
+Content	Style	Street Talk	Authentic representation of street culture and life.
+Content	Style	Braggadocious	Exaggerates self-importance and accomplishments.
+Content	Style	OG Bars	Content that reinforces perceived seniority or experience.
+Content	Literary Devices	Metaphors	Uses imaginative comparisons to illustrate points.
+Content	Literary Devices	Similes	Comparisons using 'like' or 'as' to create vivid imagery.
+Content	Literary Devices	Wordplay	Clever manipulation of words and phrases for double meanings.
+Content	Literary Devices	Witty Wordplay	Employs clever and humorous word manipulation.
+Content	Literary Devices	Schemes	Extended metaphors and thematic structures.
+Content	Literary Devices	Violent Imagery	Uses metaphors involving conflict or power dynamics.
+Content	Rhyme Schemes	Multisyllabic Rhymes	Complex rhyme schemes with multiple syllables.
+Content	Rhyme Schemes	Intricate Schemes	Uses complex and multi-layered rhyme schemes.
+Content	References	Sports References	Draws comparisons to sports and athletes to make points.
+Content	References	Pop Culture References	Incorporates popular culture and media references.
+Content	References	Historical References	Uses historical events and figures to draw parallels.
+Content	References	Locational References	Uses references to local cities or landmarks.
+Content	Commentary	Political Commentary	Engages in political discourse and critique.
+Content	Commentary	Social Commentary	Tackles social issues and injustices through lyrics.
+Content	Storytelling	Storytelling	Narrative-driven verses that paint a vivid picture.
+Content	Inspirational	Motivational	Inspires and uplifts with positive messages and themes.
+Content	Punchlines	Punchlines	Hard-hitting, memorable lines designed to make an impact.
+Content	Name Play	Name Flips	Cleverly altering the opponent’s name in various ways.
+Content	Crowd Engagement	Slogan	Uses repeatable phrases to encourage crowd participation.
+Content	Provocative Content	Controversial	Content that stirs debate by addressing sensitive topics.
+Content	Shock Value	Shock Value	Uses surprising or unexpected content to provoke reactions.
+			
+			
+In-BattleContentDecision	Improvisation	Freestyles	Improvised content created on the spot, showcasing quick thinking.
+In-BattleContentDecision	Counterattacks	Rebuttals	Quick responses to opponent's lines, showing adaptability.
+
+
+Delivery Badges
+Category	Subcategory	Style	Description
+Delivery	Aggression	Aggressive	Intense delivery, often confrontational and intimidating.
+Delivery	Aggression	Menacing	Intimidating, threatening tone
+Delivery	Rhythmic Complexity	Unorthodox	Unpredictable style that defies conventional structures.
+Delivery	Rhythmic Complexity	Speed Rapping	Delivers verses at an exceptionally fast pace.
+Delivery	Rhythmic Complexity	Slow Flow	Delivers verses at a slower, more deliberate pace.
+Delivery	Rhythmic Complexity	Choppy Flow	Delivers verses with a broken or staccato rhythm.
+Delivery	Rhythmic Complexity	Smooth Flow	Delivers verses in a fluid and melodic manner.
+Delivery	Tone and Attitude 	Explosive	Uses forceful and intense vocal projection.
+Delivery	Tone and Attitude 	Passionate	Intense and emotional delivery
+Delivery	Tone and Attitude 	Confrontational	 In-your-face, challenging approach
+Delivery	Mood and Emotion	Nonchalant	Effortlessly cool and unbothered
+Delivery	Rhythmic Complexity	Smooth Flow	Fluid and effortless flow
+Delivery	Mood and Emotion	Deadpan	Dry, emotionless delivery for comedic effect
+Delivery	Rhythmic Complexity	Rapid-fire	Fast-paced, machine-gun delivery
+Delivery	Rhythmic Complexity	Staccato	Sharp, punctuated delivery
+Delivery	Rhythmic Complexity	Melodic	Musical, almost singing-like delivery
+Delivery	Rhythmic Complexity	Multisyllabic	Emphasizing complex rhyme patterns
+			
+			
+InBattleDeliveryDecision		SpeedControl	djusting your speed can surprise the opponent and keep the audience engaged.
+InBattleDeliveryDecision		Volume Variation	Changing volume adds dynamics to your performance.
+InBattleDeliveryDecision		Emphasis	Highlight key points in your lyrics to make them more memorable.
+InBattleDeliveryDecision		Flow Switch	Demonstrates versatility and keeps the performance unpredictable.
+InBattleDeliveryDecision		Repetition	Reinforces key messages and makes them stick.
+InBattleDeliveryDecision		Accent Usage	Adds character to your performance and can be used humorously.
+InBattleDeliveryDecision		Volume Increase	Add volume to your performance. To help with loud crowds and heckling
+
+
+Perfermance badgers
+Category	Subcategory	Style	Description
+Performance	Emotional Styles	Impassioned	Deeply felt, sincere delivery.
+Performance	Emotional Styles	Cold	Detached, unemotional approach.
+Performance	Emotional Styles	Sarcastic	Mocking, ironic tone.
+Performance	Emotional Styles	Empathetic	Understanding, connecting with the audience.
+Performance	Body Language	Power Stance	Dominant, confident posture.
+Performance	Body Language	Fluid Movement	Graceful, dance-like motions.
+Performance	Body Language	Minimalist	Subtle, controlled gestures.
+Performance	Body Language	Aggressive Gestures	Sharp, forceful movements.
+Performance	Voice Modulation	Dynamic Range	Varying volume and pitch for emphasis.
+Performance	Voice Modulation	Movie Voice	Deep, throaty delivery.
+Performance	Voice Modulation	Crisp Enunciation	Clear, precise pronunciation.
+Performance	Voice Modulation	Whisper to Shout	Dramatic shifts in volume.
+Performance	Spatial Awareness	Stage Domination	Using the entire performance space.
+Performance	Spatial Awareness	Intimate Approach	Getting close to the opponent.
+Performance	Spatial Awareness	Crowd Interaction	Moving among the audience.
+Performance	Spatial Awareness	Stationary Power	Commanding presence from one spot.
+Performance	Prop Usage	Minimal Props	Subtle use of small items.
+Performance	Prop Usage	Visual Aids	Using larger props or visuals.
+Performance	Prop Usage	Costume Elements	Incorporating clothing or accessories.
+Performance	Prop Usage	Digital Integration	Using screens or projections.
+Performance	Energy Management	Crescendo	Building energy throughout the round.
+Performance	Energy Management	Peaks and Valleys	Alternating high and low energy.
+Performance	Energy Management	Consistent Intensity	Maintaining a steady energy level.
+Performance	Energy Management	Explosive Finish	Saving peak energy for the end.
+Performance	Timing and Pacing	Rhythmic Delivery	Syncing with a beat or rhythm.
+Performance	Timing and Pacing	Strategic Pauses	Using silence for emphasis.
+Performance	Timing and Pacing	Accelerando	Gradually increasing speed.
+Performance	Timing and Pacing	Rubato	Flexible timing for emotional effect.
+Performance	Vocal Techniques	Impersonations	Mimics others' voices or styles for comedic or strategic effect.
+Performance	Theatricality	Theatrical	Dramatic and exaggerated performance style.
+			
+			
+InBattlePerformanceDecision	Improvisation	Freestyles	Improvised content created on the spot, showcasing quick thinking.
+InBattlePerformanceDecision	Prop Usage	Gimmicks	Incorporates props, costumes, or unique personas to stand out.
+InBattlePerformanceDecision	Rebuttals	Rebuttals	Quick responses to opponent's lines, showing adaptability.
+InBattlePerformanceDecision	Musical Elements	Singing	Incorporates melodic elements and singing into performance.
+InBattlePerformanceDecision	Catchphrases	Memorable Catchphrases	Uses easily recognizable and repeatable phrases.
+InBattlePerformanceDecision	Crowd Interaction	Crowd Engagement	Interacts and engages with the audience to enhance performance.
+InBattlePerformanceDecision	Stage Presence	Charismatic	Charming and engaging.
+InBattlePerformanceDecision	Body Language	Extra Animated	Lively and energetic body language.
+InBattlePerformanceDecision	Body Language	Stoic	Minimal movement, relying on vocal power.
+InBattlePerformanceDecision	Facial Expressions	Intense Gaze	Piercing eye contact.
+InBattlePerformanceDecision	Facial Expressions	Emotive	Highly expressive face.
+InBattlePerformanceDecision	Facial Expressions	Poker Face	Maintaining a neutral expression.
+InBattlePerformanceDecision	Facial Expressions	Smirking	Conveying confidence or mockery.
+InBattlePerformanceDecision	Crowd Interaction	Interactive	Directly engaging with the audience.
+InBattlePerformanceDecision	Crowd Interaction	Call-and-response	Encouraging crowd participation.
+InBattlePerformanceDecision	Delivery Style	Conversational	Casual, relatable tone.
+InBattlePerformanceDecision	Energy Management	Hype	Building energy and excitement.
+
+
+Writing badges:
+Category        	"Badge	"	Description
+Pos_Writing & Content	Punchline King/Queen	Master of landing hard-hitting punchlines
+Pos_Writing & Content	Scheme Specialist	Uses complex, well-structured rhyme schemes
+Pos_Writing & Content	Metaphor Master	Expert at weaving clever metaphors into their rounds
+Pos_Writing & Content	Wordplay Wizard	Exceptional use of puns, double entendres, and wordplay
+Pos_Writing & Content	Freestyle Genius	Can seamlessly freestyle in battles when needed
+Pos_Writing & Content	Creativity Beast	Comes up with fresh, original content each battle
+Pos_Writing & Content	Consistent Writer	Delivers high-quality writing consistently
+Pos_Writing & Content	Angle Master	Uses unique and effective angles against opponents
+Pos_Writing & Content	Rebuttal King/Queen	Quick and sharp with responses to opponent's lines
+Pos_Writing & Content	Great Setups	Creates punchlines with perfectly structured setups
+Pos_Writing & Content	Double Entendre Expert	Uses layered meanings effectively in wordplay
+Pos_Writing & Content	Unpredictable	Keeps the audience guessing with original approaches
+Pos_Writing & Content	Pen Game Elite	Exceptional writing skills, considered a top-tier writer
+Pos_Writing & Content	Memorable Quotable Machine	Delivers lines that are instantly quotable
+Pos_Writing & Content	Hard-Hitting Haymakers	Known for delivering devastating bars that shake the crowd
+Pos_Writing & Content	Multisyllabic Master	Uses intricate, multi-syllabic rhyme schemes
+Pos_Writing & Content	Well Researched	Does thorough research on opponents, leading to effective personals
+Pos_Writing & Content	Well-Timed Humor	Balances serious bars with humor to engage the crowd
+Neg_Writing & Content	Recycler	Reuses old material
+Neg_Writing & Content	Biter	Steals others' lines
+Neg_Writing & Content	One-Trick Pony	Limited versatility in content
+Neg_Writing & Content	Shock Value Abuser	Relies on controversial or vulgar content for impact
+Neg_Writing & Content	Lazy Writer	Lack of effort in penning bars
+Neg_Writing & Content	Predictable Rhymer	Same rhyme schemes, no originality
+Neg_Writing & Content	Reach God/Goddess	Forced wordplay that doesn’t land well
+Neg_Writing & Content	Filler Abuser	Uses unnecessary content to fill time
+Neg_Writing & Content	Outdated Referencer	Old pop culture references
+Neg_Writing & Content	Repetitive Schemer	Repeats schemes or angles too often
+Neg_Writing & Content	Weak Punchline Setups	Poor structure leading to a lackluster punchline
+Neg_Writing & Content	Overuse of Prop Gimmicks	Overreliance on props for impact
+Neg_Writing & Content	Shallow Research	Fails to do deep research on opponent
+Neg_Writing & Content	Overreliance on Personals	Always using personal attacks
+Neg_Writing & Content	Forced Multisyllabic Rhymes	Overly complex rhyme patterns that feel forced
+Neg_Writing & Content	Weak Rebuttals	Poor response to opponent’s lines
+Neg_Writing & Content	Angle Recycler	Uses same angles on multiple opponents
+Neg_Writing & Content	Overly Verbose	Uses too many words to get to the point
+
+
+Performances Badges:
+Category	Performance Style	Description
+Performance	Stage Presence & Command	Loved by the audience, always gets a strong reaction
+Performance	Aggression & Power	Dominates the stage with powerful delivery
+Performance	Aggression & Power	Balanced aggression that works without overdoing it
+Performance	Flow & Rhythm	Delivers bars with an effortless, smooth rhythm
+Performance	Vocal Control & Projection	Can be heard clearly across the venue
+Performance	Vocal Control & Projection	Manages vocal range for impact without needing a mic
+Performance	Stage Presence & Command	Commands the attention of everyone in the room
+Performance	Aggression & Power	High-energy performer who captivates the crowd
+Performance	Stage Presence & Command	Can make the audience react exactly as intended
+Performance	Charisma & Interaction	Always delivers solid performances regardless of the setting
+Performance	Flow & Rhythm	Switches styles and delivery within rounds to keep it fresh
+Performance	Stage Presence & Command	Engages opponent and audience with sharp eye contact
+Performance	Charisma & Interaction	Seamlessly interacts with the crowd without losing focus
+Performance	Adaptability & Improvisation	Can quickly adapt when things don't go as planned
+Performance	Timing & Pacing	Oozes charisma, easily wins over the crowd
+Performance	Aggression & Power	Uses physical presence to amplify delivery
+Performance	Smooth Transitions	Moves from one topic or scheme to another without awkwardness
+Performance	Vocal Control & Projection	Delivers clearly without losing voice control
+Performance	Adaptability & Improvisation	Doesn't let heckling or crowd reactions phase them
+Performance	Charisma & Interaction	Expresses emotions effectively during performance
+Performance	Adaptability & Improvisation	Can integrate freestyles without losing the flow of a round
+Performance	Vocal Control & Projection	Finishes rounds with strong, memorable moments
+Performance	Consistent Energy	Maintains high energy from start to finish
+Performance	Timing & Pacing	Saves themselves with freestyles when needed
+Performance	Stage Presence & Command	Uses the entire stage to their advantage
+Performance	Adaptability & Improvisation	Adjusts to different venues, crowds, and opponents seamlessly
+NegPerformance	Choker	Frequently forgets lines
+NegPerformance	One-Hit Wonder	Delivers a single strong battle and then fades
+NegPerformance	Overhyped Newcomer	Doesn’t live up to initial hype
+NegPerformance	Inconsistent Performer	Some battles are great, others are poor
+NegPerformance	Crowd Killer	Negatively impacts the crowd’s energy
+NegPerformance	Time Waster	Drags rounds unnecessarily
+NegPerformance	Mumbler	Hard to hear or understand
+NegPerformance	Monotone Deliverer	Lacks vocal variation
+NegPerformance	Awkward Stage Presence	Unnatural or stiff stage presence
+NegPerformance	Gimmick Reliant	Relies too much on gimmicks, not actual skill
+NegPerformance	Energy Drainer	Makes the crowd lose interest
+NegPerformance	Off-Beat Performer	Poor rhythm, often off-beat
+NegPerformance	Poor Breath Control	Struggles with stamina and maintaining clear vocals
+NegPerformance	Sloppy Freestyler	Poor improvisational skills
+NegPerformance	Awkward Angler	Struggles with camera presence or positioning
+NegPerformance	Volume Issues	Either too quiet or too loud
+NegPerformance	Stiff Body Language	Lacks physical expression or movement
+NegPerformance	Poor Eye Contact	Fails to engage visually with the opponent or audience
+NegPerformance	Underprepared	Consistently comes with short or incomplete rounds
+NegPerformance	Overprepared	Sounds robotic or too rehearsed
+NegPerformance	Poor Time Management	Can’t fit material within time limits
+NegPerformance	Last-Minute Writer	Writes material at the last second, impacting quality
+NegPerformance	Poor Crowd Control	Can’t maintain audience engagement
+NegPerformance	Easily Rattled by Crowd Reactions	Gets shaken up by negative crowd feedback
+NegPerformance	Overreliance on Crowd Participation	Depends too much on audience interaction
+NegPerformance	Poor Networking Skills	Struggles to build relationships in the industry
+
+Personal Reputaion Badges:
+Category	Badge	Description
+PersonalReputation	Respected Veteran	Earned respect in the culture over a long career
+PersonalReputation	Crowd Favorite	Has a strong, loyal fanbase
+PersonalReputation	Consummate Professional	Reliable and professional, never no-shows or backs out
+PersonalReputation	Believability	Authentic in delivery and persona, never questioned by the crowd
+PersonalReputation	Resilient Battler	Always bounces back from losses or tough battles
+PersonalReputation	Great Sportsmanship	Respects opponents and maintains a professional demeanor
+PersonalReputation	Versatile Battler	Can adapt to any format or setting
+PersonalReputation	Show Stealer	Known for stealing the show in big battles
+PersonalReputation	Big Stage Performer	Always performs best on the biggest stages
+PersonalReputation	Comeback King/Queen	Bounces back strong after a weak round or battle
+PersonalReputation	Fan Engagement	Stays connected with fans and builds a strong rapport
+PersonalReputation	League Loyalist	Sticks with one league and builds its reputation
+PersonalReputation	PPV Sales Driver	Brings in fans and drives up pay-per-view sales
+PersonalReputation	Battle Technician	Strategically breaks down opponents with precision
+PersonalReputation	Humble Winner	Takes victories with grace and respect
+PersonalReputation	Community Builder	Gives back to the battle rap culture and supports newcomers
+PersonalReputation	Mentor Figure	Helps elevate and guide younger battlers
+PersonalReputation	Home-Court Hero	Dominates when battling in their home city or league
+PersonalReputation	Comeback Story	Made a triumphant return after a hiatus or setback
+PersonalReputation	Creative Innovator	Pioneers new approaches and styles in battle rap
+PersonalReputation	Battle of the Night Winner	Consistently has the most memorable performance
+PersonalReputation	Consistent Grinder	Constantly battles and stays sharp
+PersonalReputation	Clutch Performer	Known for delivering when the stakes are high
+PersonalReputation	Well-Connected	Well-liked and respected by league owners and battlers
+PersonalReputation	Underrated Legend	Often overlooked but consistently delivers high-quality performances
+PersonalReputation	Believable Persona	Authentic in every aspect of their delivery
+PersonalReputation	Sharp Strategist	Approaches battles with a game plan and executes it well
+NegPersonalReputation	Sore Loser	Reacts poorly to losing
+NegPersonalReputation	Canceller	Backs out of battles frequently
+NegPersonalReputation	Drama Starter	Causes unnecessary conflict
+NegPersonalReputation	Excuse Maker	Always has excuses for poor performance
+NegPersonalReputation	Disrespectful to Opponents	Lack of professionalism towards opponents
+NegPersonalReputation	League Hopper	Constantly switching loyalty between leagues
+NegPersonalReputation	Pay-Per-View Killer	Underperforms on big stages
+NegPersonalReputation	Overly Sensitive	Takes criticism too personally
+NegPersonalReputation	Unreliable Battler	No-shows or underperforms frequently
+NegPersonalReputation	Crowd Panderer	Plays too much to the crowd without delivering real substance
+NegPersonalReputation	Ghost Writer User	Has someone else writing for them
+NegPersonalReputation	Performance Enhancing Drug User	Relies on substances to perform
+NegPersonalReputation	Match Fixer	Fixes or throws battles for gain
+NegPersonalReputation	Scammer	Takes deposits or promises and doesn’t deliver
+NegPersonalReputation	Unprofessional Conduct	Behaves inappropriately in battles
+NegPersonalReputation	Disloyal to Leagues	Betrays the trust of the league owners
+NegPersonalReputation	Fake Tough Guy	Tries to act tougher than they really are
+NegPersonalReputation	Clout Chaser	In it just for attention and fame
+NegPersonalReputation	Sellout	Sacrifices authenticity for commercial gain
+NegPersonalReputation	Poor Sportsmanship	Disrespectful after a battle, win or lose
+NegPersonalReputation	Ego Issues	Struggles to accept criticism or feedback
+NegPersonalReputation	Disrespectful to Fans	Fails to engage with or is rude to fans
+NegPersonalReputation	Known Choker	Reputation for consistently choking in battles
+NegPersonalReputation	Difficult to Work With	Hard to coordinate with for league owners
+NegPersonalReputation	Unreasonable Demands	Asks for more than they can deliver
+NegPersonalReputation	Poor Battle Selection	Takes mismatches or unfavorable battles
+NegPersonalReputation	Overexposure	Battles too often and becomes stale
+NegPersonalReputation	Underexposure	Doesn’t battle enough to stay relevant
+NegPersonalReputation	Poor Brand Management	Struggles to market themselves properly
+NegPersonalReputation	Culturally Appropriative	Misuses elements of other cultures
+NegPersonalReputation	Outdated Style	Still rapping with a dated style or technique
+NegPersonalReputation	Tryhard Wordsmith	Overcomplicates language for little payoff
+NegPersonalReputation	Corny Punchline Specialist	Delivers overly cheesy or forced punchlines
+NegPersonalReputation	Inauthentic Persona	Tries to adopt a persona that doesn’t feel real
+NegPersonalReputation	Overly Aggressive Battler	Comes off as too aggressive for no reason
+NegPersonalReputation	Too Academic/Complex	Uses overly complex language that loses the crowd
+NegPersonalReputation	Unoriginal Concept User	Recycles concepts too often
+NegPersonalReputation	Trend Follower	Always following what’s popular instead of being original
+NegPersonalReputation	Poor Networking Skills	Struggles to build relationships in the industry
+

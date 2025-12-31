@@ -1,68 +1,74 @@
 "use client"
 
 import Link from "next/link"
-import { ArrowLeft, TrendingUp, TrendingDown, ChevronRight, Filter, LayoutGrid, List } from "lucide-react"
-import { mockBattler, mockRecentBattles } from "@/lib/data"
-import { useState } from "react"
+import { ArrowLeft, TrendingUp, TrendingDown, ChevronRight, Filter, LayoutGrid, List, Loader2 } from "lucide-react"
+import { useState, useEffect } from "react"
 import { BattleFlyerCard } from "@/components/battle-flyer"
 import { MOCK_BATTLE_FLYERS } from "@/lib/battle-flyers"
+import { useActiveBattler } from "@/contexts/battler-context"
+
+interface BattleHistoryItem {
+  id: string
+  opponent: {
+    id: string
+    name: string
+    tier: string
+    avatar: string
+    rating: number
+    styles: string[]
+  }
+  league: string
+  date: string
+  result: 'W' | 'L'
+  verdict: string
+  decisionType: string
+  roundResults: string[]
+  payout: number
+}
 
 export default function CareerHistoryPage() {
   const [filter, setFilter] = useState<"all" | "wins" | "losses">("all")
   const [viewMode, setViewMode] = useState<"list" | "flyers">("flyers")
+  const [battles, setBattles] = useState<BattleHistoryItem[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const activeBattler = useActiveBattler()
 
-  const allBattles = [
-    ...mockRecentBattles,
-    {
-      id: "battle-4",
-      opponentBattler: { stageName: "Flow Master", elo: 1320 },
-      winner: "player",
-      score: { player: 3, opponent: 0 },
-      date: "2024-01-15",
-      league: "Small Room Circuit",
-    },
-    {
-      id: "battle-5",
-      opponentBattler: { stageName: "Rhyme Slayer", elo: 1280 },
-      winner: "player",
-      score: { player: 2, opponent: 1 },
-      date: "2024-01-02",
-      league: "Underground League",
-    },
-    {
-      id: "battle-6",
-      opponentBattler: { stageName: "Mic Destroyer", elo: 1350 },
-      winner: "opponent",
-      score: { player: 1, opponent: 2 },
-      date: "2023-12-20",
-      league: "Small Room Circuit",
-    },
-    {
-      id: "battle-7",
-      opponentBattler: { stageName: "Word Wizard", elo: 1290 },
-      winner: "player",
-      score: { player: 3, opponent: 0 },
-      date: "2023-12-08",
-      league: "Regional League",
-    },
-    {
-      id: "battle-8",
-      opponentBattler: { stageName: "Beat Boxer", elo: 1310 },
-      winner: "player",
-      score: { player: 2, opponent: 1 },
-      date: "2023-11-25",
-      league: "Small Room Circuit",
-    },
-  ]
+  useEffect(() => {
+    async function loadHistory() {
+      try {
+        setLoading(true)
+        const res = await fetch('/api/battles/history')
+        if (!res.ok) throw new Error('Failed to fetch battle history')
+        const data = await res.json()
+        setBattles(data.battles || [])
+      } catch (err) {
+        console.error('Failed to load battle history:', err)
+        setError(err instanceof Error ? err.message : 'Failed to load')
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadHistory()
+  }, [])
 
-  const filteredBattles = allBattles.filter((battle) => {
-    if (filter === "wins") return battle.winner === "player"
-    if (filter === "losses") return battle.winner === "opponent"
+  const filteredBattles = battles.filter((battle) => {
+    if (filter === "wins") return battle.result === "W"
+    if (filter === "losses") return battle.result === "L"
     return true
   })
 
-  const totalWins = allBattles.filter((b) => b.winner === "player").length
-  const totalLosses = allBattles.filter((b) => b.winner === "opponent").length
+  const totalWins = battles.filter((b) => b.result === "W").length
+  const totalLosses = battles.filter((b) => b.result === "L").length
+  const winRate = totalWins + totalLosses > 0 ? Math.round((totalWins / (totalWins + totalLosses)) * 100) : 0
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-orange-500" />
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-zinc-950">
@@ -73,7 +79,7 @@ export default function CareerHistoryPage() {
         </Link>
         <div>
           <h1 className="text-xl font-display font-bold text-zinc-100 tracking-wide">BATTLE HISTORY</h1>
-          <p className="text-sm text-zinc-500">{mockBattler.stageName}'s Career Record</p>
+          <p className="text-sm text-zinc-500">{activeBattler?.stageName || 'Player'}'s Career Record</p>
         </div>
       </header>
 
@@ -98,19 +104,21 @@ export default function CareerHistoryPage() {
         <div className="bg-zinc-900 border-2 border-zinc-700 p-4 mb-6">
           <div className="flex justify-between items-center mb-2">
             <span className="text-sm text-zinc-400 font-display">WIN RATE</span>
-            <span className="text-lg font-mono font-bold text-orange-500">
-              {Math.round((totalWins / (totalWins + totalLosses)) * 100)}%
-            </span>
+            <span className="text-lg font-mono font-bold text-orange-500">{winRate}%</span>
           </div>
           <div className="h-3 bg-zinc-800 overflow-hidden flex">
-            <div
-              className="h-full bg-green-500"
-              style={{ width: `${(totalWins / (totalWins + totalLosses)) * 100}%` }}
-            />
-            <div
-              className="h-full bg-red-500"
-              style={{ width: `${(totalLosses / (totalWins + totalLosses)) * 100}%` }}
-            />
+            {totalWins + totalLosses > 0 && (
+              <>
+                <div
+                  className="h-full bg-green-500"
+                  style={{ width: `${(totalWins / (totalWins + totalLosses)) * 100}%` }}
+                />
+                <div
+                  className="h-full bg-red-500"
+                  style={{ width: `${(totalLosses / (totalWins + totalLosses)) * 100}%` }}
+                />
+              </>
+            )}
           </div>
         </div>
 
@@ -173,58 +181,64 @@ export default function CareerHistoryPage() {
         ) : (
           /* List View */
           <div className="bg-zinc-900 border-2 border-zinc-700">
-            {filteredBattles.map((battle, index) => (
-              <Link
-                key={battle.id}
-                href={`/battle/${battle.id}`}
-                className={`flex items-center justify-between p-4 hover:bg-zinc-800/50 transition-colors ${
-                  index !== filteredBattles.length - 1 ? "border-b border-zinc-800" : ""
-                }`}
-              >
-                <div className="flex items-center gap-4">
-                  {/* Result Icon */}
-                  <div
-                    className={`w-10 h-10 flex items-center justify-center ${
-                      battle.winner === "player" ? "bg-green-500/20" : "bg-red-500/20"
-                    }`}
-                  >
-                    {battle.winner === "player" ? (
-                      <TrendingUp className="w-5 h-5 text-green-500" />
-                    ) : (
-                      <TrendingDown className="w-5 h-5 text-red-500" />
-                    )}
+            {filteredBattles.length === 0 ? (
+              <div className="p-8 text-center text-zinc-500">
+                No battles found. Start battling to build your history!
+              </div>
+            ) : (
+              filteredBattles.map((battle, index) => (
+                <Link
+                  key={battle.id}
+                  href={`/battle/${battle.id}`}
+                  className={`flex items-center justify-between p-4 hover:bg-zinc-800/50 transition-colors ${
+                    index !== filteredBattles.length - 1 ? "border-b border-zinc-800" : ""
+                  }`}
+                >
+                  <div className="flex items-center gap-4">
+                    {/* Result Icon */}
+                    <div
+                      className={`w-10 h-10 flex items-center justify-center ${
+                        battle.result === "W" ? "bg-green-500/20" : "bg-red-500/20"
+                      }`}
+                    >
+                      {battle.result === "W" ? (
+                        <TrendingUp className="w-5 h-5 text-green-500" />
+                      ) : (
+                        <TrendingDown className="w-5 h-5 text-red-500" />
+                      )}
+                    </div>
+
+                    {/* Opponent Info */}
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-zinc-200 font-display font-bold">
+                          vs {battle.opponent.name}
+                        </span>
+                        <span
+                          className={`text-xs font-mono ${battle.result === "W" ? "text-green-500" : "text-red-500"}`}
+                        >
+                          {battle.result}
+                        </span>
+                      </div>
+                      <div className="text-xs text-zinc-500">
+                        {battle.league} • {battle.date}
+                      </div>
+                    </div>
                   </div>
 
-                  {/* Opponent Info */}
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-zinc-200 font-display font-bold">
-                        vs {battle.opponentBattler.stageName}
-                      </span>
-                      <span
-                        className={`text-xs font-mono ${battle.winner === "player" ? "text-green-500" : "text-red-500"}`}
-                      >
-                        {battle.winner === "player" ? "W" : "L"}
-                      </span>
-                    </div>
-                    <div className="text-xs text-zinc-500">
-                      {battle.league} • {battle.date}
-                    </div>
+                  <div className="flex items-center gap-3">
+                    <span
+                      className={`text-lg font-mono font-bold ${
+                        battle.result === "W" ? "text-green-500" : "text-red-500"
+                      }`}
+                    >
+                      {battle.verdict}
+                    </span>
+                    <ChevronRight className="w-4 h-4 text-zinc-600" />
                   </div>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <span
-                    className={`text-lg font-mono font-bold ${
-                      battle.winner === "player" ? "text-green-500" : "text-red-500"
-                    }`}
-                  >
-                    {battle.score?.player}-{battle.score?.opponent}
-                  </span>
-                  <ChevronRight className="w-4 h-4 text-zinc-600" />
-                </div>
-              </Link>
-            ))}
+                </Link>
+              ))
+            )}
           </div>
         )}
       </main>

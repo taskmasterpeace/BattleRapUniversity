@@ -15,6 +15,7 @@ export interface Blogger {
   notableTakes: string[]
   writingStyle: string[]
   covers: string[]
+  isActive: boolean // Only active bloggers appear in the game
   avatarId?: string // e.g. "blogger_001" maps to /sprites/bloggers/blogger_001.png
   avatarCrop?: {
     scale: number
@@ -34,7 +35,7 @@ export const BLOGGERS: Blogger[] = [
     specialty: "Battle Recaps, Bar Analysis",
     homeLeague: "Small Room Circuit",
     followers: 12400,
-    articleCount: 156,
+    articleCount: 0, // Starts at 0 - increases as LLM generates articles
     bio: "Battle Eyez has been covering the scene for over a decade. Known for detailed round-by-round breakdowns and calling out who really won controversial battles. If you want to know who had the better pen, Battle Eyez has the receipts.",
     notableTakes: [
       "Writing wins battles. Performance just gets you booked.",
@@ -44,12 +45,8 @@ export const BLOGGERS: Blogger[] = [
     ],
     writingStyle: ["Technical analysis", "Play-by-play breakdowns", "Bar-by-bar scoring", "Objective tone"],
     covers: ["Technical writers", "Scheme specialists", "Small Room battles", "Controversial decisions"],
-    avatarId: "blogger_001",
-    avatarCrop: {
-      scale: 1.0,
-      offsetX: 0,
-      offsetY: 0,
-    },
+    isActive: false, // Inactive - can be activated later
+    // avatarId: "blogger_001", // Add when avatar image exists in /public/sprites/bloggers/
   },
   {
     id: "marijuana-piranha",
@@ -61,7 +58,7 @@ export const BLOGGERS: Blogger[] = [
     specialty: "Scandals, Drama, Controversy",
     homeLeague: null,
     followers: 8200,
-    articleCount: 87,
+    articleCount: 0,
     bio: "MP keeps it raw and unfiltered. If there's beef, drama, or controversy, MP was there first. Not afraid to call out anyone, from rookies to legends. The most entertaining voice in battle rap media.",
     notableTakes: [
       "The culture needs drama to survive.",
@@ -71,12 +68,7 @@ export const BLOGGERS: Blogger[] = [
     ],
     writingStyle: ["Raw, unfiltered", "Controversial takes", "Drama-focused", "Street vernacular"],
     covers: ["Scandals", "Beef between battlers", "Controversial figures", "Underground drama"],
-    avatarId: "blogger_002",
-    avatarCrop: {
-      scale: 1.0,
-      offsetX: 0,
-      offsetY: 0,
-    },
+    isActive: true, // ACTIVE - Drama and controversy coverage
   },
   {
     id: "algorithm-institute",
@@ -88,7 +80,7 @@ export const BLOGGERS: Blogger[] = [
     specialty: "Career Updates, Rankings, Stats",
     homeLeague: null,
     followers: 15100,
-    articleCount: 203,
+    articleCount: 0,
     bio: "AI brings the numbers. Career trajectories, win rates, rating predictions - if it can be quantified, AI has the data. The most objective voice in battle rap media. Numbers don't lie.",
     notableTakes: [
       "Stats don't lie, battlers do.",
@@ -98,12 +90,7 @@ export const BLOGGERS: Blogger[] = [
     ],
     writingStyle: ["Data-driven", "Objective analysis", "Career tracking", "Statistical breakdowns"],
     covers: ["Power rankings", "Career milestones", "Rating changes", "Statistical trends"],
-    avatarId: "blogger_003",
-    avatarCrop: {
-      scale: 1.0,
-      offsetX: 0,
-      offsetY: 0,
-    },
+    isActive: true, // ACTIVE - Data and statistics coverage
   },
   {
     id: "small-room-report",
@@ -115,7 +102,7 @@ export const BLOGGERS: Blogger[] = [
     specialty: "Small Room Circuit Coverage",
     homeLeague: "Small Room Circuit",
     followers: 9800,
-    articleCount: 124,
+    articleCount: 0,
     bio: "SRR lives and breathes the Small Room Circuit. Champions pen game over performance, intimate crowds over stadium shows. The voice of lyrical purists everywhere.",
     notableTakes: [
       "Bars over performance, always.",
@@ -125,12 +112,7 @@ export const BLOGGERS: Blogger[] = [
     ],
     writingStyle: ["Lyric-focused", "Appreciates wordplay", "Intimate tone", "Writing-first perspective"],
     covers: ["Small Room Circuit battles", "Technical writers", "Underrated pen gamers", "League-specific news"],
-    avatarId: "blogger_004",
-    avatarCrop: {
-      scale: 1.0,
-      offsetX: 0,
-      offsetY: 0,
-    },
+    isActive: false, // Inactive - can be activated later
   },
   {
     id: "main-stage-herald",
@@ -142,7 +124,7 @@ export const BLOGGERS: Blogger[] = [
     specialty: "Main Stage Arena Coverage",
     homeLeague: "Main Stage Arena",
     followers: 18700,
-    articleCount: 178,
+    articleCount: 0,
     bio: "Herald covers the biggest battles on the biggest stages. Major events, championship bouts, and everything that draws a crowd. Performance matters here. Entertainment is art.",
     notableTakes: [
       "If you can't rock a crowd, you can't be a champion.",
@@ -152,6 +134,7 @@ export const BLOGGERS: Blogger[] = [
     ],
     writingStyle: ["Performance-focused", "Hype energy", "Mainstream appeal", "Entertainment lens"],
     covers: ["Main Stage Arena battles", "Major events", "Tournament coverage", "Big-name matchups"],
+    isActive: false, // Inactive - can be activated later
     avatarId: "blogger_005",
     avatarCrop: {
       scale: 1.0,
@@ -169,7 +152,7 @@ export const BLOGGERS: Blogger[] = [
     specialty: "Culture, Community, Scene Politics",
     homeLeague: null,
     followers: 7500,
-    articleCount: 98,
+    articleCount: 0,
     bio: "UV speaks for the culture. Scene politics, community issues, and the stories behind the stories. If it affects the battlers, UV is covering it. More than bars - it's about the people.",
     notableTakes: [
       "Battle rap is more than bars and performance.",
@@ -179,12 +162,8 @@ export const BLOGGERS: Blogger[] = [
     ],
     writingStyle: ["Community-focused", "Thoughtful analysis", "Human interest", "Culture commentary"],
     covers: ["Life events", "Community stories", "Scene politics", "Battler backgrounds"],
-    avatarId: "blogger_006",
-    avatarCrop: {
-      scale: 1.0,
-      offsetX: 0,
-      offsetY: 0,
-    },
+    isActive: false, // Inactive - can be activated later
+    // avatarId: "blogger_006", // Add when avatar image exists in /public/sprites/bloggers/
   },
   {
     id: "coast-to-coast",
@@ -196,7 +175,7 @@ export const BLOGGERS: Blogger[] = [
     specialty: "Regional News, Geographic Coverage",
     homeLeague: null,
     followers: 11200,
-    articleCount: 145,
+    articleCount: 0,
     bio: "C2C tracks the scenes across all regions. NYC vs LA, Midwest grind, Southern style, international exposure - C2C has correspondents everywhere. Every city has a story.",
     notableTakes: [
       "Every city has its own flavor.",
@@ -206,12 +185,8 @@ export const BLOGGERS: Blogger[] = [
     ],
     writingStyle: ["Geographic focus", "Regional comparisons", "Local scene coverage", "Travel perspective"],
     covers: ["Regional matchups", "City-specific news", "Geographic rivalries", "Scene comparisons"],
-    avatarId: "blogger_007",
-    avatarCrop: {
-      scale: 1.0,
-      offsetX: 0,
-      offsetY: 0,
-    },
+    isActive: false, // Inactive - can be activated later
+    // avatarId: "blogger_007", // Add when avatar image exists in /public/sprites/bloggers/
   },
   {
     id: "battle-breakdown",
@@ -223,7 +198,7 @@ export const BLOGGERS: Blogger[] = [
     specialty: "Strategic Analysis, What Went Wrong",
     homeLeague: null,
     followers: 10600,
-    articleCount: 132,
+    articleCount: 0,
     bio: "TBB breaks down the chess match. What worked, what didn't, and why. If you want to understand how to win battles, TBB has the blueprint. Learn from every loss.",
     notableTakes: [
       "Every loss is a lesson.",
@@ -233,12 +208,8 @@ export const BLOGGERS: Blogger[] = [
     ],
     writingStyle: ["Strategic analysis", "Educational tone", "Breakdown format", "Tactical focus"],
     covers: ["Post-battle analysis", "Prep strategies", "What went wrong", "How to improve"],
-    avatarId: "blogger_008",
-    avatarCrop: {
-      scale: 1.0,
-      offsetX: 0,
-      offsetY: 0,
-    },
+    isActive: true, // ACTIVE - Strategy and breakdown coverage
+    // avatarId: "blogger_008", // Add when avatar image exists in /public/sprites/bloggers/
   },
 ]
 
@@ -255,4 +226,20 @@ export function formatFollowers(count: number): string {
     return `${(count / 1000).toFixed(1)}K`
   }
   return count.toString()
+}
+
+// Get only active bloggers (for display in game)
+export function getActiveBloggers(): Blogger[] {
+  return BLOGGERS.filter((b) => b.isActive)
+}
+
+// Get all bloggers (for admin/dev tools)
+export function getAllBloggers(): Blogger[] {
+  return BLOGGERS
+}
+
+// Check if a blogger is active
+export function isBloggerActive(id: string): boolean {
+  const blogger = getBloggerById(id)
+  return blogger?.isActive ?? false
 }

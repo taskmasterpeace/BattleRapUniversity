@@ -26,10 +26,16 @@ import { getCityKey } from "@/lib/types"
 
 import { PlayerStateTab } from "@/components/dev/player-state-tab"
 import { BattleSimTab } from "@/components/dev/battle-sim-tab"
+import { BattleSimulatorEnhanced } from "@/components/dev/battle-simulator-enhanced"
 import { AttributesTab } from "@/components/dev/attributes-tab"
 import { DebugLog } from "@/components/dev/debug-log"
 import { TimeControlTab } from "@/components/dev/time-control-tab"
 import { EventsTab } from "@/components/dev/events-tab"
+import { GameBalanceTab } from "@/components/dev/game-balance-tab"
+import { CitiesTab } from "@/components/dev/cities-tab"
+import { MatchmakingTab } from "@/components/dev/matchmaking-tab"
+import { StorylinesTab } from "@/components/dev/storylines-tab"
+import { BattlerStateTab } from "@/components/dev/battler-state-tab"
 
 // Mock data
 const INITIAL_BACKDROPS: CityBackdrop[] = [
@@ -90,6 +96,10 @@ type ActiveTab =
   | "scenarios"
   | "cities"
   | "badges"
+  | "balance"
+  | "matchmaking"
+  | "storylines"
+  | "state"
 
 export default function DevToolsPage() {
   // Player State
@@ -343,8 +353,12 @@ export default function DevToolsPage() {
   const tabs = [
     { id: "player", label: "Player", icon: Users },
     { id: "attributes", label: "Attributes", icon: Sliders },
+    { id: "balance", label: "Balance", icon: Sliders },
+    { id: "matchmaking", label: "Matchmaking", icon: Users },
     { id: "time", label: "Time", icon: Clock },
     { id: "events", label: "Events", icon: Zap },
+    { id: "storylines", label: "Storylines", icon: Sparkles },
+    { id: "state", label: "Life State", icon: UserCircle },
     { id: "battle", label: "Battle Sim", icon: Trophy },
     { id: "relationships", label: "Relationships", icon: Flame },
     { id: "notifications", label: "Notifications", icon: Bell },
@@ -443,6 +457,10 @@ export default function DevToolsPage() {
 
             {activeTab === "attributes" && <AttributesTab attributes={attributes} setAttributes={setAttributes} />}
 
+            {activeTab === "balance" && <GameBalanceTab />}
+
+            {activeTab === "matchmaking" && <MatchmakingTab />}
+
             {activeTab === "time" && (
               <TimeControlTab
                 gameDate={gameDate}
@@ -455,19 +473,12 @@ export default function DevToolsPage() {
 
             {activeTab === "events" && <EventsTab onTriggerEvent={triggerEvent} />}
 
+            {activeTab === "storylines" && <StorylinesTab />}
+
+            {activeTab === "state" && <BattlerStateTab />}
+
             {activeTab === "battle" && (
-              <BattleSimTab
-                opponents={MOCK_OPPONENTS}
-                selectedOpponent={selectedOpponent}
-                setSelectedOpponent={setSelectedOpponent}
-                battleMargin={battleMargin}
-                setBattleMargin={setBattleMargin}
-                playerChoke={playerChoke}
-                setPlayerChoke={setPlayerChoke}
-                opponentChoke={opponentChoke}
-                setOpponentChoke={setOpponentChoke}
-                onSimulate={simulateBattle}
-              />
+              <BattleSimulatorEnhanced />
             )}
 
             {activeTab === "relationships" && (
@@ -639,97 +650,7 @@ export default function DevToolsPage() {
               </div>
             )}
 
-            {activeTab === "cities" && (
-              <div className="space-y-4">
-                <div className="bg-zinc-900 border-2 border-zinc-700 p-4">
-                  <h2 className="text-sm font-display font-bold text-orange-500 tracking-wide mb-4 flex items-center gap-2">
-                    <ImageIcon className="w-4 h-4" /> ADD NEW CITY BACKDROP
-                  </h2>
-                  <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
-                    <input
-                      type="text"
-                      value={newCityName}
-                      onChange={(e) => setNewCityName(e.target.value)}
-                      placeholder="City Name"
-                      className="bg-zinc-800 border border-zinc-700 px-3 py-2 text-zinc-100"
-                    />
-                    <input
-                      type="text"
-                      value={newCityState}
-                      onChange={(e) => setNewCityState(e.target.value.toUpperCase().slice(0, 2))}
-                      placeholder="ST"
-                      maxLength={2}
-                      className="bg-zinc-800 border border-zinc-700 px-3 py-2 text-zinc-100 uppercase"
-                    />
-                    <input
-                      type="text"
-                      value={newBackdropUrl}
-                      onChange={(e) => setNewBackdropUrl(e.target.value)}
-                      placeholder="Image URL (optional)"
-                      className="bg-zinc-800 border border-zinc-700 px-3 py-2 text-zinc-100"
-                    />
-                    <button
-                      onClick={addNewBackdrop}
-                      disabled={!newCityName || !newCityState}
-                      className="py-2 bg-orange-500 text-white font-display uppercase disabled:opacity-50"
-                    >
-                      Add
-                    </button>
-                  </div>
-                </div>
-                <div className="bg-zinc-900 border-2 border-zinc-700 p-4">
-                  <h2 className="text-sm font-display font-bold text-orange-500 tracking-wide mb-4">
-                    CITY BACKDROPS ({cityBackdrops.length})
-                  </h2>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {cityBackdrops.map((backdrop) => (
-                      <div
-                        key={backdrop.cityKey}
-                        className={`border-2 ${selectedBackdrop?.cityKey === backdrop.cityKey ? "border-orange-500" : "border-zinc-700"} overflow-hidden`}
-                      >
-                        <div
-                          className="relative cursor-pointer"
-                          style={{ aspectRatio: "21/9" }}
-                          onClick={() =>
-                            setSelectedBackdrop(selectedBackdrop?.cityKey === backdrop.cityKey ? null : backdrop)
-                          }
-                        >
-                          <Image
-                            src={backdrop.url || "/placeholder.svg"}
-                            alt={backdrop.cityKey}
-                            fill
-                            className="object-cover"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 to-transparent" />
-                          <div className="absolute bottom-2 left-2 text-sm font-display text-zinc-100">
-                            {backdrop.cityKey
-                              .split("-")
-                              .slice(0, -1)
-                              .map((p) => p.charAt(0).toUpperCase() + p.slice(1))
-                              .join(" ")}
-                            , {backdrop.cityKey.split("-").pop()?.toUpperCase()}
-                          </div>
-                        </div>
-                        <div className="p-2 bg-zinc-800 flex items-center justify-between text-xs text-zinc-500">
-                          <span>{backdrop.battlerCount} battler(s)</span>
-                          <div className="flex gap-1">
-                            <button
-                              onClick={() => regenerateBackdrop(backdrop.cityKey)}
-                              className="p-1 hover:text-orange-500"
-                            >
-                              <RefreshCw className="w-3 h-3" />
-                            </button>
-                            <button onClick={() => deleteBackdrop(backdrop.cityKey)} className="p-1 hover:text-red-500">
-                              <Trash2 className="w-3 h-3" />
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
+            {activeTab === "cities" && <CitiesTab />}
 
             {activeTab === "badges" && (
               <div className="bg-zinc-900 border-2 border-zinc-700 p-4">

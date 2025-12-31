@@ -2,11 +2,33 @@
 
 import { motion } from "framer-motion"
 
-interface CrowdReactionWindowProps {
+// Original interface
+interface CrowdReactionWindowPropsOriginal {
   reactionLevel: number // 0-100
   reactionType: "quiet" | "interested" | "hyped" | "going_crazy" | "legendary"
   momentType?: "haymaker" | "choke" | "rebuttal" | "freestyle" | null
   showAnimation?: boolean
+}
+
+// Alternative interface (used by round results page)
+interface CrowdReactionWindowPropsAlt {
+  playerMomentum: number // 0-100
+  crowdEnergy: number // 0-100
+  viralMoment?: boolean
+}
+
+type CrowdReactionWindowProps = CrowdReactionWindowPropsOriginal | CrowdReactionWindowPropsAlt
+
+function isAltProps(props: CrowdReactionWindowProps): props is CrowdReactionWindowPropsAlt {
+  return 'playerMomentum' in props
+}
+
+function getReactionTypeFromLevel(level: number): "quiet" | "interested" | "hyped" | "going_crazy" | "legendary" {
+  if (level < 25) return "quiet"
+  if (level < 50) return "interested"
+  if (level < 75) return "hyped"
+  if (level < 90) return "going_crazy"
+  return "legendary"
 }
 
 const reactionConfig = {
@@ -51,12 +73,27 @@ const momentLabels = {
   freestyle: '"OFF THE TOP!"',
 }
 
-export function CrowdReactionWindow({
-  reactionLevel,
-  reactionType,
-  momentType,
-  showAnimation = true,
-}: CrowdReactionWindowProps) {
+export function CrowdReactionWindow(props: CrowdReactionWindowProps) {
+  // Handle both prop formats
+  let reactionLevel: number
+  let reactionType: "quiet" | "interested" | "hyped" | "going_crazy" | "legendary"
+  let momentType: "haymaker" | "choke" | "rebuttal" | "freestyle" | null = null
+  let showAnimation = true
+
+  if (isAltProps(props)) {
+    // Convert alt props to original format
+    reactionLevel = props.crowdEnergy
+    reactionType = getReactionTypeFromLevel(props.crowdEnergy)
+    if (props.viralMoment) {
+      momentType = "haymaker"
+    }
+  } else {
+    reactionLevel = props.reactionLevel
+    reactionType = props.reactionType
+    momentType = props.momentType ?? null
+    showAnimation = props.showAnimation ?? true
+  }
+
   const config = reactionConfig[reactionType]
 
   return (

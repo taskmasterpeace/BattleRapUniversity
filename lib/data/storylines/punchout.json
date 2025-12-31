@@ -1,0 +1,299 @@
+{
+  "code": "PUNCH_OUT",
+  "name": "Punch Out",
+  "description": "They said something about your family. You swung. Cameras caught everything.",
+  "category": "street",
+  "min_chapters": 2,
+  "max_chapters": 4,
+
+  "trigger": {
+    "type": "compound",
+    "probability": 0.05,
+    "conditions": {
+      "all": [
+        { "min_battles": 15 },
+        {
+          "any": [
+            { "max_attribute": { "resilience": 4 } },
+            { "min_attribute": { "stress": 60 } },
+            { "has_badge": ["Hot Head"] }
+          ]
+        }
+      ]
+    }
+  },
+
+  "chapters": [
+    {
+      "id": "punch_ch1",
+      "chapter_number": 1,
+      "title": "The Moment",
+      "description": "Your opponent just said something about your mother. Your dead mother. On stage. With the crowd laughing. You didn't even think about it. Your fist was already moving. Now they're pulling you apart and everyone's phones are out.",
+      "delay": { "type": "immediate", "value": 0 },
+      "urgency": "immediate",
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "own_it_punch",
+          "label": "Own It",
+          "description": "Yeah you hit him. He had it coming. Let them talk.",
+          "effects": [
+            { "type": "permanent", "crew_loyalty": 1.0 },
+            { "type": "permanent", "reputation": -0.5 },
+            { "type": "temporary", "stress": 20 }
+          ],
+          "leads_to": { "type": "chapter", "id": "punch_ch2_consequences" }
+        },
+        {
+          "id": "apologize_punch",
+          "label": "Apologize Immediately",
+          "description": "Get ahead of it. Say you lost control. You're better than this.",
+          "effects": [
+            { "type": "permanent", "reputation": -0.3 },
+            { "type": "permanent", "crew_loyalty": -1.0 },
+            { "type": "temporary", "stress": 15 }
+          ],
+          "leads_to": { "type": "chapter", "id": "punch_ch2_apology" }
+        },
+        {
+          "id": "leave_venue",
+          "label": "Leave Without Speaking",
+          "description": "Just walk out. Don't give them a quote.",
+          "effects": [
+            { "type": "temporary", "stress": 25 }
+          ],
+          "leads_to": { "type": "chapter", "id": "punch_ch2_silence" }
+        }
+      ]
+    },
+    {
+      "id": "punch_ch2_consequences",
+      "chapter_number": 2,
+      "title": "The Fallout",
+      "description": "The video has 2 million views. The league banned you indefinitely. Other battlers are split - some say you're a legend, some say you're unprofessional. Your opponent is threatening to press charges.",
+      "delay": { "type": "days", "value": 3 },
+      "urgency": "timed",
+      "deadline_hours": 96,
+      "prep_days_cost": 1,
+      "choices": [
+        {
+          "id": "double_down",
+          "label": "Double Down",
+          "description": "Post on social media: 'Say what he said about your mother and see what happens.'",
+          "effects": [
+            { "type": "permanent", "crew_loyalty": 1.5 },
+            { "type": "permanent", "reputation": -1.0 },
+            {
+              "type": "permanent",
+              "state_changes": {
+                "ban_from_league": "URL"
+              }
+            }
+          ],
+          "leads_to": { "type": "ending", "id": "punch_end_street_legend" }
+        },
+        {
+          "id": "rematch",
+          "label": "Call for Rematch",
+          "description": "Challenge him to run it back. Settle it with bars, not fists.",
+          "effects": [
+            { "type": "permanent", "reputation": 0.5 },
+            { "type": "temporary", "stress": 30 }
+          ],
+          "leads_to": { "type": "chapter", "id": "punch_ch3_rematch" }
+        },
+        {
+          "id": "legal_settle",
+          "label": "Settle Quietly",
+          "description": "Pay him off to drop the charges. Make this go away.",
+          "effects": [
+            { "type": "permanent", "financial_stability": -2.0 }
+          ],
+          "leads_to": { "type": "ending", "id": "punch_end_paid_off" }
+        }
+      ]
+    },
+    {
+      "id": "punch_ch2_apology",
+      "chapter_number": 2,
+      "title": "The Apology Tour",
+      "description": "You posted an apology video. Some people respect it. Others are calling you soft. The league says they're 'reviewing the situation.' Your opponent accepted the apology publicly but is still trash talking in DMs.",
+      "delay": { "type": "days", "value": 2 },
+      "urgency": "passive",
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "stay_humble",
+          "label": "Stay Humble",
+          "description": "Accept the suspension. Do the anger management they want. Come back right.",
+          "effects": [
+            { "type": "temporary", "prep_days_lost": 7 },
+            { "type": "permanent", "resilience": 0.5 }
+          ],
+          "leads_to": { "type": "ending", "id": "punch_end_reformed" }
+        },
+        {
+          "id": "expose_him",
+          "label": "Expose His DMs",
+          "description": "He's saying different things publicly and privately. Show the world.",
+          "effects": [
+            { "type": "permanent", "reputation": 0.5 },
+            { "type": "temporary", "stress": 20 }
+          ],
+          "leads_to": { "type": "chapter", "id": "punch_ch3_rematch" }
+        }
+      ]
+    },
+    {
+      "id": "punch_ch2_silence",
+      "chapter_number": 2,
+      "title": "The Silence",
+      "description": "You haven't said anything. The internet is filling in the blanks. Some say you have mental issues. Some say you're a thug. The league is waiting for a statement before deciding your fate.",
+      "delay": { "type": "days", "value": 5 },
+      "urgency": "timed",
+      "deadline_hours": 72,
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "break_silence",
+          "label": "Break Silence",
+          "description": "Give a real interview. Explain what happened and why.",
+          "effects": [
+            { "type": "permanent", "reputation": 0.3 },
+            { "type": "temporary", "stress": 15 }
+          ],
+          "leads_to": { "type": "ending", "id": "punch_end_explained" }
+        },
+        {
+          "id": "stay_silent",
+          "label": "Stay Silent",
+          "description": "Let people think what they want. You don't owe anyone an explanation.",
+          "effects": [
+            { "type": "permanent", "reputation": -1.0 },
+            { "type": "permanent", "resilience": 0.5 }
+          ],
+          "leads_to": { "type": "ending", "id": "punch_end_mystery" }
+        }
+      ]
+    },
+    {
+      "id": "punch_ch3_rematch",
+      "chapter_number": 3,
+      "title": "The Rematch",
+      "description": "You're facing him again. Different league. No security between you during face-off. The tension is insane. Everyone's waiting to see if you'll swing again.",
+      "delay": { "type": "battles", "value": 3 },
+      "urgency": "immediate",
+      "prep_days_cost": 2,
+      "choices": [
+        {
+          "id": "all_bars",
+          "label": "All Bars",
+          "description": "Kill him with words. Prove you can destroy him without touching him.",
+          "effects": [
+            { "type": "permanent", "reputation": 1.5 },
+            { "type": "permanent", "resilience": 1.0 },
+            { "type": "temporary", "choke_chance_modifier": -0.05 }
+          ],
+          "leads_to": { "type": "ending", "id": "punch_end_redemption" }
+        },
+        {
+          "id": "get_physical",
+          "label": "Get Physical Again",
+          "description": "He's provoking you. Again. And this time you planned for it.",
+          "effects": [
+            { "type": "permanent", "reputation": -2.0 },
+            { "type": "permanent", "crew_loyalty": 1.0 },
+            {
+              "type": "permanent",
+              "state_changes": {
+                "add_street_enemy": true,
+                "increase_heat": 3
+              }
+            }
+          ],
+          "leads_to": { "type": "ending", "id": "punch_end_blackballed" }
+        }
+      ]
+    }
+  ],
+
+  "endings": [
+    {
+      "id": "punch_end_street_legend",
+      "type": "neutral",
+      "title": "Street Legend",
+      "description": "You're banned from URL but other leagues are booking you for more money. The incident made you a legend in certain circles. Just can't ever let anyone talk about your family.",
+      "effects": [
+        { "type": "permanent", "crew_loyalty": 1.5 },
+        { "type": "permanent", "reputation": -0.5 }
+      ],
+      "badge": "Street Legend"
+    },
+    {
+      "id": "punch_end_reformed",
+      "type": "positive",
+      "title": "Reformed",
+      "description": "You did the anger management. You came back 'mature.' Some respect the growth. Others still call you soft. But you're battling again.",
+      "effects": [
+        { "type": "permanent", "resilience": 1.0 },
+        { "type": "permanent", "crew_loyalty": -0.5 }
+      ]
+    },
+    {
+      "id": "punch_end_paid_off",
+      "type": "negative",
+      "title": "Paid the Price",
+      "description": "Charges dropped but you're broke and everyone knows you paid him. Some say he baited you on purpose for the payout.",
+      "effects": [
+        { "type": "permanent", "financial_stability": -2.0 },
+        { "type": "permanent", "reputation": -0.5 }
+      ]
+    },
+    {
+      "id": "punch_end_explained",
+      "type": "neutral",
+      "title": "Understood",
+      "description": "People heard your side. Some understand, some don't. The league gave you a 6-month suspension instead of permanent ban. Life goes on.",
+      "effects": [
+        { "type": "permanent", "reputation": 0.3 },
+        { "type": "temporary", "prep_days_lost": 14 }
+      ]
+    },
+    {
+      "id": "punch_end_mystery",
+      "type": "neutral",
+      "title": "The Mystery",
+      "description": "You never explained it. The silence became part of your persona. People still argue about whether you were right or wrong.",
+      "effects": [
+        { "type": "permanent", "resilience": 0.5 }
+      ]
+    },
+    {
+      "id": "punch_end_redemption",
+      "type": "positive",
+      "title": "Redemption",
+      "description": "You bodied him with bars. 3-0 clear. No excuses. The internet declared the beef over. You proved you didn't need your fists.",
+      "effects": [
+        { "type": "permanent", "reputation": 2.0 },
+        { "type": "permanent", "resilience": 1.0 }
+      ],
+      "badge": "Redemption"
+    },
+    {
+      "id": "punch_end_blackballed",
+      "type": "catastrophic",
+      "title": "Blackballed",
+      "description": "You swung again. This time no one's defending you. Every major league has you on their no-book list. Your battle career is effectively over.",
+      "effects": [
+        { "type": "permanent", "reputation": -3.0 },
+        {
+          "type": "permanent",
+          "state_changes": {
+            "ban_from_league": "all"
+          }
+        }
+      ],
+      "badge": "Blackballed"
+    }
+  ]
+}

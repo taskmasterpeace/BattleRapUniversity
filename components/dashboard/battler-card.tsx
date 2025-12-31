@@ -2,9 +2,9 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import type { Battler } from "@/lib/types"
+import type { Battler, CareerTier } from "@/lib/types"
 import { getCityByName, getCityBackdrop as getCityBackdropHelper } from "@/lib/cities"
-import { ChevronRight } from "lucide-react"
+import { ChevronRight, Clock } from "lucide-react"
 import { useState } from "react"
 
 interface BattlerCardProps {
@@ -62,6 +62,23 @@ function getTierBorderColor(tier: string): string {
       return "border-green-500"
     default:
       return "border-zinc-600"
+  }
+}
+
+function getCareerTierStyle(tier: CareerTier): { bg: string; text: string; label: string } {
+  switch (tier) {
+    case "legend":
+      return { bg: "bg-amber-500/20", text: "text-amber-400", label: "Legend" }
+    case "veteran":
+      return { bg: "bg-purple-500/20", text: "text-purple-400", label: "Veteran" }
+    case "established":
+      return { bg: "bg-blue-500/20", text: "text-blue-400", label: "Established" }
+    case "rising":
+      return { bg: "bg-green-500/20", text: "text-green-400", label: "Rising" }
+    case "rookie":
+      return { bg: "bg-zinc-500/20", text: "text-zinc-400", label: "Rookie" }
+    default:
+      return { bg: "bg-zinc-600/20", text: "text-zinc-500", label: "Unknown" }
   }
 }
 
@@ -184,6 +201,24 @@ export function BattlerCard({ battler }: BattlerCardProps) {
                 >
                   {battler.league}
                 </Link>
+              </div>
+              {/* Career row - shows time in the game */}
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className={`${labelColor} font-semibold uppercase tracking-wide`}>Career:</span>
+                {(() => {
+                  const careerStyle = getCareerTierStyle(battler.careerTier || 'unknown')
+                  return (
+                    <>
+                      <span className={`px-1.5 py-0.5 text-[10px] font-display font-bold uppercase ${careerStyle.bg} ${careerStyle.text} border border-current/30`}>
+                        {careerStyle.label}
+                      </span>
+                      <span className="text-white font-mono text-xs flex items-center gap-1">
+                        <Clock className="w-3 h-3 text-zinc-500" />
+                        {battler.careerDisplay || '0 days'}
+                      </span>
+                    </>
+                  )
+                })()}
               </div>
             </div>
           </div>

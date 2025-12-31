@@ -1,11 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { NavHeader } from "@/components/ui/nav-header"
-import { mockBattleOffers } from "@/lib/data"
 import type { BattleInfo } from "@/lib/types"
 import {
   Flame,
@@ -198,6 +197,40 @@ function BattleOfferCard({
                   </span>
                 ))}
               </div>
+
+              {/* Opponent Stats Preview */}
+              {offer.opponent.attributes && (
+                <div className="flex items-center gap-3 mt-3 text-xs">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-zinc-500">PEN:</span>
+                    <div className="flex items-center gap-1">
+                      <div className="w-16 h-1.5 bg-zinc-800 overflow-hidden">
+                        <div
+                          className="h-full bg-blue-500"
+                          style={{ width: `${(offer.opponent.attributes.writing / 10) * 100}%` }}
+                        />
+                      </div>
+                      <span className="font-mono text-blue-400">{offer.opponent.attributes.writing.toFixed(1)}</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-zinc-500">PERF:</span>
+                    <div className="flex items-center gap-1">
+                      <div className="w-16 h-1.5 bg-zinc-800 overflow-hidden">
+                        <div
+                          className="h-full bg-purple-500"
+                          style={{ width: `${(offer.opponent.attributes.performance / 10) * 100}%` }}
+                        />
+                      </div>
+                      <span className="font-mono text-purple-400">{offer.opponent.attributes.performance.toFixed(1)}</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-zinc-500">RES:</span>
+                    <span className="font-mono text-yellow-400">{offer.opponent.attributes.resilience}</span>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -332,16 +365,51 @@ function BattleOfferCard({
 
 export default function BattleOffersPage() {
   const router = useRouter()
-  const [offers, setOffers] = useState(mockBattleOffers)
+  const [offers, setOffers] = useState<BattleInfo[]>([])
+  const [loading, setLoading] = useState(true)
   const [rivalryModalOpen, setRivalryModalOpen] = useState(false)
   const [selectedOffer, setSelectedOffer] = useState<BattleInfo | null>(null)
 
-  const handleAccept = (offerId: string) => {
-    router.push(`/battle/${offerId}/prep`)
+  // Fetch offers from API
+  useEffect(() => {
+    async function fetchOffers() {
+      try {
+        const res = await fetch('/api/battles/offers')
+        if (res.ok) {
+          const data = await res.json()
+          setOffers(data.offers || [])  // ✓ Fix: API returns { offers: [...] }
+        }
+      } catch (error) {
+        console.error('Failed to fetch offers:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchOffers()
+  }, [])
+
+  const handleAccept = async (offerId: string) => {
+    try {
+      const res = await fetch(`/api/battles/${offerId}/accept`, { method: 'POST' })
+      if (res.ok) {
+        router.push(`/battle/${offerId}/prep`)
+      } else {
+        console.error('Failed to accept battle')
+      }
+    } catch (error) {
+      console.error('Error accepting battle:', error)
+    }
   }
 
-  const handleDecline = (offerId: string) => {
-    setOffers((prev) => prev.filter((o) => o.id !== offerId))
+  const handleDecline = async (offerId: string) => {
+    try {
+      const res = await fetch(`/api/battles/${offerId}/decline`, { method: 'POST' })
+      if (res.ok) {
+        setOffers((prev) => prev.filter((o) => o.id !== offerId))
+      }
+    } catch (error) {
+      console.error('Error declining battle:', error)
+    }
   }
 
   const handleViewRivalry = (offer: BattleInfo) => {
@@ -374,17 +442,21 @@ export default function BattleOffersPage() {
         </div>
 
         <div className="space-y-4">
-          {offers.map((offer) => (
-            <BattleOfferCard
-              key={offer.id}
-              offer={offer}
-              onAccept={() => handleAccept(offer.id)}
-              onDecline={() => handleDecline(offer.id)}
-              onViewRivalry={() => handleViewRivalry(offer)}
-            />
-          ))}
-
-          {offers.length === 0 && (
+          {loading ? (
+            <div className="bg-zinc-900 border-2 border-zinc-700 p-12 text-center">
+              <span className="text-zinc-500 font-display">Loading offers...</span>
+            </div>
+          ) : offers.length > 0 ? (
+            offers.map((offer) => (
+              <BattleOfferCard
+                key={offer.id}
+                offer={offer}
+                onAccept={() => handleAccept(offer.id)}
+                onDecline={() => handleDecline(offer.id)}
+                onViewRivalry={() => handleViewRivalry(offer)}
+              />
+            ))
+          ) : (
             <div className="bg-zinc-900 border-2 border-zinc-700 p-12 text-center">
               <span className="text-zinc-500 font-display">No pending offers</span>
               <Link href="/dashboard" className="block mt-4 text-orange-500 hover:text-orange-400 text-sm font-display">

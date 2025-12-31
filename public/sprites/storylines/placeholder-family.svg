@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" fill="none">
+  <rect width="1920" height="1080" fill="#18181b"/>
+  <rect x="60" y="60" width="1800" height="960" stroke="#27272a" stroke-width="4" fill="none"/>
+  <rect x="80" y="80" width="1760" height="920" stroke="#3f3f46" stroke-width="2" fill="none" stroke-dasharray="20 10"/>
+  <text x="960" y="480" font-family="monospace" font-size="120" fill="#a855f7" text-anchor="middle" font-weight="bold">FAMILY</text>
+  <text x="960" y="600" font-family="monospace" font-size="60" fill="#71717a" text-anchor="middle">STORYLINE IMAGE</text>
+  <text x="960" y="700" font-family="monospace" font-size="40" fill="#52525b" text-anchor="middle">[PLACEHOLDER - Replace with generated art]</text>
+  <circle cx="960" cy="340" r="80" stroke="#a855f7" stroke-width="4" fill="none"/>
+  <path d="M930 340 L960 310 L990 340 M960 310 V380" stroke="#a855f7" stroke-width="6" stroke-linecap="round"/>
+  <path d="M920 400 Q960 440 1000 400" stroke="#a855f7" stroke-width="4" fill="none"/>
+</svg>

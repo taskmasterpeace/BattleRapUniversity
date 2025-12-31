@@ -3,7 +3,6 @@
 import Image from "next/image"
 import type { Rivalry } from "@/lib/types"
 import { Flame, ArrowRight } from "lucide-react"
-import { getBattlerByName } from "@/lib/data"
 
 interface RivalryCardProps {
   rivalry: Rivalry
@@ -11,8 +10,7 @@ interface RivalryCardProps {
 }
 
 export function RivalryCard({ rivalry, compact }: RivalryCardProps) {
-  const battler = getBattlerByName(rivalry.opponent.name)
-  const spriteUrl = battler?.portrait?.spriteUrl || rivalry.opponent.avatar || "/placeholder.svg"
+  const spriteUrl = rivalry.opponent.avatar || "/placeholder.svg"
 
   return (
     <div className="bg-zinc-900 border-2 border-zinc-700 p-4">

@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sprite Crop Selector</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #1a1a1a;
+      color: #e0e0e0;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    h1 {
+      font-size: 24px;
+      color: #f97316;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    .controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    button, label.btn {
+      background: #f97316;
+      color: #000;
+      border: none;
+      padding: 10px 20px;
+      font-weight: bold;
+      cursor: pointer;
+      text-transform: uppercase;
+      font-size: 12px;
+      letter-spacing: 1px;
+    }
+    button:hover, label.btn:hover { background: #fb923c; }
+    button:disabled { background: #444; color: #888; cursor: not-allowed; }
+    button.danger { background: #ef4444; }
+    button.danger:hover { background: #f87171; }
+    button.secondary { background: #3f3f46; color: #e0e0e0; }
+    button.secondary:hover { background: #52525b; }
+    input[type="file"] { display: none; }
+
+    .workspace {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .canvas-container {
+      flex: 1;
+      min-width: 600px;
+      background: #0a0a0a;
+      border: 2px solid #333;
+      position: relative;
+      overflow: auto;
+      max-height: 80vh;
+    }
+    #canvas {
+      cursor: crosshair;
+      display: block;
+    }
+    .sidebar {
+      width: 320px;
+      background: #262626;
+      padding: 20px;
+      border: 1px solid #333;
+    }
+    .sidebar h2 {
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 15px;
+      color: #f97316;
+    }
+    .crop-list {
+      max-height: 300px;
+      overflow-y: auto;
+      margin-bottom: 20px;
+    }
+    .crop-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px;
+      background: #1a1a1a;
+      margin-bottom: 5px;
+      border-left: 3px solid #f97316;
+    }
+    .crop-item span { font-size: 12px; font-family: monospace; }
+    .crop-item button {
+      padding: 4px 8px;
+      font-size: 10px;
+    }
+    .output-section {
+      margin-top: 20px;
+    }
+    textarea {
+      width: 100%;
+      height: 150px;
+      background: #1a1a1a;
+      border: 1px solid #333;
+      color: #e0e0e0;
+      padding: 10px;
+      font-family: monospace;
+      font-size: 11px;
+      resize: vertical;
+    }
+    .stats {
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 10px;
+    }
+    .instructions {
+      background: #1f1f1f;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-left: 3px solid #f97316;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .instructions strong { color: #f97316; }
+    .selection-box {
+      position: absolute;
+      border: 2px dashed #f97316;
+      background: rgba(249, 115, 22, 0.1);
+      pointer-events: none;
+    }
+    .crop-overlay {
+      position: absolute;
+      border: 2px solid #22c55e;
+      background: rgba(34, 197, 94, 0.1);
+      pointer-events: none;
+      font-size: 10px;
+      color: #22c55e;
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-start;
+    }
+    .crop-overlay span {
+      background: #22c55e;
+      color: #000;
+      padding: 2px 4px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Sprite Crop Selector</h1>
+    <div class="controls">
+      <label class="btn">
+        Load Image
+        <input type="file" id="fileInput" accept="image/*">
+      </label>
+      <button id="clearAll" class="danger" disabled>Clear All</button>
+      <button id="undoLast" class="secondary" disabled>Undo Last</button>
+      <button id="copyCmd" disabled>Copy Command</button>
+      <button id="copyJson" disabled>Copy JSON</button>
+    </div>
+  </div>
+
+  <div class="instructions">
+    <strong>How to use:</strong> Load a sprite sheet, then click and drag to draw square crop boxes around each character.
+    The boxes are locked to 1:1 aspect ratio. When done, copy the command or JSON to process with claude-spritex.
+  </div>
+
+  <div class="workspace">
+    <div class="canvas-container">
+      <canvas id="canvas"></canvas>
+    </div>
+    <div class="sidebar">
+      <h2>Crop Regions</h2>
+      <div class="stats" id="stats">No crops defined</div>
+      <div class="crop-list" id="cropList"></div>
+
+      <div class="output-section">
+        <h2>Output</h2>
+        <textarea id="output" readonly placeholder="Crop regions will appear here..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const fileInput = document.getElementById('fileInput');
+    const cropList = document.getElementById('cropList');
+    const output = document.getElementById('output');
+    const stats = document.getElementById('stats');
+    const clearAllBtn = document.getElementById('clearAll');
+    const undoLastBtn = document.getElementById('undoLast');
+    const copyCmdBtn = document.getElementById('copyCmd');
+    const copyJsonBtn = document.getElementById('copyJson');
+
+    let image = null;
+    let imagePath = '';
+    let crops = [];
+    let isDrawing = false;
+    let startX = 0;
+    let startY = 0;
+    let currentBox = null;
+
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      imagePath = file.name;
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        image = new Image();
+        image.onload = () => {
+          canvas.width = image.width;
+          canvas.height = image.height;
+          crops = [];
+          redraw();
+          updateUI();
+        };
+        image.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    canvas.addEventListener('mousedown', (e) => {
+      if (!image) return;
+      isDrawing = true;
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      startX = (e.clientX - rect.left) * scaleX;
+      startY = (e.clientY - rect.top) * scaleY;
+    });
+
+    canvas.addEventListener('mousemove', (e) => {
+      if (!isDrawing || !image) return;
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      const currentX = (e.clientX - rect.left) * scaleX;
+      const currentY = (e.clientY - rect.top) * scaleY;
+
+      // Calculate square size (use larger dimension)
+      const dx = currentX - startX;
+      const dy = currentY - startY;
+      const size = Math.max(Math.abs(dx), Math.abs(dy));
+
+      // Determine direction
+      const signX = dx >= 0 ? 1 : -1;
+      const signY = dy >= 0 ? 1 : -1;
+
+      currentBox = {
+        x: signX > 0 ? startX : startX - size,
+        y: signY > 0 ? startY : startY - size,
+        width: size,
+        height: size
+      };
+
+      redraw();
+    });
+
+    canvas.addEventListener('mouseup', () => {
+      if (!isDrawing || !currentBox) return;
+      isDrawing = false;
+
+      // Only add if box is big enough (at least 50px)
+      if (currentBox.width >= 50) {
+        crops.push({
+          x: Math.round(currentBox.x),
+          y: Math.round(currentBox.y),
+          width: Math.round(currentBox.width),
+          height: Math.round(currentBox.height)
+        });
+      }
+
+      currentBox = null;
+      redraw();
+      updateUI();
+    });
+
+    canvas.addEventListener('mouseleave', () => {
+      if (isDrawing) {
+        isDrawing = false;
+        currentBox = null;
+        redraw();
+      }
+    });
+
+    function redraw() {
+      if (!image) {
+        ctx.fillStyle = '#1a1a1a';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#666';
+        ctx.font = '20px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('Load an image to start', canvas.width / 2, canvas.height / 2);
+        return;
+      }
+
+      ctx.drawImage(image, 0, 0);
+
+      // Draw existing crops
+      crops.forEach((crop, i) => {
+        ctx.strokeStyle = '#22c55e';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(crop.x, crop.y, crop.width, crop.height);
+        ctx.fillStyle = 'rgba(34, 197, 94, 0.1)';
+        ctx.fillRect(crop.x, crop.y, crop.width, crop.height);
+
+        // Label
+        ctx.fillStyle = '#22c55e';
+        ctx.font = 'bold 14px sans-serif';
+        ctx.fillText(`${i + 1}`, crop.x + 5, crop.y + 16);
+      });
+
+      // Draw current selection
+      if (currentBox) {
+        ctx.strokeStyle = '#f97316';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([5, 5]);
+        ctx.strokeRect(currentBox.x, currentBox.y, currentBox.width, currentBox.height);
+        ctx.fillStyle = 'rgba(249, 115, 22, 0.1)';
+        ctx.fillRect(currentBox.x, currentBox.y, currentBox.width, currentBox.height);
+        ctx.setLineDash([]);
+
+        // Show size
+        ctx.fillStyle = '#f97316';
+        ctx.font = '12px monospace';
+        ctx.fillText(`${Math.round(currentBox.width)}×${Math.round(currentBox.height)}`,
+          currentBox.x + 5, currentBox.y + currentBox.height - 5);
+      }
+    }
+
+    function updateUI() {
+      const hasImage = !!image;
+      const hasCrops = crops.length > 0;
+
+      clearAllBtn.disabled = !hasCrops;
+      undoLastBtn.disabled = !hasCrops;
+      copyCmdBtn.disabled = !hasCrops;
+      copyJsonBtn.disabled = !hasCrops;
+
+      stats.textContent = hasCrops
+        ? `${crops.length} crop${crops.length > 1 ? 's' : ''} defined`
+        : 'No crops defined';
+
+      // Update crop list
+      cropList.innerHTML = crops.map((crop, i) => `
+        <div class="crop-item">
+          <span>#${i + 1}: ${crop.x},${crop.y} ${crop.width}×${crop.height}</span>
+          <button class="danger" onclick="removeCrop(${i})">×</button>
+        </div>
+      `).join('');
+
+      // Update output
+      if (hasCrops) {
+        const jsonCrops = JSON.stringify(crops, null, 2);
+        const cropArgs = crops.map(c => `--crop "${c.x},${c.y},${c.width},${c.height}"`).join(' ');
+        output.value = `# JSON:\n${jsonCrops}\n\n# CLI Command:\nnode dist/cli.js manual "INPUT_IMAGE" -o "OUTPUT_DIR" ${cropArgs} --chroma-green --tolerance 80`;
+      } else {
+        output.value = '';
+      }
+    }
+
+    window.removeCrop = function(index) {
+      crops.splice(index, 1);
+      redraw();
+      updateUI();
+    };
+
+    clearAllBtn.addEventListener('click', () => {
+      crops = [];
+      redraw();
+      updateUI();
+    });
+
+    undoLastBtn.addEventListener('click', () => {
+      crops.pop();
+      redraw();
+      updateUI();
+    });
+
+    copyCmdBtn.addEventListener('click', () => {
+      const cropArgs = crops.map(c => `--crop "${c.x},${c.y},${c.width},${c.height}"`).join(' ');
+      const cmd = `node dist/cli.js manual "INPUT_IMAGE" -o "OUTPUT_DIR" ${cropArgs} --chroma-green --tolerance 80`;
+      navigator.clipboard.writeText(cmd);
+      copyCmdBtn.textContent = 'Copied!';
+      setTimeout(() => copyCmdBtn.textContent = 'Copy Command', 1500);
+    });
+
+    copyJsonBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(JSON.stringify(crops, null, 2));
+      copyJsonBtn.textContent = 'Copied!';
+      setTimeout(() => copyJsonBtn.textContent = 'Copy JSON', 1500);
+    });
+
+    // Initialize
+    canvas.width = 800;
+    canvas.height = 400;
+    redraw();
+  </script>
+</body>
+</html>

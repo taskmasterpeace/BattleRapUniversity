@@ -1,0 +1,331 @@
+{
+  "code": "LEGAL_TROUBLES",
+  "name": "Legal Troubles",
+  "description": "The past caught up with you. Now you're dealing with lawyers, courts, and consequences.",
+  "category": "legal",
+  "min_chapters": 3,
+  "max_chapters": 6,
+
+  "trigger": {
+    "type": "random",
+    "probability": 0.08,
+    "conditions": { "min_battles": 8 }
+  },
+
+  "chapters": [
+    {
+      "id": "legal_ch1",
+      "chapter_number": 1,
+      "title": "The Summons",
+      "description": "A process server showed up at your door. Someone's suing you - they're claiming you defamed them in a battle.",
+      "delay": { "type": "immediate", "value": 0 },
+      "urgency": "timed",
+      "deadline_hours": 96,
+      "prep_days_cost": 1,
+      "choices": [
+        {
+          "id": "get_lawyer",
+          "label": "Hire a Lawyer",
+          "description": "This is serious. Get professional help immediately.",
+          "effects": [
+            { "type": "permanent", "financial_stability": -1.5 },
+            { "type": "temporary", "stress": 10 }
+          ],
+          "leads_to": { "type": "chapter", "id": "legal_ch2_represented" }
+        },
+        {
+          "id": "ignore_it",
+          "label": "Ignore It",
+          "description": "This is probably nothing. They're just trying to scare you.",
+          "effects": [
+            { "type": "temporary", "stress": 20 }
+          ],
+          "leads_to": { "type": "chapter", "id": "legal_ch3_default" }
+        },
+        {
+          "id": "settle_quick",
+          "label": "Try to Settle",
+          "description": "Reach out directly and see if you can make this go away.",
+          "effects": [
+            { "type": "permanent", "financial_stability": -0.5 },
+            { "type": "permanent", "reputation": -0.3 }
+          ],
+          "leads_to": { "type": "chapter", "id": "legal_ch2_negotiate" }
+        }
+      ]
+    },
+    {
+      "id": "legal_ch2_represented",
+      "chapter_number": 2,
+      "title": "Discovery",
+      "description": "Your lawyer says this could go either way. They want every bar you've ever written as evidence.",
+      "delay": { "type": "battles", "value": 2 },
+      "urgency": "timed",
+      "deadline_hours": 72,
+      "prep_days_cost": 2,
+      "choices": [
+        {
+          "id": "full_cooperation",
+          "label": "Cooperate Fully",
+          "description": "Give them everything. Truth is your defense.",
+          "effects": [
+            { "type": "temporary", "prep_days_lost": 2 },
+            { "type": "temporary", "stress": 15 }
+          ],
+          "leads_to": { "type": "chapter", "id": "legal_ch4_trial" }
+        },
+        {
+          "id": "fight_discovery",
+          "label": "Fight Every Request",
+          "description": "Make this as difficult as possible for them.",
+          "effects": [
+            { "type": "permanent", "financial_stability": -1.0 },
+            { "type": "temporary", "stress": 25 }
+          ],
+          "leads_to": { "type": "chapter", "id": "legal_ch5_escalation" }
+        }
+      ]
+    },
+    {
+      "id": "legal_ch2_negotiate",
+      "chapter_number": 2,
+      "title": "At the Table",
+      "description": "They're willing to talk. Their ask? A public apology and a cut of your future earnings.",
+      "delay": { "type": "days", "value": 5 },
+      "urgency": "timed",
+      "deadline_hours": 48,
+      "prep_days_cost": 1,
+      "choices": [
+        {
+          "id": "take_deal",
+          "label": "Take the Deal",
+          "description": "Swallow your pride. Make it go away.",
+          "effects": [
+            { "type": "permanent", "financial_stability": -2.0 },
+            { "type": "permanent", "reputation": -1.0 }
+          ],
+          "leads_to": { "type": "ending", "id": "legal_end_settled_bad" }
+        },
+        {
+          "id": "counter_offer",
+          "label": "Counter Their Offer",
+          "description": "Negotiate. You'll apologize but no money.",
+          "effects": [
+            { "type": "permanent", "reputation": -0.5 },
+            { "type": "temporary", "stress": 10 }
+          ],
+          "leads_to": { "type": "ending", "id": "legal_end_settled_ok" }
+        },
+        {
+          "id": "walk_away",
+          "label": "Walk Away",
+          "description": "No deal. See you in court.",
+          "effects": [
+            { "type": "temporary", "stress": 30 }
+          ],
+          "leads_to": { "type": "chapter", "id": "legal_ch4_trial" }
+        }
+      ]
+    },
+    {
+      "id": "legal_ch3_default",
+      "chapter_number": 3,
+      "title": "Default Judgment",
+      "description": "You didn't show up. The court ruled against you automatically. Now they're coming for your money.",
+      "delay": { "type": "battles", "value": 3 },
+      "urgency": "immediate",
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "pay_up",
+          "label": "Pay the Judgment",
+          "description": "You have no choice now. Pay what the court ordered.",
+          "effects": [
+            { "type": "permanent", "financial_stability": -3.0 },
+            { "type": "permanent", "reputation": -1.5 }
+          ],
+          "leads_to": { "type": "ending", "id": "legal_end_default_loss" }
+        },
+        {
+          "id": "appeal_late",
+          "label": "Try to Appeal",
+          "description": "Long shot, but maybe you can get the ruling overturned.",
+          "effects": [
+            { "type": "permanent", "financial_stability": -2.0 },
+            { "type": "temporary", "prep_days_lost": 3 },
+            { "type": "temporary", "stress": 40 }
+          ],
+          "leads_to": { "type": "chapter", "id": "legal_ch5_appeal" }
+        }
+      ]
+    },
+    {
+      "id": "legal_ch4_trial",
+      "chapter_number": 4,
+      "title": "Day in Court",
+      "description": "The trial is today. Battle rappers in the gallery. Cameras outside. This is either your vindication or your downfall.",
+      "delay": { "type": "battles", "value": 2 },
+      "urgency": "immediate",
+      "prep_days_cost": 3,
+      "choices": [
+        {
+          "id": "testify_strong",
+          "label": "Testify with Confidence",
+          "description": "This is just another performance. Own that stand like a stage.",
+          "effects": [
+            { "type": "temporary", "stress": 25 }
+          ],
+          "leads_to": { "type": "ending", "id": "legal_end_victory" }
+        },
+        {
+          "id": "testify_nervous",
+          "label": "Keep It Simple",
+          "description": "Just answer the questions. Don't try to be clever.",
+          "effects": [
+            { "type": "temporary", "stress": 35 }
+          ],
+          "leads_to": { "type": "ending", "id": "legal_end_partial" }
+        }
+      ]
+    },
+    {
+      "id": "legal_ch5_escalation",
+      "chapter_number": 5,
+      "title": "Sanctions",
+      "description": "The judge is pissed. Your tactics backfired. They're considering holding you in contempt.",
+      "delay": { "type": "days", "value": 10 },
+      "urgency": "timed",
+      "deadline_hours": 24,
+      "prep_days_cost": 2,
+      "choices": [
+        {
+          "id": "apologize_court",
+          "label": "Apologize to the Court",
+          "description": "Humble yourself. You can't win this fight.",
+          "effects": [
+            { "type": "permanent", "reputation": -0.5 },
+            { "type": "temporary", "stress": 20 }
+          ],
+          "leads_to": { "type": "ending", "id": "legal_end_partial" }
+        },
+        {
+          "id": "double_down",
+          "label": "Stand Your Ground",
+          "description": "They can't silence you. This is America.",
+          "effects": [
+            { "type": "temporary", "stress": 50 }
+          ],
+          "leads_to": { "type": "ending", "id": "legal_end_jail" }
+        }
+      ]
+    },
+    {
+      "id": "legal_ch5_appeal",
+      "chapter_number": 5,
+      "title": "The Appeal",
+      "description": "Your new lawyer found a procedural error. There's a real chance the judgment gets thrown out.",
+      "delay": { "type": "battles", "value": 3 },
+      "urgency": "passive",
+      "prep_days_cost": 1,
+      "choices": [
+        {
+          "id": "pursue_appeal",
+          "label": "See It Through",
+          "description": "You've come this far. Finish it.",
+          "effects": [
+            { "type": "permanent", "financial_stability": -1.0 },
+            { "type": "temporary", "prep_days_lost": 2 }
+          ],
+          "leads_to": { "type": "ending", "id": "legal_end_overturned" }
+        },
+        {
+          "id": "settle_now",
+          "label": "Settle From Strength",
+          "description": "Use the appeal as leverage to negotiate a better deal.",
+          "effects": [
+            { "type": "permanent", "financial_stability": -1.5 }
+          ],
+          "leads_to": { "type": "ending", "id": "legal_end_settled_ok" }
+        }
+      ]
+    }
+  ],
+
+  "endings": [
+    {
+      "id": "legal_end_victory",
+      "type": "positive",
+      "title": "Case Dismissed",
+      "description": "You won. The judge threw out the case with prejudice. You walked out of that courtroom like you just 3-0'd the legal system.",
+      "effects": [
+        { "type": "permanent", "reputation": 1.5 },
+        { "type": "permanent", "resilience": 0.5 },
+        { "type": "temporary", "stress": -20, "duration_days": 30 }
+      ],
+      "badge": "Beat the Case"
+    },
+    {
+      "id": "legal_end_partial",
+      "type": "neutral",
+      "title": "Split Decision",
+      "description": "You won on some counts, lost on others. A small fine. Could have been worse.",
+      "effects": [
+        { "type": "permanent", "financial_stability": -0.5 }
+      ]
+    },
+    {
+      "id": "legal_end_settled_ok",
+      "type": "neutral",
+      "title": "Out of Court",
+      "description": "Settled without admitting wrongdoing. Confidential agreement. Life moves on.",
+      "effects": [
+        { "type": "permanent", "financial_stability": -1.0 },
+        { "type": "temporary", "stress": -10, "duration_days": 14 }
+      ]
+    },
+    {
+      "id": "legal_end_settled_bad",
+      "type": "negative",
+      "title": "Public Apology",
+      "description": "You had to apologize on camera. Social media had a field day. Opponents will use this forever.",
+      "effects": [
+        { "type": "permanent", "financial_stability": -2.0 },
+        { "type": "permanent", "reputation": -1.5 }
+      ],
+      "badge": "Paper Trail"
+    },
+    {
+      "id": "legal_end_default_loss",
+      "type": "negative",
+      "title": "Garnished Wages",
+      "description": "The court is taking a cut of everything you earn until the debt is paid. Every battle check hits different now.",
+      "effects": [
+        { "type": "permanent", "financial_stability": -3.0 },
+        { "type": "permanent", "reputation": -2.0 }
+      ]
+    },
+    {
+      "id": "legal_end_overturned",
+      "type": "positive",
+      "title": "Judgment Reversed",
+      "description": "The appeal worked. Judgment overturned. You learned an expensive lesson about ignoring legal papers.",
+      "effects": [
+        { "type": "permanent", "financial_stability": -1.0 },
+        { "type": "permanent", "resilience": 0.3 }
+      ]
+    },
+    {
+      "id": "legal_end_jail",
+      "type": "catastrophic",
+      "title": "Contempt of Court",
+      "description": "The judge gave you 30 days for contempt. You're calling your manager from county lockup. Your next battle is cancelled.",
+      "effects": [
+        { "type": "permanent", "reputation": -2.0 },
+        { "type": "permanent", "financial_stability": -2.0 },
+        { "type": "temporary", "prep_days_lost": 30 },
+        { "type": "temporary", "stress": 60, "duration_days": 60 }
+      ],
+      "badge": "Did Time"
+    }
+  ]
+}

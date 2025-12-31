@@ -1,0 +1,118 @@
+================================
+EDGE CASE TESTING SUITE
+================================
+
+Testing without authentication and invalid scenarios...
+
+
+
+>>> AUTHENTICATION TESTS <<<
+
+
+========== Test 1.1: Access battle offers without auth ==========
+Error: Unexpected token 'I', "Internal S"... is not valid JSON
+
+========== Test 1.2: Create battler without auth ==========
+Error: Unexpected token 'I', "Internal S"... is not valid JSON
+
+========== Test 1.3: Access non-existent battle without auth ==========
+Error: Unexpected token 'I', "Internal S"... is not valid JSON
+
+
+>>> INVALID DATA TESTS <<<
+
+
+========== Test 2.1: Create battler with invalid attributes (wrong total) ==========
+Error: Unexpected token 'I', "Internal S"... is not valid JSON
+
+========== Test 2.2: Create battler with attributes out of bounds (> 8) ==========
+Error: Unexpected token 'I', "Internal S"... is not valid JSON
+
+========== Test 2.3: Create battler with attributes < 1 ==========
+Error: Unexpected token 'I', "Internal S"... is not valid JSON
+
+========== Test 2.4: Create battler with empty stage name ==========
+Error: Unexpected token 'I', "Internal S"... is not valid JSON
+
+========== Test 2.5: Create battler with no style tags ==========
+Error: Unexpected token 'I', "Internal S"... is not valid JSON
+
+========== Test 2.6: Create battler with too many style tags (>3) ==========
+Error: Unexpected token 'I', "Internal S"... is not valid JSON
+
+
+>>> MALFORMED REQUEST TESTS <<<
+
+
+========== Test 3.1: Invalid JSON payload ==========
+Error: Unexpected token 'I', "Internal S"... is not valid JSON
+
+========== Test 3.2: Missing required fields ==========
+Error: Unexpected token 'I', "Internal S"... is not valid JSON
+
+========== Test 3.3: Accept battle with invalid UUID ==========
+Error: Unexpected token 'I', "Internal S"... is not valid JSON
+
+========== Test 3.4: Set prep with invalid day_index (0) ==========
+Error: Unexpected token 'I', "Internal S"... is not valid JSON
+
+========== Test 3.5: Set prep with negative day_index ==========
+Error: Unexpected token 'I', "Internal S"... is not valid JSON
+
+========== Test 3.6: Set prep with invalid focus type ==========
+Error: Unexpected token 'I', "Internal S"... is not valid JSON
+
+
+>>> NON-EXISTENT RESOURCE TESTS <<<
+
+
+========== Test 4.1: Accept non-existent battle ==========
+Error: Unexpected token 'I', "Internal S"... is not valid JSON
+
+========== Test 4.2: Get non-existent battle ==========
+Error: Unexpected token 'I', "Internal S"... is not valid JSON
+
+========== Test 4.3: Set prep for non-existent battle ==========
+Error: Unexpected token 'I', "Internal S"... is not valid JSON
+
+========== Test 4.4: Get non-existent news article ==========
+Error: Unexpected token 'I', "Internal S"... is not valid JSON
+
+
+>>> INTERNAL API SECURITY TESTS <<<
+
+
+========== Test 5.1: Call internal API without secret ==========
+Error: Unexpected token 'I', "Internal S"... is not valid JSON
+
+========== Test 5.2: Call internal API with wrong secret ==========
+Error: Unexpected token 'I', "Internal S"... is not valid JSON
+
+========== Test 5.3: Call internal API to generate offers without secret ==========
+Error: Unexpected token 'I', "Internal S"... is not valid JSON
+
+
+>>> UNSUPPORTED HTTP METHOD TESTS <<<
+
+
+========== Test 6.1: DELETE on battler create endpoint ==========
+Error: Unexpected end of JSON input
+
+========== Test 6.2: PUT on battle accept endpoint ==========
+Error: Unexpected token 'I', "Internal S"... is not valid JSON
+
+========== Test 6.3: PATCH on news endpoint ==========
+Error: Unexpected end of JSON input
+
+
+================================
+TEST SUITE COMPLETED
+================================
+
+Review the results above to check:
+- Are error messages clear and helpful?
+- Are HTTP status codes correct?
+- Are there any 500 errors that should be 400s?
+- Are authentication checks working?
+- Are validation checks comprehensive?
+- Are internal APIs properly secured?

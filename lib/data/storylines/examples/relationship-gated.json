@@ -1,0 +1,429 @@
+{
+  "code": "RIVALRY_ESCALATION",
+  "name": "Blood Feud",
+  "description": "Your beef isn't just battle rap anymore. Your rival is taking things personal, and it's spilling into real life.",
+  "category": "rivalry",
+  "min_chapters": 3,
+  "max_chapters": 5,
+
+  "trigger": {
+    "type": "compound",
+    "probability": 0.18,
+    "conditions": {
+      "all": [
+        { "has_rival": true },
+        { "relationship_count_min": 1 },
+        { "min_battles": 8 },
+        { "lacks_badge": ["Peacemaker", "Above the Drama"] },
+        { "no_active_storyline": ["RIVALRY_ESCALATION", "STREET_ALTERCATION"] }
+      ]
+    }
+  },
+
+  "chapters": [
+    {
+      "id": "feud_ch1",
+      "chapter_number": 1,
+      "title": "Beyond the Battle",
+      "description": "Your rival posted about you. Not battle rap stuff - personal attacks. Your family, your past, things that should be off-limits. The comments are going crazy.",
+      "delay": { "type": "immediate", "value": 0 },
+      "urgency": "timed",
+      "deadline_hours": 48,
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "clap_back",
+          "label": "Fire Back",
+          "description": "Match their energy. Air them out too.",
+          "effects": [
+            { "type": "permanent", "reputation": -0.3 },
+            { "type": "temporary", "stress": 20, "duration_days": 14 }
+          ],
+          "leads_to": { "type": "chapter", "id": "feud_ch2_war" }
+        },
+        {
+          "id": "stay_silent",
+          "label": "Don't Respond",
+          "description": "Don't give them the satisfaction. Stay silent.",
+          "effects": [
+            { "type": "temporary", "stress": 15, "duration_days": 7 }
+          ],
+          "leads_to": { "type": "chapter", "id": "feud_ch2_silent" }
+        },
+        {
+          "id": "address_directly",
+          "label": "Reach Out Directly",
+          "description": "Call them. Handle this man to man.",
+          "effects": [
+            { "type": "permanent", "resilience": 0.2 }
+          ],
+          "leads_to": { "type": "chapter", "id": "feud_ch2_direct" }
+        }
+      ]
+    },
+    {
+      "id": "feud_ch2_war",
+      "chapter_number": 2,
+      "title": "Social Media War",
+      "description": "It's all out war online. Every day there's new posts, new diss tracks previewed, people picking sides. The culture is watching.",
+      "delay": { "type": "days", "value": 3 },
+      "urgency": "timed",
+      "deadline_hours": 72,
+      "prep_days_cost": 2,
+      "choices": [
+        {
+          "id": "keep_going",
+          "label": "Keep It Going",
+          "description": "You're winning this war. Don't stop now.",
+          "effects": [
+            { "type": "temporary", "stress": 25, "duration_days": 21 },
+            { "type": "permanent", "reputation": 0.3 }
+          ],
+          "leads_to": { "type": "chapter", "id": "feud_ch3_peak" }
+        },
+        {
+          "id": "demand_battle",
+          "label": "Demand the Battle",
+          "description": "Enough talking. Let's settle this on stage.",
+          "effects": [
+            { "type": "permanent", "reputation": 0.5 }
+          ],
+          "leads_to": { "type": "chapter", "id": "feud_ch3_battle" }
+        },
+        {
+          "id": "walk_back",
+          "label": "Walk It Back",
+          "description": "This is getting out of control. De-escalate.",
+          "effects": [
+            { "type": "permanent", "reputation": -0.5 }
+          ],
+          "leads_to": { "type": "ending", "id": "feud_end_backed_down" }
+        }
+      ]
+    },
+    {
+      "id": "feud_ch2_silent",
+      "chapter_number": 2,
+      "title": "They Keep Coming",
+      "description": "Your silence is being read as weakness. They're doubling down, and now other people are joining in. The pile-on is real.",
+      "delay": { "type": "days", "value": 5 },
+      "urgency": "passive",
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "break_silence",
+          "label": "Break Your Silence",
+          "description": "Enough. Time to respond.",
+          "effects": [
+            { "type": "permanent", "reputation": 0.2 }
+          ],
+          "leads_to": { "type": "chapter", "id": "feud_ch3_late_response" }
+        },
+        {
+          "id": "stay_focused",
+          "label": "Stay Above It",
+          "description": "Let them talk. Actions speak louder.",
+          "effects": [
+            { "type": "permanent", "resilience": 0.5 },
+            { "type": "temporary", "stress": 10, "duration_days": 14 }
+          ],
+          "leads_to": { "type": "ending", "id": "feud_end_above_it" }
+        }
+      ]
+    },
+    {
+      "id": "feud_ch2_direct",
+      "chapter_number": 2,
+      "title": "The Conversation",
+      "description": "You reached out. The conversation was heated but you both aired your grievances. They agreed to delete the post if you squash the beef publicly.",
+      "delay": { "type": "days", "value": 2 },
+      "urgency": "timed",
+      "deadline_hours": 48,
+      "prep_days_cost": 1,
+      "choices": [
+        {
+          "id": "squash_it",
+          "label": "Squash It Publicly",
+          "description": "Shake hands online. Move on.",
+          "effects": [
+            { "type": "permanent", "reputation": 0.3 },
+            { "type": "permanent", "resilience": 0.3 }
+          ],
+          "leads_to": { "type": "ending", "id": "feud_end_peace" }
+        },
+        {
+          "id": "demand_more",
+          "label": "Want More",
+          "description": "They need to apologize properly. Publicly.",
+          "effects": [
+            { "type": "temporary", "stress": 15, "duration_days": 7 }
+          ],
+          "leads_to": { "type": "chapter", "id": "feud_ch3_demands" }
+        }
+      ]
+    },
+    {
+      "id": "feud_ch3_peak",
+      "chapter_number": 3,
+      "title": "Boiling Point",
+      "description": "You're both at the same event. The tension is palpable. Everyone's watching to see what happens when you cross paths.",
+      "delay": { "type": "battles", "value": 1 },
+      "urgency": "immediate",
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "confront",
+          "label": "Confront Them",
+          "description": "Walk up. Say what needs to be said.",
+          "effects": [
+            { "type": "temporary", "stress": 30, "duration_days": 7 }
+          ],
+          "leads_to": { "type": "chapter", "id": "feud_ch4_confrontation" }
+        },
+        {
+          "id": "avoid",
+          "label": "Avoid Contact",
+          "description": "Not here. Not like this.",
+          "effects": [
+            { "type": "permanent", "reputation": -0.3 }
+          ],
+          "leads_to": { "type": "ending", "id": "feud_end_avoided" }
+        }
+      ]
+    },
+    {
+      "id": "feud_ch3_battle",
+      "chapter_number": 3,
+      "title": "The Challenge",
+      "description": "You called for the battle. The leagues are interested - this beef would bring huge numbers. Your rival accepted. It's happening.",
+      "delay": { "type": "days", "value": 5 },
+      "urgency": "timed",
+      "deadline_hours": 120,
+      "prep_days_cost": 3,
+      "choices": [
+        {
+          "id": "prep_hard",
+          "label": "Prepare Like Never Before",
+          "description": "This is personal. Leave nothing in the tank.",
+          "effects": [
+            { "type": "permanent", "preparation": 0.5 },
+            { "type": "temporary", "stress": 25, "duration_days": 21 },
+            { "type": "temporary", "prep_days_lost": 2 }
+          ],
+          "leads_to": { "type": "ending", "id": "feud_end_showdown" }
+        },
+        {
+          "id": "play_it_cool",
+          "label": "Play It Cool",
+          "description": "Don't overthink it. You know what to do.",
+          "effects": [
+            { "type": "permanent", "resilience": 0.3 }
+          ],
+          "leads_to": { "type": "ending", "id": "feud_end_showdown" }
+        }
+      ]
+    },
+    {
+      "id": "feud_ch3_late_response",
+      "chapter_number": 3,
+      "title": "Setting the Record Straight",
+      "description": "You finally responded - not with insults, but with facts. The truth about who started this, what really happened, and what you're about.",
+      "delay": { "type": "immediate", "value": 0 },
+      "urgency": "passive",
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "offer_battle",
+          "label": "Offer to Battle",
+          "description": "Let's settle this the right way.",
+          "effects": [
+            { "type": "permanent", "reputation": 0.5 }
+          ],
+          "leads_to": { "type": "ending", "id": "feud_end_showdown" }
+        },
+        {
+          "id": "leave_it",
+          "label": "Leave It There",
+          "description": "You said your piece. Let the people decide.",
+          "effects": [
+            { "type": "permanent", "resilience": 0.3 }
+          ],
+          "leads_to": { "type": "ending", "id": "feud_end_statement" }
+        }
+      ]
+    },
+    {
+      "id": "feud_ch3_demands",
+      "chapter_number": 3,
+      "title": "Pride on the Line",
+      "description": "They're refusing to apologize publicly. Claims it would make them look weak. The deal is falling apart.",
+      "delay": { "type": "days", "value": 3 },
+      "urgency": "timed",
+      "deadline_hours": 48,
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "accept_private",
+          "label": "Accept Private Resolution",
+          "description": "Fine. As long as they stop.",
+          "effects": [
+            { "type": "permanent", "resilience": 0.2 }
+          ],
+          "leads_to": { "type": "ending", "id": "feud_end_quiet_peace" }
+        },
+        {
+          "id": "back_to_war",
+          "label": "Back to War",
+          "description": "If they won't apologize, this isn't over.",
+          "effects": [
+            { "type": "temporary", "stress": 20, "duration_days": 14 }
+          ],
+          "leads_to": { "type": "chapter", "id": "feud_ch4_confrontation" }
+        }
+      ]
+    },
+    {
+      "id": "feud_ch4_confrontation",
+      "chapter_number": 4,
+      "title": "Face to Face",
+      "description": "You're face to face with your rival. Cameras are out. Everyone's watching. Words are exchanged. It could go either way.",
+      "delay": { "type": "immediate", "value": 0 },
+      "urgency": "immediate",
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "keep_it_verbal",
+          "label": "Keep It Verbal",
+          "description": "Say what you need to say. Nothing more.",
+          "effects": [
+            { "type": "permanent", "reputation": 0.5 },
+            { "type": "permanent", "resilience": 0.3 }
+          ],
+          "leads_to": { "type": "ending", "id": "feud_end_verbal_win" }
+        },
+        {
+          "id": "walk_away",
+          "label": "Walk Away",
+          "description": "You've said enough. Don't give them more.",
+          "effects": [
+            { "type": "permanent", "resilience": 0.5 }
+          ],
+          "leads_to": { "type": "ending", "id": "feud_end_walked_away" }
+        },
+        {
+          "id": "things_escalate",
+          "label": "Things Get Physical",
+          "description": "Sometimes words aren't enough...",
+          "effects": [
+            { "type": "temporary", "stress": 40, "duration_days": 30 },
+            { "type": "permanent", "reputation": -1.0 }
+          ],
+          "leads_to": { "type": "ending", "id": "feud_end_physical" },
+          "branches_to_storyline": "STREET_ALTERCATION"
+        }
+      ]
+    }
+  ],
+
+  "endings": [
+    {
+      "id": "feud_end_showdown",
+      "type": "positive",
+      "title": "The Showdown",
+      "description": "The battle is set. The biggest grudge match in recent memory. Win or lose, you handled this the right way - on stage, bars for bars.",
+      "effects": [
+        { "type": "permanent", "reputation": 1.0 }
+      ],
+      "badge": "Battle Rap Purist"
+    },
+    {
+      "id": "feud_end_peace",
+      "type": "positive",
+      "title": "Squashed Beef",
+      "description": "You handled it like adults. The beef is over, mutual respect established. The culture appreciates you both for not letting it get ugly.",
+      "effects": [
+        { "type": "permanent", "reputation": 0.5 },
+        { "type": "permanent", "resilience": 0.5 },
+        { "type": "temporary", "stress": -20, "duration_days": 30 }
+      ],
+      "badge": "Peacemaker"
+    },
+    {
+      "id": "feud_end_above_it",
+      "type": "positive",
+      "title": "Above the Drama",
+      "description": "You never engaged. Let them look like the aggressor while you stayed focused on your craft. The high road isn't always satisfying, but you kept your dignity.",
+      "effects": [
+        { "type": "permanent", "resilience": 0.8 }
+      ],
+      "badge": "Above the Drama"
+    },
+    {
+      "id": "feud_end_verbal_win",
+      "type": "positive",
+      "title": "Verbal Victory",
+      "description": "Face to face, you said what needed to be said. Everyone saw it - you won that exchange without throwing a punch. That's how it's done.",
+      "effects": [
+        { "type": "permanent", "reputation": 0.8 },
+        { "type": "temporary", "stress": -15, "duration_days": 14 }
+      ]
+    },
+    {
+      "id": "feud_end_statement",
+      "type": "neutral",
+      "title": "Statement Made",
+      "description": "You set the record straight. The truth is out there now. Whether people believe you or not is on them.",
+      "effects": [
+        { "type": "permanent", "resilience": 0.3 }
+      ]
+    },
+    {
+      "id": "feud_end_quiet_peace",
+      "type": "neutral",
+      "title": "Quiet Resolution",
+      "description": "It's over, quietly. No public handshake, no announcement - just an understanding that it stops here.",
+      "effects": [
+        { "type": "permanent", "resilience": 0.2 }
+      ]
+    },
+    {
+      "id": "feud_end_walked_away",
+      "type": "neutral",
+      "title": "Walked Away",
+      "description": "You walked away from the confrontation. Some call it smart, some call it soft. You know what it took to not react.",
+      "effects": [
+        { "type": "permanent", "resilience": 0.5 }
+      ]
+    },
+    {
+      "id": "feud_end_backed_down",
+      "type": "negative",
+      "title": "Backed Down",
+      "description": "You tried to de-escalate but it looked like backing down. The narrative is set - they won this round.",
+      "effects": [
+        { "type": "permanent", "reputation": -0.8 },
+        { "type": "temporary", "stress": 25, "duration_days": 21 }
+      ]
+    },
+    {
+      "id": "feud_end_avoided",
+      "type": "negative",
+      "title": "Avoided",
+      "description": "You avoided the confrontation. People noticed. Some respected it, most didn't. The beef continues to simmer.",
+      "effects": [
+        { "type": "permanent", "reputation": -0.5 }
+      ]
+    },
+    {
+      "id": "feud_end_physical",
+      "type": "catastrophic",
+      "title": "Things Got Physical",
+      "description": "It went too far. Now there are videos, possibly legal consequences, definitely career damage. This is not how battle rappers should handle beef.",
+      "effects": [
+        { "type": "permanent", "reputation": -1.5 },
+        { "type": "temporary", "stress": 50, "duration_days": 60 }
+      ],
+      "badge": "Hot Head"
+    }
+  ]
+}

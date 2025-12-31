@@ -1,30 +1,123 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 import { motion } from "framer-motion"
 import { Card, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 import { useBattler } from "@/contexts/battler-context"
-import { BATTLERS, type Battler } from "@/lib/battlers"
+import type { Battler } from "@/lib/types"
 import { BattlerPortrait } from "@/components/battler-portrait"
-import { Users, Star, Check, Search } from "lucide-react"
+import { Users, Star, Check, Search, Loader2, UserPlus, Sparkles, Swords } from "lucide-react"
 
 export default function RosterPage() {
-  const { activeBattler, setActiveBattler } = useBattler()
+  const { activeBattler, switchBattler, battlers, loading } = useBattler()
   const [searchQuery, setSearchQuery] = useState("")
   const [tierFilter, setTierFilter] = useState<string>("all")
 
-  const filteredBattlers = BATTLERS.filter((battler) => {
-    const matchesSearch = battler.stageName.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesTier = tierFilter === "all" || battler.tier === tierFilter
+  const filteredBattlers = battlers.filter((battler) => {
+    const matchesSearch = battler.stageName?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false
+    const matchesTier = tierFilter === "all" || battler.tier?.toLowerCase().includes(tierFilter)
     return matchesSearch && matchesTier
   })
 
   const handleSelectBattler = (battler: Battler) => {
-    setActiveBattler(battler)
+    switchBattler(battler.id)
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <Loader2 className="w-8 h-8 animate-spin text-orange-500" />
+      </div>
+    )
+  }
+
+  // Empty state - no battlers signed
+  if (battlers.length === 0) {
+    return (
+      <div className="p-4 md:p-6">
+        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-8">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+            className="text-center"
+          >
+            <div className="w-32 h-32 mx-auto mb-6 bg-zinc-800 border-2 border-zinc-700 flex items-center justify-center">
+              <Swords className="w-16 h-16 text-zinc-600" />
+            </div>
+            <h1 className="text-2xl font-display font-black text-zinc-200 mb-2">YOUR ROSTER IS EMPTY</h1>
+            <p className="text-zinc-500 max-w-md">
+              Sign an existing battler from the pool or create your own custom battler to get started.
+            </p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="flex flex-col sm:flex-row gap-4"
+          >
+            <Link href="/roster/sign">
+              <Button
+                className="bg-orange-600 hover:bg-orange-500 text-white font-display font-bold px-8 py-6 text-lg flex items-center gap-3"
+              >
+                <UserPlus className="w-6 h-6" />
+                SIGN A BATTLER
+              </Button>
+            </Link>
+            <Link href="/onboarding">
+              <Button
+                variant="outline"
+                className="border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white font-display font-bold px-8 py-6 text-lg flex items-center gap-3"
+              >
+                <Sparkles className="w-6 h-6" />
+                CREATE CUSTOM
+              </Button>
+            </Link>
+          </motion.div>
+
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+            className="text-xs text-zinc-600 max-w-sm text-center"
+          >
+            Signing a battler lets you play immediately with a pre-built character. Creating a custom battler lets you choose your own name, style, and starting league.
+          </motion.p>
+        </div>
+      </div>
+    )
   }
 
   return (
     <div className="p-4 md:p-6 space-y-6">
+      {/* Header with actions */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 className="text-xl font-display font-black text-zinc-200">YOUR ROSTER</h1>
+          <p className="text-sm text-zinc-500">{battlers.length} battler{battlers.length !== 1 ? 's' : ''} signed</p>
+        </div>
+        <div className="flex gap-2">
+          <Link href="/roster/sign">
+            <Button
+              variant="outline"
+              className="border-zinc-700 text-zinc-300 hover:bg-zinc-800 font-display text-sm"
+            >
+              <UserPlus className="w-4 h-4 mr-2" />
+              Sign Battler
+            </Button>
+          </Link>
+          <Link href="/onboarding">
+            <Button className="bg-orange-600 hover:bg-orange-500 text-white font-display text-sm">
+              <Sparkles className="w-4 h-4 mr-2" />
+              Create New
+            </Button>
+          </Link>
+        </div>
+      </div>
+
       {/* Search & Filters */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
@@ -101,7 +194,7 @@ export default function RosterPage() {
         })}
       </div>
 
-      {filteredBattlers.length === 0 && (
+      {filteredBattlers.length === 0 && battlers.length > 0 && (
         <div className="text-center py-12">
           <Users className="w-12 h-12 text-zinc-700 mx-auto mb-4" />
           <p className="text-zinc-500">No battlers found matching your criteria.</p>

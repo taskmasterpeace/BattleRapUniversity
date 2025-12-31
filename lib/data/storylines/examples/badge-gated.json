@@ -1,0 +1,230 @@
+{
+  "code": "REDEMPTION_ARC",
+  "name": "Road to Redemption",
+  "description": "You've choked before. Everyone remembers. Now you have a chance to prove them wrong.",
+  "category": "career",
+  "min_chapters": 3,
+  "max_chapters": 4,
+
+  "trigger": {
+    "type": "compound",
+    "probability": 0.20,
+    "conditions": {
+      "all": [
+        { "has_badge": ["Choker"] },
+        { "min_battles": 10 },
+        { "lacks_badge": ["Clutch Performer"] },
+        { "no_active_storyline": ["REDEMPTION_ARC"] }
+      ]
+    }
+  },
+
+  "chapters": [
+    {
+      "id": "redemption_ch1",
+      "chapter_number": 1,
+      "title": "The Whispers",
+      "description": "You hear them talking. 'He's gonna choke again.' 'Same old story.' A big battle is coming up - your chance to silence the doubters.",
+      "delay": { "type": "immediate", "value": 0 },
+      "urgency": "timed",
+      "deadline_hours": 72,
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "extra_prep",
+          "label": "Buckle Down",
+          "description": "Put in extra work. Leave nothing to chance.",
+          "effects": [
+            { "type": "temporary", "stress": 15, "duration_days": 14 },
+            { "type": "permanent", "preparation": 0.5 }
+          ],
+          "leads_to": { "type": "chapter", "id": "redemption_ch2_focused" }
+        },
+        {
+          "id": "embrace_pressure",
+          "label": "Embrace the Pressure",
+          "description": "Let them talk. Use their doubt as fuel.",
+          "effects": [
+            { "type": "permanent", "resilience": 0.3 }
+          ],
+          "leads_to": { "type": "chapter", "id": "redemption_ch2_pressure" }
+        },
+        {
+          "id": "ignore_it",
+          "label": "Block It Out",
+          "description": "Just focus on your craft. Ignore the noise.",
+          "effects": [
+            { "type": "temporary", "stress": -5, "duration_days": 7 }
+          ],
+          "leads_to": { "type": "chapter", "id": "redemption_ch2_neutral" }
+        }
+      ]
+    },
+    {
+      "id": "redemption_ch2_focused",
+      "chapter_number": 2,
+      "title": "The Grind",
+      "description": "You've been working harder than ever. Late nights, early mornings. Your material is tight. But are you ready for the moment?",
+      "delay": { "type": "battles", "value": 1 },
+      "urgency": "battle_gated",
+      "prep_days_cost": 2,
+      "choices": [
+        {
+          "id": "stay_hungry",
+          "label": "Stay Hungry",
+          "description": "Keep grinding until the battle. No rest.",
+          "effects": [
+            { "type": "temporary", "prep_days_lost": 1 },
+            { "type": "permanent", "resilience": 0.5 },
+            { "type": "temporary", "choke_chance_modifier": -0.02, "duration_battles": 3 }
+          ],
+          "leads_to": { "type": "chapter", "id": "redemption_ch3_moment" }
+        },
+        {
+          "id": "trust_work",
+          "label": "Trust Your Work",
+          "description": "You've put in the time. Now trust yourself.",
+          "effects": [
+            { "type": "permanent", "resilience": 0.3 }
+          ],
+          "leads_to": { "type": "chapter", "id": "redemption_ch3_moment" }
+        }
+      ]
+    },
+    {
+      "id": "redemption_ch2_pressure",
+      "chapter_number": 2,
+      "title": "Fuel for the Fire",
+      "description": "Every doubter, every hater - you're collecting receipts. The pressure is building, but so is your determination.",
+      "delay": { "type": "battles", "value": 1 },
+      "urgency": "battle_gated",
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "channel_it",
+          "label": "Channel the Energy",
+          "description": "Transform anger into performance.",
+          "effects": [
+            { "type": "permanent", "resilience": 0.5 },
+            { "type": "temporary", "stress": 20, "duration_days": 14 }
+          ],
+          "leads_to": { "type": "chapter", "id": "redemption_ch3_moment" }
+        },
+        {
+          "id": "too_much",
+          "label": "It's Getting Heavy",
+          "description": "The weight of expectations is crushing.",
+          "effects": [
+            { "type": "temporary", "stress": 30, "duration_days": 21 },
+            { "type": "temporary", "choke_chance_modifier": 0.03, "duration_battles": 2 }
+          ],
+          "leads_to": { "type": "ending", "id": "redemption_end_collapse" }
+        }
+      ]
+    },
+    {
+      "id": "redemption_ch2_neutral",
+      "chapter_number": 2,
+      "title": "Business as Usual",
+      "description": "You've been treating this like any other battle. No extra pressure, no extra preparation. Just you.",
+      "delay": { "type": "battles", "value": 1 },
+      "urgency": "battle_gated",
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "last_minute",
+          "label": "Last Minute Push",
+          "description": "Maybe you should put in some extra work after all...",
+          "effects": [
+            { "type": "temporary", "prep_days_lost": 2 },
+            { "type": "permanent", "preparation": 0.3 }
+          ],
+          "leads_to": { "type": "chapter", "id": "redemption_ch3_moment" }
+        },
+        {
+          "id": "stay_course",
+          "label": "Stay the Course",
+          "description": "What happens, happens.",
+          "effects": [],
+          "leads_to": { "type": "ending", "id": "redemption_end_neutral" }
+        }
+      ]
+    },
+    {
+      "id": "redemption_ch3_moment",
+      "chapter_number": 3,
+      "title": "The Moment",
+      "description": "Battle day. The crowd knows your history. This is it - the moment you've been building toward.",
+      "delay": { "type": "immediate", "value": 0 },
+      "urgency": "timed",
+      "deadline_hours": 24,
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "prove_them_wrong",
+          "label": "Prove Them Wrong",
+          "description": "Step up and deliver. Show them who you really are.",
+          "effects": [
+            { "type": "permanent", "resilience": 1.0 },
+            { "type": "temporary", "choke_chance_modifier": -0.05, "duration_battles": 5 }
+          ],
+          "leads_to": { "type": "ending", "id": "redemption_end_redeemed" }
+        },
+        {
+          "id": "accept_fate",
+          "label": "Accept Whatever Happens",
+          "description": "Win or lose, choke or clutch - you're at peace with it.",
+          "effects": [
+            { "type": "permanent", "resilience": 0.5 },
+            { "type": "temporary", "stress": -20, "duration_days": 30 }
+          ],
+          "leads_to": { "type": "ending", "id": "redemption_end_peace" }
+        }
+      ]
+    }
+  ],
+
+  "endings": [
+    {
+      "id": "redemption_end_redeemed",
+      "type": "positive",
+      "title": "Redeemed",
+      "description": "You did it. When it mattered most, you stepped up. The 'Choker' label no longer defines you. You've proven that you can perform under pressure.",
+      "effects": [
+        { "type": "permanent", "reputation": 1.5 },
+        { "type": "permanent", "resilience": 0.5 },
+        { "type": "temporary", "stress": -25, "duration_days": 30 }
+      ],
+      "badge": "Clutch Performer"
+    },
+    {
+      "id": "redemption_end_peace",
+      "type": "neutral",
+      "title": "Inner Peace",
+      "description": "You found something more valuable than proving doubters wrong - peace with yourself. Whatever happens in battles no longer controls your self-worth.",
+      "effects": [
+        { "type": "permanent", "resilience": 0.8 },
+        { "type": "permanent", "stress": -10 }
+      ],
+      "badge": "Zen Master"
+    },
+    {
+      "id": "redemption_end_collapse",
+      "type": "negative",
+      "title": "Under Pressure",
+      "description": "The weight was too much. You tried to use the pressure as fuel, but it consumed you instead. The doubters had their ammunition reinforced.",
+      "effects": [
+        { "type": "permanent", "resilience": -0.5 },
+        { "type": "temporary", "stress": 35, "duration_days": 45 },
+        { "type": "temporary", "choke_chance_modifier": 0.02, "duration_battles": 5 }
+      ]
+    },
+    {
+      "id": "redemption_end_neutral",
+      "type": "neutral",
+      "title": "Nothing Changed",
+      "description": "You didn't make a big statement either way. The narrative about you remains unchanged. Maybe next time.",
+      "effects": []
+    }
+  ]
+}

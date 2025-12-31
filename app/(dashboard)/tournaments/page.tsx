@@ -1,10 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { LEAGUES } from "@/lib/leagues"
+import { getLeagues, League } from "@/lib/leagues"
 import { Trophy, Calendar, Users, MapPin, ChevronRight } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
@@ -23,99 +23,7 @@ interface Tournament {
   entryFee: number
 }
 
-const MOCK_TOURNAMENTS: Tournament[] = [
-  {
-    id: "tourney-64",
-    name: "March Madness 64",
-    leagueSlug: "main-stage",
-    startDate: "2024-07-15",
-    endDate: "2024-07-20",
-    prizePool: 100000,
-    entrants: 64,
-    maxEntrants: 64,
-    status: "in-progress",
-    format: "single-elimination",
-    entryFee: 1000,
-  },
-  {
-    id: "tourney-32",
-    name: "Summer Madness 32",
-    leagueSlug: "main-stage",
-    startDate: "2024-06-15",
-    endDate: "2024-06-17",
-    prizePool: 50000,
-    entrants: 32,
-    maxEntrants: 32,
-    status: "in-progress",
-    format: "single-elimination",
-    entryFee: 500,
-  },
-  {
-    id: "tourney-16",
-    name: "Ultimate Madness 16",
-    leagueSlug: "underground-kings",
-    startDate: "2024-05-20",
-    endDate: "2024-05-21",
-    prizePool: 25000,
-    entrants: 16,
-    maxEntrants: 16,
-    status: "in-progress",
-    format: "single-elimination",
-    entryFee: 250,
-  },
-  {
-    id: "tourney-8",
-    name: "Underground 8",
-    leagueSlug: "underground-kings",
-    startDate: "2024-05-10",
-    endDate: "2024-05-11",
-    prizePool: 10000,
-    entrants: 8,
-    maxEntrants: 8,
-    status: "in-progress",
-    format: "single-elimination",
-    entryFee: 100,
-  },
-  {
-    id: "tourney-6",
-    name: "Proving Grounds 6-Man",
-    leagueSlug: "proving-grounds",
-    startDate: "2024-05-05",
-    endDate: "2024-05-05",
-    prizePool: 5000,
-    entrants: 6,
-    maxEntrants: 6,
-    status: "in-progress",
-    format: "single-elimination",
-    entryFee: 50,
-  },
-  {
-    id: "tourney-upcoming-16",
-    name: "Fall Classic 16",
-    leagueSlug: "flame-wars",
-    startDate: "2024-09-15",
-    endDate: "2024-09-17",
-    prizePool: 20000,
-    entrants: 12,
-    maxEntrants: 16,
-    status: "upcoming",
-    format: "single-elimination",
-    entryFee: 200,
-  },
-  {
-    id: "tourney-completed",
-    name: "Spring Showdown",
-    leagueSlug: "flame-wars",
-    startDate: "2024-04-10",
-    endDate: "2024-04-12",
-    prizePool: 15000,
-    entrants: 16,
-    maxEntrants: 16,
-    status: "completed",
-    format: "single-elimination",
-    entryFee: 200,
-  },
-]
+// MOCK_TOURNAMENTS removed - now fetches from /api/tournaments
 
 const getStatusColor = (status: Tournament["status"]) => {
   switch (status) {
@@ -137,8 +45,62 @@ const getSizeBadgeColor = (size: number) => {
 
 export default function TournamentsPage() {
   const [statusFilter, setStatusFilter] = useState<"all" | Tournament["status"]>("all")
+  const [leagues, setLeagues] = useState<League[]>([])
+  const [tournaments, setTournaments] = useState<Tournament[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  const filteredTournaments = MOCK_TOURNAMENTS.filter((t) => statusFilter === "all" || t.status === statusFilter)
+  useEffect(() => {
+    setLeagues(getLeagues())
+  }, [])
+
+  useEffect(() => {
+    async function fetchTournaments() {
+      try {
+        const res = await fetch('/api/tournaments')
+        if (!res.ok) throw new Error(`HTTP ${res.status}`)
+        const data = await res.json()
+        setTournaments(data.tournaments || [])
+      } catch (err: any) {
+        console.error('Failed to fetch tournaments:', err)
+        setError(err.message)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchTournaments()
+  }, [])
+
+  const filteredTournaments = tournaments.filter((t) => statusFilter === "all" || t.status === statusFilter)
+
+  if (loading) {
+    return (
+      <div className="p-6 flex items-center justify-center min-h-[50vh]">
+        <div className="text-center space-y-3">
+          <div className="w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="text-zinc-400 font-display">Loading tournaments...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="p-6 flex items-center justify-center min-h-[50vh]">
+        <div className="text-center space-y-3">
+          <Trophy className="w-12 h-12 text-red-500 mx-auto" />
+          <p className="text-zinc-300 font-display">Failed to load tournaments</p>
+          <p className="text-zinc-500 text-sm">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-orange-600 text-white font-display text-sm hover:bg-orange-700 transition-colors"
+          >
+            RETRY
+          </button>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="p-4 md:p-6 space-y-6">
@@ -150,7 +112,7 @@ export default function TournamentsPage() {
         </div>
         <div className="flex items-center gap-2">
           <Trophy className="w-5 h-5 text-orange-500" />
-          <span className="text-sm text-zinc-400">{MOCK_TOURNAMENTS.length} Active</span>
+          <span className="text-sm text-zinc-400">{tournaments.length} Total</span>
         </div>
       </div>
 
@@ -174,7 +136,7 @@ export default function TournamentsPage() {
       {/* Tournaments List */}
       <div className="space-y-4">
         {filteredTournaments.map((tournament, index) => {
-          const league = LEAGUES.find((l) => l.slug === tournament.leagueSlug)
+          const league = leagues.find((l) => l.slug === tournament.leagueSlug)
 
           return (
             <motion.div

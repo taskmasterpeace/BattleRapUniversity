@@ -1,0 +1,636 @@
+{
+  "version": "1.0.0",
+  "generatedAt": "2025-11-26T04:24:58.088Z",
+  "sheets": [
+    {
+      "file": "image_1764125439477.png",
+      "rows": 4,
+      "cols": 8,
+      "confidence": 0.9,
+      "dimensions": {
+        "width": 2752,
+        "height": 1536
+      },
+      "cellSize": {
+        "width": 344,
+        "height": 384
+      }
+    },
+    {
+      "file": "image_1764125274881.png",
+      "rows": 4,
+      "cols": 8,
+      "confidence": 0.9,
+      "dimensions": {
+        "width": 2752,
+        "height": 1536
+      },
+      "cellSize": {
+        "width": 344,
+        "height": 384
+      }
+    },
+    {
+      "file": "image_1764125270901.png",
+      "rows": 4,
+      "cols": 8,
+      "confidence": 0.9,
+      "dimensions": {
+        "width": 2752,
+        "height": 1536
+      },
+      "cellSize": {
+        "width": 344,
+        "height": 384
+      }
+    },
+    {
+      "file": "image_1764125268626.png",
+      "rows": 4,
+      "cols": 8,
+      "confidence": 0.9,
+      "dimensions": {
+        "width": 2752,
+        "height": 1536
+      },
+      "cellSize": {
+        "width": 344,
+        "height": 384
+      }
+    },
+    {
+      "file": "image_1764125265376.png",
+      "rows": 4,
+      "cols": 8,
+      "confidence": 0.9,
+      "dimensions": {
+        "width": 2752,
+        "height": 1536
+      },
+      "cellSize": {
+        "width": 344,
+        "height": 384
+      }
+    },
+    {
+      "file": "image_1764125263534.png",
+      "rows": 4,
+      "cols": 8,
+      "confidence": 0.9,
+      "dimensions": {
+        "width": 2752,
+        "height": 1536
+      },
+      "cellSize": {
+        "width": 344,
+        "height": 384
+      }
+    },
+    {
+      "file": "image_1764125261816.png",
+      "rows": 4,
+      "cols": 8,
+      "confidence": 0.9,
+      "dimensions": {
+        "width": 2752,
+        "height": 1536
+      },
+      "cellSize": {
+        "width": 344,
+        "height": 384
+      }
+    },
+    {
+      "file": "image_1764125260354.png",
+      "rows": 4,
+      "cols": 8,
+      "confidence": 0.9,
+      "dimensions": {
+        "width": 2752,
+        "height": 1536
+      },
+      "cellSize": {
+        "width": 344,
+        "height": 384
+      }
+    },
+    {
+      "file": "image_1764124579831.png",
+      "rows": 4,
+      "cols": 8,
+      "confidence": 0.9,
+      "dimensions": {
+        "width": 2752,
+        "height": 1536
+      },
+      "cellSize": {
+        "width": 344,
+        "height": 384
+      }
+    },
+    {
+      "file": "image_1764124577521.png",
+      "rows": 4,
+      "cols": 8,
+      "confidence": 0.9,
+      "dimensions": {
+        "width": 2752,
+        "height": 1536
+      },
+      "cellSize": {
+        "width": 344,
+        "height": 384
+      }
+    },
+    {
+      "file": "image_1764124575383.png",
+      "rows": 4,
+      "cols": 8,
+      "confidence": 0.9,
+      "dimensions": {
+        "width": 2752,
+        "height": 1536
+      },
+      "cellSize": {
+        "width": 344,
+        "height": 384
+      }
+    },
+    {
+      "file": "image_1764124573403.png",
+      "rows": 4,
+      "cols": 8,
+      "confidence": 0.9,
+      "dimensions": {
+        "width": 2752,
+        "height": 1536
+      },
+      "cellSize": {
+        "width": 344,
+        "height": 384
+      }
+    },
+    {
+      "file": "image_1764124571123.png",
+      "rows": 4,
+      "cols": 8,
+      "confidence": 0.9,
+      "dimensions": {
+        "width": 2752,
+        "height": 1536
+      },
+      "cellSize": {
+        "width": 344,
+        "height": 384
+      }
+    },
+    {
+      "file": "image_1764124564322.png",
+      "rows": 4,
+      "cols": 8,
+      "confidence": 0.9,
+      "dimensions": {
+        "width": 2752,
+        "height": 1536
+      },
+      "cellSize": {
+        "width": 344,
+        "height": 384
+      }
+    },
+    {
+      "file": "image_1764124422924.png",
+      "rows": 4,
+      "cols": 8,
+      "confidence": 0.9,
+      "dimensions": {
+        "width": 2752,
+        "height": 1536
+      },
+      "cellSize": {
+        "width": 344,
+        "height": 384
+      }
+    },
+    {
+      "file": "image_1764124419234.png",
+      "rows": 4,
+      "cols": 8,
+      "confidence": 0.9,
+      "dimensions": {
+        "width": 2752,
+        "height": 1536
+      },
+      "cellSize": {
+        "width": 344,
+        "height": 384
+      }
+    },
+    {
+      "file": "image_1764124416159.png",
+      "rows": 4,
+      "cols": 8,
+      "confidence": 0.9,
+      "dimensions": {
+        "width": 2752,
+        "height": 1536
+      },
+      "cellSize": {
+        "width": 344,
+        "height": 384
+      }
+    },
+    {
+      "file": "image_1764124414036.png",
+      "rows": 4,
+      "cols": 8,
+      "confidence": 0.9,
+      "dimensions": {
+        "width": 2752,
+        "height": 1536
+      },
+      "cellSize": {
+        "width": 344,
+        "height": 384
+      }
+    },
+    {
+      "file": "image_1764124412155.png",
+      "rows": 4,
+      "cols": 8,
+      "confidence": 0.9,
+      "dimensions": {
+        "width": 2752,
+        "height": 1536
+      },
+      "cellSize": {
+        "width": 344,
+        "height": 384
+      }
+    },
+    {
+      "file": "image_1764124410367.png",
+      "rows": 4,
+      "cols": 8,
+      "confidence": 0.9,
+      "dimensions": {
+        "width": 2752,
+        "height": 1536
+      },
+      "cellSize": {
+        "width": 344,
+        "height": 384
+      }
+    },
+    {
+      "file": "image_1764124406596.png",
+      "rows": 4,
+      "cols": 8,
+      "confidence": 0.9,
+      "dimensions": {
+        "width": 2752,
+        "height": 1536
+      },
+      "cellSize": {
+        "width": 344,
+        "height": 384
+      }
+    },
+    {
+      "file": "image_1764124404256.png",
+      "rows": 4,
+      "cols": 8,
+      "confidence": 0.9,
+      "dimensions": {
+        "width": 2752,
+        "height": 1536
+      },
+      "cellSize": {
+        "width": 344,
+        "height": 384
+      }
+    },
+    {
+      "file": "image_1764124402089.png",
+      "rows": 4,
+      "cols": 8,
+      "confidence": 0.9,
+      "dimensions": {
+        "width": 2752,
+        "height": 1536
+      },
+      "cellSize": {
+        "width": 344,
+        "height": 384
+      }
+    },
+    {
+      "file": "image_1764124399696.png",
+      "rows": 4,
+      "cols": 8,
+      "confidence": 0.9,
+      "dimensions": {
+        "width": 2752,
+        "height": 1536
+      },
+      "cellSize": {
+        "width": 344,
+        "height": 384
+      }
+    },
+    {
+      "file": "image_1764124397914.png",
+      "rows": 4,
+      "cols": 8,
+      "confidence": 0.9,
+      "dimensions": {
+        "width": 2752,
+        "height": 1536
+      },
+      "cellSize": {
+        "width": 344,
+        "height": 384
+      }
+    },
+    {
+      "file": "image_1764124391977.png",
+      "rows": 4,
+      "cols": 8,
+      "confidence": 0.9,
+      "dimensions": {
+        "width": 2752,
+        "height": 1536
+      },
+      "cellSize": {
+        "width": 344,
+        "height": 384
+      }
+    },
+    {
+      "file": "image_1764124387599.png",
+      "rows": 4,
+      "cols": 8,
+      "confidence": 0.9,
+      "dimensions": {
+        "width": 2752,
+        "height": 1536
+      },
+      "cellSize": {
+        "width": 344,
+        "height": 384
+      }
+    },
+    {
+      "file": "image_1764124377171.png",
+      "rows": 4,
+      "cols": 8,
+      "confidence": 0.9,
+      "dimensions": {
+        "width": 2752,
+        "height": 1536
+      },
+      "cellSize": {
+        "width": 344,
+        "height": 384
+      }
+    },
+    {
+      "file": "image_1764124371265.png",
+      "rows": 4,
+      "cols": 8,
+      "confidence": 0.9,
+      "dimensions": {
+        "width": 2752,
+        "height": 1536
+      },
+      "cellSize": {
+        "width": 344,
+        "height": 384
+      }
+    },
+    {
+      "file": "image_1764124368508.png",
+      "rows": 4,
+      "cols": 8,
+      "confidence": 0.9,
+      "dimensions": {
+        "width": 2752,
+        "height": 1536
+      },
+      "cellSize": {
+        "width": 344,
+        "height": 384
+      }
+    },
+    {
+      "file": "image_1764123967958.png",
+      "rows": 4,
+      "cols": 8,
+      "confidence": 0.9,
+      "dimensions": {
+        "width": 2752,
+        "height": 1536
+      },
+      "cellSize": {
+        "width": 344,
+        "height": 384
+      }
+    },
+    {
+      "file": "image_1764123960717.png",
+      "rows": 4,
+      "cols": 8,
+      "confidence": 0.9,
+      "dimensions": {
+        "width": 2752,
+        "height": 1536
+      },
+      "cellSize": {
+        "width": 344,
+        "height": 384
+      }
+    },
+    {
+      "file": "image_1764123958307.png",
+      "rows": 4,
+      "cols": 8,
+      "confidence": 0.9,
+      "dimensions": {
+        "width": 2752,
+        "height": 1536
+      },
+      "cellSize": {
+        "width": 344,
+        "height": 384
+      }
+    },
+    {
+      "file": "image_1764123955038.png",
+      "rows": 4,
+      "cols": 8,
+      "confidence": 0.9,
+      "dimensions": {
+        "width": 2752,
+        "height": 1536
+      },
+      "cellSize": {
+        "width": 344,
+        "height": 384
+      }
+    },
+    {
+      "file": "image_1764114235312.png",
+      "rows": 4,
+      "cols": 8,
+      "confidence": 0.9,
+      "dimensions": {
+        "width": 2752,
+        "height": 1536
+      },
+      "cellSize": {
+        "width": 344,
+        "height": 384
+      }
+    },
+    {
+      "file": "image_1764114233251.png",
+      "rows": 4,
+      "cols": 8,
+      "confidence": 0.9,
+      "dimensions": {
+        "width": 2752,
+        "height": 1536
+      },
+      "cellSize": {
+        "width": 344,
+        "height": 384
+      }
+    },
+    {
+      "file": "image_1764114231730.png",
+      "rows": 4,
+      "cols": 8,
+      "confidence": 0.82,
+      "dimensions": {
+        "width": 3168,
+        "height": 1344
+      },
+      "cellSize": {
+        "width": 396,
+        "height": 336
+      }
+    },
+    {
+      "file": "image_1764114229875.png",
+      "rows": 4,
+      "cols": 8,
+      "confidence": 0.82,
+      "dimensions": {
+        "width": 3168,
+        "height": 1344
+      },
+      "cellSize": {
+        "width": 396,
+        "height": 336
+      }
+    },
+    {
+      "file": "image_1764114228076.png",
+      "rows": 4,
+      "cols": 8,
+      "confidence": 0.82,
+      "dimensions": {
+        "width": 3168,
+        "height": 1344
+      },
+      "cellSize": {
+        "width": 396,
+        "height": 336
+      }
+    },
+    {
+      "file": "image_1764114226183.png",
+      "rows": 4,
+      "cols": 8,
+      "confidence": 0.82,
+      "dimensions": {
+        "width": 3168,
+        "height": 1344
+      },
+      "cellSize": {
+        "width": 396,
+        "height": 336
+      }
+    },
+    {
+      "file": "image_1764114224315.png",
+      "rows": 4,
+      "cols": 8,
+      "confidence": 0.82,
+      "dimensions": {
+        "width": 3168,
+        "height": 1344
+      },
+      "cellSize": {
+        "width": 396,
+        "height": 336
+      }
+    },
+    {
+      "file": "image_1764114222647.png",
+      "rows": 4,
+      "cols": 8,
+      "confidence": 0.82,
+      "dimensions": {
+        "width": 3168,
+        "height": 1344
+      },
+      "cellSize": {
+        "width": 396,
+        "height": 336
+      }
+    },
+    {
+      "file": "image_1764114221042.png",
+      "rows": 4,
+      "cols": 8,
+      "confidence": 0.82,
+      "dimensions": {
+        "width": 3168,
+        "height": 1344
+      },
+      "cellSize": {
+        "width": 396,
+        "height": 336
+      }
+    },
+    {
+      "file": "image_1764114219431.png",
+      "rows": 4,
+      "cols": 8,
+      "confidence": 0.82,
+      "dimensions": {
+        "width": 3168,
+        "height": 1344
+      },
+      "cellSize": {
+        "width": 396,
+        "height": 336
+      }
+    },
+    {
+      "file": "image_1764114217715.png",
+      "rows": 4,
+      "cols": 8,
+      "confidence": 0.82,
+      "dimensions": {
+        "width": 3168,
+        "height": 1344
+      },
+      "cellSize": {
+        "width": 396,
+        "height": 336
+      }
+    }
+  ]
+}

@@ -1,0 +1,235 @@
+{
+  "code": "HEALTH_CRISIS",
+  "name": "Health Crisis",
+  "description": "Your body is telling you to slow down. Are you listening?",
+  "category": "health",
+  "min_chapters": 2,
+  "max_chapters": 4,
+
+  "trigger": {
+    "type": "attribute",
+    "probability": 0.12,
+    "conditions": { "stress_min": 70, "min_battles": 10 }
+  },
+
+  "chapters": [
+    {
+      "id": "health_ch1",
+      "chapter_number": 1,
+      "title": "Warning Signs",
+      "description": "You've been feeling off. Tired all the time. Can't focus. Your prep sessions aren't hitting the same.",
+      "delay": { "type": "immediate", "value": 0 },
+      "urgency": "passive",
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "push_through",
+          "label": "Push Through It",
+          "description": "You've got battles to win. Rest is for the weak.",
+          "effects": [
+            { "type": "permanent", "resilience": -0.3 },
+            { "type": "temporary", "stress": 15 }
+          ],
+          "leads_to": { "type": "chapter", "id": "health_ch2_breakdown" }
+        },
+        {
+          "id": "take_break",
+          "label": "Take a Break",
+          "description": "Cancel your next battle. Get some rest.",
+          "effects": [
+            { "type": "permanent", "reputation": -0.3 },
+            { "type": "temporary", "prep_days_lost": 7 },
+            { "type": "temporary", "stress": -30, "duration_days": 14 }
+          ],
+          "leads_to": { "type": "ending", "id": "health_end_recovered" }
+        },
+        {
+          "id": "see_doctor",
+          "label": "See a Doctor",
+          "description": "Get checked out. Something might actually be wrong.",
+          "effects": [
+            { "type": "permanent", "financial_stability": -0.5 },
+            { "type": "temporary", "prep_days_lost": 2 }
+          ],
+          "leads_to": { "type": "chapter", "id": "health_ch2_diagnosis" }
+        }
+      ]
+    },
+    {
+      "id": "health_ch2_breakdown",
+      "chapter_number": 2,
+      "title": "The Crash",
+      "description": "You collapsed during prep. Your body gave out. You're in the hospital now.",
+      "delay": { "type": "battles", "value": 1 },
+      "urgency": "immediate",
+      "prep_days_cost": 5,
+      "choices": [
+        {
+          "id": "follow_orders",
+          "label": "Listen to Doctors",
+          "description": "Do what they say. Take the time to heal.",
+          "effects": [
+            { "type": "temporary", "prep_days_lost": 14 },
+            { "type": "permanent", "resilience": 0.5 },
+            { "type": "temporary", "stress": -40, "duration_days": 30 }
+          ],
+          "leads_to": { "type": "ending", "id": "health_end_full_recovery" }
+        },
+        {
+          "id": "leave_early",
+          "label": "Check Out Early",
+          "description": "You've got obligations. You can't lay here forever.",
+          "effects": [
+            { "type": "permanent", "resilience": -1.0 },
+            { "type": "temporary", "prep_days_lost": 5 },
+            { "type": "temporary", "stress": 20, "duration_days": 30 }
+          ],
+          "leads_to": { "type": "ending", "id": "health_end_chronic" }
+        }
+      ]
+    },
+    {
+      "id": "health_ch2_diagnosis",
+      "chapter_number": 2,
+      "title": "The Results",
+      "description": "The tests came back. It's burnout. Severe stress. Your body is shutting down from the pressure.",
+      "delay": { "type": "days", "value": 5 },
+      "urgency": "timed",
+      "deadline_hours": 72,
+      "prep_days_cost": 1,
+      "choices": [
+        {
+          "id": "accept_reality",
+          "label": "Accept the Reality",
+          "description": "Take the doctor's advice. Scale back.",
+          "effects": [
+            { "type": "temporary", "prep_days_lost": 10 },
+            { "type": "temporary", "stress": -50, "duration_days": 30 }
+          ],
+          "leads_to": { "type": "ending", "id": "health_end_managed" }
+        },
+        {
+          "id": "mental_health_focus",
+          "label": "Get Mental Health Support",
+          "description": "It's not just physical. Start talking to someone.",
+          "effects": [
+            { "type": "permanent", "financial_stability": -0.5 },
+            { "type": "temporary", "prep_days_lost": 5 },
+            { "type": "permanent", "resilience": 1.0 }
+          ],
+          "leads_to": { "type": "ending", "id": "health_end_therapy" }
+        },
+        {
+          "id": "ignore_diagnosis",
+          "label": "Ignore It",
+          "description": "Doctors don't understand this culture.",
+          "effects": [
+            { "type": "temporary", "stress": 30 }
+          ],
+          "leads_to": { "type": "chapter", "id": "health_ch3_worse" }
+        }
+      ]
+    },
+    {
+      "id": "health_ch3_worse",
+      "chapter_number": 3,
+      "title": "Getting Worse",
+      "description": "You ignored the warning. Now you can barely get through a session without your hands shaking. People are noticing.",
+      "delay": { "type": "battles", "value": 2 },
+      "urgency": "immediate",
+      "prep_days_cost": 3,
+      "choices": [
+        {
+          "id": "forced_break",
+          "label": "Take the Break Now",
+          "description": "You have no choice. Your body won't let you continue.",
+          "effects": [
+            { "type": "temporary", "prep_days_lost": 21 },
+            { "type": "permanent", "reputation": -0.5 },
+            { "type": "temporary", "stress": -40, "duration_days": 45 }
+          ],
+          "leads_to": { "type": "ending", "id": "health_end_long_recovery" }
+        },
+        {
+          "id": "one_more_battle",
+          "label": "One More Battle",
+          "description": "Just get through this one. Then you'll rest.",
+          "effects": [
+            { "type": "permanent", "resilience": -1.5 },
+            { "type": "temporary", "stress": 50 }
+          ],
+          "leads_to": { "type": "ending", "id": "health_end_chronic" }
+        }
+      ]
+    }
+  ],
+
+  "endings": [
+    {
+      "id": "health_end_recovered",
+      "type": "positive",
+      "title": "Smart Move",
+      "description": "You took the break early. Came back fresh. People respected that you knew your limits.",
+      "effects": [
+        { "type": "permanent", "resilience": 0.5 },
+        { "type": "permanent", "preparation": 0.3 }
+      ],
+      "badge": "Know Your Limits"
+    },
+    {
+      "id": "health_end_full_recovery",
+      "type": "positive",
+      "title": "Full Recovery",
+      "description": "The hospital stay was rough but you came back stronger. Your body healed completely.",
+      "effects": [
+        { "type": "permanent", "resilience": 1.0 },
+        { "type": "temporary", "stress": -30, "duration_days": 60 }
+      ],
+      "badge": "Comeback"
+    },
+    {
+      "id": "health_end_therapy",
+      "type": "positive",
+      "title": "Mind Right",
+      "description": "Getting mental health support changed everything. You're performing better than ever.",
+      "effects": [
+        { "type": "permanent", "resilience": 1.5 },
+        { "type": "permanent", "preparation": 0.5 },
+        { "type": "temporary", "stress": -40, "duration_days": 90 }
+      ],
+      "badge": "Mind Over Matter"
+    },
+    {
+      "id": "health_end_managed",
+      "type": "neutral",
+      "title": "Managing It",
+      "description": "You're not 100% but you've learned to manage it. Pacing yourself differently now.",
+      "effects": [
+        { "type": "permanent", "resilience": 0.3 },
+        { "type": "temporary", "stress": -20, "duration_days": 30 }
+      ]
+    },
+    {
+      "id": "health_end_long_recovery",
+      "type": "negative",
+      "title": "Long Road Back",
+      "description": "You were out for weeks. Lost momentum. Lost bookings. Starting over from a different place.",
+      "effects": [
+        { "type": "permanent", "reputation": -1.0 },
+        { "type": "permanent", "resilience": -0.5 }
+      ]
+    },
+    {
+      "id": "health_end_chronic",
+      "type": "catastrophic",
+      "title": "Chronic Issues",
+      "description": "You pushed too hard. Now you deal with this every day. It affects every performance.",
+      "effects": [
+        { "type": "permanent", "resilience": -2.0 },
+        { "type": "permanent", "preparation": -0.5 },
+        { "type": "temporary", "stress": 25, "duration_days": 90 }
+      ],
+      "badge": "Battle Worn"
+    }
+  ]
+}

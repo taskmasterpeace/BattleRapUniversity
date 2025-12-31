@@ -3,14 +3,17 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
-import { Check, Minus, Plus, ChevronLeft, ChevronRight, Loader2, Info } from "lucide-react"
+import Link from "next/link"
+import { Check, Minus, Plus, ChevronLeft, ChevronRight, Loader2, Info, X } from "lucide-react"
 import { CityAutocomplete, type CityData } from "@/components/ui/city-autocomplete"
+import { OriginSelector, type OriginType } from "@/components/onboarding/OriginSelector"
 
-type Step = 1 | 2 | 3 | 4
+type Step = 1 | 2 | 3 | 4 | 5
 
 interface OnboardingData {
   stageName: string
   city: CityData | null
+  origin: OriginType | null
   league: string
   attributes: Record<string, number>
   styles: string[]
@@ -146,6 +149,7 @@ export default function OnboardingPage() {
   const [data, setData] = useState<OnboardingData>({
     stageName: "",
     city: null,
+    origin: null,
     league: "",
     attributes: { ...initialAttributes },
     styles: [],
@@ -156,6 +160,7 @@ export default function OnboardingPage() {
   const remainingPoints = totalPoints - usedPoints
 
   const isStageNameValid = data.stageName.length >= 2 && data.stageName.length <= 50
+  const isOriginSelected = data.origin !== null
   const isLeagueSelected = data.league !== ""
   const isAttributesValid = remainingPoints === 0
   const isStylesValid = data.styles.length >= 1 && data.styles.length <= 3
@@ -165,10 +170,12 @@ export default function OnboardingPage() {
       case 1:
         return isStageNameValid
       case 2:
-        return isLeagueSelected
+        return isOriginSelected
       case 3:
-        return isAttributesValid
+        return isLeagueSelected
       case 4:
+        return isAttributesValid
+      case 5:
         return isStylesValid
       default:
         return false
@@ -237,6 +244,7 @@ export default function OnboardingPage() {
                 city_tier: data.city.cityTier,
               }
             : null,
+          origin_type: data.origin,
           primary_league_id: data.league,
           style_tags: data.styles,
           allocated_attributes: {
@@ -277,7 +285,7 @@ export default function OnboardingPage() {
   }
 
   const handleNext = () => {
-    if (step < 4) {
+    if (step < 5) {
       setStep((s) => (s + 1) as Step)
     } else {
       handleSubmit()
@@ -327,15 +335,33 @@ export default function OnboardingPage() {
     <div className="min-h-screen bg-zinc-950 p-4 sm:p-6">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <h1 className="text-xl sm:text-2xl font-display font-bold text-zinc-100 mb-2 tracking-wide">
-          ONBOARDING:{" "}
-          {step === 1 ? "IDENTITY" : step === 2 ? "LEAGUE SELECTION" : step === 3 ? "ATTRIBUTES" : "DEFINE YOUR STYLE"}{" "}
-          <span className="text-zinc-500">(STEP {step} OF 4)</span>
-        </h1>
+        <div className="flex items-center justify-between mb-2">
+          <h1 className="text-xl sm:text-2xl font-display font-bold text-zinc-100 tracking-wide">
+            ONBOARDING:{" "}
+            {step === 1
+              ? "IDENTITY"
+              : step === 2
+                ? "ORIGIN STORY"
+                : step === 3
+                  ? "LEAGUE SELECTION"
+                  : step === 4
+                    ? "ATTRIBUTES"
+                    : "DEFINE YOUR STYLE"}{" "}
+            <span className="text-zinc-500">(STEP {step} OF 5)</span>
+          </h1>
+          <Link
+            href="/roster"
+            className="flex items-center gap-2 px-3 py-1.5 text-sm text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800 border border-zinc-700 transition-colors"
+            title="Cancel and return to roster"
+          >
+            <X className="w-4 h-4" />
+            <span className="hidden sm:inline">CANCEL</span>
+          </Link>
+        </div>
 
         {/* Progress Bar */}
         <div className="h-2 bg-zinc-800 mb-6 sm:mb-8">
-          <div className="h-full bg-orange-500 transition-all duration-300" style={{ width: `${(step / 4) * 100}%` }} />
+          <div className="h-full bg-orange-500 transition-all duration-300" style={{ width: `${(step / 5) * 100}%` }} />
         </div>
 
         {/* Step Content */}
@@ -435,6 +461,10 @@ export default function OnboardingPage() {
           )}
 
           {step === 2 && (
+            <OriginSelector selectedOrigin={data.origin} onSelect={(origin) => setData((prev) => ({ ...prev, origin }))} />
+          )}
+
+          {step === 3 && (
             <div>
               <p className="text-zinc-400 text-sm mb-6 text-center">
                 Choose your primary league. You can participate in both, but this will be your starting point.
@@ -477,7 +507,7 @@ export default function OnboardingPage() {
             </div>
           )}
 
-          {step === 3 && (
+          {step === 4 && (
             <div>
               <div className="text-center mb-6">
                 <div
@@ -619,7 +649,7 @@ export default function OnboardingPage() {
             </div>
           )}
 
-          {step === 4 && (
+          {step === 5 && (
             <div>
               <div className="text-center mb-6">
                 <p className="text-zinc-400 text-sm">Select 1-3 style tags that define your battling approach</p>
@@ -676,7 +706,7 @@ export default function OnboardingPage() {
               <>
                 <Loader2 className="w-4 h-4 animate-spin" /> CREATING...
               </>
-            ) : step === 4 ? (
+            ) : step === 5 ? (
               "CREATE BATTLER"
             ) : (
               <>

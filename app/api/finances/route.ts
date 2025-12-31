@@ -1,47 +1,135 @@
 import { NextResponse } from "next/server"
-import { mockBattler, mockTransactions } from "@/lib/data"
+import { createServerClient } from "@/lib/db/server"
 
 export async function GET() {
-  // Generate earnings over time data for line graph
-  const earningsOverTime = [
-    { date: "2025-11-01", balance: 8500, amount: 500, type: "base_pay" },
-    { date: "2025-11-05", balance: 9700, amount: 1200, type: "battle_win" },
-    { date: "2025-11-10", balance: 9200, amount: -500, type: "entry_fee" },
-    { date: "2025-11-15", balance: 10400, amount: 1200, type: "battle_win" },
-    { date: "2025-11-20", balance: 10900, amount: 500, type: "base_pay" },
-    { date: "2025-11-25", balance: 11100, amount: 200, type: "performance_bonus" },
-    { date: "2025-12-01", balance: 10600, amount: -500, type: "entry_fee" },
-    { date: "2025-12-05", balance: 11800, amount: 1200, type: "battle_win" },
-    { date: "2025-12-10", balance: 12050, amount: 250, type: "merch" },
-    { date: "2025-12-15", balance: 12450, amount: 400, type: "performance_bonus" },
-  ]
+  try {
+    const supabase = createServerClient()
 
-  const response = {
-    battler: {
-      id: mockBattler.id,
-      name: mockBattler.stageName,
-      avatar_url: "/rapper-pixel.jpg",
-    },
-    currentBalance: 12450,
-    lifetimeEarnings: 34200,
-    battleEarnings: 28500,
-    earningsOverTime,
-    breakdown: {
-      winBonuses: 18000,
-      basePay: 6500,
-      tournamentPrizes: 8000,
-      merch: 1200,
-      other: 500,
-    },
-    recentTransactions: mockTransactions.slice(0, 10),
-    tierAverages: {
+    // Get player's battler
+    const { data: playerBattler, error: battlerError } = await supabase
+      .from('battlers')
+      .select('id, stage_name, avatar_url')
+      .eq('is_ai', false)
+      .limit(1)
+      .single()
+
+    if (battlerError || !playerBattler) {
+      return NextResponse.json({ error: 'Player battler not found' }, { status: 404 })
+    }
+
+    // Get player's financial attributes
+    const { data: attributes } = await supabase
+      .from('battler_attributes')
+      .select('balance, lifetime_earnings')
+      .eq('battler_id', playerBattler.id)
+      .single()
+
+    // Get recent earnings transactions
+    const { data: transactions } = await supabase
+      .from('battler_earnings')
+      .select('*')
+      .eq('battler_id', playerBattler.id)
+      .order('created_at', { ascending: false })
+      .limit(20)
+
+    // Calculate earnings breakdown by type
+    const { data: allTransactions } = await supabase
+      .from('battler_earnings')
+      .select('amount, transaction_type')
+      .eq('battler_id', playerBattler.id)
+
+    const breakdown = {
+      winBonuses: 0,
+      basePay: 0,
+      tournamentPrizes: 0,
+      lifeEventGains: 0,
+      lifeEventLosses: 0,
+    }
+
+    allTransactions?.forEach(t => {
+      if (t.transaction_type === 'battle_win_bonus') breakdown.winBonuses += Number(t.amount)
+      else if (t.transaction_type === 'battle_base_pay') breakdown.basePay += Number(t.amount)
+      else if (t.transaction_type === 'tournament_prize') breakdown.tournamentPrizes += Number(t.amount)
+      else if (t.transaction_type === 'life_event_gain') breakdown.lifeEventGains += Number(t.amount)
+      else if (t.transaction_type === 'life_event_loss') breakdown.lifeEventLosses += Math.abs(Number(t.amount))
+    })
+
+    // Generate earnings over time from transactions (last 10 with running balance)
+    const earningsOverTime: { date: string; balance: number; amount: number; type: string }[] = []
+    let runningBalance = Number(attributes?.balance) || 5000
+
+    // Work backwards from most recent transaction
+    const sortedTransactions = [...(transactions || [])].reverse()
+    sortedTransactions.forEach(t => {
+      earningsOverTime.push({
+        date: new Date(t.created_at).toISOString().split('T')[0],
+        balance: runningBalance,
+        amount: Number(t.amount),
+        type: t.transaction_type,
+      })
+      runningBalance -= Number(t.amount)
+    })
+    earningsOverTime.reverse() // Chronological order
+
+    // Map transactions to expected format
+    const recentTransactions = (transactions || []).map(t => ({
+      id: t.id,
+      date: new Date(t.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+      description: t.description || formatTransactionDescription(t.transaction_type),
+      amount: Number(t.amount),
+      type: mapTransactionType(t.transaction_type),
+      balance: 0, // We'd need running balance calculation
+    }))
+
+    // Tier averages (static for now - could be calculated from all battlers)
+    const tierAverages = {
       topTier: 85000,
       highTier: 45000,
       midTier: 22000,
       lowTier: 8000,
       rookie: 3000,
-    },
-  }
+    }
 
-  return NextResponse.json(response)
+    const response = {
+      battler: {
+        id: playerBattler.id,
+        name: playerBattler.stage_name,
+        avatar_url: playerBattler.avatar_url || "/rapper-pixel.jpg",
+      },
+      currentBalance: Number(attributes?.balance) || 5000,
+      lifetimeEarnings: Number(attributes?.lifetime_earnings) || 0,
+      battleEarnings: breakdown.winBonuses + breakdown.basePay,
+      earningsOverTime,
+      breakdown,
+      recentTransactions,
+      tierAverages,
+    }
+
+    return NextResponse.json(response)
+  } catch (err) {
+    console.error('Finances route error:', err)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  }
+}
+
+function formatTransactionDescription(type: string): string {
+  switch (type) {
+    case 'battle_base_pay': return 'Battle Base Pay'
+    case 'battle_win_bonus': return 'Win Bonus'
+    case 'tournament_prize': return 'Tournament Prize'
+    case 'life_event_gain': return 'Life Event Bonus'
+    case 'life_event_loss': return 'Life Event Expense'
+    default: return type
+  }
+}
+
+function mapTransactionType(type: string): string {
+  switch (type) {
+    case 'battle_base_pay': return 'base_pay'
+    case 'battle_win_bonus': return 'battle_win'
+    case 'tournament_prize': return 'tournament'
+    case 'life_event_gain': return 'bonus'
+    case 'life_event_loss': return 'expense'
+    default: return 'other'
+  }
 }

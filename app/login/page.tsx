@@ -1,15 +1,71 @@
 "use client"
 
+import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
+import { getClient } from "@/lib/db/client"
 
 export default function LoginPage() {
   const router = useRouter()
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [isSignUp, setIsSignUp] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  const handleMockLogin = () => {
-    router.push("/dashboard")
+  const supabase = getClient()
+
+  const handleEmailAuth = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setError(null)
+
+    try {
+      if (isSignUp) {
+        // Sign up
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/auth/callback`,
+          },
+        })
+        if (error) throw error
+        // For local dev, auto-confirm is usually enabled
+        router.push("/dashboard")
+      } else {
+        // Sign in
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        })
+        if (error) throw error
+        router.push("/dashboard")
+      }
+    } catch (err: any) {
+      setError(err.message || "Authentication failed")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleGoogleLogin = async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        },
+      })
+      if (error) throw error
+    } catch (err: any) {
+      setError(err.message || "Google login failed")
+      setLoading(false)
+    }
   }
 
   return (
@@ -46,11 +102,60 @@ export default function LoginPage() {
           {/* Login Form */}
           <div className="bg-zinc-900 border-2 border-zinc-700 rounded-lg p-6 md:p-8">
             <h1 className="font-display text-xl font-bold text-center mb-6 uppercase tracking-wider text-amber-100">
-              Welcome Back
+              {isSignUp ? "Create Account" : "Welcome Back"}
             </h1>
 
+            {error && (
+              <div className="mb-4 p-3 bg-red-500/20 border border-red-500/50 rounded text-red-400 text-sm">
+                {error}
+              </div>
+            )}
+
+            <form onSubmit={handleEmailAuth} className="space-y-4">
+              <div>
+                <label className="block text-sm font-display text-zinc-400 mb-1">Email</label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full h-10 px-3 bg-zinc-800 border border-zinc-700 rounded text-zinc-100 focus:border-amber-500 focus:outline-none"
+                  placeholder="your@email.com"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-display text-zinc-400 mb-1">Password</label>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full h-10 px-3 bg-zinc-800 border border-zinc-700 rounded text-zinc-100 focus:border-amber-500 focus:outline-none"
+                  placeholder="••••••••"
+                  required
+                  minLength={6}
+                />
+              </div>
+              <Button
+                type="submit"
+                disabled={loading}
+                className="w-full h-12 bg-amber-500 hover:bg-amber-600 text-zinc-900 font-display font-bold text-base"
+              >
+                {loading ? "Please wait..." : isSignUp ? "Sign Up" : "Sign In"}
+              </Button>
+            </form>
+
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-zinc-700" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-zinc-900 px-2 text-zinc-500">or</span>
+              </div>
+            </div>
+
             <Button
-              onClick={handleMockLogin}
+              onClick={handleGoogleLogin}
+              disabled={loading}
               className="w-full h-12 bg-white hover:bg-zinc-100 text-zinc-900 font-display font-bold text-base flex items-center justify-center gap-3"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -74,18 +179,17 @@ export default function LoginPage() {
               Continue with Google
             </Button>
 
-            <p className="font-display text-amber-400/70 text-xs text-center mt-4">Dev Mode: Click to enter</p>
-
             <div className="mt-6 pt-6 border-t border-zinc-700">
-              <p className="font-display text-zinc-400 text-sm text-center">New to Battle Rap University?</p>
-              <Link href="/">
-                <Button
-                  variant="ghost"
-                  className="w-full mt-2 text-amber-400 hover:text-amber-300 hover:bg-transparent font-display font-bold uppercase tracking-wider"
-                >
-                  Join the Waitlist
-                </Button>
-              </Link>
+              <p className="font-display text-zinc-400 text-sm text-center">
+                {isSignUp ? "Already have an account?" : "New to Battle Rap University?"}
+              </p>
+              <Button
+                variant="ghost"
+                onClick={() => setIsSignUp(!isSignUp)}
+                className="w-full mt-2 text-amber-400 hover:text-amber-300 hover:bg-transparent font-display font-bold uppercase tracking-wider"
+              >
+                {isSignUp ? "Sign In Instead" : "Create Account"}
+              </Button>
             </div>
           </div>
 

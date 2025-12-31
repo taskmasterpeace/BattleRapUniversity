@@ -1,0 +1,259 @@
+{
+  "code": "FAMILY_FALLOUT",
+  "name": "The Reckoning",
+  "description": "Your family hasn't forgotten what you did. The choice you made during the Family Crisis is coming back around.",
+  "category": "family",
+  "min_chapters": 2,
+  "max_chapters": 4,
+
+  "trigger": {
+    "type": "compound",
+    "conditions": {
+      "all": [
+        {
+          "made_choice": [{
+            "storyline_code": "FAMILY_DRAMA",
+            "choice_id": "ignore"
+          }]
+        },
+        {
+          "completed_storyline": [{
+            "storyline_code": "FAMILY_DRAMA",
+            "ending_type": "negative"
+          }]
+        },
+        { "min_battles": 3 },
+        { "no_active_storyline": ["FAMILY_FALLOUT", "FAMILY_DRAMA"] }
+      ]
+    }
+  },
+
+  "chapters": [
+    {
+      "id": "fallout_ch1",
+      "chapter_number": 1,
+      "title": "The Cold Shoulder",
+      "description": "You tried reaching out to your family. They're not returning calls. Word gets back that they're talking about you - and it's not good.",
+      "delay": { "type": "immediate", "value": 0 },
+      "urgency": "passive",
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "apologize",
+          "label": "Make a Real Apology",
+          "description": "Go in person. Make it right. No excuses.",
+          "effects": [
+            { "type": "temporary", "prep_days_lost": 2 },
+            { "type": "temporary", "stress": 25, "duration_days": 14 }
+          ],
+          "leads_to": { "type": "chapter", "id": "fallout_ch2_apology" }
+        },
+        {
+          "id": "send_gift",
+          "label": "Send a Peace Offering",
+          "description": "Maybe money can help smooth things over.",
+          "effects": [
+            { "type": "permanent", "financial_stability": -1.0 }
+          ],
+          "leads_to": { "type": "chapter", "id": "fallout_ch2_gift" }
+        },
+        {
+          "id": "give_space",
+          "label": "Give Them Space",
+          "description": "They need time. You'll wait.",
+          "effects": [
+            { "type": "temporary", "stress": 15, "duration_days": 30 }
+          ],
+          "leads_to": { "type": "chapter", "id": "fallout_ch2_wait" }
+        }
+      ]
+    },
+    {
+      "id": "fallout_ch2_apology",
+      "chapter_number": 2,
+      "title": "Face to Face",
+      "description": "You showed up at home. The tension was thick. But you said your piece. Now you wait to see if they can forgive you.",
+      "delay": { "type": "days", "value": 5 },
+      "urgency": "timed",
+      "deadline_hours": 96,
+      "prep_days_cost": 1,
+      "choices": [
+        {
+          "id": "patience",
+          "label": "Be Patient",
+          "description": "You said what you needed to say. The ball is in their court.",
+          "effects": [
+            { "type": "permanent", "resilience": 0.3 }
+          ],
+          "leads_to": { "type": "chapter", "id": "fallout_ch3_reconcile" }
+        },
+        {
+          "id": "push_harder",
+          "label": "Push for Resolution",
+          "description": "You can't leave things like this. Keep reaching out.",
+          "effects": [
+            { "type": "temporary", "prep_days_lost": 1 },
+            { "type": "temporary", "stress": 20, "duration_days": 14 }
+          ],
+          "leads_to": { "type": "ending", "id": "fallout_end_fragile" }
+        }
+      ]
+    },
+    {
+      "id": "fallout_ch2_gift",
+      "chapter_number": 2,
+      "title": "Money Can't Fix Everything",
+      "description": "They took the money but didn't say much. You hear through others that they appreciated it, but they're still hurt.",
+      "delay": { "type": "days", "value": 7 },
+      "urgency": "passive",
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "follow_up",
+          "label": "Follow Up in Person",
+          "description": "The gift opened a door. Walk through it.",
+          "effects": [
+            { "type": "temporary", "prep_days_lost": 2 },
+            { "type": "permanent", "family_bond": 0.5 }
+          ],
+          "leads_to": { "type": "ending", "id": "fallout_end_mending" }
+        },
+        {
+          "id": "keep_sending",
+          "label": "Keep Sending Support",
+          "description": "If that's how you can help, keep doing it.",
+          "effects": [
+            { "type": "permanent", "financial_stability": -0.5 },
+            { "type": "permanent", "family_bond": 0.2 }
+          ],
+          "leads_to": { "type": "ending", "id": "fallout_end_provider" }
+        }
+      ]
+    },
+    {
+      "id": "fallout_ch2_wait",
+      "chapter_number": 2,
+      "title": "Silence",
+      "description": "Weeks pass. Nothing. The silence is deafening. You start to wonder if they'll ever come around.",
+      "delay": { "type": "battles", "value": 3 },
+      "urgency": "passive",
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "break_silence",
+          "label": "Break the Silence",
+          "description": "You've waited long enough. Time to reach out.",
+          "effects": [
+            { "type": "temporary", "stress": 15, "duration_days": 7 }
+          ],
+          "leads_to": { "type": "chapter", "id": "fallout_ch3_reconcile" }
+        },
+        {
+          "id": "accept_loss",
+          "label": "Accept the Loss",
+          "description": "Maybe some things can't be fixed. Move on.",
+          "effects": [
+            { "type": "permanent", "family_bond": -1.0 },
+            { "type": "permanent", "resilience": 0.5 }
+          ],
+          "leads_to": { "type": "ending", "id": "fallout_end_moved_on" }
+        }
+      ]
+    },
+    {
+      "id": "fallout_ch3_reconcile",
+      "chapter_number": 3,
+      "title": "Building Bridges",
+      "description": "There's been some progress. Your family is starting to come around. But trust takes time to rebuild.",
+      "delay": { "type": "days", "value": 3 },
+      "urgency": "timed",
+      "deadline_hours": 72,
+      "prep_days_cost": 1,
+      "choices": [
+        {
+          "id": "commit",
+          "label": "Commit to Change",
+          "description": "Promise to be there. And keep that promise.",
+          "effects": [
+            { "type": "permanent", "family_bond": 1.0 },
+            { "type": "temporary", "prep_days_lost": 1 }
+          ],
+          "leads_to": { "type": "ending", "id": "fallout_end_redeemed" }
+        },
+        {
+          "id": "cautious",
+          "label": "Take It Slow",
+          "description": "Don't make promises you might not keep.",
+          "effects": [
+            { "type": "permanent", "family_bond": 0.3 }
+          ],
+          "leads_to": { "type": "ending", "id": "fallout_end_cautious" }
+        }
+      ]
+    }
+  ],
+
+  "endings": [
+    {
+      "id": "fallout_end_redeemed",
+      "type": "positive",
+      "title": "Second Chance",
+      "description": "You earned back their trust. It took time, effort, and sacrifice - but you proved that family matters to you. The past isn't forgotten, but you're building a better future.",
+      "effects": [
+        { "type": "permanent", "family_bond": 1.5 },
+        { "type": "temporary", "stress": -30, "duration_days": 60 }
+      ],
+      "badge": "Redeemer"
+    },
+    {
+      "id": "fallout_end_fragile",
+      "type": "neutral",
+      "title": "Fragile Peace",
+      "description": "Things are better, but delicate. Your family has forgiven but not forgotten. You're on probation - one wrong move and this could all unravel.",
+      "effects": [
+        { "type": "permanent", "family_bond": 0.5 },
+        { "type": "temporary", "stress": 10, "duration_days": 30 }
+      ]
+    },
+    {
+      "id": "fallout_end_mending",
+      "type": "positive",
+      "title": "Mending Bonds",
+      "description": "The combination of financial help and showing up in person worked. Your family sees that you're trying. Slowly but surely, you're rebuilding what was broken.",
+      "effects": [
+        { "type": "permanent", "family_bond": 1.0 },
+        { "type": "temporary", "stress": -15, "duration_days": 30 }
+      ]
+    },
+    {
+      "id": "fallout_end_provider",
+      "type": "neutral",
+      "title": "The Provider",
+      "description": "You've become the one who sends money. It's not the relationship you wanted, but it's something. They appreciate your support, even if they keep their distance.",
+      "effects": [
+        { "type": "permanent", "family_bond": 0.3 }
+      ]
+    },
+    {
+      "id": "fallout_end_moved_on",
+      "type": "negative",
+      "title": "Moving On",
+      "description": "You've accepted that some things can't be fixed. Your family has moved on without you, and you've learned to live with that. It hurts, but you're stronger for it.",
+      "effects": [
+        { "type": "permanent", "resilience": 0.8 },
+        { "type": "permanent", "family_bond": -0.5 }
+      ],
+      "badge": "Lone Wolf"
+    },
+    {
+      "id": "fallout_end_cautious",
+      "type": "neutral",
+      "title": "Cautious Reconnection",
+      "description": "You're back in touch with your family, but you're keeping expectations realistic. You don't want to promise more than you can deliver. It's progress, if slow.",
+      "effects": [
+        { "type": "permanent", "family_bond": 0.5 },
+        { "type": "permanent", "resilience": 0.2 }
+      ]
+    }
+  ]
+}

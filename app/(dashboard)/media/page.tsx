@@ -6,8 +6,8 @@ import { useState, useEffect, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { BATTLERS } from "@/lib/battlers"
-import { BLOGGERS, getBloggerBySlug } from "@/lib/bloggers"
+import { useBattler } from "@/contexts/battler-context"
+import { BLOGGERS, getBloggerBySlug, getActiveBloggers } from "@/lib/bloggers"
 import { BloggerAvatar } from "@/components/media/blogger-avatar"
 import {
   Flame,
@@ -47,125 +47,7 @@ interface NewsArticle {
   bloggerSlug: string
 }
 
-const MOCK_NEWS: NewsArticle[] = [
-  {
-    id: "1",
-    slug: "upset-of-the-year-rookie-stuns-veteran",
-    title: "UPSET OF THE YEAR: Rookie Stuns Veteran in Main Stage Debut",
-    excerpt:
-      "In what many are calling the biggest upset of the season, newcomer Flash Wordz delivered a career-defining performance against a 10-year vet. The crowd went silent after the third round haymaker.",
-    category: "battle-recap",
-    timestamp: "2 hours ago",
-    views: 15420,
-    comments: 234,
-    likes: 1893,
-    image: "/battle-rap-stage-lights-crowd-cheering.jpg",
-    battlerIds: ["rookie-sensation", "veteran-legend"],
-    league: "main-stage",
-    isHot: true,
-    bloggerSlug: "main-stage-herald",
-  },
-  {
-    id: "2",
-    slug: "ghostwriter-allegations-rock-scene",
-    title: "BREAKING: Top Battler Accused of Using Ghostwriter",
-    excerpt:
-      "Allegations surface after suspicious similarities found between recent rounds and an underground writer's portfolio. The accused has yet to respond publicly.",
-    category: "scandal",
-    timestamp: "5 hours ago",
-    views: 28930,
-    comments: 892,
-    likes: 2341,
-    image: "/dramatic-spotlight-microphone-shadows-controversy.jpg",
-    isHot: true,
-    bloggerSlug: "marijuana-piranha",
-  },
-  {
-    id: "3",
-    slug: "power-rankings-week-12",
-    title: "Official Power Rankings: Week 12 Update",
-    excerpt:
-      "Major shakeups in the top 10 after this week's events. Two legends drop out, three newcomers make their debut on the list.",
-    category: "ranking",
-    timestamp: "1 day ago",
-    views: 8750,
-    comments: 156,
-    likes: 876,
-    image: "/leaderboard-rankings-trophy-gold-medals.jpg",
-    bloggerSlug: "algorithm-institute",
-  },
-  {
-    id: "4",
-    slug: "champion-interview-training-secrets",
-    title: "Exclusive Interview: Champion Reveals Training Secrets",
-    excerpt:
-      "We sit down with the reigning champion to discuss preparation methods, mental game, and what it takes to stay on top in 2024.",
-    category: "interview",
-    timestamp: "2 days ago",
-    views: 12300,
-    comments: 89,
-    likes: 1456,
-    image: "/interview-studio-podcast-microphone-professional.jpg",
-    bloggerSlug: "battle-eyez",
-  },
-  {
-    id: "5",
-    slug: "league-announces-2025-format",
-    title: "League Announces New Tournament Format for 2025",
-    excerpt:
-      "Revolutionary changes coming to the championship series including new qualification rules, prize pools, and regional representation.",
-    category: "announcement",
-    timestamp: "3 days ago",
-    views: 6420,
-    comments: 203,
-    likes: 567,
-    image: "/tournament-bracket-championship-trophy-stage.jpg",
-    bloggerSlug: "coast-to-coast",
-  },
-  {
-    id: "6",
-    slug: "small-room-showdown-recap",
-    title: "Small Room Showdown: Technical Masterclass",
-    excerpt:
-      "Two pen-game specialists went bar-for-bar in what critics are calling the most technically impressive battle of the year.",
-    category: "battle-recap",
-    timestamp: "3 days ago",
-    views: 9200,
-    comments: 178,
-    likes: 1234,
-    image: "/intimate-venue-small-crowd-intense-battle-rap.jpg",
-    league: "small-room",
-    bloggerSlug: "small-room-report",
-  },
-  {
-    id: "7",
-    slug: "contract-dispute-escalates",
-    title: "Contract Dispute Between Top Battler and League Escalates",
-    excerpt:
-      "Sources say negotiations have broken down completely. The battler is now exploring options with rival leagues.",
-    category: "scandal",
-    timestamp: "4 days ago",
-    views: 11800,
-    comments: 445,
-    likes: 987,
-    image: "/contract-dispute-tension-argument-silhouettes.jpg",
-    bloggerSlug: "underground-voice",
-  },
-  {
-    id: "8",
-    slug: "breakdown-what-went-wrong",
-    title: "What Went Wrong: Analyzing the Champion's First Loss",
-    excerpt:
-      "A detailed breakdown of how preparation, angle selection, and crowd management all contributed to the shocking upset.",
-    category: "interview",
-    timestamp: "5 days ago",
-    views: 7650,
-    comments: 234,
-    likes: 876,
-    image: "/chess-strategy-breakdown-analysis-thinking.jpg",
-    bloggerSlug: "battle-breakdown",
-  },
-]
+// MOCK_NEWS removed - now fetches from /api/news
 
 const getCategoryIcon = (category: NewsArticle["category"]) => {
   switch (category) {
@@ -205,12 +87,33 @@ function MediaContent() {
   const searchParams = useSearchParams()
   const tabParam = searchParams.get("tab") as TabId | null
   const [activeTab, setActiveTab] = useState<TabId>(tabParam || "for-you")
+  const { battlers } = useBattler()
+  const [articles, setArticles] = useState<NewsArticle[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     if (tabParam) {
       setActiveTab(tabParam)
     }
   }, [tabParam])
+
+  useEffect(() => {
+    async function fetchNews() {
+      try {
+        const res = await fetch('/api/news')
+        if (!res.ok) throw new Error(`HTTP ${res.status}`)
+        const data = await res.json()
+        setArticles(data.articles || [])
+      } catch (err: any) {
+        console.error('Failed to fetch news:', err)
+        setError(err.message)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchNews()
+  }, [])
 
   const tabs: { id: TabId; label: string; icon: React.ElementType }[] = [
     { id: "for-you", label: "For You", icon: Flame },
@@ -221,7 +124,7 @@ function MediaContent() {
     { id: "bloggers", label: "Bloggers", icon: Users },
   ]
 
-  const filteredNews = MOCK_NEWS.filter((article) => {
+  const filteredNews = articles.filter((article) => {
     if (activeTab === "for-you") return article.isHot || article.views > 10000
     if (activeTab === "latest") return true
     if (activeTab === "battle-recaps") return article.category === "battle-recap"
@@ -438,7 +341,7 @@ function MediaContent() {
   )
 
   const renderRankings = () => {
-    const topBattlers = BATTLERS.filter((b) => b.stats?.clout).sort(
+    const topBattlers = battlers.filter((b) => b.stats?.clout).sort(
       (a, b) => (b.stats?.clout || 0) - (a.stats?.clout || 0),
     )
 
@@ -543,6 +446,35 @@ function MediaContent() {
     )
   }
 
+  if (loading) {
+    return (
+      <div className="p-6 flex items-center justify-center min-h-[50vh]">
+        <div className="text-center space-y-3">
+          <div className="w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="text-zinc-400 font-display">Loading news...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="p-6 flex items-center justify-center min-h-[50vh]">
+        <div className="text-center space-y-3">
+          <AlertTriangle className="w-12 h-12 text-red-500 mx-auto" />
+          <p className="text-zinc-300 font-display">Failed to load news</p>
+          <p className="text-zinc-500 text-sm">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-orange-600 text-white font-display text-sm hover:bg-orange-700 transition-colors"
+          >
+            RETRY
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="p-4 md:p-6 space-y-6">
       {/* Tab Navigation */}
@@ -582,10 +514,10 @@ function MediaContent() {
           >
             <div className="flex items-center justify-between">
               <h2 className="font-display font-bold text-zinc-300">BLOGGERS & ANALYSTS</h2>
-              <span className="text-xs text-zinc-500">{BLOGGERS.length} voices in the culture</span>
+              <span className="text-xs text-zinc-500">{getActiveBloggers().length} active voices in the culture</span>
             </div>
             <div className="grid gap-4 md:grid-cols-2">
-              {BLOGGERS.map((blogger, index) => renderBloggerCard(blogger, index))}
+              {getActiveBloggers().map((blogger, index) => renderBloggerCard(blogger, index))}
             </div>
           </motion.div>
         ) : (

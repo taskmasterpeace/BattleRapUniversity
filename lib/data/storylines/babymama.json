@@ -1,0 +1,392 @@
+{
+  "code": "BABY_MAMA_DRAMA",
+  "name": "Baby Mama Drama",
+  "description": "Your past just showed up with receipts. And a baby.",
+  "category": "romance",
+  "min_chapters": 3,
+  "max_chapters": 5,
+
+  "trigger": {
+    "type": "compound",
+    "probability": 0.07,
+    "conditions": {
+      "all": [
+        { "min_battles": 12 },
+        { "min_tier": "rising" },
+        { "lacks_badge": ["Family Man"] }
+      ]
+    }
+  },
+
+  "chapters": [
+    {
+      "id": "babymama_ch1",
+      "chapter_number": 1,
+      "title": "The DM",
+      "description": "A message from someone you hooked up with 2 years ago. 'We need to talk. It's about your son.' You have a kid you didn't know about. And now she's going public.",
+      "delay": { "type": "immediate", "value": 0 },
+      "urgency": "timed",
+      "deadline_hours": 72,
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "respond_private",
+          "label": "Respond Privately",
+          "description": "Message her back. Figure this out before it goes public.",
+          "effects": [
+            { "type": "temporary", "stress": 20 },
+            {
+              "type": "permanent",
+              "create_npc": {
+                "relationship_type": "baby_mama",
+                "gender": "female",
+                "personality": "Protective of her child. Will do whatever it takes."
+              }
+            }
+          ],
+          "leads_to": { "type": "chapter", "id": "babymama_ch2_private" }
+        },
+        {
+          "id": "demand_test",
+          "label": "Demand a DNA Test",
+          "description": "You're not claiming anything until you see proof.",
+          "effects": [
+            { "type": "permanent", "reputation": -0.3 },
+            { "type": "temporary", "stress": 25 }
+          ],
+          "leads_to": { "type": "chapter", "id": "babymama_ch2_test" }
+        },
+        {
+          "id": "ignore_message",
+          "label": "Ignore It",
+          "description": "Could be a scam. Could be clout chasing. Don't respond.",
+          "effects": [
+            { "type": "temporary", "stress": 15 }
+          ],
+          "leads_to": { "type": "chapter", "id": "babymama_ch2_public" }
+        }
+      ]
+    },
+    {
+      "id": "babymama_ch2_private",
+      "chapter_number": 2,
+      "title": "The Meeting",
+      "description": "You met up. The kid looks like you. She's not asking for much - just wants you to be in his life. And maybe some help with daycare costs. But she's clear: if you ghost her, she's going to the blogs.",
+      "delay": { "type": "days", "value": 5 },
+      "urgency": "timed",
+      "deadline_hours": 120,
+      "prep_days_cost": 1,
+      "choices": [
+        {
+          "id": "step_up",
+          "label": "Step Up",
+          "description": "This is your kid. Do right by him.",
+          "effects": [
+            { "type": "permanent", "family_bond": 1.0 },
+            { "type": "permanent", "financial_stability": -1.0 },
+            {
+              "type": "permanent",
+              "state_changes": {
+                "set_relationship_status": "coparenting"
+              }
+            }
+          ],
+          "leads_to": { "type": "ending", "id": "babymama_end_father" }
+        },
+        {
+          "id": "money_only",
+          "label": "Money But No Presence",
+          "description": "Send support but keep your distance. You're not ready to be a dad.",
+          "effects": [
+            { "type": "permanent", "financial_stability": -1.5 },
+            { "type": "permanent", "family_bond": -0.5 }
+          ],
+          "leads_to": { "type": "chapter", "id": "babymama_ch3_money" }
+        },
+        {
+          "id": "negotiate_silence",
+          "label": "Pay for Silence",
+          "description": "Offer her a lump sum to keep this quiet.",
+          "effects": [
+            { "type": "permanent", "financial_stability": -2.5 },
+            { "type": "temporary", "stress": 30 }
+          ],
+          "leads_to": { "type": "chapter", "id": "babymama_ch3_secret" }
+        }
+      ]
+    },
+    {
+      "id": "babymama_ch2_test",
+      "chapter_number": 2,
+      "title": "The Results",
+      "description": "DNA test came back. 99.9% probability you're the father. It's real. Now what?",
+      "delay": { "type": "days", "value": 14 },
+      "urgency": "timed",
+      "deadline_hours": 72,
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "accept_results",
+          "label": "Accept It",
+          "description": "Can't argue with science. Time to figure this out.",
+          "effects": [
+            { "type": "temporary", "stress": 20 },
+            {
+              "type": "permanent",
+              "create_npc": {
+                "relationship_type": "baby_mama",
+                "gender": "female",
+                "personality": "Proven right. Expects you to step up now."
+              }
+            }
+          ],
+          "leads_to": { "type": "chapter", "id": "babymama_ch3_accept" }
+        },
+        {
+          "id": "still_deny",
+          "label": "Deny It Anyway",
+          "description": "Tests can be wrong. Labs can be paid off. You're not buying it.",
+          "effects": [
+            { "type": "permanent", "reputation": -1.5 },
+            { "type": "permanent", "family_bond": -1.0 }
+          ],
+          "leads_to": { "type": "chapter", "id": "babymama_ch2_public" }
+        }
+      ]
+    },
+    {
+      "id": "babymama_ch2_public",
+      "chapter_number": 2,
+      "title": "Going Viral",
+      "description": "She went to the blogs. Screenshots of your DMs. Pictures of the kid who looks exactly like you. Receipts from the time you were together. It's everywhere. Your opponents are already writing bars.",
+      "delay": { "type": "days", "value": 7 },
+      "urgency": "immediate",
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "public_apology",
+          "label": "Public Accountability",
+          "description": "Get ahead of it. Admit you handled it wrong. Commit to doing better.",
+          "effects": [
+            { "type": "permanent", "reputation": -0.5 },
+            { "type": "permanent", "family_bond": 0.5 }
+          ],
+          "leads_to": { "type": "ending", "id": "babymama_end_redeemed" }
+        },
+        {
+          "id": "deny_everything",
+          "label": "Deny Everything",
+          "description": "Claim the screenshots are fake. The kid isn't yours. She's lying.",
+          "effects": [
+            { "type": "permanent", "reputation": -2.0 },
+            { "type": "permanent", "family_bond": -2.0 }
+          ],
+          "leads_to": { "type": "ending", "id": "babymama_end_deadbeat" }
+        },
+        {
+          "id": "attack_her",
+          "label": "Attack Her Credibility",
+          "description": "Dig up her past. Make this about her, not you.",
+          "effects": [
+            { "type": "permanent", "reputation": -1.0 },
+            { "type": "permanent", "crew_loyalty": 0.5 },
+            { "type": "temporary", "stress": 35 }
+          ],
+          "leads_to": { "type": "ending", "id": "babymama_end_messy" }
+        }
+      ]
+    },
+    {
+      "id": "babymama_ch3_money",
+      "chapter_number": 3,
+      "title": "Not Enough",
+      "description": "She's appreciating the money but the kid is asking about you. Wants to come to your battles. Wants to know why daddy doesn't visit. She says money isn't enough.",
+      "delay": { "type": "battles", "value": 3 },
+      "urgency": "timed",
+      "deadline_hours": 168,
+      "prep_days_cost": 1,
+      "choices": [
+        {
+          "id": "get_involved",
+          "label": "Start Visiting",
+          "description": "Time to actually be in his life. Not just a check.",
+          "effects": [
+            { "type": "permanent", "family_bond": 1.5 },
+            { "type": "temporary", "prep_days_lost": 2 }
+          ],
+          "leads_to": { "type": "ending", "id": "babymama_end_growing" }
+        },
+        {
+          "id": "increase_money",
+          "label": "Send More Money",
+          "description": "Double the payments. Hope that's enough.",
+          "effects": [
+            { "type": "permanent", "financial_stability": -1.5 },
+            { "type": "permanent", "family_bond": -0.5 }
+          ],
+          "leads_to": { "type": "ending", "id": "babymama_end_checkfather" }
+        }
+      ]
+    },
+    {
+      "id": "babymama_ch3_secret",
+      "chapter_number": 3,
+      "title": "The Leak",
+      "description": "She took the money but someone talked. Maybe her friend. Maybe your accountant. The story is out anyway. And now it looks worse because you tried to hide it.",
+      "delay": { "type": "battles", "value": 2 },
+      "urgency": "immediate",
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "come_clean",
+          "label": "Come Clean",
+          "description": "Admit you tried to keep it private. Take the L.",
+          "effects": [
+            { "type": "permanent", "reputation": -1.5 },
+            { "type": "permanent", "resilience": 0.3 }
+          ],
+          "leads_to": { "type": "ending", "id": "babymama_end_exposed" }
+        },
+        {
+          "id": "blame_her",
+          "label": "Blame Her",
+          "description": "She promised to keep it quiet. She broke her word.",
+          "effects": [
+            { "type": "permanent", "reputation": -1.0 },
+            { "type": "permanent", "family_bond": -1.5 }
+          ],
+          "leads_to": { "type": "ending", "id": "babymama_end_messy" }
+        }
+      ]
+    },
+    {
+      "id": "babymama_ch3_accept",
+      "chapter_number": 3,
+      "title": "Building a Bond",
+      "description": "You've been spending time with your kid. It's weird at first but... he's pretty cool actually. Your baby mama is surprised you're actually showing up.",
+      "delay": { "type": "battles", "value": 2 },
+      "urgency": "passive",
+      "prep_days_cost": 2,
+      "choices": [
+        {
+          "id": "go_public_positive",
+          "label": "Share It Positively",
+          "description": "Post a photo together. Own this part of your life.",
+          "effects": [
+            { "type": "permanent", "family_bond": 1.0 },
+            { "type": "permanent", "reputation": 0.5 }
+          ],
+          "leads_to": { "type": "ending", "id": "babymama_end_proud_father" }
+        },
+        {
+          "id": "keep_private",
+          "label": "Keep It Private",
+          "description": "Your kid doesn't need to be in the spotlight.",
+          "effects": [
+            { "type": "permanent", "family_bond": 0.5 },
+            { "type": "permanent", "resilience": 0.3 }
+          ],
+          "leads_to": { "type": "ending", "id": "babymama_end_quiet_father" }
+        }
+      ]
+    }
+  ],
+
+  "endings": [
+    {
+      "id": "babymama_end_father",
+      "type": "positive",
+      "title": "Stepped Up",
+      "description": "You're in his life. It's not easy balancing battling and fatherhood, but you're making it work. Your opponents try to use it against you but 'I handle my responsibilities' hits different.",
+      "effects": [
+        { "type": "permanent", "family_bond": 1.5 },
+        { "type": "permanent", "resilience": 0.5 }
+      ],
+      "badge": "Family Man"
+    },
+    {
+      "id": "babymama_end_proud_father",
+      "type": "positive",
+      "title": "Proud Father",
+      "description": "You brought your kid to a battle. Front row. Cheering. The culture loved it. Changed the narrative completely.",
+      "effects": [
+        { "type": "permanent", "family_bond": 2.0 },
+        { "type": "permanent", "reputation": 1.0 }
+      ],
+      "badge": "Family Man"
+    },
+    {
+      "id": "babymama_end_quiet_father",
+      "type": "positive",
+      "title": "Quiet Father",
+      "description": "You keep your family life private but you're present. That's what matters.",
+      "effects": [
+        { "type": "permanent", "family_bond": 1.0 },
+        { "type": "permanent", "resilience": 0.5 }
+      ]
+    },
+    {
+      "id": "babymama_end_growing",
+      "type": "positive",
+      "title": "Growing Into It",
+      "description": "Started rough but you're figuring out this father thing. He's starting to look up to you. That feels better than any battle win.",
+      "effects": [
+        { "type": "permanent", "family_bond": 1.5 },
+        { "type": "permanent", "financial_stability": -0.5 }
+      ]
+    },
+    {
+      "id": "babymama_end_redeemed",
+      "type": "neutral",
+      "title": "Redeemed Yourself",
+      "description": "You handled it wrong at first but owned up to it. People respect the accountability even if they clown you for the situation.",
+      "effects": [
+        { "type": "permanent", "reputation": -0.3 },
+        { "type": "permanent", "family_bond": 0.5 }
+      ]
+    },
+    {
+      "id": "babymama_end_checkfather",
+      "type": "negative",
+      "title": "Check Father",
+      "description": "You send money but you're a stranger to your own kid. Your baby mama tells everyone you're 'just a check.' Opponents have endless material.",
+      "effects": [
+        { "type": "permanent", "family_bond": -1.0 },
+        { "type": "permanent", "financial_stability": -1.0 }
+      ],
+      "badge": "Deadbeat"
+    },
+    {
+      "id": "babymama_end_deadbeat",
+      "type": "negative",
+      "title": "Deadbeat",
+      "description": "You denied it to the end despite all evidence. Everyone knows. It's the first thing opponents bring up. You're a punchline.",
+      "effects": [
+        { "type": "permanent", "reputation": -2.0 },
+        { "type": "permanent", "family_bond": -2.0 }
+      ],
+      "badge": "Deadbeat"
+    },
+    {
+      "id": "babymama_end_messy",
+      "type": "negative",
+      "title": "Messy Situation",
+      "description": "It's a mess. Back and forth on social media. Both of you look bad. Your kid is caught in the middle of a very public war.",
+      "effects": [
+        { "type": "permanent", "reputation": -1.5 },
+        { "type": "permanent", "family_bond": -1.5 },
+        { "type": "temporary", "stress": 30, "duration_days": 60 }
+      ]
+    },
+    {
+      "id": "babymama_end_exposed",
+      "type": "negative",
+      "title": "Exposed",
+      "description": "Tried to hide it, got caught, had to admit it anyway. The cover-up was worse than the crime. Trust issues all around.",
+      "effects": [
+        { "type": "permanent", "reputation": -1.5 },
+        { "type": "permanent", "financial_stability": -2.0 }
+      ]
+    }
+  ]
+}

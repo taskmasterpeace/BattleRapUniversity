@@ -1,0 +1,365 @@
+================================================================================
+BATTLE ACCEPTANCE FLOW - VISUAL DIAGRAM
+================================================================================
+
+NORMAL FLOW (Happy Path):
+================================================================================
+
+┌─────────────┐
+│   USER      │
+└──────┬──────┘
+       │
+       │ Visits /battle/offers
+       ▼
+┌─────────────────────────────────────────────────────────────┐
+│  OFFERS PAGE (app/battle/offers/page.tsx)                   │
+│  ┌──────────────────────────────────────┐                   │
+│  │ Battle vs AI Opponent                │                   │
+│  │ League: Small Room Circuit           │                   │
+│  │ Scheduled: Nov 30, 2025              │                   │
+│  │ Prep Deadline: Nov 28, 2025          │                   │
+│  │ [Accept] [Decline]                   │                   │
+│  └──────────────────────────────────────┘                   │
+└──────────────────────┬──────────────────────────────────────┘
+                       │
+                       │ Click "Accept"
+                       ▼
+┌─────────────────────────────────────────────────────────────┐
+│  API ROUTE: POST /api/battles/{id}/accept                   │
+│                                                              │
+│  Step 1: Authentication                                     │
+│  ┌────────────────────────────────────┐                     │
+│  │ getUser()                          │ ← ✅ VALIDATED     │
+│  │ Returns user from session cookies  │                     │
+│  └────────────────────────────────────┘                     │
+│                                                              │
+│  Step 2: Get Player's Battler                               │
+│  ┌────────────────────────────────────┐                     │
+│  │ SELECT * FROM battlers             │ ← ✅ VALIDATED     │
+│  │ WHERE user_id = {user}             │                     │
+│  │   AND is_ai = false                │                     │
+│  └────────────────────────────────────┘                     │
+│                                                              │
+│  Step 3: Get Battle & Verify Ownership                      │
+│  ┌────────────────────────────────────┐                     │
+│  │ SELECT * FROM battles              │ ← ✅ VALIDATED     │
+│  │ WHERE id = {battle_id}             │                     │
+│  │                                    │                     │
+│  │ Check: battler_player_id = user's  │                     │
+│  └────────────────────────────────────┘                     │
+│                                                              │
+│  Step 4: Validate Status                                    │
+│  ┌────────────────────────────────────┐                     │
+│  │ if (status !== 'offered')          │ ← ✅ VALIDATED     │
+│  │   return error                     │                     │
+│  └────────────────────────────────────┘                     │
+│                                                              │
+│  Step 5: Check for Existing Active Battles                  │
+│  ┌────────────────────────────────────┐                     │
+│  │ SELECT * FROM battles              │ ← ⚠️ RACE RISK!   │
+│  │ WHERE battler_player_id = {user}   │                     │
+│  │   AND status IN ('accepted',       │                     │
+│  │                   'locked')        │                     │
+│  └────────────────────────────────────┘                     │
+│          │                                                   │
+│          │ If > 0: Return error "already have active battle"│
+│          │ If = 0: Continue...                              │
+│          ▼                                                   │
+│  Step 6: Check Expiration                                   │
+│  ┌────────────────────────────────────┐                     │
+│  │ if (now >= lock_prep_at)           │ ← ✅ VALIDATED     │
+│  │   return error "expired"           │                     │
+│  └────────────────────────────────────┘                     │
+│                                                              │
+│  Step 7: Update Status                                      │
+│  ┌────────────────────────────────────┐                     │
+│  │ UPDATE battles                     │ ← ⚠️ NOT ATOMIC   │
+│  │ SET status = 'accepted'            │    WITH STEP 5!    │
+│  │ WHERE id = {battle_id}             │                     │
+│  └────────────────────────────────────┘                     │
+│                                                              │
+│  Return: { battle: {...} }                                  │
+└──────────────────────┬──────────────────────────────────────┘
+                       │
+                       │ Success
+                       ▼
+┌─────────────────────────────────────────────────────────────┐
+│  OFFERS PAGE (updated)                                       │
+│  ┌──────────────────────────────────────┐                   │
+│  │ Battle #1 [REMOVED from list]        │                   │
+│  │ Battle #2 still available            │                   │
+│  │ Battle #3 still available            │                   │
+│  └──────────────────────────────────────┘                   │
+└──────────────────────┬──────────────────────────────────────┘
+                       │
+                       │ User navigates to /dashboard
+                       ▼
+┌─────────────────────────────────────────────────────────────┐
+│  DASHBOARD (app/dashboard/page.tsx)                          │
+│                                                              │
+│  Query: SELECT * FROM battles                                │
+│         WHERE battler_player_id = {user}                     │
+│           AND status = 'accepted'  ← 🟡 BUG #2              │
+│           AND scheduled_at > NOW()                           │
+│         ORDER BY scheduled_at ASC LIMIT 1                    │
+│                                                              │
+│  ┌──────────────────────────────────────┐                   │
+│  │ NEXT BATTLE                          │                   │
+│  │ vs AI Opponent                       │                   │
+│  │ Nov 30, 2025                         │                   │
+│  │ Prep ends: Nov 28                    │                   │
+│  │ [View Prep Plan]                     │                   │
+│  └──────────────────────────────────────┘                   │
+└─────────────────────────────────────────────────────────────┘
+
+================================================================================
+RACE CONDITION BUG SCENARIO:
+================================================================================
+
+Timeline showing how race condition allows 2 active battles:
+
+T0: User has 0 active battles
+    - 2 browser tabs open to /battle/offers
+    - Tab A ready to accept Battle #1
+    - Tab B ready to accept Battle #2
+
+T1: User rapidly clicks Accept in both tabs (nearly simultaneous)
+
+T2: Request A reaches API
+    Step 5: Check existing battles → finds 0 ✓
+    Proceeds to Step 6...
+
+T3: Request B reaches API (before Request A updates DB)
+    Step 5: Check existing battles → finds 0 ✓
+    Proceeds to Step 6...
+
+T4: Request A validates expiration → pass ✓
+
+T5: Request B validates expiration → pass ✓
+
+T6: Request A updates Battle #1
+    UPDATE battles SET status='accepted' WHERE id=1
+
+T7: Request B updates Battle #2
+    UPDATE battles SET status='accepted' WHERE id=2
+
+T8: BOTH requests return success!
+
+Result: Database now has:
+┌────────┬──────────┬──────────┬─────────────┐
+│ Battle │ Battler  │ Status   │ Accepted At │
+├────────┼──────────┼──────────┼─────────────┤
+│   #1   │ Player X │ accepted │ 2025-11-25  │  ← BUG!
+│   #2   │ Player X │ accepted │ 2025-11-25  │  ← BUG!
+└────────┴──────────┴──────────┴─────────────┘
+
+Player now has TWO active battles (should only have 1)!
+
+================================================================================
+UI DOUBLE-CLICK BUG SCENARIO:
+================================================================================
+
+User clicks Accept button twice rapidly:
+
+Click 1: handleAccept(battle1) called
+         setActionLoading(battle1)  ← State update queued (async)
+         fetch('/api/battles/1/accept') starts...
+
+Click 2: handleAccept(battle1) called AGAIN
+         actionLoading still null (React hasn't updated yet)
+         fetch('/api/battles/1/accept') starts AGAIN...
+
+Both requests hit API:
+  Request 1: Status check passes → updates to 'accepted' ✓
+  Request 2: Status check fails → error "not in offered status" ✓
+
+Outcome: Backend prevents damage, but unnecessary API call made
+
+================================================================================
+DASHBOARD BUG SCENARIO:
+================================================================================
+
+Normal flow:
+Nov 25: User accepts battle (scheduled Nov 30, prep deadline Nov 28)
+        Dashboard shows: "NEXT BATTLE vs AI Opponent"
+
+Nov 28: Prep deadline passes
+        Cron job runs: UPDATE battles SET status='locked' WHERE lock_prep_at < NOW()
+        Battle #1 status: accepted → locked
+
+Nov 29: User visits dashboard
+        Query: SELECT * WHERE status='accepted' ← 🟡 BUG!
+        Result: 0 rows (battle is 'locked' now, not 'accepted')
+        Dashboard shows: [No next battle section]
+
+User confusion: "Where did my battle go? It's tomorrow!"
+
+================================================================================
+VALIDATION FLOW DIAGRAM:
+================================================================================
+
+┌─────────────┐
+│  Accept     │
+│  Request    │
+└──────┬──────┘
+       │
+       ▼
+  ┌────────────────┐
+  │ Authenticated? │───── NO ──→ 401 Unauthorized
+  └────┬───────────┘
+       │ YES
+       ▼
+  ┌────────────────┐
+  │ Battler exists?│───── NO ──→ 404 No battler found
+  └────┬───────────┘
+       │ YES
+       ▼
+  ┌────────────────┐
+  │ Battle exists? │───── NO ──→ 404 Battle not found
+  └────┬───────────┘
+       │ YES
+       ▼
+  ┌────────────────┐
+  │ User owns      │───── NO ──→ 403 Not your battle
+  │ battle?        │
+  └────┬───────────┘
+       │ YES
+       ▼
+  ┌────────────────┐
+  │ Status =       │───── NO ──→ 400 Not in offered status
+  │ 'offered'?     │
+  └────┬───────────┘
+       │ YES
+       ▼
+  ┌────────────────┐         ⚠️ RACE CONDITION WINDOW
+  │ Already has    │───── YES ─→ 400 Already have active battle
+  │ active battle? │         ⚠️ (Check not atomic with update)
+  └────┬───────────┘
+       │ NO
+       ▼
+  ┌────────────────┐
+  │ Offer expired? │───── YES ─→ 400 Offer expired
+  └────┬───────────┘
+       │ NO
+       ▼
+  ┌────────────────┐
+  │ UPDATE status  │───── ERROR ─→ 500 Failed to accept
+  │ to 'accepted'  │
+  └────┬───────────┘
+       │ SUCCESS
+       ▼
+  ┌────────────────┐
+  │ Return battle  │
+  │ object         │
+  └────────────────┘
+
+================================================================================
+STATE TRANSITION DIAGRAM:
+================================================================================
+
+Battle Status Flow:
+
+           ┌─────────┐
+           │ offered │ ← Initial state (AI generates offer)
+           └────┬────┘
+                │
+         User Decision
+         /      │      \
+        /       │       \
+       /        │        \
+      ▼         ▼         ▼
+┌──────────┐  ┌─────────┐  ┌────────┐
+│ declined │  │accepted │  │ (ignored)
+└──────────┘  └────┬────┘  └────────┘
+   (END)           │          (stays offered)
+                   │
+                   │ Prep deadline passes
+                   ▼
+              ┌─────────┐
+              │ locked  │ ← No more prep changes allowed
+              └────┬────┘
+                   │
+                   │ Battle simulation runs
+                   ▼
+              ┌──────────┐
+              │simulated │ ← Results calculated
+              └────┬─────┘
+                   │
+                   │ Winner determined
+                   ▼
+              ┌───────────┐
+              │ completed │ ← Final state
+              └───────────┘
+
+Current Implementation:
+✅ offered → accepted (validated correctly)
+✅ offered → declined (in separate endpoint)
+🟡 accepted → locked (dashboard query needs update)
+❓ locked → simulated (needs testing)
+❓ simulated → completed (needs testing)
+
+================================================================================
+PROPOSED FIX: Database Constraint
+================================================================================
+
+Add trigger to prevent race condition:
+
+CREATE FUNCTION check_one_active_battle() RETURNS TRIGGER AS $$
+BEGIN
+  -- If setting status to accepted or locked...
+  IF NEW.status IN ('accepted', 'locked') THEN
+
+    -- Check if player already has another active battle
+    IF EXISTS (
+      SELECT 1 FROM battles
+      WHERE battler_player_id = NEW.battler_player_id
+        AND id != NEW.id
+        AND status IN ('accepted', 'locked')
+    ) THEN
+      RAISE EXCEPTION 'Battler already has an active battle';
+    END IF;
+
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER enforce_one_active_battle
+  BEFORE INSERT OR UPDATE ON battles
+  FOR EACH ROW
+  EXECUTE FUNCTION check_one_active_battle();
+
+This makes the validation ATOMIC at database level!
+
+Race condition scenario with constraint:
+
+T6: Request A updates Battle #1
+    → Trigger checks: no other active battles → PASS
+    → Battle #1 set to 'accepted'
+
+T7: Request B updates Battle #2
+    → Trigger checks: Battle #1 is now 'accepted' → FAIL
+    → Exception raised: "Battler already has an active battle"
+    → Battle #2 remains 'offered'
+
+Result: Only ONE active battle allowed (guaranteed by database)
+
+================================================================================
+TESTING CHECKLIST:
+================================================================================
+
+✅ = Should pass
+❌ = Should fail
+
+User can accept valid offer              → ✅ Accept succeeds
+User can see accepted battle on dashboard → ✅ Shows in "NEXT BATTLE"
+User tries to accept second battle        → ❌ Error: "already have active"
+User tries to accept same battle twice    → ❌ Error: "not in offered status"
+User tries to accept expired offer        → ❌ Error: "offer expired"
+Non-owner tries to accept battle          → ❌ Error: 403 Forbidden
+Unauthenticated request                  → ❌ Error: 401 Unauthorized
+Race condition (2 simultaneous accepts)   → ❌ Only 1 succeeds (with constraint)
+Dashboard shows locked battles            → ✅ Shows (after fix)
+Double-clicking Accept button             → ✅ Only 1 request (after fix)
+
+================================================================================

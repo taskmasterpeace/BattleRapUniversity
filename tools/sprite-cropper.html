@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sprite Icon Extractor</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #1a1a2e;
+      color: #eee;
+      min-height: 100vh;
+      padding: 15px;
+    }
+    h1 { text-align: center; margin-bottom: 15px; color: #f97316; font-size: 20px; }
+    .controls {
+      background: #16213e;
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: flex-end;
+    }
+    .control-group { display: flex; flex-direction: column; gap: 3px; }
+    .control-group label { font-size: 10px; color: #888; text-transform: uppercase; }
+    input, select {
+      background: #0f3460;
+      border: 1px solid #444;
+      padding: 6px 8px;
+      border-radius: 4px;
+      color: #fff;
+      font-size: 12px;
+    }
+    input[type="number"] { width: 55px; }
+    input[type="text"] { width: 140px; }
+    select { min-width: 90px; }
+    input[type="color"] { width: 40px; height: 28px; padding: 2px; cursor: pointer; }
+    button {
+      background: #f97316;
+      color: #fff;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 11px;
+      text-transform: uppercase;
+    }
+    button:hover { background: #ea580c; }
+    button.secondary { background: #0f3460; }
+    button.danger { background: #dc2626; }
+    button.active { background: #22c55e; }
+    button.small { padding: 4px 8px; font-size: 9px; }
+    .workspace { display: flex; gap: 12px; height: calc(100vh - 180px); }
+    .panel {
+      background: #16213e;
+      padding: 12px;
+      border-radius: 6px;
+      display: flex;
+      flex-direction: column;
+    }
+    .source-panel { width: 50%; }
+    .output-panel { flex: 1; }
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 11px;
+      color: #888;
+      text-transform: uppercase;
+    }
+    .canvas-wrap {
+      position: relative;
+      background: repeating-conic-gradient(#333 0% 25%, #222 0% 50%) 50% / 12px 12px;
+      border-radius: 4px;
+      overflow: auto;
+      flex: 1;
+      cursor: crosshair;
+    }
+    canvas { display: block; }
+    #overlayCanvas { position: absolute; top: 0; left: 0; pointer-events: none; }
+    #previewCanvas { position: absolute; top: 0; left: 0; pointer-events: none; }
+    .output-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 8px;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .icon-card {
+      background: #0f3460;
+      border-radius: 4px;
+      padding: 6px;
+      text-align: center;
+    }
+    .icon-card img {
+      max-width: 80px;
+      max-height: 80px;
+      background: repeating-conic-gradient(#444 0% 25%, #333 0% 50%) 50% / 6px 6px;
+      border-radius: 3px;
+    }
+    .icon-card input {
+      width: 100%;
+      margin-top: 4px;
+      padding: 3px;
+      font-size: 9px;
+    }
+    .icon-card button { margin-top: 4px; padding: 3px 6px; font-size: 9px; }
+    .status {
+      background: #0a0a15;
+      padding: 6px 10px;
+      border-radius: 4px;
+      font-size: 10px;
+      color: #22c55e;
+      margin-top: 8px;
+      font-family: monospace;
+    }
+    .swatches { display: flex; gap: 3px; margin-top: 6px; flex-wrap: wrap; align-items: center; }
+    .swatches-label { font-size: 9px; color: #666; margin-right: 4px; }
+    .swatch {
+      width: 22px;
+      height: 22px;
+      border-radius: 3px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      position: relative;
+    }
+    .swatch:hover, .swatch.active { border-color: #f97316; }
+    .swatch.excluded { border-color: #22c55e; }
+    .swatch.excluded::after {
+      content: '✓';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #fff;
+      font-size: 12px;
+      text-shadow: 0 0 2px #000;
+    }
+    .mode-btns { display: flex; gap: 4px; }
+    .mode-btns button { padding: 6px 10px; }
+
+    /* Selection boxes with drag/resize */
+    .selection-box {
+      position: absolute;
+      border: 2px dashed #22c55e;
+      background: rgba(34, 197, 94, 0.15);
+      pointer-events: auto;
+      cursor: move;
+    }
+    .selection-box.saved {
+      border-color: #3b82f6;
+      background: rgba(59, 130, 246, 0.15);
+    }
+    .selection-box.drawing {
+      pointer-events: none;
+    }
+    .selection-box .sel-label {
+      position: absolute;
+      top: -18px;
+      left: 0;
+      font-size: 10px;
+      color: #fff;
+      background: #3b82f6;
+      padding: 1px 4px;
+      border-radius: 2px;
+      pointer-events: none;
+    }
+    .selection-box .sel-close {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      width: 16px;
+      height: 16px;
+      background: #dc2626;
+      border-radius: 50%;
+      color: #fff;
+      font-size: 10px;
+      line-height: 16px;
+      text-align: center;
+      cursor: pointer;
+    }
+    /* Resize handles */
+    .selection-box .resize-handle {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: #3b82f6;
+      border: 1px solid #fff;
+      border-radius: 2px;
+    }
+    .resize-handle.nw { top: -5px; left: -5px; cursor: nw-resize; }
+    .resize-handle.ne { top: -5px; right: -5px; cursor: ne-resize; }
+    .resize-handle.sw { bottom: -5px; left: -5px; cursor: sw-resize; }
+    .resize-handle.se { bottom: -5px; right: -5px; cursor: se-resize; }
+
+    .exclude-colors { display: flex; gap: 3px; flex-wrap: wrap; align-items: center; margin-top: 4px; }
+    .exclude-label { font-size: 9px; color: #22c55e; }
+  </style>
+</head>
+<body>
+  <h1>Sprite Icon Extractor</h1>
+
+  <div class="controls">
+    <div class="control-group">
+      <label>Load Image</label>
+      <input type="file" id="fileInput" accept="image/*">
+    </div>
+
+    <div class="control-group">
+      <label>Mode</label>
+      <div class="mode-btns">
+        <button id="gridBtn" class="active" onclick="setMode('grid')">Grid</button>
+        <button id="manualBtn" onclick="setMode('manual')">Manual</button>
+      </div>
+    </div>
+
+    <div class="control-group grid-ctrl">
+      <label>Preset</label>
+      <select id="preset" onchange="applyPreset()">
+        <option value="1,1">1x1</option>
+        <option value="2,2">2x2</option>
+        <option value="3,3" selected>3x3</option>
+        <option value="4,4">4x4</option>
+        <option value="16,16">16x16</option>
+        <option value="custom">Custom</option>
+      </select>
+    </div>
+
+    <div class="control-group grid-ctrl">
+      <label>Rows</label>
+      <input type="number" id="rows" value="3" min="1" max="50">
+    </div>
+
+    <div class="control-group grid-ctrl">
+      <label>Cols</label>
+      <input type="number" id="cols" value="3" min="1" max="50">
+    </div>
+
+    <div class="control-group grid-ctrl">
+      <label>Top Skip</label>
+      <input type="number" id="topPad" value="80" min="0">
+    </div>
+
+    <div class="control-group grid-ctrl">
+      <label>Side Skip</label>
+      <input type="number" id="sidePad" value="10" min="0">
+    </div>
+
+    <div class="control-group grid-ctrl">
+      <label>Label Cut</label>
+      <input type="number" id="bottomCrop" value="40" min="0">
+    </div>
+
+    <!-- Manual mode controls -->
+    <div class="control-group manual-ctrl">
+      <label>Aspect Ratio</label>
+      <select id="aspectRatio" onchange="updateAspectRatio()">
+        <option value="free">Free</option>
+        <option value="1:1" selected>1:1 (Square)</option>
+        <option value="16:9">16:9</option>
+        <option value="9:16">9:16</option>
+        <option value="4:3">4:3</option>
+        <option value="3:4">3:4</option>
+        <option value="3:2">3:2</option>
+        <option value="2:3">2:3</option>
+      </select>
+    </div>
+
+    <div class="control-group manual-ctrl">
+      <label>Output Size</label>
+      <select id="outputSize">
+        <option value="original">Original</option>
+        <option value="32">32px</option>
+        <option value="64">64px</option>
+        <option value="128" selected>128px</option>
+        <option value="256">256px</option>
+        <option value="512">512px</option>
+      </select>
+    </div>
+
+    <div class="control-group">
+      <label>BG Color</label>
+      <input type="color" id="bgColor" value="#3b4a5e">
+    </div>
+
+    <div class="control-group">
+      <label>Tolerance</label>
+      <input type="number" id="tolerance" value="45" min="0" max="150">
+    </div>
+
+    <div class="control-group">
+      <label>Prefix</label>
+      <input type="text" id="savePrefix" value="secret_">
+    </div>
+
+    <div class="control-group">
+      <label>Save To</label>
+      <button class="secondary" onclick="pickSaveDir()" id="saveDirBtn" title="Click to choose save folder">Downloads</button>
+    </div>
+
+    <button onclick="extract()">Extract</button>
+    <button class="secondary" onclick="downloadAll()">Download All</button>
+    <button class="danger manual-ctrl" onclick="clearSelections()">Clear All</button>
+  </div>
+
+  <div class="workspace">
+    <div class="panel source-panel">
+      <div class="panel-header">
+        <span>Source</span>
+        <span id="imgInfo">No image</span>
+      </div>
+      <div class="canvas-wrap" id="canvasWrap">
+        <canvas id="srcCanvas"></canvas>
+        <canvas id="previewCanvas"></canvas>
+        <canvas id="overlayCanvas"></canvas>
+        <div id="selectionsContainer"></div>
+      </div>
+      <div class="status" id="status">Load an image</div>
+      <div class="swatches">
+        <span class="swatches-label">BG:</span>
+        <div id="swatches"></div>
+      </div>
+      <div class="exclude-colors">
+        <span class="exclude-label">Keep (right-click to exclude):</span>
+        <div id="excludedSwatches"></div>
+      </div>
+    </div>
+
+    <div class="panel output-panel">
+      <div class="panel-header">
+        <span>Extracted</span>
+        <span id="iconCount">0</span>
+      </div>
+      <div class="output-grid" id="output"></div>
+    </div>
+  </div>
+
+  <script>
+    let img = null;
+    let icons = [];
+    let sampledColors = [];
+    let excludedColors = []; // Colors to KEEP (not remove)
+    let mode = 'grid';
+    let isDrawing = false;
+    let selStart = {x:0, y:0};
+    let selEnd = {x:0, y:0};
+
+    // Multiple selections for manual mode
+    let selections = [];
+    let currentSelBox = null;
+    let aspectRatio = 1;
+    let aspectLock = true;
+
+    // Drag/resize state
+    let isDragging = false;
+    let isResizing = false;
+    let dragSelIdx = -1;
+    let resizeHandle = '';
+    let dragStartPos = {x:0, y:0};
+    let dragStartSel = null;
+
+    // Save directory handle (File System Access API)
+    let saveDirectoryHandle = null;
+
+    const srcCanvas = document.getElementById('srcCanvas');
+    const previewCanvas = document.getElementById('previewCanvas');
+    const overlayCanvas = document.getElementById('overlayCanvas');
+    const ctx = srcCanvas.getContext('2d');
+    const previewCtx = previewCanvas.getContext('2d');
+    const overlayCtx = overlayCanvas.getContext('2d');
+    const canvasWrap = document.getElementById('canvasWrap');
+    const selectionsContainer = document.getElementById('selectionsContainer');
+    const output = document.getElementById('output');
+    const status = document.getElementById('status');
+
+    // Events
+    document.getElementById('fileInput').addEventListener('change', loadImage);
+    srcCanvas.addEventListener('click', sampleColor);
+    srcCanvas.addEventListener('contextmenu', excludeColor);
+    srcCanvas.addEventListener('mousedown', startDraw);
+    srcCanvas.addEventListener('mousemove', onDraw);
+    srcCanvas.addEventListener('mouseup', endDraw);
+    srcCanvas.addEventListener('mouseleave', endDraw);
+
+    ['rows','cols','topPad','sidePad','bottomCrop','bgColor','tolerance'].forEach(id => {
+      document.getElementById(id).addEventListener('input', updatePreview);
+    });
+
+    function log(msg) { status.textContent = msg; console.log(msg); }
+
+    function setMode(m) {
+      mode = m;
+      document.getElementById('gridBtn').classList.toggle('active', m === 'grid');
+      document.getElementById('manualBtn').classList.toggle('active', m === 'manual');
+      document.querySelectorAll('.grid-ctrl').forEach(el => el.style.display = m === 'grid' ? 'flex' : 'none');
+      document.querySelectorAll('.manual-ctrl').forEach(el => el.style.display = m === 'manual' ? 'flex' : 'none');
+      updatePreview();
+      if (m === 'manual') {
+        log(`Manual mode - ${selections.length} selection(s). Draw/drag boxes.`);
+      } else {
+        log('Grid mode - adjust settings');
+      }
+    }
+
+    function updateAspectRatio() {
+      const val = document.getElementById('aspectRatio').value;
+      if (val === 'free') {
+        aspectLock = false;
+        aspectRatio = 1;
+      } else {
+        aspectLock = true;
+        const [w, h] = val.split(':').map(Number);
+        aspectRatio = w / h;
+      }
+      log(`Aspect ratio: ${val}${aspectLock ? ' (locked)' : ''}`);
+    }
+
+    function applyPreset() {
+      const val = document.getElementById('preset').value;
+      if (val !== 'custom') {
+        const [r,c] = val.split(',');
+        document.getElementById('rows').value = r;
+        document.getElementById('cols').value = c;
+        updatePreview();
+      }
+    }
+
+    function loadImage(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      log('Loading...');
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        img = new Image();
+        img.onload = () => {
+          srcCanvas.width = img.width;
+          srcCanvas.height = img.height;
+          previewCanvas.width = img.width;
+          previewCanvas.height = img.height;
+          overlayCanvas.width = img.width;
+          overlayCanvas.height = img.height;
+
+          ctx.drawImage(img, 0, 0);
+          document.getElementById('imgInfo').textContent = `${img.width}x${img.height}`;
+          log(`Loaded ${img.width}x${img.height}`);
+          autoSampleColors();
+          clearSelections();
+          excludedColors = [];
+          updateExcludedSwatches();
+          updatePreview();
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function autoSampleColors() {
+      if (!img) return;
+      const w = srcCanvas.width, h = srcCanvas.height;
+      const d = ctx.getImageData(0, 0, w, h).data;
+      const points = [[5,5],[w-5,5],[5,h-5],[w-5,h-5],[w/2,5],[5,h/2],[w-5,h/2],[w/2,h-5]];
+
+      sampledColors = [];
+      const swDiv = document.getElementById('swatches');
+      swDiv.innerHTML = '';
+
+      points.forEach(([x,y]) => {
+        const i = (Math.floor(y)*w + Math.floor(x))*4;
+        const hex = '#' + [d[i],d[i+1],d[i+2]].map(v=>v.toString(16).padStart(2,'0')).join('');
+        if (!sampledColors.includes(hex)) {
+          sampledColors.push(hex);
+          const sw = document.createElement('div');
+          sw.className = 'swatch';
+          sw.style.background = hex;
+          sw.title = `Left-click: set BG\nRight-click: exclude`;
+          sw.onclick = () => {
+            document.getElementById('bgColor').value = hex;
+            updatePreview();
+          };
+          sw.oncontextmenu = (e) => {
+            e.preventDefault();
+            toggleExcludedColor(hex);
+          };
+          swDiv.appendChild(sw);
+        }
+      });
+    }
+
+    function sampleColor(e) {
+      if (!img || mode === 'manual') return;
+      const rect = srcCanvas.getBoundingClientRect();
+      const x = Math.floor((e.clientX - rect.left) * srcCanvas.width / rect.width);
+      const y = Math.floor((e.clientY - rect.top) * srcCanvas.height / rect.height);
+      const p = ctx.getImageData(x, y, 1, 1).data;
+      const hex = '#' + [p[0],p[1],p[2]].map(v=>v.toString(16).padStart(2,'0')).join('');
+      document.getElementById('bgColor').value = hex;
+      log(`Sampled BG: ${hex}`);
+      updatePreview();
+    }
+
+    function excludeColor(e) {
+      e.preventDefault();
+      if (!img) return;
+      const rect = srcCanvas.getBoundingClientRect();
+      const x = Math.floor((e.clientX - rect.left) * srcCanvas.width / rect.width);
+      const y = Math.floor((e.clientY - rect.top) * srcCanvas.height / rect.height);
+      const p = ctx.getImageData(x, y, 1, 1).data;
+      const hex = '#' + [p[0],p[1],p[2]].map(v=>v.toString(16).padStart(2,'0')).join('');
+      toggleExcludedColor(hex);
+    }
+
+    function toggleExcludedColor(hex) {
+      const idx = excludedColors.indexOf(hex);
+      if (idx >= 0) {
+        excludedColors.splice(idx, 1);
+        log(`Removed exclusion: ${hex}`);
+      } else {
+        excludedColors.push(hex);
+        log(`Excluded (will keep): ${hex}`);
+      }
+      updateExcludedSwatches();
+      updatePreview();
+    }
+
+    function updateExcludedSwatches() {
+      const div = document.getElementById('excludedSwatches');
+      div.innerHTML = '';
+      excludedColors.forEach(hex => {
+        const sw = document.createElement('div');
+        sw.className = 'swatch excluded';
+        sw.style.background = hex;
+        sw.title = `Click to remove exclusion`;
+        sw.onclick = () => toggleExcludedColor(hex);
+        div.appendChild(sw);
+      });
+    }
+
+    function startDraw(e) {
+      if (mode !== 'manual' || !img) return;
+
+      // Check if clicking on existing selection
+      if (isDragging || isResizing) return;
+
+      isDrawing = true;
+      const rect = srcCanvas.getBoundingClientRect();
+      selStart = {
+        x: (e.clientX - rect.left) * srcCanvas.width / rect.width,
+        y: (e.clientY - rect.top) * srcCanvas.height / rect.height
+      };
+      selEnd = {...selStart};
+
+      // Create temporary selection box
+      currentSelBox = document.createElement('div');
+      currentSelBox.className = 'selection-box drawing';
+      selectionsContainer.appendChild(currentSelBox);
+      updateCurrentSelectionBox(rect);
+    }
+
+    function onDraw(e) {
+      if (!isDrawing || !currentSelBox) return;
+      const rect = srcCanvas.getBoundingClientRect();
+
+      let endX = (e.clientX - rect.left) * srcCanvas.width / rect.width;
+      let endY = (e.clientY - rect.top) * srcCanvas.height / rect.height;
+
+      // Apply aspect ratio lock
+      if (aspectLock) {
+        const dx = endX - selStart.x;
+        const dy = endY - selStart.y;
+        const absDx = Math.abs(dx);
+        const absDy = Math.abs(dy);
+
+        if (absDx / aspectRatio > absDy) {
+          const newH = absDx / aspectRatio;
+          endY = selStart.y + (dy >= 0 ? newH : -newH);
+        } else {
+          const newW = absDy * aspectRatio;
+          endX = selStart.x + (dx >= 0 ? newW : -newW);
+        }
+      }
+
+      selEnd = { x: endX, y: endY };
+      updateCurrentSelectionBox(rect);
+    }
+
+    function endDraw(e) {
+      if (!isDrawing || !currentSelBox) return;
+      isDrawing = false;
+
+      const w = Math.abs(selEnd.x - selStart.x);
+      const h = Math.abs(selEnd.y - selStart.y);
+
+      if (w > 10 && h > 10) {
+        const sel = {
+          x: Math.min(selStart.x, selEnd.x),
+          y: Math.min(selStart.y, selEnd.y),
+          w: w,
+          h: h,
+          name: `sel_${selections.length + 1}`
+        };
+        selections.push(sel);
+        currentSelBox.remove();
+        rebuildSelectionBoxes();
+        log(`${selections.length} selection(s) - ${Math.round(w)}x${Math.round(h)}px`);
+      } else {
+        currentSelBox.remove();
+      }
+
+      currentSelBox = null;
+    }
+
+    function updateCurrentSelectionBox(rect) {
+      if (!currentSelBox) return;
+      const scaleX = rect.width / srcCanvas.width;
+      const scaleY = rect.height / srcCanvas.height;
+      const l = Math.min(selStart.x, selEnd.x) * scaleX;
+      const t = Math.min(selStart.y, selEnd.y) * scaleY;
+      const w = Math.abs(selEnd.x - selStart.x) * scaleX;
+      const h = Math.abs(selEnd.y - selStart.y) * scaleY;
+      currentSelBox.style.left = l + 'px';
+      currentSelBox.style.top = t + 'px';
+      currentSelBox.style.width = w + 'px';
+      currentSelBox.style.height = h + 'px';
+    }
+
+    function removeSelection(idx) {
+      selections.splice(idx, 1);
+      rebuildSelectionBoxes();
+      log(`${selections.length} selection(s) remaining`);
+    }
+
+    function clearSelections() {
+      selections = [];
+      selectionsContainer.innerHTML = '';
+      log('Selections cleared');
+    }
+
+    function rebuildSelectionBoxes() {
+      selectionsContainer.innerHTML = '';
+      const rect = srcCanvas.getBoundingClientRect();
+      const scaleX = rect.width / srcCanvas.width;
+      const scaleY = rect.height / srcCanvas.height;
+
+      selections.forEach((sel, idx) => {
+        const box = document.createElement('div');
+        box.className = 'selection-box saved';
+        box.style.left = (sel.x * scaleX) + 'px';
+        box.style.top = (sel.y * scaleY) + 'px';
+        box.style.width = (sel.w * scaleX) + 'px';
+        box.style.height = (sel.h * scaleY) + 'px';
+        box.dataset.idx = idx;
+
+        // Label
+        const label = document.createElement('span');
+        label.className = 'sel-label';
+        label.textContent = `#${idx + 1}`;
+        box.appendChild(label);
+
+        // Close button
+        const close = document.createElement('span');
+        close.className = 'sel-close';
+        close.textContent = '×';
+        close.onclick = (e) => { e.stopPropagation(); removeSelection(idx); };
+        box.appendChild(close);
+
+        // Resize handles
+        ['nw','ne','sw','se'].forEach(corner => {
+          const handle = document.createElement('div');
+          handle.className = `resize-handle ${corner}`;
+          handle.onmousedown = (e) => startResize(e, idx, corner);
+          box.appendChild(handle);
+        });
+
+        // Drag to move
+        box.onmousedown = (e) => {
+          if (e.target.classList.contains('resize-handle') || e.target.classList.contains('sel-close')) return;
+          startDrag(e, idx);
+        };
+
+        selectionsContainer.appendChild(box);
+      });
+    }
+
+    function startDrag(e, idx) {
+      e.stopPropagation();
+      isDragging = true;
+      dragSelIdx = idx;
+      dragStartPos = { x: e.clientX, y: e.clientY };
+      dragStartSel = { ...selections[idx] };
+
+      document.addEventListener('mousemove', onDrag);
+      document.addEventListener('mouseup', endDrag);
+    }
+
+    function onDrag(e) {
+      if (!isDragging || dragSelIdx < 0) return;
+
+      const rect = srcCanvas.getBoundingClientRect();
+      const scaleX = srcCanvas.width / rect.width;
+      const scaleY = srcCanvas.height / rect.height;
+
+      const dx = (e.clientX - dragStartPos.x) * scaleX;
+      const dy = (e.clientY - dragStartPos.y) * scaleY;
+
+      selections[dragSelIdx].x = Math.max(0, Math.min(srcCanvas.width - dragStartSel.w, dragStartSel.x + dx));
+      selections[dragSelIdx].y = Math.max(0, Math.min(srcCanvas.height - dragStartSel.h, dragStartSel.y + dy));
+
+      rebuildSelectionBoxes();
+    }
+
+    function endDrag() {
+      isDragging = false;
+      dragSelIdx = -1;
+      document.removeEventListener('mousemove', onDrag);
+      document.removeEventListener('mouseup', endDrag);
+    }
+
+    function startResize(e, idx, corner) {
+      e.stopPropagation();
+      isResizing = true;
+      dragSelIdx = idx;
+      resizeHandle = corner;
+      dragStartPos = { x: e.clientX, y: e.clientY };
+      dragStartSel = { ...selections[idx] };
+
+      document.addEventListener('mousemove', onResize);
+      document.addEventListener('mouseup', endResize);
+    }
+
+    function onResize(e) {
+      if (!isResizing || dragSelIdx < 0) return;
+
+      const rect = srcCanvas.getBoundingClientRect();
+      const scaleX = srcCanvas.width / rect.width;
+      const scaleY = srcCanvas.height / rect.height;
+
+      let dx = (e.clientX - dragStartPos.x) * scaleX;
+      let dy = (e.clientY - dragStartPos.y) * scaleY;
+
+      const sel = selections[dragSelIdx];
+      const s = dragStartSel;
+
+      // Apply aspect ratio lock during resize
+      if (aspectLock) {
+        const avgD = (Math.abs(dx) + Math.abs(dy)) / 2;
+        dx = (dx >= 0 ? avgD : -avgD) * (resizeHandle.includes('e') ? 1 : -1);
+        dy = dx / aspectRatio * (resizeHandle.includes('s') ? 1 : -1);
+      }
+
+      switch(resizeHandle) {
+        case 'se':
+          sel.w = Math.max(20, s.w + dx);
+          sel.h = aspectLock ? sel.w / aspectRatio : Math.max(20, s.h + dy);
+          break;
+        case 'sw':
+          const newWsw = Math.max(20, s.w - dx);
+          sel.x = s.x + s.w - newWsw;
+          sel.w = newWsw;
+          sel.h = aspectLock ? sel.w / aspectRatio : Math.max(20, s.h + dy);
+          break;
+        case 'ne':
+          sel.w = Math.max(20, s.w + dx);
+          const newHne = aspectLock ? sel.w / aspectRatio : Math.max(20, s.h - dy);
+          sel.y = s.y + s.h - newHne;
+          sel.h = newHne;
+          break;
+        case 'nw':
+          const newWnw = Math.max(20, s.w - dx);
+          const newHnw = aspectLock ? newWnw / aspectRatio : Math.max(20, s.h - dy);
+          sel.x = s.x + s.w - newWnw;
+          sel.y = s.y + s.h - newHnw;
+          sel.w = newWnw;
+          sel.h = newHnw;
+          break;
+      }
+
+      rebuildSelectionBoxes();
+    }
+
+    function endResize() {
+      isResizing = false;
+      dragSelIdx = -1;
+      document.removeEventListener('mousemove', onResize);
+      document.removeEventListener('mouseup', endResize);
+    }
+
+    function updatePreview() {
+      if (!img) return;
+
+      const bgHex = document.getElementById('bgColor').value;
+      const tolerance = parseInt(document.getElementById('tolerance').value) || 40;
+
+      previewCtx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+      previewCtx.drawImage(srcCanvas, 0, 0);
+
+      const imageData = previewCtx.getImageData(0, 0, previewCanvas.width, previewCanvas.height);
+      const data = imageData.data;
+      const bgColors = [hexToRgb(bgHex), ...sampledColors.map(hexToRgb)];
+      const keepColors = excludedColors.map(hexToRgb);
+
+      for (let i = 0; i < data.length; i += 4) {
+        const r = data[i], g = data[i+1], b = data[i+2];
+
+        // Check if this color should be kept (excluded from removal)
+        let shouldKeep = false;
+        for (const keep of keepColors) {
+          if (Math.sqrt((r-keep.r)**2 + (g-keep.g)**2 + (b-keep.b)**2) <= tolerance) {
+            shouldKeep = true;
+            break;
+          }
+        }
+        if (shouldKeep) continue;
+
+        // Check if matches background
+        for (const bg of bgColors) {
+          if (Math.sqrt((r-bg.r)**2 + (g-bg.g)**2 + (b-bg.b)**2) <= tolerance) {
+            data[i+3] = 50;
+            break;
+          }
+        }
+      }
+      previewCtx.putImageData(imageData, 0, 0);
+
+      overlayCtx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
+
+      if (mode === 'grid') {
+        const rows = parseInt(document.getElementById('rows').value) || 1;
+        const cols = parseInt(document.getElementById('cols').value) || 1;
+        const topPad = parseInt(document.getElementById('topPad').value) || 0;
+        const sidePad = parseInt(document.getElementById('sidePad').value) || 0;
+        const bottomCrop = parseInt(document.getElementById('bottomCrop').value) || 0;
+
+        const availW = srcCanvas.width - sidePad * 2;
+        const availH = srcCanvas.height - topPad - sidePad;
+        const cellW = availW / cols;
+        const cellH = availH / rows;
+
+        overlayCtx.strokeStyle = '#f97316';
+        overlayCtx.lineWidth = 2;
+        overlayCtx.setLineDash([6, 3]);
+
+        for (let r = 0; r <= rows; r++) {
+          const y = topPad + r * cellH;
+          overlayCtx.beginPath();
+          overlayCtx.moveTo(sidePad, y);
+          overlayCtx.lineTo(srcCanvas.width - sidePad, y);
+          overlayCtx.stroke();
+        }
+        for (let c = 0; c <= cols; c++) {
+          const x = sidePad + c * cellW;
+          overlayCtx.beginPath();
+          overlayCtx.moveTo(x, topPad);
+          overlayCtx.lineTo(x, srcCanvas.height - sidePad);
+          overlayCtx.stroke();
+        }
+
+        if (bottomCrop > 0) {
+          overlayCtx.strokeStyle = '#ef4444';
+          for (let r = 0; r < rows; r++) {
+            const y = topPad + (r+1)*cellH - bottomCrop;
+            overlayCtx.beginPath();
+            overlayCtx.moveTo(sidePad, y);
+            overlayCtx.lineTo(srcCanvas.width - sidePad, y);
+            overlayCtx.stroke();
+          }
+        }
+
+        log(`Grid ${rows}x${cols}, Cell ${Math.round(cellW)}x${Math.round(cellH-bottomCrop)}px`);
+      }
+    }
+
+    function extract() {
+      if (!img) { log('No image!'); return; }
+
+      icons = [];
+      output.innerHTML = '';
+
+      if (mode === 'manual') {
+        extractManual();
+      } else {
+        extractGrid();
+      }
+
+      document.getElementById('iconCount').textContent = icons.length;
+    }
+
+    function extractManual() {
+      if (selections.length === 0) {
+        log('Draw selection boxes first!');
+        return;
+      }
+
+      const tolerance = parseInt(document.getElementById('tolerance').value) || 40;
+      const bgHex = document.getElementById('bgColor').value;
+      const outputSizeVal = document.getElementById('outputSize').value;
+
+      selections.forEach((sel, idx) => {
+        const canvas = extractRegion(sel.x, sel.y, sel.w, sel.h, bgHex, tolerance, outputSizeVal);
+        addIcon(canvas, sel.name, idx, 0);
+      });
+
+      log(`Extracted ${icons.length} icons`);
+    }
+
+    function extractGrid() {
+      const rows = parseInt(document.getElementById('rows').value) || 1;
+      const cols = parseInt(document.getElementById('cols').value) || 1;
+      const topPad = parseInt(document.getElementById('topPad').value) || 0;
+      const sidePad = parseInt(document.getElementById('sidePad').value) || 0;
+      const bottomCrop = parseInt(document.getElementById('bottomCrop').value) || 0;
+      const tolerance = parseInt(document.getElementById('tolerance').value) || 40;
+      const bgHex = document.getElementById('bgColor').value;
+
+      const availW = srcCanvas.width - sidePad * 2;
+      const availH = srcCanvas.height - topPad - sidePad;
+      const cellW = availW / cols;
+      const cellH = availH / rows;
+
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const x = sidePad + c * cellW;
+          const y = topPad + r * cellH;
+          const w = cellW;
+          const h = cellH - bottomCrop;
+
+          if (w < 5 || h < 5) continue;
+
+          const canvas = extractRegion(x, y, w, h, bgHex, tolerance, 'original');
+          addIcon(canvas, `r${r}_c${c}`, r, c);
+        }
+      }
+
+      log(`Extracted ${icons.length} icons`);
+    }
+
+    function extractRegion(x, y, w, h, bgHex, tolerance, outputSize) {
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = Math.floor(w);
+      tempCanvas.height = Math.floor(h);
+      const tctx = tempCanvas.getContext('2d');
+
+      tctx.drawImage(srcCanvas, Math.floor(x), Math.floor(y), Math.floor(w), Math.floor(h), 0, 0, Math.floor(w), Math.floor(h));
+
+      const imageData = tctx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+      const data = imageData.data;
+      const width = tempCanvas.width, height = tempCanvas.height;
+
+      const bgColors = [hexToRgb(bgHex), ...sampledColors.map(hexToRgb)];
+      const keepColors = excludedColors.map(hexToRgb);
+      const transparent = new Uint8Array(width * height);
+      const visited = new Uint8Array(width * height);
+      const queue = [];
+
+      for (let px = 0; px < width; px++) { queue.push(px); queue.push((height-1)*width + px); }
+      for (let py = 1; py < height-1; py++) { queue.push(py*width); queue.push(py*width + width-1); }
+
+      while (queue.length > 0) {
+        const pos = queue.pop();
+        if (pos < 0 || pos >= width*height || visited[pos]) continue;
+        visited[pos] = 1;
+
+        const idx = pos * 4;
+        const r = data[idx], g = data[idx+1], b = data[idx+2];
+
+        // Check if should be kept
+        let shouldKeep = false;
+        for (const keep of keepColors) {
+          if (Math.sqrt((r-keep.r)**2 + (g-keep.g)**2 + (b-keep.b)**2) <= tolerance) {
+            shouldKeep = true;
+            break;
+          }
+        }
+        if (shouldKeep) continue;
+
+        let isBg = false;
+        for (const bg of bgColors) {
+          if (Math.sqrt((r-bg.r)**2 + (g-bg.g)**2 + (b-bg.b)**2) <= tolerance) { isBg = true; break; }
+        }
+
+        if (isBg) {
+          transparent[pos] = 1;
+          const px = pos % width, py = Math.floor(pos / width);
+          if (px > 0) queue.push(pos - 1);
+          if (px < width-1) queue.push(pos + 1);
+          if (py > 0) queue.push(pos - width);
+          if (py < height-1) queue.push(pos + width);
+        }
+      }
+
+      for (let i = 0; i < width*height; i++) {
+        if (transparent[i]) data[i*4 + 3] = 0;
+      }
+
+      tctx.putImageData(imageData, 0, 0);
+
+      if (outputSize === 'original') {
+        return tempCanvas;
+      }
+
+      const targetSize = parseInt(outputSize);
+      const outCanvas = document.createElement('canvas');
+
+      const aspectW = tempCanvas.width / tempCanvas.height;
+      if (aspectW >= 1) {
+        outCanvas.width = targetSize;
+        outCanvas.height = Math.round(targetSize / aspectW);
+      } else {
+        outCanvas.height = targetSize;
+        outCanvas.width = Math.round(targetSize * aspectW);
+      }
+
+      const outCtx = outCanvas.getContext('2d');
+      outCtx.imageSmoothingEnabled = true;
+      outCtx.imageSmoothingQuality = 'high';
+      outCtx.drawImage(tempCanvas, 0, 0, outCanvas.width, outCanvas.height);
+
+      return outCanvas;
+    }
+
+    function addIcon(canvas, name, row, col) {
+      const dataUrl = canvas.toDataURL('image/png');
+      icons.push({ name, dataUrl, row, col });
+
+      const card = document.createElement('div');
+      card.className = 'icon-card';
+
+      const img = document.createElement('img');
+      img.src = dataUrl;
+
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.value = name;
+      input.onchange = (e) => {
+        const icon = icons.find(i => i.row === row && i.col === col);
+        if (icon) icon.name = e.target.value;
+      };
+
+      const btn = document.createElement('button');
+      btn.textContent = 'Save';
+      btn.onclick = async () => {
+        const icon = icons.find(i => i.row === row && i.col === col);
+        if (!icon) return;
+        try {
+          await saveIconToDir(icon);
+          log(`Saved ${icon.name}`);
+        } catch (e) {
+          log(`Error saving ${icon.name}`);
+        }
+      };
+
+      card.appendChild(img);
+      card.appendChild(input);
+      card.appendChild(btn);
+      output.appendChild(card);
+    }
+
+    async function pickSaveDir() {
+      try {
+        if (!window.showDirectoryPicker) {
+          log('Directory picker not supported in this browser');
+          return;
+        }
+        saveDirectoryHandle = await window.showDirectoryPicker({
+          mode: 'readwrite',
+          startIn: 'downloads'
+        });
+        const dirName = saveDirectoryHandle.name;
+        document.getElementById('saveDirBtn').textContent = dirName.length > 15 ? dirName.slice(0, 12) + '...' : dirName;
+        document.getElementById('saveDirBtn').title = `Save to: ${dirName}`;
+        log(`Save directory: ${dirName}`);
+      } catch (e) {
+        if (e.name !== 'AbortError') {
+          log('Could not select directory');
+          console.error(e);
+        }
+      }
+    }
+
+    async function saveIconToDir(icon) {
+      if (!saveDirectoryHandle) {
+        // Fallback to download
+        const prefix = document.getElementById('savePrefix').value || '';
+        const link = document.createElement('a');
+        link.download = `${prefix}${icon.name}.png`;
+        link.href = icon.dataUrl;
+        link.click();
+        return;
+      }
+
+      try {
+        const prefix = document.getElementById('savePrefix').value || '';
+        const fileName = `${prefix}${icon.name}.png`;
+
+        // Convert data URL to blob
+        const response = await fetch(icon.dataUrl);
+        const blob = await response.blob();
+
+        // Write to directory
+        const fileHandle = await saveDirectoryHandle.getFileHandle(fileName, { create: true });
+        const writable = await fileHandle.createWritable();
+        await writable.write(blob);
+        await writable.close();
+
+        return fileName;
+      } catch (e) {
+        console.error('Save error:', e);
+        throw e;
+      }
+    }
+
+    async function downloadAll() {
+      if (icons.length === 0) { log('Extract first!'); return; }
+
+      if (saveDirectoryHandle) {
+        // Save to selected directory
+        let saved = 0;
+        for (const icon of icons) {
+          try {
+            await saveIconToDir(icon);
+            saved++;
+          } catch (e) {
+            log(`Error saving ${icon.name}`);
+          }
+        }
+        log(`Saved ${saved} icons to folder`);
+      } else {
+        // Fallback to downloads
+        const prefix = document.getElementById('savePrefix').value || '';
+        for (const icon of icons) {
+          const link = document.createElement('a');
+          link.download = `${prefix}${icon.name}.png`;
+          link.href = icon.dataUrl;
+          link.click();
+          await new Promise(r => setTimeout(r, 100));
+        }
+        log(`Downloaded ${icons.length} icons`);
+      }
+    }
+
+    function hexToRgb(hex) {
+      const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return m ? {r:parseInt(m[1],16), g:parseInt(m[2],16), b:parseInt(m[3],16)} : {r:0,g:0,b:0};
+    }
+
+    window.addEventListener('resize', () => {
+      if (selections.length > 0) rebuildSelectionBoxes();
+    });
+
+    setMode('grid');
+    updateAspectRatio();
+  </script>
+</body>
+</html>

@@ -5,9 +5,9 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { useBattler } from "@/contexts/battler-context"
-import { LEAGUES, getLeagueTierBadge } from "@/lib/leagues"
+import { getLeagueTierBadge, type League } from "@/lib/leagues"
 import { BattlerPortrait } from "@/components/battler-portrait"
 import {
   Home,
@@ -28,7 +28,12 @@ import {
   Flame,
   Clock,
   BarChart3,
+  Wrench,
+  LogOut,
+  Megaphone,
+  UserPlus,
 } from "lucide-react"
+import { createBrowserClient } from "@supabase/ssr"
 import { motion, AnimatePresence } from "framer-motion"
 
 interface NavItem {
@@ -49,9 +54,40 @@ const MEDIA_SUBNAV = [
 
 export function SidebarNav() {
   const pathname = usePathname()
+  const router = useRouter()
   const { activeBattler } = useBattler()
   const [expandedSections, setExpandedSections] = useState<string[]>(["leagues"])
   const [isMobileOpen, setIsMobileOpen] = useState(false)
+  const [leagues, setLeagues] = useState<League[]>([])
+
+  const hasBattler = !!activeBattler
+
+  // Create Supabase client for sign out
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut()
+    router.push("/login")
+  }
+
+  // Fetch leagues on mount
+  useEffect(() => {
+    async function loadLeagues() {
+      try {
+        const response = await fetch('/api/leagues?active=true')
+        if (response.ok) {
+          const data = await response.json()
+          setLeagues(data.leagues || [])
+        }
+      } catch (error) {
+        console.error('Failed to load leagues for sidebar:', error)
+      }
+    }
+    loadLeagues()
+  }, [])
 
   useEffect(() => {
     if (pathname.startsWith("/media")) {
@@ -62,13 +98,27 @@ export function SidebarNav() {
     }
   }, [pathname])
 
-  // Get leagues the battler is affiliated with
-  const battlerLeagues = LEAGUES.filter(
-    (l) => l.tier === "underground" || l.tier === "regional" || l.slug === "small-room-circuit",
-  ).slice(0, 5)
+  // Get leagues the battler is affiliated with - show their primary league first
+  const battlerLeague = activeBattler?.league?.name
+  const battlerLeagues = leagues.filter((l) => {
+    // If battler has a primary league, show it first
+    if (battlerLeague && l.displayName === battlerLeague) return true
+    // Show all active leagues (we now only have 2)
+    return true
+  }).slice(0, 3)
 
-  const navItems: NavItem[] = [
+  // League tier categories for browsing before signing
+  const leagueTierCategories = [
+    { href: "/leagues?tier=underground", label: "Underground", badge: "underground" },
+    { href: "/leagues?tier=regional", label: "Regional", badge: "regional" },
+    { href: "/leagues?tier=national", label: "National", badge: "national" },
+    { href: "/leagues?tier=premier", label: "Premier", badge: "premier" },
+  ]
+
+  // Full nav items for when user has a battler
+  const fullNavItems: NavItem[] = [
     { href: "/dashboard", label: "Dashboard", icon: Home },
+    { href: "/roster", label: "Roster", icon: Users },
     { href: "/battle/next/prep", label: "Prep Calendar", icon: CalendarCheck },
     {
       href: "/leagues",
@@ -92,8 +142,26 @@ export function SidebarNav() {
       icon: Newspaper,
       children: MEDIA_SUBNAV,
     },
+    { href: "/crews", label: "Crews", icon: UserPlus },
+    { href: "/call-outs", label: "Call-Outs", icon: Megaphone },
+    { href: "/rivalries", label: "Rivalries", icon: Flame },
     { href: "/guide", label: "Guide", icon: BookOpen },
   ]
+
+  // Limited nav items for when user has no battler
+  const limitedNavItems: NavItem[] = [
+    { href: "/roster", label: "Roster", icon: Users },
+    {
+      href: "/leagues",
+      label: "Browse Leagues",
+      icon: Building2,
+      children: leagueTierCategories,
+    },
+    { href: "/guide", label: "Guide", icon: BookOpen },
+  ]
+
+  // Use limited nav when no battler, full nav otherwise
+  const navItems = hasBattler ? fullNavItems : limitedNavItems
 
   const toggleSection = (label: string) => {
     setExpandedSections((prev) => (prev.includes(label) ? prev.filter((s) => s !== label) : [...prev, label]))
@@ -152,7 +220,7 @@ export function SidebarNav() {
                     )}
                     {item.children?.map((child) => {
                       const tierClass = child.badge ? getLeagueTierBadge(child.badge as any) : ""
-                      const league = LEAGUES.find((l) => `/leagues/${l.slug}` === child.href)
+                      const league = leagues.find((l) => `/leagues/${l.slug}` === child.href)
                       const ChildIcon = child.icon
 
                       return (
@@ -234,19 +302,31 @@ export function SidebarNav() {
             className="object-contain w-full h-auto"
           />
         </Link>
-        {activeBattler && (
+        {activeBattler ? (
           <div className="flex items-center gap-3 p-2 bg-zinc-800/50 border border-zinc-700">
             <div className="w-10 h-10 border border-orange-500/50 overflow-hidden">
               <BattlerPortrait battler={activeBattler} size="sm" showFrame={false} />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-display font-bold text-orange-400 truncate">{activeBattler.stageName}</p>
-              <p className="text-xs text-zinc-500 truncate">{activeBattler.tier} Tier</p>
+              <div className="flex items-center gap-1.5">
+                <p className="text-sm font-display font-bold text-orange-400 truncate">{activeBattler.stageName}</p>
+                {activeBattler.crew && (
+                  <span className="text-xs font-display font-bold text-zinc-400 px-1.5 py-0.5 bg-zinc-700/50 border border-zinc-600 flex-shrink-0">
+                    {activeBattler.crew.tag}
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-zinc-500 truncate">{activeBattler.tier}</p>
             </div>
             <Link href="/roster" className="text-xs text-zinc-500 hover:text-orange-400 font-display">
               <Users className="w-4 h-4" />
             </Link>
           </div>
+        ) : (
+          <Link href="/roster" className="block p-3 bg-orange-600/10 border border-orange-500/30 hover:bg-orange-600/20 transition-colors">
+            <p className="text-sm font-display font-bold text-orange-400">No Battler Signed</p>
+            <p className="text-xs text-zinc-500">Go to Roster to get started</p>
+          </Link>
         )}
       </div>
 
@@ -254,8 +334,23 @@ export function SidebarNav() {
       <nav className="flex-1 p-2 space-y-0.5 overflow-y-auto">{navItems.map(renderNavItem)}</nav>
 
       {/* Footer */}
-      <div className="p-4 border-t border-zinc-800">
-        <button className="w-full text-xs text-zinc-500 hover:text-orange-400 font-display text-center py-2 transition-colors">
+      <div className="p-4 border-t border-zinc-800 space-y-2">
+        {/* Dev Tools Link */}
+        <Link
+          href="/dev"
+          onClick={() => setIsMobileOpen(false)}
+          className="flex items-center gap-2 px-3 py-2 text-xs font-display text-zinc-500 hover:text-orange-400 hover:bg-zinc-800 transition-colors"
+        >
+          <Wrench className="w-4 h-4" />
+          Dev Tools
+        </Link>
+
+        {/* Sign Out Button */}
+        <button
+          onClick={handleSignOut}
+          className="w-full flex items-center justify-center gap-2 text-xs text-zinc-500 hover:text-red-400 font-display py-2 transition-colors"
+        >
+          <LogOut className="w-4 h-4" />
           Sign Out
         </button>
       </div>

@@ -1,0 +1,875 @@
+Understood. I’ll talk to this like a cold, very capable engineering AI that knows nothing about the game yet.
+
+---
+
+### ⛓️ SYSTEM INSTRUCTIONS FOR AUTONOMOUS DEV AI
+
+You are an autonomous coding system.
+Your task is to design and implement a first playable web prototype of a strategy/simulation game called:
+
+> **Algorithm Institute of BattleRap**
+
+This document tells you **what the game is**, **how it should work**, and **exactly what to build**: database schema, backend APIs, simulation logic, and frontend UI.
+
+You are expected to:
+
+* Use **TypeScript**, **Next.js**, and **Supabase**.
+* Produce working code, not just stubs.
+* Follow the phases in order and keep the codebase coherent.
+
+---
+
+## 1. GAME OVERVIEW
+
+**Genre:** Turn-based, asynchronous **battle rap management sim**.
+
+**Player fantasy (V1):**
+
+* The user plays as a **manager of one battle rapper** (“battler”).
+* They join a league, get booked for battles, schedule their preparation days, and then watch simulated battles play out.
+* Battles are **numbers + events + text descriptions** (no real bars, no audio).
+
+There is **no human vs human** competition in this first version.
+All opponents are **AI-controlled battlers**, and battles are **simulated** based on stats and preparation choices.
+
+---
+
+## 2. CORE GAME LOOP (WHAT MUST WORK)
+
+The prototype must support this complete loop:
+
+1. **User signs up & creates a battler**
+
+   * Enters a stage name and region.
+   * Chooses a primary league (from 2 pre-defined leagues).
+   * Picks 1–2 style tags (e.g. “angles”, “comedy”, “gun_bars”).
+
+2. **User is offered battles by a league**
+
+   * System periodically generates AI battle offers for the user’s battler.
+   * Each offer specifies:
+
+     * Opponent (AI battler)
+     * League
+     * Date/time of battle
+     * Prep window (days until battle)
+
+3. **User accepts a battle & plans prep**
+
+   * They see a prep calendar leading up to the battle.
+   * For each day, they choose **one focus** out of:
+
+     * `research`, `writing`, `performance`, `life`, `rest`
+   * Those choices define the battler’s preparation profile.
+
+4. **Battle day: system simulates the battle**
+
+   * At the scheduled time:
+
+     * The system checks prep and no-show conditions.
+     * Runs a **segment-based simulation** for 3 rounds:
+
+       * Each round has multiple segments (like “moments” in the round).
+       * Some segments are peaks (high scores), some are average or weak.
+     * Outputs:
+
+       * Round scores
+       * Peak vs average performance
+       * Crowd reaction
+       * Momentum swings
+       * Choke events (if any)
+       * Winner
+
+5. **User watches the battle & reads a recap**
+
+   * A **Battle Viewer** screen shows:
+
+     * Round-by-round stats & momentum.
+     * Segment timeline with events (haymaker, choke, rebuttal flags).
+   * A **Media Feed** shows:
+
+     * System-generated blog-style recap articles (“battle recaps”).
+     * Articles are generated from metadata about the battle (not from real bars).
+
+6. **Progression**
+
+   * Battler has:
+
+     * Attributes (writing/performance/personal/resilience)
+     * Ranking (rating, wins, losses)
+   * Winning/losing battles updates this state.
+
+---
+
+## 3. TECH STACK & PROJECT SETUP
+
+Use:
+
+* **Framework:** Next.js (App Router), TypeScript
+* **Backend:** Next.js API routes talking to Supabase
+* **Database:** Supabase Postgres
+* **Auth:** Supabase Auth
+* **Client state:** TanStack Query (React Query)
+* **Styling:** Tailwind CSS
+
+Suggested structure:
+
+```txt
+/ai-battlerap
+  /app
+    /api
+      /battler
+      /battles
+      /news
+      /internal
+    /onboarding
+    /dashboard
+    /battle
+    /media
+  /components
+    battler/
+    battle/
+    prep/
+    ui/
+  /lib
+    db/
+    models/
+    game/
+    services/
+  /scripts
+  /tests
+```
+
+---
+
+## 4. DATA MODEL – DATABASE SCHEMA (SUPABASE / POSTGRES)
+
+Implement the following tables with SQL migrations. Use UUID primary keys and `gen_random_uuid()` where appropriate.
+
+### 4.1 profiles
+
+Use Supabase `auth.users` for auth. Create a profile wrapper:
+
+```sql
+create table profiles (
+  id uuid primary key references auth.users(id) on delete cascade,
+  display_name text not null,
+  created_at timestamptz not null default now()
+);
+```
+
+### 4.2 leagues
+
+There are **two leagues** in V1:
+
+* **Small Room Circuit** – 2-minute rounds, more writing-focused.
+* **Main Stage Arena** – 3-minute rounds, more performance-focused.
+
+Table:
+
+```sql
+create table leagues (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  short_code text not null unique,
+  round_length_minutes int not null check (round_length_minutes in (2,3)),
+  base_crowd_factor numeric not null,      -- e.g., 0.4, 0.7
+  writing_weight numeric not null,         -- 0..1
+  performance_weight numeric not null,     -- 0..1
+  booking_pace_days int not null,          -- average days between offers
+  description text,
+  created_at timestamptz not null default now()
+);
+```
+
+Seed:
+
+* `SMALL_ROOM` – round_length=2, writing_weight > performance_weight.
+* `MAIN_STAGE` – round_length=3, performance_weight > writing_weight.
+
+### 4.3 battlers
+
+```sql
+create table battlers (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references auth.users(id),
+  stage_name text not null,
+  region text,
+  primary_league_id uuid references leagues(id),
+  style_tags jsonb not null default '[]'::jsonb,  -- e.g. ["angles","gun_bars"]
+  tier text not null default 'low',               -- 'low','mid','top','god'
+  is_ai boolean not null default false,
+  created_at timestamptz not null default now()
+);
+```
+
+* Player-controlled battler = `is_ai = false`, `user_id = auth.user.id`.
+* AI battlers = `is_ai = true`, `user_id = null`.
+
+### 4.4 battler_attributes
+
+```sql
+create table battler_attributes (
+  battler_id uuid primary key references battlers(id) on delete cascade,
+  writing jsonb not null,       -- {lyricism: int, wordplay: int, creativity: int}
+  performance jsonb not null,   -- {stage_presence: int, crowd_control: int, delivery: int}
+  personal jsonb not null,      -- {financial_stability: int, reputation: int, family_bond: int}
+  resilience int not null check (resilience between 1 and 10),
+  public_knowledge int not null default 0,  -- 0..100
+  xp jsonb not null default '{}'::jsonb,
+  updated_at timestamptz not null default now()
+);
+```
+
+Values should be in range 1–10 for each attribute.
+
+### 4.5 rankings
+
+```sql
+create table rankings (
+  battler_id uuid primary key references battlers(id) on delete cascade,
+  rating int not null default 1200,
+  wins int not null default 0,
+  losses int not null default 0,
+  streak int not null default 0
+);
+```
+
+### 4.6 battles
+
+```sql
+create table battles (
+  id uuid primary key default gen_random_uuid(),
+  league_id uuid not null references leagues(id),
+  battler_player_id uuid not null references battlers(id),
+  battler_ai_id uuid not null references battlers(id),
+  scheduled_at timestamptz not null,
+  lock_prep_at timestamptz not null,
+  status text not null check (status in (
+    'offered','accepted','declined','locked','simulated','completed','forfeit'
+  )) default 'offered',
+  winner_battler_id uuid references battlers(id),
+  no_show_player boolean not null default false,
+  created_at timestamptz not null default now()
+);
+```
+
+### 4.7 prep_blocks
+
+Each day before the battle, the battler chooses a **single focus**:
+
+* `research`, `writing`, `performance`, `life`, or `rest`.
+
+```sql
+create table prep_blocks (
+  id uuid primary key default gen_random_uuid(),
+  battle_id uuid not null references battles(id) on delete cascade,
+  battler_id uuid not null references battlers(id) on delete cascade,
+  day_index int not null,  -- 1..N (e.g. 1 = first prep day)
+  focus text not null check (focus in ('research','writing','performance','life','rest')),
+  auto_generated boolean not null default false,
+  created_at timestamptz not null default now(),
+  unique (battle_id, battler_id, day_index)
+);
+```
+
+### 4.8 battle_rounds
+
+Summaries per round and battler.
+
+```sql
+create table battle_rounds (
+  id uuid primary key default gen_random_uuid(),
+  battle_id uuid not null references battles(id) on delete cascade,
+  round_index int not null check (round_index between 1 and 3),
+  battler_id uuid not null references battlers(id),
+  average_score numeric not null,
+  peak_score numeric not null,
+  consistency_score numeric not null,
+  momentum_delta numeric not null,
+  crowd_reaction int not null, -- 0..100
+  choked boolean not null default false,
+  summary_text text,
+  created_at timestamptz not null default now(),
+  unique (battle_id, round_index, battler_id)
+);
+```
+
+### 4.9 battle_segments
+
+Each round is divided into multiple segments (e.g., 4 or 6) representing “moments” in the round.
+
+```sql
+create table battle_segments (
+  id uuid primary key default gen_random_uuid(),
+  battle_id uuid not null references battles(id) on delete cascade,
+  round_index int not null,
+  segment_index int not null,
+  battler_id uuid not null references battlers(id),
+  segment_score numeric not null,
+  event_flags jsonb not null default '[]'::jsonb, -- ["haymaker","choke"]
+  created_at timestamptz not null default now()
+);
+```
+
+### 4.10 life_events
+
+Life events are used for future expansion. For this prototype, only basic support is required.
+
+```sql
+create table life_events (
+  id uuid primary key default gen_random_uuid(),
+  battler_id uuid not null references battlers(id) on delete cascade,
+  event_type text not null,
+  trigger_source text not null, -- 'time','attribute','random','battle_result'
+  choice_made text,
+  attribute_changes jsonb,
+  public boolean not null default false,
+  created_at timestamptz not null default now()
+);
+```
+
+### 4.11 news_articles
+
+For media/blog system.
+
+```sql
+create table news_articles (
+  id uuid primary key default gen_random_uuid(),
+  title text not null,
+  slug text not null unique,
+  type text not null check (type in ('battle_recap','scandal','career_update')),
+  primary_battler_id uuid references battlers(id),
+  secondary_battler_id uuid references battlers(id),
+  battle_id uuid references battles(id),
+  league_id uuid references leagues(id),
+  body_markdown text not null,
+  meta_json jsonb not null default '{}'::jsonb,
+  published_at timestamptz not null default now()
+);
+```
+
+---
+
+## 5. API DESIGN (NEXT.JS API ROUTES)
+
+All endpoints should:
+
+* Validate the authenticated user (for player-specific data).
+* Enforce that the user can only act on their own battler.
+
+### 5.1 Battler APIs
+
+#### POST `/api/battler/create`
+
+**Input (JSON body):**
+
+* `stage_name: string`
+* `region: string`
+* `primary_league_id: string`
+* `style_tags: string[]`
+
+**Behavior:**
+
+* Create a `battlers` row for the authenticated user.
+* Initialize `battler_attributes` with baseline values (1–10 range).
+* Initialize `rankings` row with rating=1200, wins=0, losses=0.
+* Return created battler + attributes.
+
+#### GET `/api/battler/me`
+
+**Behavior:**
+
+* Identify authenticated user.
+* Return:
+
+  * The user’s battler (assume 1).
+  * Its attributes.
+  * Its rankings row.
+  * Its **next upcoming battle** if any (status accepted, scheduled in future).
+
+---
+
+### 5.2 Battle Offers & Prep APIs
+
+#### GET `/api/battles/offers`
+
+**Behavior:**
+
+* Get current user’s battler.
+* Return battles where:
+
+  * `battler_player_id` = that battler
+  * `status = 'offered'`.
+
+#### POST `/api/battles/:id/accept`
+
+**Behavior:**
+
+* Verify battle belongs to user’s battler and `status = 'offered'`.
+* Set `status = 'accepted'`.
+* Return updated battle.
+
+#### POST `/api/battles/:id/decline`
+
+**Behavior:**
+
+* Verify battle belongs to user’s battler and `status = 'offered'`.
+* Set `status = 'declined'`.
+* Apply optional small reputation penalty in `battler_attributes.personal.reputation`.
+
+#### GET `/api/battles/:id/prep`
+
+**Behavior:**
+
+* Verify user owns `battler_player_id`.
+* Return:
+
+  * `battle` basic info (league, opponent, scheduled_at, lock_prep_at).
+  * Existing `prep_blocks` for (battle, battler_player_id).
+
+#### POST `/api/battles/:id/prep`
+
+**Input:**
+
+* `day_index: number`
+* `focus: "research" | "writing" | "performance" | "life" | "rest"`
+
+**Behavior:**
+
+* Verify:
+
+  * User owns the player battler in this battle.
+  * Current time `< lock_prep_at`.
+* Upsert a `prep_blocks` row for `(battle_id, battler_id, day_index)`.
+
+---
+
+### 5.3 Battle Viewer APIs
+
+#### GET `/api/battles/:id`
+
+**Behavior:**
+
+* Verify user is participant (or allow read-only for now).
+* Return:
+
+  * Battle details.
+  * `battle_rounds` for both battlers.
+  * `battle_segments` for both battlers.
+  * Optional aggregated prep summary.
+
+---
+
+### 5.4 News APIs
+
+#### GET `/api/news`
+
+**Query params (optional):**
+
+* `league_id`
+* `battler_id`
+* `type`
+
+**Behavior:**
+
+* Return latest `news_articles` filtered if params provided.
+
+#### GET `/api/news/[slug]`
+
+**Behavior:**
+
+* Return article by `slug`.
+
+---
+
+### 5.5 Internal Cron APIs
+
+Protect these with a shared secret token in headers.
+
+#### POST `/api/internal/generate-battle-offers`
+
+**Purpose:**
+
+Daily job to generate battle offers for player battlers.
+
+**Behavior:**
+
+* For each player battler:
+
+  * Check how long since their last battle.
+  * Using league’s `booking_pace_days`, decide whether to create a new offer.
+  * If yes:
+
+    * Pick league = `primary_league_id`.
+    * Pick AI opponent with similar rating.
+    * Set `scheduled_at` ~ 7–14 days in the future.
+    * Set `lock_prep_at = scheduled_at - 1 day`.
+    * Insert `battles` row with `status = 'offered'`.
+
+#### POST `/api/internal/run-due-battles`
+
+**Purpose:**
+
+Runs periodically (e.g., every minute) to simulate battles whose time has come.
+
+**Behavior:**
+
+* Select all battles where:
+
+  * `scheduled_at <= now()`
+  * `status in ('accepted','locked')`
+* For each such battle:
+
+  * Determine **no-show**:
+
+    * If user accepted but has **no prep_blocks** by `lock_prep_at`, mark `no_show_player = true` and auto-generate minimal `prep_blocks` with focus `rest` or `life` for all days.
+  * Call `simulateBattle(battleId)` (see below).
+  * After simulation, set `status = 'completed'`.
+
+---
+
+## 6. SIMULATION ENGINE
+
+Create `/lib/game/simulation.ts` with:
+
+```ts
+export async function simulateBattle(battleId: string, options?: { seed?: number }): Promise<void>;
+```
+
+### 6.1 Inputs
+
+For a given `battleId`, you must fetch:
+
+* `battle` row (league_id, battler ids, scheduled_at, no_show_player).
+* League config.
+* Attributes for both battlers.
+* Prep blocks for each battler.
+* Rankings for each battler.
+
+### 6.2 Prep Profile
+
+For each battler, aggregate:
+
+```ts
+type PrepProfile = {
+  researchDays: number;
+  writingDays: number;
+  performanceDays: number;
+  lifeDays: number;
+  restDays: number;
+};
+```
+
+Count days by `focus`.
+
+### 6.3 Modify attributes according to prep
+
+Define function:
+
+```ts
+function applyPrepModifiers(
+  attributes: BattlerAttributes,
+  prep: PrepProfile
+): ModifiedAttributes;
+```
+
+Example behavior (tunable constants):
+
+* Each **writing** day slightly increases writing stats (lyricism, wordplay, creativity).
+* Each **research** day improves “angle effectiveness” and “rebuttal chance” (internal modifiers).
+* Each **performance** day boosts stage_presence, crowd_control, delivery.
+* Each **rest** day boosts resilience slightly.
+* Each **life** day helps personal attributes (money, reputation) but doesn’t help battle performance as much.
+
+Clamp final attributes within a reasonable range (e.g., 1–12).
+
+### 6.4 Segment-based round simulation
+
+For each round 1..3:
+
+* Determine `segmentsPerRound`:
+
+  * If `round_length_minutes = 2` → 4 segments.
+  * If `round_length_minutes = 3` → 6 segments.
+
+For each battler:
+
+* Compute a **base power**:
+
+```ts
+writingPower = weighted average of writing stats
+performancePower = weighted average of performance stats
+
+baseScore = writingPower * league.writing_weight + performancePower * league.performance_weight
+```
+
+Take resilience and no_show into account:
+
+* No-show → extra penalty to baseScore and higher choke probability.
+
+For each segment:
+
+* Draw a random execution value:
+
+```ts
+executionRoll = baseScore + noise(resilience, restDays);
+```
+
+Introduce peaks:
+
+* For certain segments, if battler’s `style_tags` + `prep` support it (e.g., `angles` + high research), multiply that segment by a peak factor (~1.15–1.25).
+
+Choke check:
+
+* Based on low resilience, no-show flag, and weak prep (few writing/performance days), sometimes drastically reduce executionRoll (~0.3–0.5x) and mark `choked`.
+
+Record:
+
+* One `battle_segments` row per battler per segment:
+
+  * `segment_score = executionRoll`
+  * `event_flags`: e.g. `["haymaker"]`, `["choke"]`, `[]`.
+
+### 6.5 Aggregating round stats
+
+For each battler and round:
+
+* `average_score = mean(segment_scores)`
+
+* `peak_score = max(segment_scores)`
+
+* `consistency_score = inverse of stddev(segment_scores)` (you can store direct stddev and invert in UI).
+
+* `momentum_delta = average_score - opponent_average_score` (store signed).
+
+* `crowd_reaction`:
+
+  * Map average_score to 0..100.
+  * Modulate by:
+
+    * league.base_crowd_factor
+    * performancePower
+
+* `choked = true` if any segment had choke event.
+
+Create and insert `battle_rounds` rows.
+
+### 6.6 Determine winner & update rankings
+
+* For each round:
+
+  * Compare `average_score` of both battlers.
+  * Round winner = higher average_score (with defined tiebreaker).
+* Battle winner = battler with most rounds won.
+* Update:
+
+  * `battles.winner_battler_id`.
+  * Both battlers’ `rankings` rows using a simple ELO-like adjustment.
+
+---
+
+## 7. MEDIA / BLOG GENERATION
+
+Create `/lib/services/newsGenerator.ts` with:
+
+```ts
+export async function createBattleRecapArticle(battleId: string): Promise<void>;
+```
+
+Behavior:
+
+1. Load:
+
+* Battle, battlers, league.
+* `battle_rounds` and `battle_segments`.
+
+2. Build a JSON summary with:
+
+* Winner, loser, score (2-1, 3-0).
+* Key stats: peak_score, average_score, crowd_reaction, chokes, upsets.
+* A basic “story type”: `dominant_win`, `upset`, `edge_win`, `choke_story`, etc.
+
+3. Call an LLM or stub to produce a **300–500 word recap** in markdown, from that JSON, **without** generating fake bars.
+
+4. Insert into `news_articles`:
+
+* `type = 'battle_recap'`
+* `primary_battler_id = winner`
+* `secondary_battler_id = loser`
+* `battle_id`
+* `league_id`
+
+Call `createBattleRecapArticle(battleId)` from inside `simulateBattle` after results are saved.
+
+---
+
+## 8. FRONTEND – REQUIRED PAGES & FLOWS
+
+Use Next.js App Router (`/app` directory).
+
+### 8.1 `/onboarding`
+
+* If user does not have a battler:
+
+  * Step 1: Prompt for `display_name` (profile), `stage_name`, `region`.
+  * Step 2: Choose primary league (Small Room / Main Stage).
+  * Step 3: Choose 1–2 style tags out of predefined list.
+
+On completion:
+
+* Call `POST /api/battler/create`.
+
+### 8.2 `/dashboard`
+
+* Call `GET /api/battler/me`.
+* Show:
+
+  * Battler Card:
+
+    * Name, league, rating, record.
+  * Next battle:
+
+    * Opponent name, league, date/time, countdown.
+    * Buttons: “Go to Prep”, “View Battle” (if completed).
+  * “Open Battle Offers” button → `/battle/offers`.
+
+### 8.3 `/battle/offers`
+
+* Call `GET /api/battles/offers`.
+* For each offer:
+
+  * Show opponent, league, scheduled_at.
+  * Buttons:
+
+    * Accept → `POST /api/battles/:id/accept`
+    * Decline → `POST /api/battles/:id/decline`
+
+### 8.4 `/battle/[id]/prep`
+
+* Call `GET /api/battles/:id/prep`.
+* Display:
+
+  * Battle info.
+  * Days from now until `lock_prep_at`.
+* For each day (represented as `day_index`):
+
+  * Show a tile:
+
+    * Current focus (if any).
+    * Dropdown or buttons: `research`, `writing`, `performance`, `life`, `rest`.
+  * On change:
+
+    * Call `POST /api/battles/:id/prep`.
+
+### 8.5 `/battle/[id]` – Battle Viewer
+
+* Call `GET /api/battles/:id`.
+* UI should show:
+
+  * Overall header:
+
+    * Player battler vs AI battler.
+    * League.
+    * Final result (2-1, 3-0).
+  * Rounds:
+
+    * Tabs or sections for R1, R2, R3.
+    * For each round:
+
+      * Side-by-side stats:
+
+        * average_score, peak_score, consistency_score, crowd_reaction, choked.
+      * Momentum bar:
+
+        * Visual showing which side controlled the round.
+      * Segment timeline:
+
+        * For each segment:
+
+          * A dot/marker colored/scaled by segment_score.
+          * Icons or labels for event_flags like “haymaker”, “choke”.
+
+No need for animation; static charts are enough.
+
+### 8.6 `/media`
+
+* Call `GET /api/news`.
+* List recent articles:
+
+  * Title
+  * Type (Recap, Scandal, etc.)
+  * Primary battler name
+  * Published date.
+* Clicking an article → `/media/[slug]`.
+
+### 8.7 `/media/[slug]`
+
+* Fetch article by slug.
+* Render `title` and `body_markdown` as HTML.
+
+---
+
+## 9. SEEDING DATA
+
+Create a seeding script or SQL:
+
+1. Insert two leagues.
+2. Insert ~10 AI battlers with:
+
+* Varied styles (angles/comedy/storytelling/gun_bars).
+* Mixed attributes (some low-tier, some mid-tier, some top-tier).
+* Rankings initialized.
+
+This enables the matchmaking / battle offers system to function immediately for test users.
+
+---
+
+## 10. IMPLEMENTATION ORDER (MANDATORY PHASES)
+
+Follow these phases in order:
+
+1. **Phase 1 – DB + Seeds**
+
+   * Implement all tables + constraints.
+   * Seed leagues and AI battlers.
+
+2. **Phase 2 – Auth & Onboarding**
+
+   * Integrate Supabase auth with Next.js.
+   * Build `/onboarding`.
+   * Implement `/api/battler/create`, `/api/battler/me`, `/dashboard`.
+
+3. **Phase 3 – Offers System**
+
+   * Implement cron endpoint `/api/internal/generate-battle-offers`.
+   * Implement `/api/battles/offers`, `/api/battles/:id/accept`, `/api/battles/:id/decline`.
+   * Build `/battle/offers` UI.
+
+4. **Phase 4 – Prep**
+
+   * Implement `prep_blocks` table & `/api/battles/:id/prep` GET/POST.
+   * Build prep calendar UI at `/battle/[id]/prep`.
+
+5. **Phase 5 – Simulation**
+
+   * Implement `simulateBattle(battleId)` with segment-based logic.
+   * Implement cron `/api/internal/run-due-battles`.
+   * Build `/battle/[id]` viewer powered by battle_rounds + battle_segments.
+
+6. **Phase 6 – News / Blogs**
+
+   * Implement `news_articles` table.
+   * Implement `createBattleRecapArticle(battleId)`.
+   * Build `/media` and `/media/[slug]` UIs.
+
+7. **Phase 7 – Polish & Config**
+
+   * Centralize tunable constants (prep multipliers, choke probabilities, league weights).
+   * Add loading + error states.
+   * Do minimal styling with Tailwind for readability.
+
+---
+
+These are your instructions.
+Your job is to turn this into a working, playable prototype without adding extra systems or drift from the spec.

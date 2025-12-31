@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { ArrowLeft, Save, Upload, Trash2, Search, Sliders } from "lucide-react"
@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
-import { LEAGUES, type League } from "@/lib/leagues"
+import { getLeagues, type League } from "@/lib/leagues"
 import { LeagueLogo } from "@/components/leagues/league-logo"
 
 export default function DevLeaguesPage() {
@@ -19,8 +19,15 @@ export default function DevLeaguesPage() {
   const [logoId, setLogoId] = useState("")
   const [logoCrop, setLogoCrop] = useState({ scale: 1, offsetX: 0, offsetY: 0 })
   const [logs, setLogs] = useState<string[]>([])
+  const [leagues, setLeagues] = useState<League[]>([])
 
-  const filteredLeagues = LEAGUES.filter(
+  // Load leagues on mount
+  useEffect(() => {
+    const loadedLeagues = getLeagues()
+    setLeagues(loadedLeagues)
+  }, [])
+
+  const filteredLeagues = leagues.filter(
     (l) =>
       l.displayName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       l.tier.toLowerCase().includes(searchQuery.toLowerCase()),

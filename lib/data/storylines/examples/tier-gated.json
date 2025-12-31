@@ -1,0 +1,413 @@
+{
+  "code": "LABEL_INTEREST",
+  "name": "Industry Eyes",
+  "description": "A major label has been watching your battles. They see potential. The question is: are you ready for what comes next?",
+  "category": "career",
+  "min_chapters": 4,
+  "max_chapters": 5,
+
+  "trigger": {
+    "type": "compound",
+    "probability": 0.15,
+    "conditions": {
+      "all": [
+        { "min_tier": "established" },
+        { "lacks_badge": ["Industry Plant", "Independent Forever"] },
+        { "min_attribute": { "reputation": 6 } },
+        { "no_active_storyline": ["LABEL_INTEREST"] }
+      ]
+    }
+  },
+
+  "chapters": [
+    {
+      "id": "label_ch1",
+      "chapter_number": 1,
+      "title": "The DM",
+      "description": "You get a message from someone claiming to work at a major label. They want to meet. Could be real, could be cap.",
+      "delay": { "type": "immediate", "value": 0 },
+      "urgency": "timed",
+      "deadline_hours": 48,
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "take_meeting",
+          "label": "Take the Meeting",
+          "description": "Can't hurt to hear what they have to say.",
+          "effects": [],
+          "leads_to": { "type": "chapter", "id": "label_ch2_meeting" }
+        },
+        {
+          "id": "verify_first",
+          "label": "Do Your Research",
+          "description": "Check them out before committing to anything.",
+          "effects": [
+            { "type": "temporary", "prep_days_lost": 1 }
+          ],
+          "leads_to": { "type": "chapter", "id": "label_ch2_verified" }
+        },
+        {
+          "id": "ignore",
+          "label": "Ignore It",
+          "description": "Probably a scam. Stay focused on battling.",
+          "effects": [],
+          "leads_to": { "type": "ending", "id": "label_end_missed" }
+        }
+      ]
+    },
+    {
+      "id": "label_ch2_meeting",
+      "chapter_number": 2,
+      "title": "The Pitch",
+      "description": "You meet with the A&R rep. They're legit - works for a major. They see you as a 'brand opportunity.' The offer: $50K advance for a development deal. But there are strings attached.",
+      "delay": { "type": "days", "value": 2 },
+      "urgency": "timed",
+      "deadline_hours": 72,
+      "prep_days_cost": 1,
+      "choices": [
+        {
+          "id": "want_more",
+          "label": "Ask for Better Terms",
+          "description": "You know your worth. Counter-offer.",
+          "effects": [
+            { "type": "permanent", "reputation": 0.3 }
+          ],
+          "leads_to": { "type": "chapter", "id": "label_ch3_negotiate" }
+        },
+        {
+          "id": "take_deal",
+          "label": "Take the Deal",
+          "description": "$50K is $50K. Secure the bag.",
+          "effects": [
+            { "type": "permanent", "financial_stability": 2.0 }
+          ],
+          "leads_to": { "type": "chapter", "id": "label_ch3_signed" }
+        },
+        {
+          "id": "think_it_over",
+          "label": "Need Time to Think",
+          "description": "This is a big decision. Don't rush it.",
+          "effects": [],
+          "leads_to": { "type": "chapter", "id": "label_ch3_time" }
+        }
+      ]
+    },
+    {
+      "id": "label_ch2_verified",
+      "chapter_number": 2,
+      "title": "The Real Deal",
+      "description": "Your research checks out - they're legitimate and have signed real artists. They reach out again, impressed that you did your homework.",
+      "delay": { "type": "days", "value": 3 },
+      "urgency": "timed",
+      "deadline_hours": 48,
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "meet_confident",
+          "label": "Take the Meeting (Confident)",
+          "description": "Now you know what you're dealing with.",
+          "effects": [
+            { "type": "permanent", "reputation": 0.2 }
+          ],
+          "leads_to": { "type": "chapter", "id": "label_ch3_negotiate" }
+        },
+        {
+          "id": "stay_independent",
+          "label": "Stay Independent",
+          "description": "Labels ain't for you. Build your own thing.",
+          "effects": [
+            { "type": "permanent", "resilience": 0.3 }
+          ],
+          "leads_to": { "type": "ending", "id": "label_end_independent" }
+        }
+      ]
+    },
+    {
+      "id": "label_ch3_negotiate",
+      "chapter_number": 3,
+      "title": "The Counter",
+      "description": "You came in strong. Asked for more money, better terms, creative control. They're thinking it over. You hear through the grapevine they're impressed but also considering other artists.",
+      "delay": { "type": "days", "value": 5 },
+      "urgency": "timed",
+      "deadline_hours": 96,
+      "prep_days_cost": 2,
+      "choices": [
+        {
+          "id": "hold_firm",
+          "label": "Hold Your Position",
+          "description": "Don't back down. Know your worth.",
+          "effects": [
+            { "type": "permanent", "resilience": 0.5 },
+            { "type": "temporary", "stress": 20, "duration_days": 14 }
+          ],
+          "leads_to": { "type": "chapter", "id": "label_ch4_decision" }
+        },
+        {
+          "id": "compromise",
+          "label": "Find Middle Ground",
+          "description": "Some wins are better than no deal.",
+          "effects": [
+            { "type": "permanent", "financial_stability": 1.0 }
+          ],
+          "leads_to": { "type": "ending", "id": "label_end_deal" }
+        },
+        {
+          "id": "walk_away",
+          "label": "Walk Away",
+          "description": "If they can't see your value, that's their loss.",
+          "effects": [
+            { "type": "permanent", "reputation": 0.5 }
+          ],
+          "leads_to": { "type": "ending", "id": "label_end_passed" }
+        }
+      ]
+    },
+    {
+      "id": "label_ch3_signed",
+      "chapter_number": 3,
+      "title": "The Strings",
+      "description": "You signed. The check cleared. But now they want you in the studio constantly. They want to 'develop your sound.' Your battle schedule is becoming a problem for them.",
+      "delay": { "type": "battles", "value": 2 },
+      "urgency": "timed",
+      "deadline_hours": 48,
+      "prep_days_cost": 3,
+      "choices": [
+        {
+          "id": "comply",
+          "label": "Focus on Music",
+          "description": "This is the opportunity. Make the most of it.",
+          "effects": [
+            { "type": "permanent", "reputation": -0.5 },
+            { "type": "permanent", "financial_stability": 1.0 },
+            { "type": "temporary", "prep_days_lost": 3 }
+          ],
+          "leads_to": { "type": "ending", "id": "label_end_artist" }
+        },
+        {
+          "id": "balance",
+          "label": "Try to Balance Both",
+          "description": "You can do both. Right?",
+          "effects": [
+            { "type": "temporary", "stress": 30, "duration_days": 30 },
+            { "type": "temporary", "prep_days_lost": 2 }
+          ],
+          "leads_to": { "type": "ending", "id": "label_end_burnout" }
+        },
+        {
+          "id": "prioritize_battles",
+          "label": "Battle Rap Comes First",
+          "description": "Music is cool but this is who you are.",
+          "effects": [
+            { "type": "permanent", "reputation": 0.3 }
+          ],
+          "leads_to": { "type": "chapter", "id": "label_ch4_conflict" }
+        }
+      ]
+    },
+    {
+      "id": "label_ch3_time",
+      "chapter_number": 3,
+      "title": "The Pressure",
+      "description": "They're getting impatient. Other artists are being considered. The window is closing.",
+      "delay": { "type": "days", "value": 7 },
+      "urgency": "timed",
+      "deadline_hours": 24,
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "decide_yes",
+          "label": "Say Yes",
+          "description": "Don't let this opportunity pass.",
+          "effects": [
+            { "type": "permanent", "financial_stability": 1.5 }
+          ],
+          "leads_to": { "type": "ending", "id": "label_end_deal" }
+        },
+        {
+          "id": "decide_no",
+          "label": "Pass",
+          "description": "If it's meant to be, another opportunity will come.",
+          "effects": [
+            { "type": "permanent", "resilience": 0.3 }
+          ],
+          "leads_to": { "type": "ending", "id": "label_end_passed" }
+        }
+      ]
+    },
+    {
+      "id": "label_ch4_decision",
+      "chapter_number": 4,
+      "title": "The Final Offer",
+      "description": "They came back. Better terms than before. Not everything you asked for, but close. This is their final offer.",
+      "delay": { "type": "days", "value": 3 },
+      "urgency": "timed",
+      "deadline_hours": 48,
+      "prep_days_cost": 1,
+      "choices": [
+        {
+          "id": "accept_improved",
+          "label": "Accept the Offer",
+          "description": "You got what you fought for. Time to win.",
+          "effects": [
+            { "type": "permanent", "financial_stability": 2.5 },
+            { "type": "permanent", "reputation": 1.0 }
+          ],
+          "leads_to": { "type": "ending", "id": "label_end_winner" }
+        },
+        {
+          "id": "final_pass",
+          "label": "Still Not Enough",
+          "description": "You know what you're worth. This ain't it.",
+          "effects": [
+            { "type": "permanent", "resilience": 1.0 },
+            { "type": "permanent", "reputation": 0.5 }
+          ],
+          "leads_to": { "type": "ending", "id": "label_end_independent" }
+        }
+      ]
+    },
+    {
+      "id": "label_ch4_conflict",
+      "chapter_number": 4,
+      "title": "The Ultimatum",
+      "description": "The label isn't happy. They gave you money, you're not delivering. They want you in the studio or they're dropping you - and they want that advance back.",
+      "delay": { "type": "battles", "value": 1 },
+      "urgency": "timed",
+      "deadline_hours": 72,
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "pay_back",
+          "label": "Pay Them Back",
+          "description": "Cut ties cleanly. Keep your integrity.",
+          "effects": [
+            { "type": "permanent", "financial_stability": -2.5 },
+            { "type": "permanent", "reputation": 0.5 }
+          ],
+          "leads_to": { "type": "ending", "id": "label_end_free" }
+        },
+        {
+          "id": "fulfill",
+          "label": "Fulfill the Contract",
+          "description": "You signed a deal. Honor it.",
+          "effects": [
+            { "type": "permanent", "reputation": -0.3 },
+            { "type": "temporary", "prep_days_lost": 4 }
+          ],
+          "leads_to": { "type": "ending", "id": "label_end_obligated" }
+        },
+        {
+          "id": "lawyer_up",
+          "label": "Get a Lawyer",
+          "description": "Let's see what the contract really says.",
+          "effects": [
+            { "type": "permanent", "financial_stability": -1.0 },
+            { "type": "temporary", "stress": 25, "duration_days": 30 }
+          ],
+          "leads_to": { "type": "ending", "id": "label_end_legal" }
+        }
+      ]
+    }
+  ],
+
+  "endings": [
+    {
+      "id": "label_end_winner",
+      "type": "positive",
+      "title": "Negotiation Win",
+      "description": "You held your ground and won. Better money, better terms, and respect from the industry for knowing your worth. This is how it's done.",
+      "effects": [
+        { "type": "permanent", "reputation": 1.5 },
+        { "type": "temporary", "stress": -20, "duration_days": 30 }
+      ],
+      "badge": "Industry Savvy"
+    },
+    {
+      "id": "label_end_deal",
+      "type": "neutral",
+      "title": "The Deal",
+      "description": "You're signed. It's not everything you wanted, but it's a major label deal. New opportunities await - but so do new pressures.",
+      "effects": [
+        { "type": "permanent", "financial_stability": 1.5 }
+      ]
+    },
+    {
+      "id": "label_end_artist",
+      "type": "neutral",
+      "title": "The Artist",
+      "description": "You've transitioned from battler to recording artist. The battle rap scene watches from a distance as you chase a different dream.",
+      "effects": [
+        { "type": "permanent", "reputation": -1.0 },
+        { "type": "permanent", "financial_stability": 2.0 }
+      ],
+      "badge": "Gone Hollywood"
+    },
+    {
+      "id": "label_end_burnout",
+      "type": "negative",
+      "title": "Burned at Both Ends",
+      "description": "You tried to do both and did neither well. The label is frustrated, your battle performance has suffered, and you're exhausted. Something has to give.",
+      "effects": [
+        { "type": "permanent", "resilience": -0.5 },
+        { "type": "temporary", "stress": 40, "duration_days": 45 }
+      ],
+      "badge": "Overextended"
+    },
+    {
+      "id": "label_end_independent",
+      "type": "positive",
+      "title": "Independent Forever",
+      "description": "You chose independence. Your own path, your own rules. The money wasn't right, and you refused to compromise who you are.",
+      "effects": [
+        { "type": "permanent", "resilience": 1.0 },
+        { "type": "permanent", "reputation": 0.5 }
+      ],
+      "badge": "Independent Forever"
+    },
+    {
+      "id": "label_end_passed",
+      "type": "neutral",
+      "title": "Opportunity Passed",
+      "description": "You walked away. Maybe you'll regret it, maybe you won't. Either way, you're still doing what you love in battle rap.",
+      "effects": [
+        { "type": "permanent", "resilience": 0.3 }
+      ]
+    },
+    {
+      "id": "label_end_free",
+      "type": "positive",
+      "title": "Bought Your Freedom",
+      "description": "It cost you, but you're free. No label strings, no obligations. You paid the price for your independence - literally.",
+      "effects": [
+        { "type": "permanent", "resilience": 0.8 },
+        { "type": "permanent", "reputation": 0.3 }
+      ]
+    },
+    {
+      "id": "label_end_obligated",
+      "type": "negative",
+      "title": "Contract Bound",
+      "description": "You're fulfilling your end of the deal, but your heart isn't in it. The battle scene sees less of you while you work off your commitment.",
+      "effects": [
+        { "type": "permanent", "reputation": -0.5 },
+        { "type": "temporary", "prep_days_lost": 2 }
+      ]
+    },
+    {
+      "id": "label_end_legal",
+      "type": "neutral",
+      "title": "Legal Battle",
+      "description": "Lawyers are involved. It's messy, expensive, and stressful - but your lawyer found some holes in their contract. The outcome is uncertain.",
+      "effects": [
+        { "type": "temporary", "stress": 30, "duration_days": 60 }
+      ]
+    },
+    {
+      "id": "label_end_missed",
+      "type": "neutral",
+      "title": "What If?",
+      "description": "You ignored the opportunity. Probably for the best - most of these things are scams anyway. But sometimes you wonder...",
+      "effects": []
+    }
+  ]
+}

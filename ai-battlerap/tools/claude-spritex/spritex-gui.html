@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SpriteX - Sprite Extraction Tool</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0a0a0a;
+      color: #e0e0e0;
+      min-height: 100vh;
+    }
+    .header {
+      background: #1a1a1a;
+      padding: 20px 30px;
+      border-bottom: 2px solid #f97316;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    h1 {
+      font-size: 28px;
+      color: #f97316;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      font-weight: 900;
+    }
+    .subtitle { color: #666; font-size: 12px; text-transform: uppercase; letter-spacing: 2px; }
+
+    .container { max-width: 1400px; margin: 0 auto; padding: 30px; }
+
+    /* Mode Selection */
+    .mode-selector {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    .mode-btn {
+      flex: 1;
+      padding: 25px;
+      background: #1a1a1a;
+      border: 2px solid #333;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .mode-btn:hover { border-color: #f97316; }
+    .mode-btn.active { border-color: #f97316; background: #1f1510; }
+    .mode-btn h3 { color: #f97316; font-size: 18px; margin-bottom: 8px; text-transform: uppercase; }
+    .mode-btn p { color: #888; font-size: 13px; line-height: 1.5; }
+
+    /* Drop Zone */
+    .drop-zone {
+      border: 3px dashed #333;
+      padding: 60px;
+      text-align: center;
+      margin-bottom: 30px;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    .drop-zone:hover, .drop-zone.dragover { border-color: #f97316; background: #1a1510; }
+    .drop-zone h3 { color: #f97316; font-size: 20px; margin-bottom: 10px; }
+    .drop-zone p { color: #666; }
+    .drop-zone input { display: none; }
+
+    /* Preview Area */
+    .preview-area {
+      display: none;
+      background: #1a1a1a;
+      border: 1px solid #333;
+      margin-bottom: 20px;
+    }
+    .preview-area.visible { display: block; }
+    .preview-header {
+      padding: 15px 20px;
+      background: #222;
+      border-bottom: 1px solid #333;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .preview-header h3 { color: #f97316; font-size: 14px; text-transform: uppercase; }
+    .preview-info { color: #888; font-size: 12px; }
+    .preview-canvas-container {
+      max-height: 500px;
+      overflow: auto;
+      position: relative;
+      background: #111;
+    }
+    #previewCanvas { display: block; cursor: crosshair; }
+
+    /* Crop List */
+    .crop-list {
+      padding: 15px 20px;
+      background: #1a1a1a;
+      border-top: 1px solid #333;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    .crop-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 12px;
+      background: #222;
+      margin-bottom: 5px;
+      border-left: 3px solid #22c55e;
+    }
+    .crop-item span { font-family: monospace; font-size: 12px; }
+    .crop-item button {
+      background: #ef4444;
+      border: none;
+      color: white;
+      padding: 4px 10px;
+      cursor: pointer;
+      font-size: 11px;
+    }
+
+    /* Settings */
+    .settings {
+      background: #1a1a1a;
+      padding: 20px;
+      border: 1px solid #333;
+      margin-bottom: 20px;
+    }
+    .settings h3 { color: #f97316; font-size: 14px; text-transform: uppercase; margin-bottom: 15px; }
+    .setting-row {
+      display: flex;
+      gap: 30px;
+      flex-wrap: wrap;
+    }
+    .setting-item { display: flex; align-items: center; gap: 10px; }
+    .setting-item label { color: #888; font-size: 12px; text-transform: uppercase; }
+    .setting-item input, .setting-item select {
+      background: #222;
+      border: 1px solid #444;
+      color: #e0e0e0;
+      padding: 8px 12px;
+      font-size: 13px;
+      width: 80px;
+    }
+    .setting-item select { width: 120px; }
+
+    /* Action Buttons */
+    .actions {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+    button.primary {
+      background: #f97316;
+      color: #000;
+      border: none;
+      padding: 15px 40px;
+      font-weight: bold;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      cursor: pointer;
+    }
+    button.primary:hover { background: #fb923c; }
+    button.primary:disabled { background: #444; color: #888; cursor: not-allowed; }
+    button.secondary {
+      background: #333;
+      color: #e0e0e0;
+      border: none;
+      padding: 15px 30px;
+      font-weight: bold;
+      font-size: 14px;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+    button.secondary:hover { background: #444; }
+
+    /* Output */
+    .output {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      padding: 20px;
+    }
+    .output h3 { color: #f97316; font-size: 14px; text-transform: uppercase; margin-bottom: 15px; }
+    .output-content {
+      background: #111;
+      padding: 15px;
+      font-family: monospace;
+      font-size: 12px;
+      max-height: 200px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+
+    /* Results Grid */
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .result-item {
+      background: #222;
+      padding: 5px;
+      text-align: center;
+    }
+    .result-item img { max-width: 100%; height: auto; background: repeating-conic-gradient(#333 0% 25%, #222 0% 50%) 50% / 10px 10px; }
+    .result-item p { font-size: 10px; color: #888; margin-top: 5px; }
+
+    /* Instructions */
+    .instructions {
+      background: #1f1510;
+      border-left: 4px solid #f97316;
+      padding: 15px 20px;
+      margin-bottom: 20px;
+    }
+    .instructions h4 { color: #f97316; margin-bottom: 10px; }
+    .instructions ol { margin-left: 20px; color: #ccc; font-size: 13px; line-height: 1.8; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div>
+      <h1>SpriteX</h1>
+      <p class="subtitle">Sprite Extraction Tool</p>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Mode Selection -->
+    <div class="mode-selector">
+      <div class="mode-btn active" data-mode="auto" onclick="setMode('auto')">
+        <h3>Auto Extract</h3>
+        <p>For clean sprite sheets with consistent 5x8 grid. Automatically extracts all 40 characters.</p>
+      </div>
+      <div class="mode-btn" data-mode="manual" onclick="setMode('manual')">
+        <h3>Manual Crop</h3>
+        <p>For problem sheets where characters overlap. Draw boxes around each character you want.</p>
+      </div>
+    </div>
+
+    <!-- Instructions -->
+    <div class="instructions" id="autoInstructions">
+      <h4>Auto Mode Instructions</h4>
+      <ol>
+        <li>Drop your sprite sheet below (5 rows x 8 columns = 40 characters)</li>
+        <li>Adjust settings if needed (tolerance, grid trimming)</li>
+        <li>Click "Generate Command" to get the CLI command</li>
+        <li>Run the command in terminal to extract sprites</li>
+      </ol>
+    </div>
+    <div class="instructions" id="manualInstructions" style="display:none;">
+      <h4>Manual Mode Instructions</h4>
+      <ol>
+        <li>Drop your sprite sheet below</li>
+        <li>Click and drag to draw boxes around each character (boxes are square)</li>
+        <li>Use "Undo" to remove last box, "Clear All" to start over</li>
+        <li>Click "Generate Command" to get the CLI command</li>
+        <li>Run the command in terminal to extract sprites</li>
+      </ol>
+    </div>
+
+    <!-- Drop Zone -->
+    <div class="drop-zone" id="dropZone">
+      <h3>Drop Sprite Sheet Here</h3>
+      <p>or click to browse</p>
+      <input type="file" id="fileInput" accept="image/*">
+    </div>
+
+    <!-- Preview -->
+    <div class="preview-area" id="previewArea">
+      <div class="preview-header">
+        <h3 id="fileName">image.png</h3>
+        <span class="preview-info" id="imageInfo">0 x 0</span>
+      </div>
+      <div class="preview-canvas-container">
+        <canvas id="previewCanvas"></canvas>
+      </div>
+      <div class="crop-list" id="cropList" style="display:none;">
+        <p style="color:#888;font-size:12px;">No crop regions defined. Click and drag on the image to add.</p>
+      </div>
+    </div>
+
+    <!-- Settings -->
+    <div class="settings">
+      <h3>Settings</h3>
+      <div class="setting-row">
+        <div class="setting-item">
+          <label>Rows</label>
+          <input type="number" id="rows" value="5" min="1" max="20">
+        </div>
+        <div class="setting-item">
+          <label>Columns</label>
+          <input type="number" id="cols" value="8" min="1" max="20">
+        </div>
+        <div class="setting-item">
+          <label>Tolerance</label>
+          <input type="number" id="tolerance" value="80" min="0" max="255">
+        </div>
+        <div class="setting-item">
+          <label>Trim Grid</label>
+          <input type="number" id="trimGrid" value="15" min="0" max="50">
+        </div>
+        <div class="setting-item">
+          <label>Output Folder</label>
+          <input type="text" id="outputFolder" value="output" style="width:150px;">
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="actions">
+      <button class="primary" id="generateBtn" disabled onclick="generateCommand()">Generate Command</button>
+      <button class="secondary" id="undoBtn" style="display:none;" onclick="undoCrop()">Undo Last</button>
+      <button class="secondary" id="clearBtn" style="display:none;" onclick="clearCrops()">Clear All</button>
+      <button class="secondary" onclick="copyCommand()">Copy Command</button>
+    </div>
+
+    <!-- Output -->
+    <div class="output">
+      <h3>CLI Command</h3>
+      <div class="output-content" id="outputContent">Select an image and configure settings to generate the command...</div>
+    </div>
+  </div>
+
+  <script>
+    let mode = 'auto';
+    let image = null;
+    let imagePath = '';
+    let crops = [];
+    let isDrawing = false;
+    let startX = 0, startY = 0;
+    let currentBox = null;
+
+    const canvas = document.getElementById('previewCanvas');
+    const ctx = canvas.getContext('2d');
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+    const previewArea = document.getElementById('previewArea');
+    const cropList = document.getElementById('cropList');
+    const generateBtn = document.getElementById('generateBtn');
+    const undoBtn = document.getElementById('undoBtn');
+    const clearBtn = document.getElementById('clearBtn');
+
+    function setMode(newMode) {
+      mode = newMode;
+      document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.mode === newMode);
+      });
+      document.getElementById('autoInstructions').style.display = newMode === 'auto' ? 'block' : 'none';
+      document.getElementById('manualInstructions').style.display = newMode === 'manual' ? 'block' : 'none';
+      cropList.style.display = newMode === 'manual' ? 'block' : 'none';
+      undoBtn.style.display = newMode === 'manual' ? 'inline-block' : 'none';
+      clearBtn.style.display = newMode === 'manual' ? 'inline-block' : 'none';
+
+      // Show/hide grid settings based on mode
+      document.getElementById('rows').parentElement.style.display = newMode === 'auto' ? 'flex' : 'none';
+      document.getElementById('cols').parentElement.style.display = newMode === 'auto' ? 'flex' : 'none';
+      document.getElementById('trimGrid').parentElement.style.display = newMode === 'auto' ? 'flex' : 'none';
+
+      crops = [];
+      redraw();
+      updateCropList();
+      generateCommand();
+    }
+
+    // Drop zone handlers
+    dropZone.addEventListener('click', () => fileInput.click());
+    dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('dragover');
+      const file = e.dataTransfer.files[0];
+      if (file) loadImage(file);
+    });
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files[0]) loadImage(e.target.files[0]);
+    });
+
+    function loadImage(file) {
+      imagePath = file.name;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        image = new Image();
+        image.onload = () => {
+          canvas.width = image.width;
+          canvas.height = image.height;
+          crops = [];
+          redraw();
+          updateUI();
+          generateCommand();
+        };
+        image.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function updateUI() {
+      previewArea.classList.add('visible');
+      document.getElementById('fileName').textContent = imagePath;
+      document.getElementById('imageInfo').textContent = `${image.width} x ${image.height}`;
+      generateBtn.disabled = false;
+    }
+
+    // Canvas drawing for manual mode
+    canvas.addEventListener('mousedown', (e) => {
+      if (mode !== 'manual' || !image) return;
+      isDrawing = true;
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      startX = (e.clientX - rect.left) * scaleX;
+      startY = (e.clientY - rect.top) * scaleY;
+    });
+
+    canvas.addEventListener('mousemove', (e) => {
+      if (!isDrawing || !image) return;
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      const currentX = (e.clientX - rect.left) * scaleX;
+      const currentY = (e.clientY - rect.top) * scaleY;
+
+      const dx = currentX - startX;
+      const dy = currentY - startY;
+      const size = Math.max(Math.abs(dx), Math.abs(dy));
+      const signX = dx >= 0 ? 1 : -1;
+      const signY = dy >= 0 ? 1 : -1;
+
+      currentBox = {
+        x: signX > 0 ? startX : startX - size,
+        y: signY > 0 ? startY : startY - size,
+        width: size,
+        height: size
+      };
+      redraw();
+    });
+
+    canvas.addEventListener('mouseup', () => {
+      if (!isDrawing || !currentBox) return;
+      isDrawing = false;
+      if (currentBox.width >= 50) {
+        crops.push({
+          x: Math.round(currentBox.x),
+          y: Math.round(currentBox.y),
+          width: Math.round(currentBox.width),
+          height: Math.round(currentBox.height)
+        });
+        updateCropList();
+        generateCommand();
+      }
+      currentBox = null;
+      redraw();
+    });
+
+    function redraw() {
+      if (!image) {
+        ctx.fillStyle = '#111';
+        ctx.fillRect(0, 0, canvas.width || 800, canvas.height || 400);
+        return;
+      }
+      ctx.drawImage(image, 0, 0);
+
+      // Draw grid lines in auto mode
+      if (mode === 'auto') {
+        const rows = parseInt(document.getElementById('rows').value) || 5;
+        const cols = parseInt(document.getElementById('cols').value) || 8;
+        const cellW = image.width / cols;
+        const cellH = image.height / rows;
+
+        ctx.strokeStyle = 'rgba(249, 115, 22, 0.5)';
+        ctx.lineWidth = 1;
+        for (let i = 1; i < cols; i++) {
+          ctx.beginPath();
+          ctx.moveTo(i * cellW, 0);
+          ctx.lineTo(i * cellW, image.height);
+          ctx.stroke();
+        }
+        for (let i = 1; i < rows; i++) {
+          ctx.beginPath();
+          ctx.moveTo(0, i * cellH);
+          ctx.lineTo(image.width, i * cellH);
+          ctx.stroke();
+        }
+      }
+
+      // Draw existing crops in manual mode
+      if (mode === 'manual') {
+        crops.forEach((crop, i) => {
+          ctx.strokeStyle = '#22c55e';
+          ctx.lineWidth = 2;
+          ctx.strokeRect(crop.x, crop.y, crop.width, crop.height);
+          ctx.fillStyle = 'rgba(34, 197, 94, 0.1)';
+          ctx.fillRect(crop.x, crop.y, crop.width, crop.height);
+          ctx.fillStyle = '#22c55e';
+          ctx.font = 'bold 16px sans-serif';
+          ctx.fillText(`${i + 1}`, crop.x + 5, crop.y + 18);
+        });
+
+        // Draw current selection
+        if (currentBox) {
+          ctx.strokeStyle = '#f97316';
+          ctx.lineWidth = 2;
+          ctx.setLineDash([5, 5]);
+          ctx.strokeRect(currentBox.x, currentBox.y, currentBox.width, currentBox.height);
+          ctx.setLineDash([]);
+        }
+      }
+    }
+
+    function updateCropList() {
+      if (crops.length === 0) {
+        cropList.innerHTML = '<p style="color:#888;font-size:12px;">No crop regions defined. Click and drag on the image to add.</p>';
+      } else {
+        cropList.innerHTML = crops.map((crop, i) => `
+          <div class="crop-item">
+            <span>#${i + 1}: (${crop.x}, ${crop.y}) ${crop.width}x${crop.height}</span>
+            <button onclick="removeCrop(${i})">Remove</button>
+          </div>
+        `).join('');
+      }
+    }
+
+    window.removeCrop = function(index) {
+      crops.splice(index, 1);
+      redraw();
+      updateCropList();
+      generateCommand();
+    };
+
+    function undoCrop() {
+      crops.pop();
+      redraw();
+      updateCropList();
+      generateCommand();
+    }
+
+    function clearCrops() {
+      crops = [];
+      redraw();
+      updateCropList();
+      generateCommand();
+    }
+
+    function generateCommand() {
+      if (!image) {
+        document.getElementById('outputContent').textContent = 'Select an image first...';
+        return;
+      }
+
+      const tolerance = document.getElementById('tolerance').value;
+      const outputFolder = document.getElementById('outputFolder').value || 'output';
+
+      let cmd = 'cd ai-battlerap/tools/claude-spritex\n\n';
+
+      if (mode === 'auto') {
+        const rows = document.getElementById('rows').value;
+        const cols = document.getElementById('cols').value;
+        const trimGrid = document.getElementById('trimGrid').value;
+
+        cmd += `node dist/cli.js extract "INPUT_PATH/${imagePath}" ^
+  -o "${outputFolder}" ^
+  -r ${rows} --cols ${cols} ^
+  --chroma-green --tolerance ${tolerance} ^
+  --trim-grid ${trimGrid} --remove-dark-lines ^
+  --prefix sprite`;
+      } else {
+        if (crops.length === 0) {
+          document.getElementById('outputContent').textContent = 'Draw crop regions on the image first...';
+          return;
+        }
+
+        const cropArgs = crops.map(c => `--crop "${c.x},${c.y},${c.width},${c.height}"`).join(' ^\n  ');
+
+        cmd += `node dist/cli.js manual "INPUT_PATH/${imagePath}" ^
+  -o "${outputFolder}" ^
+  ${cropArgs} ^
+  --chroma-green --tolerance ${tolerance} ^
+  --prefix sprite`;
+      }
+
+      document.getElementById('outputContent').textContent = cmd;
+    }
+
+    function copyCommand() {
+      const cmd = document.getElementById('outputContent').textContent;
+      navigator.clipboard.writeText(cmd.replace(/\^[\r\n]+\s*/g, ' '));
+      alert('Command copied to clipboard!');
+    }
+
+    // Update grid preview when settings change
+    document.getElementById('rows').addEventListener('input', () => { redraw(); generateCommand(); });
+    document.getElementById('cols').addEventListener('input', () => { redraw(); generateCommand(); });
+    document.getElementById('tolerance').addEventListener('input', generateCommand);
+    document.getElementById('trimGrid').addEventListener('input', generateCommand);
+    document.getElementById('outputFolder').addEventListener('input', generateCommand);
+
+    // Initial draw
+    canvas.width = 800;
+    canvas.height = 400;
+    ctx.fillStyle = '#111';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#444';
+    ctx.font = '16px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('Drop an image above to preview', 400, 200);
+  </script>
+</body>
+</html>

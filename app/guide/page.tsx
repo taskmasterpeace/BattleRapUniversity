@@ -22,7 +22,7 @@ import {
 const guideCards = [
   {
     id: "game-loop",
-    title: "The Game Loop",
+    title: "🎯 The Game Loop",
     icon: Target,
     description: "Understand the core cycle: Offers → Prep → Battle → Results → Repeat",
     href: "/guide/game-loop",
@@ -30,7 +30,7 @@ const guideCards = [
   },
   {
     id: "attributes",
-    title: "Attributes System",
+    title: "🧠 Attributes System",
     icon: Brain,
     description: "Deep dive into Writing, Performance, and Personal attributes",
     href: "/guide/attributes",
@@ -38,7 +38,7 @@ const guideCards = [
   },
   {
     id: "prep",
-    title: "Prep Focus Types",
+    title: "✍️ Prep Focus Types",
     icon: Dumbbell,
     description: "Master Research, Writing, Performance, Life, and Rest prep",
     href: "/guide/prep",
@@ -46,7 +46,7 @@ const guideCards = [
   },
   {
     id: "leagues",
-    title: "Leagues & Cities",
+    title: "🏟️ Leagues & Cities",
     icon: Users,
     description: "Small Room Circuit vs Main Stage Arena. City tier system.",
     href: "/guide/leagues",
@@ -54,7 +54,7 @@ const guideCards = [
   },
   {
     id: "battle",
-    title: "Battle Mechanics",
+    title: "⚔️ Battle Mechanics",
     icon: Swords,
     description: "Rounds, segments, haymakers, chokes, and scoring explained",
     href: "/guide/battle",
@@ -62,7 +62,7 @@ const guideCards = [
   },
   {
     id: "bloggers",
-    title: "Blogger System",
+    title: "📰 Blogger System",
     icon: Newspaper,
     description: "Meet the 8 voices of battle rap media. Their biases, coverage, and personalities.",
     href: "/guide/bloggers",
@@ -70,7 +70,7 @@ const guideCards = [
   },
   {
     id: "badges",
-    title: "Badge Compendium",
+    title: "🏆 Badge Compendium",
     icon: Trophy,
     description: "100+ badges across 7 categories with effects and synergies",
     href: "/badges",
@@ -78,7 +78,7 @@ const guideCards = [
   },
   {
     id: "stress",
-    title: "Stress & Resilience",
+    title: "💪 Stress & Resilience",
     icon: Heart,
     description: "Manage stress levels to avoid choking under pressure",
     href: "/guide/stress",
@@ -86,7 +86,7 @@ const guideCards = [
   },
   {
     id: "tiers",
-    title: "Tier System",
+    title: "📈 Tier System",
     icon: TrendingUp,
     description: "None → Low → Mid → Top → God tier progression explained",
     href: "/guide/tiers",
@@ -94,7 +94,7 @@ const guideCards = [
   },
   {
     id: "calendar",
-    title: "Time & Events",
+    title: "📅 Time & Events",
     icon: Calendar,
     description: "Life events, tournaments, media scandals, and random occurrences",
     href: "/guide/events",
@@ -102,7 +102,7 @@ const guideCards = [
   },
   {
     id: "regions",
-    title: "Regional System",
+    title: "🗺️ Regional System",
     icon: MapPin,
     description: "City rankings, regional competitions, and location bonuses",
     href: "/guide/regions",
@@ -110,7 +110,7 @@ const guideCards = [
   },
   {
     id: "rivalries",
-    title: "Rivalries & Grudges",
+    title: "🔥 Rivalries & Grudges",
     icon: Shield,
     description: "Build beef for bigger payouts and media attention",
     href: "/guide/rivalries",
@@ -118,7 +118,7 @@ const guideCards = [
   },
   {
     id: "tips",
-    title: "Pro Tips & Strategies",
+    title: "💡 Pro Tips & Strategies",
     icon: Lightbulb,
     description: "Advanced tactics for climbing the ranks efficiently",
     href: "/guide/tips",
@@ -193,13 +193,13 @@ export default function GuidePage() {
       <div className="max-w-6xl mx-auto p-4 sm:p-6">
         {/* Intro */}
         <div className="bg-zinc-900 border-2 border-orange-500/30 p-6 mb-8">
-          <h1 className="text-2xl font-display font-bold text-orange-500 mb-3">WELCOME TO BATTLE RAP UNIVERSITY</h1>
+          <h1 className="text-2xl font-display font-bold text-orange-500 mb-3">🎤 WELCOME TO BATTLE RAP UNIVERSITY</h1>
           <p className="text-zinc-300 leading-relaxed mb-4">
             Master the art of battle rap management. This guide covers everything from attributes and prep strategies to
             badges, rivalries, and advanced tactics. Click any section below to learn more.
           </p>
           <p className="text-sm text-zinc-500 italic">
-            Tip: Bookmark this page. You'll reference it often as you climb the ranks.
+            💡 Tip: Bookmark this page. You'll reference it often as you climb the ranks.
           </p>
         </div>
 
@@ -233,45 +233,45 @@ export default function GuidePage() {
 
         {/* Quick Reference */}
         <div className="bg-zinc-900 border-2 border-zinc-700 p-6">
-          <h2 className="text-xl font-display font-bold text-zinc-100 mb-4">QUICK REFERENCE</h2>
+          <h2 className="text-xl font-display font-bold text-zinc-100 mb-4">📚 QUICK REFERENCE</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
             <div>
-              <h3 className="font-display font-bold text-orange-500 mb-2">PREP FOCUS</h3>
+              <h3 className="font-display font-bold text-orange-500 mb-2">✍️ PREP FOCUS</h3>
               <ul className="space-y-1 text-zinc-400">
                 <li>
-                  <span className="text-green-500">■</span> Research - Study opponent
+                  <span className="text-green-500">■</span> 🔍 Research - Study opponent
                 </li>
                 <li>
-                  <span className="text-orange-500">■</span> Writing - Craft bars
+                  <span className="text-orange-500">■</span> ✍️ Writing - Craft bars
                 </li>
                 <li>
-                  <span className="text-blue-500">■</span> Performance - Practice delivery
+                  <span className="text-blue-500">■</span> 🎤 Performance - Practice delivery
                 </li>
                 <li>
-                  <span className="text-purple-500">■</span> Life - Handle personal matters
+                  <span className="text-purple-500">■</span> 💰 Life - Handle personal matters
                 </li>
                 <li>
-                  <span className="text-zinc-500">■</span> Rest - Recover & reduce stress
+                  <span className="text-zinc-500">■</span> 😴 Rest - Recover & reduce stress
                 </li>
               </ul>
             </div>
             <div>
-              <h3 className="font-display font-bold text-orange-500 mb-2">TIER SYSTEM</h3>
+              <h3 className="font-display font-bold text-orange-500 mb-2">📈 TIER SYSTEM</h3>
               <ul className="space-y-1 text-zinc-400">
                 <li>
-                  <span className="text-zinc-600">■</span> None (Under 800 ELO)
+                  <span className="text-zinc-600">■</span> 🚫 None (Under 800 ELO)
                 </li>
                 <li>
-                  <span className="text-amber-700">■</span> Low (800-1199 ELO)
+                  <span className="text-amber-700">■</span> 🥉 Low (800-1199 ELO)
                 </li>
                 <li>
-                  <span className="text-yellow-500">■</span> Mid (1200-1599 ELO)
+                  <span className="text-yellow-500">■</span> 🥈 Mid (1200-1599 ELO)
                 </li>
                 <li>
-                  <span className="text-purple-500">■</span> Top (1600-1999 ELO)
+                  <span className="text-purple-500">■</span> 🥇 Top (1600-1999 ELO)
                 </li>
                 <li>
-                  <span className="text-orange-500">■</span> God (2000+ ELO)
+                  <span className="text-orange-500">■</span> 👑 God (2000+ ELO)
                 </li>
               </ul>
             </div>

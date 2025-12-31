@@ -25,6 +25,9 @@ const PAGE_TITLES: Record<string, string> = {
   "/guide": "Guide",
   "/roster": "Roster",
   "/battle/next/prep": "Battle Prep",
+  "/crews": "Crews",
+  "/call-outs": "Call-Outs",
+  "/rivalries": "Rivalries",
 }
 
 export function DashboardLayout({ children, pageTitle }: DashboardLayoutProps) {

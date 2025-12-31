@@ -51,7 +51,7 @@ function handleApiError(error: unknown): never {
 // API CLIENT
 // ============================================
 
-const USE_MOCK = true // Toggle for development
+const USE_MOCK = false // Toggle for development - Set to false to use real API
 
 export const battleApi = {
   // --- Battle Offers ---

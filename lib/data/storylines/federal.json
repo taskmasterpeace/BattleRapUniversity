@@ -1,0 +1,414 @@
+{
+  "code": "FEDERAL_HEAT",
+  "name": "Federal Heat",
+  "description": "The feds showed up at your door. This ain't about parking tickets.",
+  "category": "legal",
+  "min_chapters": 4,
+  "max_chapters": 6,
+
+  "trigger": {
+    "type": "compound",
+    "probability": 0.06,
+    "conditions": {
+      "all": [
+        { "min_battles": 25 },
+        { "min_tier": "rising" },
+        {
+          "any": [
+            { "gang_affiliated": true },
+            { "has_badge": ["Street Certified"] },
+            { "min_attribute": { "crew_loyalty": 7 } }
+          ]
+        }
+      ]
+    }
+  },
+
+  "chapters": [
+    {
+      "id": "federal_ch1",
+      "chapter_number": 1,
+      "title": "The Knock",
+      "description": "6 AM. Loud knocking. You look through the peephole and see suits. FBI badges. They're asking about your old neighborhood, your associates, things you thought were buried. They're building a case.",
+      "delay": { "type": "immediate", "value": 0 },
+      "urgency": "timed",
+      "deadline_hours": 72,
+      "prep_days_cost": 1,
+      "choices": [
+        {
+          "id": "cooperate_early",
+          "label": "Talk to Them",
+          "description": "Maybe if you answer their questions, this goes away.",
+          "effects": [
+            { "type": "permanent", "crew_loyalty": -2.0 },
+            { "type": "temporary", "stress": 25 }
+          ],
+          "leads_to": { "type": "chapter", "id": "federal_ch2_talking" }
+        },
+        {
+          "id": "lawyer_up",
+          "label": "Lawyer Up",
+          "description": "Don't say a word without representation. This is serious.",
+          "effects": [
+            { "type": "permanent", "financial_stability": -1.5 },
+            { "type": "temporary", "stress": 20 }
+          ],
+          "leads_to": { "type": "chapter", "id": "federal_ch2_represented" }
+        },
+        {
+          "id": "ignore_feds",
+          "label": "Shut the Door",
+          "description": "You don't have to talk to them. Maybe they'll move on.",
+          "effects": [
+            { "type": "temporary", "stress": 30 },
+            {
+              "type": "permanent",
+              "schedule_event": {
+                "event_type": "arrest_warrant",
+                "delay_days": 21,
+                "details": { "type": "federal", "public": true },
+                "priority": 10,
+                "can_be_cancelled": false
+              }
+            }
+          ],
+          "leads_to": { "type": "chapter", "id": "federal_ch3_arrest" }
+        }
+      ]
+    },
+    {
+      "id": "federal_ch2_talking",
+      "chapter_number": 2,
+      "title": "The Snitch Label",
+      "description": "Word got out you talked to the feds. Someone saw them leaving your spot. Now it's on blogs. Other battlers are calling you out. Someone made 'FREE [YOUR NAME]... from his own mouth' shirts.",
+      "delay": { "type": "days", "value": 7 },
+      "urgency": "timed",
+      "deadline_hours": 96,
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "address_on_stage",
+          "label": "Address It On Stage",
+          "description": "Your next battle is your platform. Clear your name in front of everybody.",
+          "effects": [
+            { "type": "temporary", "prep_efficiency_modifier": 1.3 },
+            { "type": "temporary", "stress": 15 }
+          ],
+          "leads_to": { "type": "chapter", "id": "federal_ch4_prove" }
+        },
+        {
+          "id": "lay_low",
+          "label": "Lay Low",
+          "description": "Let it blow over. Focus on the case, not the optics.",
+          "effects": [
+            { "type": "permanent", "reputation": -1.5 },
+            { "type": "temporary", "stress": 10 }
+          ],
+          "leads_to": { "type": "chapter", "id": "federal_ch3_case" }
+        }
+      ]
+    },
+    {
+      "id": "federal_ch2_represented",
+      "chapter_number": 2,
+      "title": "The Charges",
+      "description": "Your lawyer got the paperwork. RICO conspiracy. They're saying you had a leadership role. The prosecutor wants to make an example. Maximum: 20 years.",
+      "delay": { "type": "battles", "value": 2 },
+      "urgency": "timed",
+      "deadline_hours": 120,
+      "prep_days_cost": 3,
+      "choices": [
+        {
+          "id": "fight_trial",
+          "label": "Take It to Trial",
+          "description": "You're not admitting to anything. See you in court.",
+          "effects": [
+            { "type": "permanent", "financial_stability": -2.5 },
+            { "type": "temporary", "stress": 40 },
+            { "type": "temporary", "prep_days_lost": 5 }
+          ],
+          "leads_to": { "type": "chapter", "id": "federal_ch5_trial" }
+        },
+        {
+          "id": "plea_deal",
+          "label": "Consider Plea Deal",
+          "description": "Your lawyer says they're offering 5 years. Guaranteed. vs. 20 possible.",
+          "effects": [
+            { "type": "temporary", "stress": 35 }
+          ],
+          "leads_to": { "type": "chapter", "id": "federal_ch4_plea" }
+        },
+        {
+          "id": "full_cooperate",
+          "label": "Cooperate Fully",
+          "description": "Give them what they want. Names. Dates. Walk free.",
+          "effects": [
+            { "type": "permanent", "crew_loyalty": -5.0 },
+            { "type": "permanent", "reputation": -2.0 },
+            {
+              "type": "permanent",
+              "create_npc": {
+                "relationship_type": "enemy",
+                "name": "Big Homie",
+                "gender": "male",
+                "personality": "Connected. Patient. Remembers everything."
+              }
+            }
+          ],
+          "leads_to": { "type": "ending", "id": "federal_end_snitch" }
+        }
+      ]
+    },
+    {
+      "id": "federal_ch3_arrest",
+      "chapter_number": 3,
+      "title": "Caught Slipping",
+      "description": "They got you at a venue. In front of everybody. Cameras were rolling. You're in cuffs while fans record. It's everywhere within the hour. This is worse than if you'd just talked to them.",
+      "delay": { "type": "battles", "value": 2 },
+      "urgency": "immediate",
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "bond_out",
+          "label": "Post Bond",
+          "description": "Get out and fight this from outside.",
+          "effects": [
+            { "type": "permanent", "financial_stability": -3.0 },
+            { "type": "permanent", "reputation": -1.0 }
+          ],
+          "leads_to": { "type": "chapter", "id": "federal_ch5_trial" }
+        },
+        {
+          "id": "sit_in_jail",
+          "label": "Can't Make Bond",
+          "description": "You don't have that kind of money. Sit tight.",
+          "effects": [
+            { "type": "temporary", "prep_days_lost": 30 },
+            { "type": "temporary", "stress": 60 }
+          ],
+          "leads_to": { "type": "chapter", "id": "federal_ch4_plea" }
+        }
+      ]
+    },
+    {
+      "id": "federal_ch3_case",
+      "chapter_number": 3,
+      "title": "Case Building",
+      "description": "You're laying low but the case isn't going away. Your lawyer says the feds have tapes. Wiretaps. They've been listening for years.",
+      "delay": { "type": "battles", "value": 3 },
+      "urgency": "passive",
+      "prep_days_cost": 2,
+      "choices": [
+        {
+          "id": "prepare_defense",
+          "label": "Prepare Your Defense",
+          "description": "Build the best case you can. This might go to trial.",
+          "effects": [
+            { "type": "permanent", "financial_stability": -2.0 },
+            { "type": "temporary", "prep_days_lost": 3 }
+          ],
+          "leads_to": { "type": "chapter", "id": "federal_ch5_trial" }
+        },
+        {
+          "id": "negotiate",
+          "label": "Start Negotiating",
+          "description": "See what kind of deal they'll offer.",
+          "effects": [
+            { "type": "temporary", "stress": 25 }
+          ],
+          "leads_to": { "type": "chapter", "id": "federal_ch4_plea" }
+        }
+      ]
+    },
+    {
+      "id": "federal_ch4_prove",
+      "chapter_number": 4,
+      "title": "Prove It On Stage",
+      "description": "Your battle is tonight. Everyone's watching to see how you handle this. The crowd is 50/50 - some support, some came to see you fail. Your opponent has been posting 'snitch' bars all week.",
+      "delay": { "type": "battles", "value": 1 },
+      "urgency": "immediate",
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "own_it",
+          "label": "Own Your Truth",
+          "description": "Address it directly. Explain your side. Make them understand.",
+          "effects": [
+            { "type": "permanent", "reputation": 0.5 },
+            { "type": "permanent", "resilience": 0.5 }
+          ],
+          "leads_to": { "type": "ending", "id": "federal_end_cleared" }
+        },
+        {
+          "id": "ignore_narrative",
+          "label": "Just Rap",
+          "description": "Don't give it energy. Let your bars speak.",
+          "effects": [
+            { "type": "permanent", "reputation": -0.5 }
+          ],
+          "leads_to": { "type": "ending", "id": "federal_end_shadow" }
+        }
+      ]
+    },
+    {
+      "id": "federal_ch4_plea",
+      "chapter_number": 4,
+      "title": "The Deal",
+      "description": "5 years federal. No parole. But it's better than 20. Your lawyer says take it. Your family says take it. Your career might survive 5 years. It won't survive 20.",
+      "delay": { "type": "days", "value": 14 },
+      "urgency": "timed",
+      "deadline_hours": 168,
+      "prep_days_cost": 2,
+      "choices": [
+        {
+          "id": "take_plea",
+          "label": "Take the Plea",
+          "description": "5 years. You can come back from 5 years.",
+          "effects": [
+            {
+              "type": "permanent",
+              "state_changes": {
+                "set_felony": true,
+                "felony_type": "RICO conspiracy"
+              }
+            },
+            {
+              "type": "permanent",
+              "schedule_event": {
+                "event_type": "prison_release",
+                "delay_days": 180,
+                "details": { "sentence": "5 years federal", "served": "good behavior" },
+                "priority": 10,
+                "can_be_cancelled": false,
+                "triggers_storyline": "COMEBACK_TOUR"
+              }
+            }
+          ],
+          "leads_to": { "type": "ending", "id": "federal_end_prison" }
+        },
+        {
+          "id": "reject_plea",
+          "label": "Reject It",
+          "description": "You're not guilty. Take it to trial.",
+          "effects": [
+            { "type": "temporary", "stress": 50 }
+          ],
+          "leads_to": { "type": "chapter", "id": "federal_ch5_trial" }
+        }
+      ]
+    },
+    {
+      "id": "federal_ch5_trial",
+      "chapter_number": 5,
+      "title": "Day in Court",
+      "description": "Federal courthouse. Media outside. Battle rappers in the gallery. This is either your vindication or your downfall. The prosecutor has tapes. Your lawyer has doubt. The jury has your fate.",
+      "delay": { "type": "battles", "value": 2 },
+      "urgency": "immediate",
+      "prep_days_cost": 5,
+      "choices": [
+        {
+          "id": "testify",
+          "label": "Take the Stand",
+          "description": "Tell your story. Make them see you as a person, not a case number.",
+          "effects": [
+            { "type": "temporary", "stress": 45 }
+          ],
+          "leads_to": { "type": "ending", "id": "federal_end_acquitted" }
+        },
+        {
+          "id": "dont_testify",
+          "label": "Stay Silent",
+          "description": "Don't give them anything to twist. Let your lawyer work.",
+          "effects": [
+            { "type": "temporary", "stress": 50 }
+          ],
+          "leads_to": { "type": "ending", "id": "federal_end_convicted" }
+        }
+      ]
+    }
+  ],
+
+  "endings": [
+    {
+      "id": "federal_end_acquitted",
+      "type": "positive",
+      "title": "Beat the Case",
+      "description": "Not guilty on all counts. You walked out of that courthouse to cameras and cheers. 'He beat a RICO' is legendary status. Your next battle sold out in 10 minutes.",
+      "effects": [
+        { "type": "permanent", "reputation": 3.0 },
+        { "type": "permanent", "resilience": 1.0 },
+        { "type": "temporary", "stress": -30, "duration_days": 60 }
+      ],
+      "badge": "Beat the Case"
+    },
+    {
+      "id": "federal_end_prison",
+      "type": "negative",
+      "title": "Did Time",
+      "description": "5 years federal. No parole. You're calling your manager from inside. Battles cancelled. Album shelved. But you'll be back. The culture remembers those who come back.",
+      "effects": [
+        {
+          "type": "permanent",
+          "state_changes": {
+            "set_felony": true,
+            "felony_type": "RICO conspiracy"
+          }
+        },
+        { "type": "permanent", "reputation": -1.0 },
+        { "type": "temporary", "prep_days_lost": 180 }
+      ],
+      "badge": "Did Time"
+    },
+    {
+      "id": "federal_end_convicted",
+      "type": "catastrophic",
+      "title": "Maximum Sentence",
+      "description": "Guilty. The judge gave you 15 years. You fought and lost. Should have taken the plea. Your career is over unless the appeal works.",
+      "effects": [
+        {
+          "type": "permanent",
+          "state_changes": {
+            "set_felony": true,
+            "felony_type": "RICO conspiracy - convicted at trial"
+          }
+        },
+        { "type": "permanent", "reputation": -2.0 },
+        { "type": "temporary", "prep_days_lost": 365 }
+      ],
+      "badge": "Lost at Trial"
+    },
+    {
+      "id": "federal_end_snitch",
+      "type": "negative",
+      "title": "Paper Trail",
+      "description": "You walked. Charges dropped. But everyone knows why. You gave names. The streets have a long memory. Some leagues won't book you. Some battlers won't battle you. You're alive and free. Is it worth it?",
+      "effects": [
+        { "type": "permanent", "crew_loyalty": -5.0 },
+        { "type": "permanent", "reputation": -3.0 },
+        { "type": "temporary", "stress": 20, "duration_days": 90 }
+      ],
+      "badge": "Paper Trail"
+    },
+    {
+      "id": "federal_end_cleared",
+      "type": "positive",
+      "title": "Cleared Your Name",
+      "description": "You addressed it head-on and the culture respected it. Case eventually dropped for lack of evidence. The snitch rumors died down. You came out stronger.",
+      "effects": [
+        { "type": "permanent", "reputation": 1.0 },
+        { "type": "permanent", "resilience": 0.5 },
+        { "type": "temporary", "stress": -15, "duration_days": 30 }
+      ]
+    },
+    {
+      "id": "federal_end_shadow",
+      "type": "neutral",
+      "title": "Under a Cloud",
+      "description": "Case got dropped but the rumors never fully went away. Some people believe you, some don't. You battle on, but there's always that asterisk next to your name.",
+      "effects": [
+        { "type": "permanent", "reputation": -0.5 },
+        { "type": "permanent", "resilience": 0.3 }
+      ]
+    }
+  ]
+}

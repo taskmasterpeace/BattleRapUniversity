@@ -4,7 +4,6 @@ import { useState, useEffect } from "react"
 import { useRouter, useParams } from "next/navigation"
 import { motion } from "framer-motion"
 import { useActiveBattler } from "@/contexts/battler-context"
-import { ALL_BATTLERS } from "@/lib/data"
 import { RoundResultsCard } from "@/components/battle/round-results-card"
 import { RoundResultsBreakdown } from "@/components/battle/round-results-breakdown"
 import { CrowdReactionWindow } from "@/components/battle/crowd-reaction-window"
@@ -21,28 +20,56 @@ export default function RoundResultsPage() {
   const params = useParams()
   const battleId = params.id as string
   const roundNum = Number.parseInt(params.roundNum as string)
-  const { activeBattler } = useActiveBattler()
+  const activeBattler = useActiveBattler()
   const [result, setResult] = useState<RoundResult | null>(null)
+  const [opponent, setOpponent] = useState({ stageName: "OPPONENT", style: "technical" })
 
   const totalRounds = 3
-  const opponent = ALL_BATTLERS.find((b) => b.id !== activeBattler?.id) || ALL_BATTLERS[1]
   const isFinalRound = roundNum >= totalRounds
 
   useEffect(() => {
-    // Simulate round result
-    const mockResult = simulateMockRound({
-      contentType: "punchlines",
-      deliveryType: "aggressive",
-      performanceType: "high_energy",
-      opponentStyle: opponent.style || "technical",
-    })
-    setResult(mockResult)
-  }, [opponent.style])
+    // Fetch battle data to get opponent info
+    async function fetchBattle() {
+      try {
+        const response = await fetch(`/api/battles/${battleId}`)
+        if (response.ok) {
+          const data = await response.json()
+          if (data.battle?.ai_battler) {
+            const opp = {
+              stageName: data.battle.ai_battler.stage_name,
+              style: data.battle.ai_battler.style_tags?.[0] || "technical",
+            }
+            setOpponent(opp)
 
-  // Mock cumulative scores
-  const playerWins = Math.floor(Math.random() * (roundNum + 1))
-  const opponentWins = roundNum - playerWins + (result?.winner === "opponent" ? 1 : 0)
-  const adjustedPlayerWins = playerWins + (result?.winner === "player" ? 1 : 0)
+            // Simulate round result
+            const mockResult = simulateMockRound({
+              contentType: "punchlines",
+              deliveryType: "aggressive",
+              performanceType: "high_energy",
+              opponentStyle: opp.style,
+            })
+            setResult(mockResult)
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching battle:', error)
+        // Still set a result even if fetch fails
+        const mockResult = simulateMockRound({
+          contentType: "punchlines",
+          deliveryType: "aggressive",
+          performanceType: "high_energy",
+          opponentStyle: "technical",
+        })
+        setResult(mockResult)
+      }
+    }
+    fetchBattle()
+  }, [battleId])
+
+  // Show just this round's result (cumulative tracking would require state persistence)
+  const playerWonThisRound = result?.winner === "player"
+  const adjustedPlayerWins = playerWonThisRound ? 1 : 0
+  const opponentWins = playerWonThisRound ? 0 : 1
 
   const handleNextRound = () => {
     router.push(`/battle/${battleId}/round/${roundNum + 1}`)

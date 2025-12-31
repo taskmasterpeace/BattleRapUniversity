@@ -36,6 +36,7 @@ export interface Badge {
     earningsBonus?: number
     fanGrowth?: number
     crowdReaction?: number
+    selfAwareness?: number // Affects accuracy of perceived readiness
   }
   isNegative?: boolean
   removable?: boolean
@@ -1407,6 +1408,86 @@ export const ALL_BADGES: Badge[] = [
       writingEfficiency: 10,
       rehearsalEfficiency: 10,
       restEfficiency: 10,
+    },
+  },
+
+  // SELF-AWARENESS & MEMORIZATION BADGES (6)
+  {
+    id: "self_aware",
+    name: "SELF-AWARE",
+    description: "Knows exactly when they're ready and when they're not",
+    fullEffectText: "+3 Self-Awareness. Always knows their true readiness level. Lower comfort threshold.",
+    rarity: "epic",
+    category: "special_ability",
+    icon: "🪞",
+    imageId: null,
+    effects: { selfAwareness: 3, chokeRisk: -5, consistency: 8 },
+  },
+  {
+    id: "overconfident",
+    name: "OVERCONFIDENT",
+    description: "Always thinks they're ready, even when they're not",
+    fullEffectText: "-3 Self-Awareness. Often misjudges readiness. Higher choke risk when underprepared.",
+    rarity: "common",
+    category: "special_ability",
+    icon: "😎",
+    imageId: null,
+    effects: { selfAwareness: -3, chokeRisk: 10, stagePresence: 5 },
+    isNegative: true,
+    removable: true,
+    removalCondition: "Choke in 2 battles (reality check)",
+  },
+  {
+    id: "clutch_performer",
+    name: "CLUTCH PERFORMER",
+    description: "Rises to the occasion in pressure moments",
+    fullEffectText: "-15% choke risk. +2 Self-Awareness in pressure situations. Comfort threshold lowered.",
+    rarity: "legendary",
+    category: "special_ability",
+    icon: "🎯",
+    imageId: null,
+    effects: { selfAwareness: 2, chokeRisk: -15, resilience: 10 },
+  },
+  {
+    id: "bars_on_lock",
+    name: "BARS ON LOCK",
+    description: "Once memorized, never forgotten",
+    fullEffectText: "+15% rehearsal efficiency. Material stays locked in. Lower comfort threshold needed.",
+    rarity: "epic",
+    category: "special_ability",
+    icon: "🔒",
+    imageId: null,
+    effects: { consistency: 12, chokeRisk: -8 },
+    prepEffects: {
+      rehearsalEfficiency: 15,
+    },
+  },
+  {
+    id: "overthinking",
+    name: "OVERTHINKING",
+    description: "Always feels underprepared even when ready",
+    fullEffectText: "-2 Self-Awareness (underconfident). Needs extra rehearsal to feel safe. Actually performs well.",
+    rarity: "common",
+    category: "special_ability",
+    icon: "🌀",
+    imageId: null,
+    effects: { selfAwareness: -2, consistency: 5, stressPerDay: 2 },
+    isNegative: true,
+    removable: true,
+    removalCondition: "Win 3 battles with minimal stumbles",
+  },
+  {
+    id: "gunslinger",
+    name: "GUNSLINGER",
+    description: "Comfortable performing with minimal prep - raw talent",
+    fullEffectText: "Low comfort threshold. +20% effectiveness with under 50% memorization. High variance.",
+    rarity: "epic",
+    category: "special_ability",
+    icon: "🔫",
+    imageId: null,
+    effects: { adaptability: 15, chokeRisk: 5, selfAwareness: -1 },
+    prepEffects: {
+      lowPrepBonus: 20,
     },
   },
 ]

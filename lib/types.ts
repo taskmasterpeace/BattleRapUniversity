@@ -1,4 +1,5 @@
 export type FocusType = "research" | "writing" | "performance" | "life" | "rest"
+export type OriginType = "text_forums" | "app_camera" | "crew"
 
 export interface DayPlan {
   day: number
@@ -21,6 +22,20 @@ export interface BattleInfo {
     avatar: string
     styles: string[]
     record?: string
+    attributes?: {
+      writing: number      // Average of lyricism, wordplay, creativity, flow (1-10)
+      performance: number  // Average of stage_presence, crowd_control, delivery (1-10)
+      resilience: number   // Resilience stat (1-10)
+      breakdown?: {        // Individual stats for detailed view
+        lyricism: number
+        wordplay: number
+        creativity: number
+        flow: number
+        stage_presence: number
+        crowd_control: number
+        delivery: number
+      }
+    }
   }
   league: string
   battleDate: string
@@ -84,8 +99,11 @@ export interface BattlerStats {
     reputation: number
     family: number
     resilience: number
+    selfAwareness: number // 1-10: How accurately they perceive their own readiness
   }
 }
+
+export type CareerTier = 'rookie' | 'rising' | 'established' | 'veteran' | 'legend' | 'unknown'
 
 export interface Battler {
   id: string
@@ -107,6 +125,18 @@ export interface Battler {
     spriteUrl: string
     crop?: PortraitCrop
   }
+  crew?: {
+    id: string
+    name: string
+    tag: string
+  }
+  origin_type?: OriginType
+  origin_completed?: boolean
+  // Career days tracking (the "battle rap secret")
+  careerDays?: number
+  careerPublic?: boolean
+  careerTier?: CareerTier
+  careerDisplay?: string  // Human readable: "3 weeks", "1.5 years", or "???"
 }
 
 export interface Rivalry {
@@ -362,4 +392,12 @@ export interface PortraitCrop {
   scale: number // 1 = 100%, 1.5 = 150%, etc.
   offsetX: number // horizontal offset in pixels
   offsetY: number // vertical offset in pixels
+}
+
+export interface OriginMilestone {
+  id: string
+  battler_id: string
+  milestone_key: string
+  achieved_at: string
+  context?: any
 }

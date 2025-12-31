@@ -1,83 +1,165 @@
 import { NextResponse } from "next/server"
-import { mockBattler, mockBattleInfo } from "@/lib/data"
-
-const mockRosterData = {
-  battlers: [
-    {
-      id: mockBattler.id,
-      stageName: mockBattler.stageName,
-      tier: mockBattler.tier,
-      styleTags: mockBattler.styleTags || ["Wordplay", "Schemes"],
-      avatarUrl: "/rapper-pixel.jpg",
-      bannerUrl: "/small-intimate-battle-rap-venue-purple-lighting.jpg",
-      league: {
-        name: "Small Room Circuit",
-        logo_url: "/placeholder-logo.png",
-      },
-      attributes: mockBattler.stats,
-      ranking: {
-        rating: mockBattler.elo,
-        wins: mockBattler.record?.wins || 11,
-        losses: mockBattler.record?.losses || 4,
-        streak: mockBattler.streak || 3,
-      },
-      stats: {
-        totalBattles: 15,
-        wins: 11,
-        losses: 4,
-        winRate: 73,
-        streak: 3,
-        rating: mockBattler.elo,
-      },
-      nextBattle: {
-        opponent: mockBattleInfo.opponent.name,
-        date: mockBattleInfo.battleDate,
-        league: mockBattleInfo.league,
-      },
-      badges: [
-        { id: "b1", name: "Master Wordsmith", icon_url: "/placeholder-logo.png", tier: "gold" },
-        { id: "b2", name: "Punchline King", icon_url: "/placeholder-logo.png", tier: "gold" },
-        { id: "b3", name: "Rising Star", icon_url: "/placeholder-logo.png", tier: "bronze" },
-      ],
-      isActive: true,
-    },
-    {
-      id: "battler-002",
-      stageName: "COLD BARS",
-      tier: "LOW TIER",
-      styleTags: ["Aggression", "Flow"],
-      avatarUrl: "/rapper-portrait-pixel-art.jpg",
-      bannerUrl: "/large-arena-battle-rap-stage-bright-lights-crowd.jpg",
-      league: {
-        name: "Small Room Circuit",
-        logo_url: "/placeholder-logo.png",
-      },
-      attributes: {
-        writing: { lyricism: 5, wordplay: 4, creativity: 5, flow: 6 },
-        performance: { stagePresence: 6, crowdControl: 5, delivery: 7 },
-        personal: { financial: 3, reputation: 4, family: 5, resilience: 5 },
-      },
-      ranking: {
-        rating: 980,
-        wins: 3,
-        losses: 5,
-        streak: -2,
-      },
-      stats: {
-        totalBattles: 8,
-        wins: 3,
-        losses: 5,
-        winRate: 38,
-        streak: -2,
-        rating: 980,
-      },
-      nextBattle: null,
-      badges: [{ id: "b4", name: "Crowd Favorite", icon_url: "/placeholder-logo.png", tier: "bronze" }],
-      isActive: false,
-    },
-  ],
-}
+import { createServerClient } from "@/lib/db/server"
+import { ALL_BADGES } from "@/lib/all-badges"
 
 export async function GET() {
-  return NextResponse.json(mockRosterData)
+  try {
+    const supabase = createServerClient()
+
+    // Get all player-controlled battlers with their attributes, rankings, leagues, crews, and cities
+    const { data: battlers, error } = await supabase
+      .from('battlers')
+      .select(`
+        *,
+        battler_attributes(*),
+        rankings(*),
+        leagues:primary_league_id(id, name, prestige_level),
+        crews:crew_id(id, name, tag),
+        cities:city_id(id, name, state, region, scene_size)
+      `)
+      .eq('is_ai', false)
+      .order('created_at', { ascending: false })
+
+    if (error) {
+      console.error('Error fetching roster:', error)
+      return NextResponse.json({ error: 'Failed to fetch roster' }, { status: 500 })
+    }
+
+    // Get next battle for each battler
+    const battlerIds = battlers?.map(b => b.id) || []
+
+    // Fetch earned badges for all battlers
+    const { data: earnedBadges } = await supabase
+      .from('badge_earned')
+      .select('battler_id, badge_code, earned_at, is_active')
+      .in('battler_id', battlerIds)
+      .eq('is_active', true)
+      .order('earned_at', { ascending: false })
+
+    const { data: nextBattles } = await supabase
+      .from('battles')
+      .select(`
+        id,
+        battler_player_id,
+        battler_ai_id,
+        scheduled_at,
+        status,
+        opponent:battler_ai_id(id, stage_name),
+        league:league_id(name)
+      `)
+      .in('battler_player_id', battlerIds)
+      .in('status', ['offered', 'accepted', 'locked'])
+      .order('scheduled_at', { ascending: true })
+
+    // Helper to format career days
+    function formatCareerDays(days: number): string {
+      if (days < 7) return `${days} days`
+      if (days < 90) return `${Math.floor(days / 7)} weeks`
+      if (days < 365) return `${(days / 30).toFixed(1)} months`
+      return `${(days / 365).toFixed(1)} years`
+    }
+
+    // Helper to get career tier
+    function getCareerTier(days: number): string {
+      if (days <= 90) return 'rookie'
+      if (days <= 270) return 'rising'
+      if (days <= 730) return 'established'
+      if (days <= 1825) return 'veteran'
+      return 'legend'
+    }
+
+    // Map battlers to frontend format
+    const formattedBattlers = battlers?.map(battler => {
+      const attrs = battler.battler_attributes?.[0] || {}
+      const ranking = battler.rankings?.[0] || {}
+      const league = battler.leagues
+      const city = battler.cities
+      const nextBattle = nextBattles?.find(b => b.battler_player_id === battler.id)
+
+      const wins = ranking.wins || 0
+      const losses = ranking.losses || 0
+      const totalBattles = wins + losses
+
+      // Career data - player's own career is always visible to them
+      const careerDays = battler.career_days || 0
+      const careerPublic = battler.career_public || false
+      const careerTier = getCareerTier(careerDays)
+      const careerDisplay = formatCareerDays(careerDays)
+
+      return {
+        id: battler.id,
+        stageName: battler.stage_name,
+        tier: battler.tier?.toUpperCase() + ' TIER',
+        styleTags: battler.style_tags || [],
+        avatarUrl: battler.avatar_url || "/rapper-pixel.jpg",
+        bannerUrl: battler.banner_url || "/small-intimate-battle-rap-venue-purple-lighting.jpg",
+        // City data from cities table
+        city: city ? {
+          name: city.name,
+          state: city.state,
+          region: city.region,
+        } : null,
+        region: city?.region || battler.region || null,
+        league: league ? {
+          name: league.name,
+          logo_url: "/placeholder-logo.png",
+        } : null,
+        crew: battler.crews ? {
+          id: battler.crews.id,
+          name: battler.crews.name,
+          tag: battler.crews.tag,
+        } : null,
+        attributes: {
+          writing: attrs.writing || { lyricism: 5, wordplay: 5, creativity: 5, flow: 5 },
+          performance: attrs.performance || { stagePresence: 5, crowdControl: 5, delivery: 5 },
+          personal: attrs.personal || { financial: 5, reputation: 5, family: 5, resilience: 5 },
+        },
+        ranking: {
+          rating: ranking.rating || 1000,
+          wins,
+          losses,
+          streak: ranking.current_streak || 0,
+        },
+        stats: {
+          totalBattles,
+          wins,
+          losses,
+          winRate: totalBattles > 0 ? Math.round((wins / totalBattles) * 100) : 0,
+          streak: ranking.current_streak || 0,
+          rating: ranking.rating || 1000,
+        },
+        nextBattle: nextBattle ? {
+          opponent: nextBattle.opponent?.stage_name,
+          date: nextBattle.scheduled_at,
+          league: nextBattle.league?.name,
+        } : null,
+        badges: (earnedBadges || [])
+          .filter(eb => eb.battler_id === battler.id)
+          .map(eb => {
+            const badge = ALL_BADGES.find(b => b.id === eb.badge_code)
+            return badge ? {
+              id: badge.id,
+              name: badge.name,
+              description: badge.description,
+              rarity: badge.rarity,
+              category: badge.category,
+              icon: badge.icon,
+              earnedAt: eb.earned_at,
+            } : null
+          })
+          .filter(Boolean),
+        isActive: battler.id === battlers[0]?.id, // First battler is active
+        // Career tracking data
+        careerDays,
+        careerPublic,
+        careerTier,
+        careerDisplay,
+      }
+    }) || []
+
+    return NextResponse.json({ battlers: formattedBattlers })
+  } catch (err) {
+    console.error('Roster API error:', err)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  }
 }

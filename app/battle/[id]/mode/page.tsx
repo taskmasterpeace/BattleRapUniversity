@@ -6,20 +6,36 @@ import { motion } from "framer-motion"
 import { ModeSelectionCard } from "@/components/battle/mode-selection-card"
 import { Button } from "@/components/ui/button"
 import { useActiveBattler } from "@/contexts/battler-context"
-import { ALL_BATTLERS } from "@/lib/data"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
+import { useEffect } from "react"
 
 export default function BattleModeSelectionPage() {
   const router = useRouter()
   const params = useParams()
   const battleId = params.id as string
-  const { activeBattler } = useActiveBattler()
+  const activeBattler = useActiveBattler()
   const [selectedMode, setSelectedMode] = useState<"locked_in" | "auto" | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [opponent, setOpponent] = useState({ stageName: "OPPONENT" })
 
-  // Mock opponent
-  const opponent = ALL_BATTLERS.find((b) => b.id !== activeBattler?.id) || ALL_BATTLERS[1]
+  useEffect(() => {
+    // Fetch battle data to get opponent info
+    async function fetchBattle() {
+      try {
+        const response = await fetch(`/api/battles/${battleId}`)
+        if (response.ok) {
+          const data = await response.json()
+          if (data.battle?.ai_battler) {
+            setOpponent({ stageName: data.battle.ai_battler.stage_name })
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching battle:', error)
+      }
+    }
+    fetchBattle()
+  }, [battleId])
 
   const handleConfirm = async () => {
     if (!selectedMode) return

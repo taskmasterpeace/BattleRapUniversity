@@ -1,26 +1,73 @@
 import { NextResponse } from "next/server"
+import { createServerClient } from "@/lib/db/server"
+import { requireBattleOwnership } from "@/lib/auth/helpers"
 
 // POST /api/battles/[id]/accept - Accept a battle offer
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params
+  try {
+    const { id: battleId } = await params
 
-  // In production:
-  // 1. Verify offer exists and hasn't expired
-  // 2. Create battle record in database
-  // 3. Set up prep period
+    // SECURITY: Verify user owns this battle
+    const authResult = await requireBattleOwnership(battleId)
+    if (!authResult.success) {
+      return NextResponse.json({ error: authResult.error }, { status: authResult.status })
+    }
 
-  const now = new Date()
-  const prepLocksAt = new Date(now.getTime() + 12 * 24 * 60 * 60 * 1000)
-  const scheduledAt = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000)
+    const supabase = createServerClient()
 
-  return NextResponse.json({
-    success: true,
-    battle: {
-      id,
-      status: "accepted",
-      prepStartsAt: now.toISOString(),
-      prepLocksAt: prepLocksAt.toISOString(),
-      scheduledAt: scheduledAt.toISOString(),
-    },
-  })
+    // Get the battle offer
+    const { data: battle, error: fetchError } = await supabase
+      .from('battles')
+      .select('*')
+      .eq('id', battleId)
+      .eq('status', 'offered')
+      .single()
+
+    if (fetchError || !battle) {
+      return NextResponse.json({
+        error: 'Battle offer not found or already accepted'
+      }, { status: 404 })
+    }
+
+    // Check if offer has expired (2 days after creation)
+    const expiresAt = new Date(battle.created_at)
+    expiresAt.setDate(expiresAt.getDate() + 2)
+    if (new Date() > expiresAt) {
+      return NextResponse.json({
+        error: 'Battle offer has expired'
+      }, { status: 400 })
+    }
+
+    // Update battle status to accepted (atomic check-and-set to prevent race conditions)
+    const { data: updatedBattle, error: updateError } = await supabase
+      .from('battles')
+      .update({
+        status: 'accepted',
+      })
+      .eq('id', battleId)
+      .eq('status', 'offered')  // Atomic: only update if still offered
+      .select()
+      .single()
+
+    if (updateError || !updatedBattle) {
+      console.error('Error accepting battle:', updateError)
+      return NextResponse.json({
+        error: 'Battle already accepted or no longer available'
+      }, { status: 409 })
+    }
+
+    return NextResponse.json({
+      success: true,
+      battle: {
+        id: updatedBattle.id,
+        status: updatedBattle.status,
+        prepStartsAt: updatedBattle.created_at,
+        prepLocksAt: updatedBattle.lock_prep_at,
+        scheduledAt: updatedBattle.scheduled_at,
+      },
+    })
+  } catch (err) {
+    console.error('Accept battle error:', err)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  }
 }

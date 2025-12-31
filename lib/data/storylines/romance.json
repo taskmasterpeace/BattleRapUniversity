@@ -1,0 +1,299 @@
+{
+  "code": "ROMANCE_TROUBLE",
+  "name": "Relationship Drama",
+  "description": "Your personal life is spilling into your professional one. Everyone's watching.",
+  "category": "romance",
+  "min_chapters": 2,
+  "max_chapters": 5,
+
+  "trigger": {
+    "type": "random",
+    "probability": 0.10,
+    "conditions": { "min_battles": 6, "reputation_min": 5 }
+  },
+
+  "chapters": [
+    {
+      "id": "romance_ch1",
+      "chapter_number": 1,
+      "title": "The DM",
+      "description": "Your partner found messages in your phone. Someone from the scene. Now they want answers.",
+      "delay": { "type": "immediate", "value": 0 },
+      "urgency": "timed",
+      "deadline_hours": 48,
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "come_clean",
+          "label": "Come Clean",
+          "description": "Tell the truth. Whatever happens, happens.",
+          "effects": [
+            { "type": "permanent", "family_bond": -0.5 },
+            { "type": "temporary", "stress": 25 }
+          ],
+          "leads_to": { "type": "chapter", "id": "romance_ch2_fallout" }
+        },
+        {
+          "id": "deny_everything",
+          "label": "Deny Everything",
+          "description": "It was nothing. You can explain.",
+          "effects": [
+            { "type": "temporary", "stress": 15 }
+          ],
+          "leads_to": { "type": "chapter", "id": "romance_ch2_lies" }
+        },
+        {
+          "id": "flip_it",
+          "label": "Turn It Around",
+          "description": "Why are they going through your phone? That's the real problem.",
+          "effects": [
+            { "type": "permanent", "family_bond": -1.0 },
+            { "type": "temporary", "stress": 20 }
+          ],
+          "leads_to": { "type": "chapter", "id": "romance_ch3_toxic" }
+        }
+      ]
+    },
+    {
+      "id": "romance_ch2_fallout",
+      "chapter_number": 2,
+      "title": "The Fallout",
+      "description": "They're hurt. You're hurt. The whole situation is messy. And somehow it's getting out to people in the scene.",
+      "delay": { "type": "days", "value": 3 },
+      "urgency": "timed",
+      "deadline_hours": 72,
+      "prep_days_cost": 1,
+      "choices": [
+        {
+          "id": "fight_for_it",
+          "label": "Fight For the Relationship",
+          "description": "You messed up. Make it right.",
+          "effects": [
+            { "type": "permanent", "family_bond": 0.5 },
+            { "type": "temporary", "prep_days_lost": 3 },
+            { "type": "temporary", "stress": 20 }
+          ],
+          "leads_to": { "type": "ending", "id": "romance_end_working_on_it" }
+        },
+        {
+          "id": "let_it_go",
+          "label": "Let It Go",
+          "description": "Maybe this needed to happen. Time to move on.",
+          "effects": [
+            { "type": "permanent", "family_bond": -1.5 },
+            { "type": "temporary", "stress": 30, "duration_days": 21 }
+          ],
+          "leads_to": { "type": "ending", "id": "romance_end_single" }
+        }
+      ]
+    },
+    {
+      "id": "romance_ch2_lies",
+      "chapter_number": 2,
+      "title": "More Receipts",
+      "description": "They found more messages. Your story doesn't hold up. Now they're threatening to expose everything publicly.",
+      "delay": { "type": "days", "value": 5 },
+      "urgency": "immediate",
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "confess_now",
+          "label": "Confess Everything",
+          "description": "Stop lying. Tell them everything before they tell the world.",
+          "effects": [
+            { "type": "permanent", "family_bond": -1.0 },
+            { "type": "permanent", "reputation": -0.3 }
+          ],
+          "leads_to": { "type": "chapter", "id": "romance_ch4_public" }
+        },
+        {
+          "id": "keep_denying",
+          "label": "Keep Denying",
+          "description": "Maybe they're bluffing. Hold the line.",
+          "effects": [
+            { "type": "temporary", "stress": 35 }
+          ],
+          "leads_to": { "type": "chapter", "id": "romance_ch4_exposed" }
+        }
+      ]
+    },
+    {
+      "id": "romance_ch3_toxic",
+      "chapter_number": 3,
+      "title": "Toxic Pattern",
+      "description": "Arguments every night. You can't focus on prep. This relationship is poison for your career.",
+      "delay": { "type": "battles", "value": 2 },
+      "urgency": "passive",
+      "prep_days_cost": 2,
+      "choices": [
+        {
+          "id": "end_it_clean",
+          "label": "End It Clean",
+          "description": "This isn't working. Walk away while you can.",
+          "effects": [
+            { "type": "permanent", "family_bond": -0.5 },
+            { "type": "temporary", "stress": -15, "duration_days": 21 }
+          ],
+          "leads_to": { "type": "ending", "id": "romance_end_single" }
+        },
+        {
+          "id": "counseling",
+          "label": "Suggest Counseling",
+          "description": "Try to fix this the right way.",
+          "effects": [
+            { "type": "permanent", "financial_stability": -0.5 },
+            { "type": "temporary", "prep_days_lost": 2 }
+          ],
+          "leads_to": { "type": "ending", "id": "romance_end_working_on_it" }
+        },
+        {
+          "id": "stay_toxic",
+          "label": "Stay In It",
+          "description": "You love them. It's complicated. That's life.",
+          "effects": [
+            { "type": "temporary", "stress": 20, "duration_days": 60 },
+            { "type": "permanent", "resilience": -0.3 }
+          ],
+          "leads_to": { "type": "ending", "id": "romance_end_toxic" }
+        }
+      ]
+    },
+    {
+      "id": "romance_ch4_public",
+      "chapter_number": 4,
+      "title": "Controlled Narrative",
+      "description": "You came clean before they could expose you. The story's out there but it's your version.",
+      "delay": { "type": "days", "value": 3 },
+      "urgency": "passive",
+      "prep_days_cost": 1,
+      "choices": [
+        {
+          "id": "address_it",
+          "label": "Address It in Battle",
+          "description": "Own it. Make it part of your story.",
+          "effects": [
+            { "type": "permanent", "reputation": 0.3 },
+            { "type": "permanent", "resilience": 0.5 }
+          ],
+          "leads_to": { "type": "ending", "id": "romance_end_owned_it" }
+        },
+        {
+          "id": "stay_quiet",
+          "label": "Don't Mention It",
+          "description": "Keep it out of your battles. That's personal.",
+          "effects": [
+            { "type": "permanent", "reputation": -0.3 }
+          ],
+          "leads_to": { "type": "ending", "id": "romance_end_quiet" }
+        }
+      ]
+    },
+    {
+      "id": "romance_ch4_exposed",
+      "chapter_number": 4,
+      "title": "Exposed",
+      "description": "They posted everything. Screenshots. Videos. Your name is trending for all the wrong reasons.",
+      "delay": { "type": "immediate", "value": 0 },
+      "urgency": "immediate",
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "damage_control",
+          "label": "Damage Control",
+          "description": "Put out a statement. Try to save your reputation.",
+          "effects": [
+            { "type": "permanent", "reputation": -1.0 },
+            { "type": "temporary", "prep_days_lost": 2 },
+            { "type": "temporary", "stress": 40 }
+          ],
+          "leads_to": { "type": "ending", "id": "romance_end_scandal" }
+        },
+        {
+          "id": "disappear",
+          "label": "Go Dark",
+          "description": "Delete socials. Let it blow over.",
+          "effects": [
+            { "type": "permanent", "reputation": -1.5 },
+            { "type": "temporary", "prep_days_lost": 5 },
+            { "type": "temporary", "stress": 30, "duration_days": 30 }
+          ],
+          "leads_to": { "type": "ending", "id": "romance_end_recovered" }
+        }
+      ]
+    }
+  ],
+
+  "endings": [
+    {
+      "id": "romance_end_working_on_it",
+      "type": "neutral",
+      "title": "Working On It",
+      "description": "You're trying to make it work. It's not easy but you're committed.",
+      "effects": [
+        { "type": "permanent", "family_bond": 0.5 },
+        { "type": "temporary", "stress": 10, "duration_days": 30 }
+      ]
+    },
+    {
+      "id": "romance_end_single",
+      "type": "neutral",
+      "title": "Single",
+      "description": "It's over. You're focusing on yourself and your career now.",
+      "effects": [
+        { "type": "permanent", "family_bond": -1.0 },
+        { "type": "temporary", "stress": -10, "duration_days": 14 }
+      ]
+    },
+    {
+      "id": "romance_end_toxic",
+      "type": "negative",
+      "title": "Toxic Love",
+      "description": "You stayed in a bad situation. It's affecting everything else in your life.",
+      "effects": [
+        { "type": "permanent", "resilience": -0.5 },
+        { "type": "temporary", "stress": 25, "duration_days": 60 }
+      ]
+    },
+    {
+      "id": "romance_end_owned_it",
+      "type": "positive",
+      "title": "Owned It",
+      "description": "You turned personal drama into bars. The culture respects that authenticity.",
+      "effects": [
+        { "type": "permanent", "reputation": 0.5 },
+        { "type": "permanent", "resilience": 0.5 }
+      ],
+      "badge": "Real Talk"
+    },
+    {
+      "id": "romance_end_quiet",
+      "type": "neutral",
+      "title": "Kept It Private",
+      "description": "You kept your personal life out of your battles. Some things aren't for the stage.",
+      "effects": [
+        { "type": "permanent", "family_bond": 0.3 }
+      ]
+    },
+    {
+      "id": "romance_end_scandal",
+      "type": "negative",
+      "title": "Scandal",
+      "description": "Your name is associated with drama now. Every opponent will bring it up.",
+      "effects": [
+        { "type": "permanent", "reputation": -1.5 },
+        { "type": "temporary", "stress": 35, "duration_days": 45 }
+      ],
+      "badge": "Drama King"
+    },
+    {
+      "id": "romance_end_recovered",
+      "type": "neutral",
+      "title": "Recovered",
+      "description": "You went dark and came back. The heat died down. People forgot. Almost.",
+      "effects": [
+        { "type": "permanent", "reputation": -0.5 },
+        { "type": "permanent", "resilience": 0.3 }
+      ]
+    }
+  ]
+}

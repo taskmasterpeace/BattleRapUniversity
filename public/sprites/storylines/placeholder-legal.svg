@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" fill="none">
+  <rect width="1920" height="1080" fill="#18181b"/>
+  <rect x="60" y="60" width="1800" height="960" stroke="#27272a" stroke-width="4" fill="none"/>
+  <rect x="80" y="80" width="1760" height="920" stroke="#3f3f46" stroke-width="2" fill="none" stroke-dasharray="20 10"/>
+  <text x="960" y="480" font-family="monospace" font-size="120" fill="#ef4444" text-anchor="middle" font-weight="bold">LEGAL</text>
+  <text x="960" y="600" font-family="monospace" font-size="60" fill="#71717a" text-anchor="middle">STORYLINE IMAGE</text>
+  <text x="960" y="700" font-family="monospace" font-size="40" fill="#52525b" text-anchor="middle">[PLACEHOLDER - Replace with generated art]</text>
+  <rect x="900" y="260" width="120" height="160" stroke="#ef4444" stroke-width="4" fill="none"/>
+  <line x1="920" y1="300" x2="1000" y2="300" stroke="#ef4444" stroke-width="3"/>
+  <line x1="920" y1="330" x2="980" y2="330" stroke="#ef4444" stroke-width="2"/>
+  <line x1="920" y1="360" x2="1000" y2="360" stroke="#ef4444" stroke-width="2"/>
+  <line x1="920" y1="390" x2="960" y2="390" stroke="#ef4444" stroke-width="2"/>
+</svg>

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" fill="none">
+  <rect width="1920" height="1080" fill="#18181b"/>
+  <rect x="60" y="60" width="1800" height="960" stroke="#27272a" stroke-width="4" fill="none"/>
+  <rect x="80" y="80" width="1760" height="920" stroke="#3f3f46" stroke-width="2" fill="none" stroke-dasharray="20 10"/>
+  <text x="960" y="480" font-family="monospace" font-size="120" fill="#f97316" text-anchor="middle" font-weight="bold">CAREER</text>
+  <text x="960" y="600" font-family="monospace" font-size="60" fill="#71717a" text-anchor="middle">STORYLINE IMAGE</text>
+  <text x="960" y="700" font-family="monospace" font-size="40" fill="#52525b" text-anchor="middle">[PLACEHOLDER - Replace with generated art]</text>
+  <rect x="880" y="280" width="160" height="120" stroke="#f97316" stroke-width="4" fill="none"/>
+  <line x1="880" y1="320" x2="1040" y2="320" stroke="#f97316" stroke-width="2"/>
+  <rect x="900" y="340" width="40" height="40" fill="#f97316" opacity="0.5"/>
+  <rect x="960" y="340" width="60" height="40" fill="#f97316" opacity="0.3"/>
+</svg>

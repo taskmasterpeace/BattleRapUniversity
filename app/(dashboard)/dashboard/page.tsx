@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useBattler } from "@/contexts/battler-context"
-import { getNextScheduledBattle } from "@/lib/battle-scheduler"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import {
@@ -17,40 +16,162 @@ import {
   Flame,
   Mail,
   AlertCircle,
+  Loader2,
+  Calendar,
 } from "lucide-react"
 import { LEAGUES } from "@/lib/leagues"
 import { BattlerPortrait } from "@/components/battler-portrait"
 import { motion } from "framer-motion"
-import { BATTLERS } from "@/lib/battlers"
 import { StressWidget } from "@/components/life-events/stress-widget"
 import { RegionalSceneWidget } from "@/components/dashboard/regional-scene-widget"
 import { RivalriesWidget } from "@/components/media/rivalries-widget"
+import { ActiveStorylines } from "@/components/dashboard/active-storylines"
 import { BattlerCard } from "@/components/dashboard/battler-card"
 import { StatsGrid } from "@/components/dashboard/stats-grid"
 import { PrepProgressWidget } from "@/components/battle-prep/prep-progress-widget"
 import type { StressState } from "@/lib/life-events"
 
+interface BattleOffer {
+  id: string
+  opponent: {
+    id: string
+    stageName: string
+    tier: string
+    portrait?: { spriteUrl?: string }
+  }
+  league: {
+    displayName: string
+    slug: string
+  }
+  purse: number
+  expiresAt: string
+}
+
+interface NextBattle {
+  id: string
+  opponent: {
+    id: string
+    stageName: string
+    tier: string
+    portrait?: { spriteUrl?: string }
+  }
+  league: {
+    displayName: string
+    slug: string
+  }
+  scheduledAt: string
+  daysUntil: number
+}
+
 export default function DashboardPage() {
-  const { activeBattler } = useBattler()
-  const [nextBattle, setNextBattle] = useState<ReturnType<typeof getNextScheduledBattle>>(null)
+  const { activeBattler, battlers, loading } = useBattler()
+  const [nextBattle, setNextBattle] = useState<NextBattle | null>(null)
+  const [battleOffers, setBattleOffers] = useState<BattleOffer[]>([])
+  const [recentBattles, setRecentBattles] = useState<any[]>([])
+  const [loadingData, setLoadingData] = useState(true)
 
+  // Fetch battle offers and next battle from API
   useEffect(() => {
-    if (activeBattler) {
-      const battle = getNextScheduledBattle(activeBattler.id)
-      setNextBattle(battle)
-    }
-  }, [activeBattler])
+    async function fetchDashboardData() {
+      try {
+        setLoadingData(true)
 
-  if (!activeBattler) {
+        // Fetch battle offers
+        const offersRes = await fetch('/api/battles/offers')
+        if (offersRes.ok) {
+          const offersData = await offersRes.json()
+          setBattleOffers((offersData.offers || []).slice(0, 2).map((offer: any) => ({
+            id: offer.id,
+            opponent: {
+              id: offer.opponent?.id,
+              stageName: offer.opponent?.name || offer.opponent?.stage_name,
+              tier: offer.opponent?.tier,
+              portrait: { spriteUrl: offer.opponent?.avatar || offer.opponent?.sprite_url }
+            },
+            league: {
+              displayName: offer.league?.name || 'Unknown League',
+              slug: offer.league?.short_code || 'unknown'
+            },
+            purse: offer.purse || 0,
+            expiresAt: offer.expiresAt || offer.expires_at
+          })))
+
+          // Check for accepted battles (next battle)
+          const acceptedBattle = (offersData.offers || []).find((b: any) => b.status === 'accepted')
+          if (acceptedBattle) {
+            const scheduledDate = new Date(acceptedBattle.scheduledAt || acceptedBattle.scheduled_at)
+            const now = new Date()
+            const daysUntil = Math.ceil((scheduledDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+
+            setNextBattle({
+              id: acceptedBattle.id,
+              opponent: {
+                id: acceptedBattle.opponent?.id,
+                stageName: acceptedBattle.opponent?.name || acceptedBattle.opponent?.stage_name,
+                tier: acceptedBattle.opponent?.tier,
+                portrait: { spriteUrl: acceptedBattle.opponent?.avatar || acceptedBattle.opponent?.sprite_url }
+              },
+              league: {
+                displayName: acceptedBattle.league?.name || 'Unknown League',
+                slug: acceptedBattle.league?.short_code || 'unknown'
+              },
+              scheduledAt: acceptedBattle.scheduledAt || acceptedBattle.scheduled_at,
+              daysUntil: Math.max(0, daysUntil)
+            })
+          }
+        }
+
+        // Fetch recent battles
+        const historyRes = await fetch('/api/battles/history')
+        if (historyRes.ok) {
+          const historyData = await historyRes.json()
+          setRecentBattles((historyData.battles || []).slice(0, 2).map((battle: any) => ({
+            id: battle.id,
+            opponent: {
+              id: battle.opponent?.id,
+              stageName: battle.opponent?.name || battle.opponent?.stage_name,
+              portrait: { spriteUrl: battle.opponent?.avatar }
+            },
+            result: battle.result,
+            league: { displayName: battle.league }
+          })))
+        }
+      } catch (err) {
+        console.error('Failed to fetch dashboard data:', err)
+      } finally {
+        setLoadingData(false)
+      }
+    }
+
+    fetchDashboardData()
+  }, [])
+
+  if (loading || loadingData) {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
-        <p className="text-zinc-400">Loading battler data...</p>
+        <Loader2 className="w-8 h-8 animate-spin text-orange-500" />
       </div>
     )
   }
 
-  const battleOpponent = nextBattle ? BATTLERS.find((b) => b.id === nextBattle.opponentId) : null
-  const battleLeague = nextBattle ? LEAGUES.find((l) => l.slug === nextBattle.leagueSlug) : null
+  if (!activeBattler) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[50vh] gap-6">
+        <div className="w-24 h-24 bg-zinc-800 border-2 border-zinc-700 flex items-center justify-center">
+          <Swords className="w-12 h-12 text-zinc-600" />
+        </div>
+        <div className="text-center">
+          <h2 className="text-xl font-display font-bold text-zinc-300 mb-2">NO BATTLER SIGNED</h2>
+          <p className="text-zinc-500 text-sm">Sign or create a battler to get started</p>
+        </div>
+        <Link href="/roster">
+          <Button className="bg-orange-600 hover:bg-orange-500 text-white font-display font-bold px-8">
+            GO TO ROSTER
+          </Button>
+        </Link>
+      </div>
+    )
+  }
 
   const mockStress: StressState = {
     level: activeBattler.stats?.stress || 35,
@@ -69,35 +190,9 @@ export default function DashboardPage() {
     ],
   }
 
-  const battleOffers = [
-    {
-      id: "offer-1",
-      opponent: BATTLERS.find((b) => b.id !== activeBattler.id && b.tier === "prospect"),
-      league: LEAGUES[2],
-      purse: 500,
-      daysToRespond: 3,
-    },
-    {
-      id: "offer-2",
-      opponent: BATTLERS.find((b) => b.id !== activeBattler.id && b.tier === "contender"),
-      league: LEAGUES[1],
-      purse: 1500,
-      daysToRespond: 5,
-    },
-  ].filter((o) => o.opponent)
-
-  const recentBattles = [
-    { opponent: BATTLERS.find((b) => b.id !== activeBattler.id), result: "W", league: LEAGUES[0] },
-    {
-      opponent: BATTLERS.find((b) => b.id !== activeBattler.id && b.tier === "veteran"),
-      result: "L",
-      league: LEAGUES[1],
-    },
-  ].filter((b) => b.opponent)
-
   const pendingLifeEvents = 2
 
-  const hasActivePrepBattle = nextBattle && battleOpponent
+  const hasActivePrepBattle = nextBattle !== null
 
   return (
     <div className="p-4 md:p-6 space-y-6">
@@ -156,17 +251,17 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {hasActivePrepBattle && (
+      {hasActivePrepBattle && nextBattle && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.18 }}
         >
           <PrepProgressWidget
-            battleId={nextBattle.oddsId || "next"}
-            opponentName={battleOpponent.stageName}
-            opponentAvatar={battleOpponent.portrait?.spriteUrl}
-            league={battleLeague?.displayName || "Unknown League"}
+            battleId={nextBattle.id || "next"}
+            opponentName={nextBattle.opponent?.stageName || "Unknown"}
+            opponentAvatar={nextBattle.opponent?.portrait?.spriteUrl}
+            league={nextBattle.league?.displayName || "Unknown League"}
             daysUntilBattle={nextBattle.daysUntil}
             daysUntilPrepLock={Math.max(0, nextBattle.daysUntil - 2)}
             research={{
@@ -195,7 +290,7 @@ export default function DashboardPage() {
       )}
 
       {/* Next Battle Card - Hero */}
-      {nextBattle && battleOpponent && battleLeague && (
+      {nextBattle && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -226,26 +321,30 @@ export default function DashboardPage() {
 
                 <div className="flex flex-col items-center gap-1">
                   <span className="text-2xl font-display font-black text-zinc-600">VS</span>
-                  <span className="text-[10px] text-zinc-600 font-mono">{battleLeague.displayName}</span>
+                  <span className="text-[10px] text-zinc-600 font-mono">{nextBattle.league?.displayName}</span>
                 </div>
 
                 <div className="flex-1 text-center">
                   <div className="w-20 h-20 mx-auto mb-2 border-2 border-red-500/50 bg-zinc-800 overflow-hidden">
-                    <BattlerPortrait battler={battleOpponent} size="md" showFrame={false} />
+                    {nextBattle.opponent?.portrait?.spriteUrl ? (
+                      <img src={nextBattle.opponent.portrait.spriteUrl} alt={nextBattle.opponent.stageName} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full bg-zinc-700" />
+                    )}
                   </div>
-                  <p className="font-display font-bold text-red-400 text-sm truncate">{battleOpponent.stageName}</p>
-                  <p className="text-xs text-zinc-500">{battleOpponent.tier}</p>
+                  <p className="font-display font-bold text-red-400 text-sm truncate">{nextBattle.opponent?.stageName}</p>
+                  <p className="text-xs text-zinc-500">{nextBattle.opponent?.tier}</p>
                 </div>
               </div>
 
               <div className="mt-4 flex gap-2">
-                <Link href="/battle/next/prep" className="flex-1">
+                <Link href={`/battle/${nextBattle.id}/prep`} className="flex-1">
                   <Button className="w-full bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700 font-display">
                     <CalendarCheck className="w-4 h-4 mr-2" />
                     PREP
                   </Button>
                 </Link>
-                <Link href={`/battle/${nextBattle.oddsId}/mode`} className="flex-1">
+                <Link href={`/battle/${nextBattle.id}/mode`} className="flex-1">
                   <Button className="w-full bg-orange-600 hover:bg-orange-500 text-white font-display font-bold">
                     <Play className="w-4 h-4 mr-2" />
                     BATTLE NOW
@@ -279,28 +378,32 @@ export default function DashboardPage() {
               </div>
             </CardHeader>
             <CardContent className="space-y-2">
-              {battleOffers.map((offer) => (
-                <div
-                  key={offer.id}
-                  className="flex items-center justify-between p-3 bg-zinc-800 border border-zinc-700 hover:border-blue-500/50 transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    {offer.opponent && (
-                      <div className="w-10 h-10 border border-zinc-600 overflow-hidden">
-                        <BattlerPortrait battler={offer.opponent} size="sm" showFrame={false} />
+              {battleOffers.map((offer) => {
+                const expiresDate = offer.expiresAt ? new Date(offer.expiresAt) : null
+                const daysLeft = expiresDate ? Math.max(0, Math.ceil((expiresDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24))) : 0
+                return (
+                  <div
+                    key={offer.id}
+                    className="flex items-center justify-between p-3 bg-zinc-800 border border-zinc-700 hover:border-blue-500/50 transition-colors"
+                  >
+                    <div className="flex items-center gap-3">
+                      {offer.opponent?.portrait?.spriteUrl && (
+                        <div className="w-10 h-10 border border-zinc-600 overflow-hidden">
+                          <img src={offer.opponent.portrait.spriteUrl} alt={offer.opponent.stageName} className="w-full h-full object-cover" />
+                        </div>
+                      )}
+                      <div>
+                        <p className="text-sm font-display font-bold text-zinc-200">{offer.opponent?.stageName}</p>
+                        <p className="text-xs text-zinc-500">{offer.league?.displayName}</p>
                       </div>
-                    )}
-                    <div>
-                      <p className="text-sm font-display font-bold text-zinc-200">{offer.opponent?.stageName}</p>
-                      <p className="text-xs text-zinc-500">{offer.league?.displayName}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-display font-bold text-green-400">${offer.purse.toLocaleString()}</p>
+                      <p className="text-xs text-zinc-500">{daysLeft}d left</p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-sm font-display font-bold text-green-400">${offer.purse.toLocaleString()}</p>
-                    <p className="text-xs text-zinc-500">{offer.daysToRespond}d left</p>
-                  </div>
-                </div>
-              ))}
+                )
+              })}
             </CardContent>
           </Card>
         </motion.div>
@@ -316,11 +419,21 @@ export default function DashboardPage() {
         <Card className="bg-zinc-900 border-zinc-800">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs text-zinc-500 font-display">RECORD</p>
-                <p className="text-xl font-display font-bold text-zinc-100">
+              <div className="flex-1">
+                <p className="text-xs text-zinc-500 font-display mb-1">RECORD</p>
+                <p className="text-2xl font-display font-bold text-zinc-100 mb-1">
                   {activeBattler.stats?.wins || 0}-{activeBattler.stats?.losses || 0}
                 </p>
+                <div className="flex items-center gap-3 text-xs">
+                  <span className="text-zinc-400">
+                    {activeBattler.stats?.totalBattles || 0} battles
+                  </span>
+                  {(activeBattler.stats?.totalBattles || 0) > 0 && (
+                    <span className="text-green-400 font-bold">
+                      {activeBattler.stats?.winRate || 0}% win rate
+                    </span>
+                  )}
+                </div>
               </div>
               <TrendingUp className="w-8 h-8 text-green-500/50" />
             </div>
@@ -356,13 +469,20 @@ export default function DashboardPage() {
         <Card className="bg-zinc-900 border-zinc-800">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs text-zinc-500 font-display">BATTLES</p>
+              <div className="flex-1">
+                <p className="text-xs text-zinc-500 font-display mb-1">CAREER</p>
                 <p className="text-xl font-display font-bold text-zinc-100">
-                  {(activeBattler.stats?.wins || 0) + (activeBattler.stats?.losses || 0)}
+                  {activeBattler.careerDisplay || '0 days'}
                 </p>
+                {activeBattler.streak !== 0 && (
+                  <p className="text-xs mt-1">
+                    <span className={activeBattler.streak > 0 ? 'text-green-400' : 'text-red-400'}>
+                      {activeBattler.streak > 0 ? `${activeBattler.streak}W` : `${Math.abs(activeBattler.streak)}L`} streak
+                    </span>
+                  </p>
+                )}
               </div>
-              <Swords className="w-8 h-8 text-zinc-500/50" />
+              <Calendar className="w-8 h-8 text-blue-500/50" />
             </div>
           </CardContent>
         </Card>
@@ -390,12 +510,14 @@ export default function DashboardPage() {
                 </div>
               </CardHeader>
               <CardContent className="space-y-2">
-                {recentBattles.map((battle, i) => (
-                  <div key={i} className="flex items-center justify-between p-2 bg-zinc-800 border border-zinc-700">
+                {recentBattles.length === 0 ? (
+                  <p className="text-sm text-zinc-500 text-center py-4">No battles yet</p>
+                ) : recentBattles.map((battle, i) => (
+                  <div key={battle.id || i} className="flex items-center justify-between p-2 bg-zinc-800 border border-zinc-700">
                     <div className="flex items-center gap-2">
-                      {battle.opponent && (
+                      {battle.opponent?.portrait?.spriteUrl && (
                         <div className="w-8 h-8 border border-zinc-600 overflow-hidden">
-                          <BattlerPortrait battler={battle.opponent} size="sm" showFrame={false} />
+                          <img src={battle.opponent.portrait.spriteUrl} alt={battle.opponent.stageName} className="w-full h-full object-cover" />
                         </div>
                       )}
                       <div>
@@ -422,13 +544,22 @@ export default function DashboardPage() {
           >
             <RivalriesWidget />
           </motion.div>
+
+          {/* Active Storylines */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.6 }}
+          >
+            <ActiveStorylines battlerId={activeBattler.id} />
+          </motion.div>
         </div>
 
         {/* Right Column: Regional Scene */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.6 }}
+          transition={{ duration: 0.5, delay: 0.65 }}
         >
           <RegionalSceneWidget
             playerCitySlug={activeBattler.hometown?.toLowerCase().replace(/\s+/g, "-") || "atlanta"}
@@ -441,7 +572,7 @@ export default function DashboardPage() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.65 }}
+        transition={{ duration: 0.5, delay: 0.7 }}
         className="grid grid-cols-2 gap-3"
       >
         <Link href="/media">

@@ -1,0 +1,253 @@
+{
+  "code": "FAMILY_DRAMA",
+  "name": "Family Crisis",
+  "description": "Your family needs you. But your career is taking off...",
+  "category": "family",
+  "min_chapters": 2,
+  "max_chapters": 5,
+
+  "trigger": {
+    "type": "random",
+    "probability": 0.12,
+    "conditions": { "min_battles": 5, "family_bond_max": 7 }
+  },
+
+  "chapters": [
+    {
+      "id": "family_ch1",
+      "chapter_number": 1,
+      "title": "The First Call",
+      "description": "Your mom called. Something's wrong at home. You can hear the stress in her voice.",
+      "delay": { "type": "immediate", "value": 0 },
+      "urgency": "timed",
+      "deadline_hours": 72,
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "go_home",
+          "label": "Go Home",
+          "description": "Drop everything and go. Family comes first.",
+          "effects": [
+            { "type": "permanent", "family_bond": 1.5 },
+            { "type": "temporary", "prep_days_lost": 3 }
+          ],
+          "leads_to": { "type": "ending", "id": "family_end_resolved_early" }
+        },
+        {
+          "id": "send_money",
+          "label": "Send Money",
+          "description": "Send support but stay focused on the upcoming battle.",
+          "effects": [
+            { "type": "permanent", "family_bond": -0.3 },
+            { "type": "permanent", "financial_stability": -0.5 }
+          ],
+          "leads_to": { "type": "chapter", "id": "family_ch2" }
+        },
+        {
+          "id": "ignore",
+          "label": "Focus on Career",
+          "description": "They'll understand. You have a battle coming up.",
+          "effects": [
+            { "type": "permanent", "family_bond": -1.0 },
+            { "type": "temporary", "stress": 15 }
+          ],
+          "leads_to": { "type": "chapter", "id": "family_ch3_crisis" }
+        }
+      ]
+    },
+    {
+      "id": "family_ch2",
+      "chapter_number": 2,
+      "title": "Things Getting Worse",
+      "description": "The money helped, but they still need you. Your sister called crying.",
+      "delay": { "type": "battles", "value": 2 },
+      "urgency": "timed",
+      "deadline_hours": 48,
+      "prep_days_cost": 1,
+      "choices": [
+        {
+          "id": "finally_go",
+          "label": "Finally Go Home",
+          "description": "You've put it off long enough. Time to handle this.",
+          "effects": [
+            { "type": "permanent", "family_bond": 0.5 },
+            { "type": "temporary", "prep_days_lost": 2 }
+          ],
+          "leads_to": { "type": "ending", "id": "family_end_resolved" }
+        },
+        {
+          "id": "keep_sending",
+          "label": "Keep Sending Money",
+          "description": "Maybe more money will fix it. You can't leave now.",
+          "effects": [
+            { "type": "permanent", "family_bond": -0.5 },
+            { "type": "permanent", "financial_stability": -1.0 }
+          ],
+          "leads_to": { "type": "chapter", "id": "family_ch4_broke" }
+        }
+      ]
+    },
+    {
+      "id": "family_ch3_crisis",
+      "chapter_number": 3,
+      "title": "The Fallout",
+      "description": "Your family stopped calling. You hear through others that things got bad. Real bad.",
+      "delay": { "type": "battles", "value": 3 },
+      "urgency": "passive",
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "reach_out",
+          "label": "Try to Reconnect",
+          "description": "Swallow your pride. Pick up the phone.",
+          "effects": [
+            { "type": "permanent", "family_bond": 0.3 },
+            { "type": "temporary", "stress": 20 }
+          ],
+          "leads_to": { "type": "chapter", "id": "family_ch5_redemption" }
+        },
+        {
+          "id": "move_on",
+          "label": "They Made Their Choice",
+          "description": "You can't force them to forgive you. Focus on what you can control.",
+          "effects": [
+            { "type": "permanent", "family_bond": -2.0 }
+          ],
+          "leads_to": { "type": "ending", "id": "family_end_estranged" }
+        }
+      ]
+    },
+    {
+      "id": "family_ch4_broke",
+      "chapter_number": 4,
+      "title": "Running Dry",
+      "description": "You're broke from sending money, and nothing's changed at home. The stress is showing in your battles.",
+      "delay": { "type": "battles", "value": 2 },
+      "urgency": "timed",
+      "deadline_hours": 72,
+      "prep_days_cost": 1,
+      "choices": [
+        {
+          "id": "finally_go_broke",
+          "label": "Just Go Home",
+          "description": "Money didn't work. Maybe you being there will.",
+          "effects": [
+            { "type": "permanent", "family_bond": 0.8 },
+            { "type": "temporary", "prep_days_lost": 3 }
+          ],
+          "leads_to": { "type": "ending", "id": "family_end_resolved" }
+        },
+        {
+          "id": "give_up",
+          "label": "Stop Trying",
+          "description": "You gave everything you could. It's not enough.",
+          "effects": [
+            { "type": "permanent", "family_bond": -1.5 },
+            { "type": "permanent", "resilience": -0.5 }
+          ],
+          "leads_to": { "type": "ending", "id": "family_end_estranged" }
+        }
+      ]
+    },
+    {
+      "id": "family_ch5_redemption",
+      "chapter_number": 5,
+      "title": "Second Chance",
+      "description": "They answered. It's awkward, but they're willing to talk. This might be your last chance.",
+      "delay": { "type": "days", "value": 7 },
+      "urgency": "timed",
+      "deadline_hours": 48,
+      "prep_days_cost": 2,
+      "choices": [
+        {
+          "id": "make_time",
+          "label": "Make Time For Them",
+          "description": "Cancel everything. Be there. Really be there.",
+          "effects": [
+            { "type": "permanent", "family_bond": 1.5 },
+            { "type": "temporary", "prep_days_lost": 3 },
+            { "type": "temporary", "stress": -10 }
+          ],
+          "leads_to": { "type": "ending", "id": "family_end_healed" }
+        },
+        {
+          "id": "half_effort",
+          "label": "Quick Visit",
+          "description": "Stop by, but you've got obligations. They'll understand.",
+          "effects": [
+            { "type": "permanent", "family_bond": -0.5 },
+            { "type": "temporary", "prep_days_lost": 1 }
+          ],
+          "leads_to": { "type": "ending", "id": "family_end_distant" }
+        }
+      ]
+    }
+  ],
+
+  "endings": [
+    {
+      "id": "family_end_resolved_early",
+      "type": "positive",
+      "title": "Family First",
+      "description": "You dropped everything when it mattered. They'll never forget that. Your mom hugged you at the door and didn't let go for five minutes.",
+      "effects": [
+        { "type": "permanent", "family_bond": 1.0 },
+        { "type": "temporary", "stress": -15, "duration_days": 30 }
+      ],
+      "badge": "Family First"
+    },
+    {
+      "id": "family_end_resolved",
+      "type": "positive",
+      "title": "Better Late Than Never",
+      "description": "It took a while, but you came through. The damage isn't fully healed, but you're working on it.",
+      "effects": [
+        { "type": "permanent", "family_bond": 0.5 }
+      ]
+    },
+    {
+      "id": "family_end_healed",
+      "type": "positive",
+      "title": "Stronger Than Before",
+      "description": "Going through this together made your family bond stronger. They show up to your battles now. Front row.",
+      "effects": [
+        { "type": "permanent", "family_bond": 2.0 },
+        { "type": "permanent", "resilience": 0.5 },
+        { "type": "temporary", "stress": -20, "duration_days": 60 }
+      ],
+      "badge": "Blood Is Thicker"
+    },
+    {
+      "id": "family_end_distant",
+      "type": "neutral",
+      "title": "Distant But Civil",
+      "description": "You're not close anymore, but you're not enemies. Holiday phone calls and birthday texts. It's something.",
+      "effects": [
+        { "type": "permanent", "family_bond": -0.5 }
+      ]
+    },
+    {
+      "id": "family_end_estranged",
+      "type": "negative",
+      "title": "Estranged",
+      "description": "Your family has moved on without you. Your name doesn't come up at dinner anymore. The success tastes different now.",
+      "effects": [
+        { "type": "permanent", "family_bond": -2.0 },
+        { "type": "temporary", "stress": 25, "duration_days": 60 }
+      ],
+      "badge": "Forgot Where You Came From"
+    },
+    {
+      "id": "family_end_catastrophe",
+      "type": "catastrophic",
+      "title": "It's Too Late",
+      "description": "Something happened while you were busy. You weren't there. You'll carry this forever. Every success is hollow now.",
+      "effects": [
+        { "type": "permanent", "family_bond": -5.0 },
+        { "type": "permanent", "resilience": -1.0 },
+        { "type": "temporary", "stress": 50, "duration_days": 90 }
+      ],
+      "badge": "Regret"
+    }
+  ]
+}

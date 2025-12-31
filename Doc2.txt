@@ -1,0 +1,768 @@
+Cool. Then I’m going to give you what you actually asked for: a **master build brief** you can hand to an “autonomous” dev AI and tell it:
+
+> “Implement *this* as the first playable prototype.”
+
+I’ll assume: **TypeScript + Next.js + Supabase**. You can change libraries later if you want; the structure still holds.
+
+I’m not going to re-explain concepts you already read. I’m going to turn them into **explicit build instructions.**
+
+---
+
+# MASTER BUILD SPEC – Algorithm Institute of BattleRap (V1 Prototype)
+
+## 0. Goal of This Prototype
+
+**Deliverable:**
+A working web app where:
+
+* A user:
+
+  * Creates **one battler**.
+  * Chooses a **primary league** (Small Room or Main Stage).
+  * Receives **AI-created battle offers** against AI battlers.
+  * Accepts an offer and gets a **prep calendar**.
+  * Sets **one prep focus per day** until lock.
+  * At battle time, the system **simulates a 3-round battle**:
+
+    * Segment-based peaks and averages.
+    * Crowd/momentum.
+  * User can **watch the battle** via a structured replay screen.
+  * A **blog-style recap article** is generated and visible in a media feed.
+
+**Out of scope for V1:**
+
+* Human vs human matchmaking.
+* Player stables (multiple managed battlers).
+* Audio, voice, live text chat, generated bars.
+
+---
+
+## 1. Tech Stack & Project Setup
+
+**Core stack**
+
+* **Frontend:** Next.js (App Router) + React + TypeScript
+* **Backend:** Next.js API routes + Supabase (Postgres + Auth + Cron)
+* **Client data fetching:** TanStack Query (React Query)
+* **Styling:** TailwindCSS
+* **DB:** Supabase Postgres with Row-Level Security for user data
+
+**Initial folder structure**
+
+```txt
+/ai-battlerap
+  /app
+    /api
+      /battler
+      /battles
+      /news
+    /dashboard
+    /onboarding
+    /battle
+    /media
+  /components
+    battler/
+    battle/
+    prep/
+    ui/
+  /lib
+    db/
+    models/
+    game/
+    services/
+  /scripts
+  /tests
+```
+
+**Environment**
+
+* Configure Supabase URL + anon key in `.env.local`.
+* Ensure Supabase Auth is used for Next.js (middleware or server components where applicable).
+
+---
+
+## 2. Database Schema (Supabase / Postgres)
+
+**NOTE FOR THE AUTONOMOUS AI:**
+Generate SQL migration files to create these tables. Use snake_case. Use UUID primary keys.
+
+### 2.1 users
+
+Use Supabase’s `auth.users` for identity – no custom `users` table necessary unless you want extra profile fields.
+
+Create a `profiles` table:
+
+```sql
+create table profiles (
+  id uuid primary key references auth.users(id) on delete cascade,
+  display_name text not null,
+  created_at timestamptz not null default now()
+);
+```
+
+### 2.2 leagues
+
+```sql
+create table leagues (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  short_code text not null unique,
+  round_length_minutes int not null check (round_length_minutes in (2,3)),
+  base_crowd_factor numeric not null,      -- e.g., 0.4, 0.7
+  writing_weight numeric not null,         -- 0..1
+  performance_weight numeric not null,     -- 0..1
+  booking_pace_days int not null,          -- average days between offers
+  description text,
+  created_at timestamptz not null default now()
+);
+```
+
+Seed two leagues:
+
+* `SMALL_ROOM` – 2 min rounds, higher writing weight.
+* `MAIN_STAGE` – 3 min rounds, higher performance weight.
+
+### 2.3 battlers
+
+```sql
+create table battlers (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references auth.users(id),
+  stage_name text not null,
+  region text,
+  primary_league_id uuid references leagues(id),
+  style_tags jsonb not null default '[]'::jsonb,  -- ["angles","gun_bars"]
+  tier text not null default 'low',              -- low, mid, top, god
+  is_ai boolean not null default false,
+  created_at timestamptz not null default now()
+);
+```
+
+### 2.4 battler_attributes
+
+```sql
+create table battler_attributes (
+  battler_id uuid primary key references battlers(id) on delete cascade,
+  writing jsonb not null,       -- {lyricism: int, wordplay: int, creativity: int}
+  performance jsonb not null,   -- {stage_presence, crowd_control, delivery}
+  personal jsonb not null,      -- {financial_stability, reputation, family_bond}
+  resilience int not null check (resilience between 1 and 10),
+  public_knowledge int not null default 0, -- 0..100
+  xp jsonb not null default '{}'::jsonb,
+  updated_at timestamptz not null default now()
+);
+```
+
+### 2.5 rankings
+
+```sql
+create table rankings (
+  battler_id uuid primary key references battlers(id) on delete cascade,
+  rating int not null default 1200,
+  wins int not null default 0,
+  losses int not null default 0,
+  streak int not null default 0
+);
+```
+
+### 2.6 battles
+
+```sql
+create table battles (
+  id uuid primary key default gen_random_uuid(),
+  league_id uuid not null references leagues(id),
+  battler_player_id uuid not null references battlers(id),
+  battler_ai_id uuid not null references battlers(id),
+  scheduled_at timestamptz not null,
+  lock_prep_at timestamptz not null,
+  status text not null check (status in (
+    'offered','accepted','declined','locked','simulated','completed','forfeit'
+  )) default 'offered',
+  winner_battler_id uuid references battlers(id),
+  no_show_player boolean not null default false,
+  created_at timestamptz not null default now()
+);
+```
+
+### 2.7 prep_blocks
+
+```sql
+create table prep_blocks (
+  id uuid primary key default gen_random_uuid(),
+  battle_id uuid not null references battles(id) on delete cascade,
+  battler_id uuid not null references battlers(id) on delete cascade,
+  day_index int not null, -- 1..N days before battle or relative index
+  focus text not null check (focus in ('research','writing','performance','life','rest')),
+  auto_generated boolean not null default false,
+  created_at timestamptz not null default now(),
+  unique (battle_id, battler_id, day_index)
+);
+```
+
+### 2.8 battle_rounds
+
+```sql
+create table battle_rounds (
+  id uuid primary key default gen_random_uuid(),
+  battle_id uuid not null references battles(id) on delete cascade,
+  round_index int not null check (round_index between 1 and 3),
+  battler_id uuid not null references battlers(id),
+  average_score numeric not null,
+  peak_score numeric not null,
+  consistency_score numeric not null,
+  momentum_delta numeric not null,
+  crowd_reaction int not null, -- 0..100
+  choked boolean not null default false,
+  summary_text text,
+  created_at timestamptz not null default now(),
+  unique (battle_id, round_index, battler_id)
+);
+```
+
+### 2.9 battle_segments
+
+```sql
+create table battle_segments (
+  id uuid primary key default gen_random_uuid(),
+  battle_id uuid not null references battles(id) on delete cascade,
+  round_index int not null,
+  segment_index int not null,
+  battler_id uuid not null references battlers(id),
+  segment_score numeric not null,
+  event_flags jsonb not null default '[]'::jsonb,
+  created_at timestamptz not null default now()
+);
+```
+
+### 2.10 life_events
+
+```sql
+create table life_events (
+  id uuid primary key default gen_random_uuid(),
+  battler_id uuid not null references battlers(id) on delete cascade,
+  event_type text not null,
+  trigger_source text not null, -- 'time','attribute','random','battle_result'
+  choice_made text,
+  attribute_changes jsonb,
+  public boolean not null default false,
+  created_at timestamptz not null default now()
+);
+```
+
+### 2.11 news_articles
+
+```sql
+create table news_articles (
+  id uuid primary key default gen_random_uuid(),
+  title text not null,
+  slug text not null unique,
+  type text not null check (type in (
+    'battle_recap','scandal','career_update'
+  )),
+  primary_battler_id uuid references battlers(id),
+  secondary_battler_id uuid references battlers(id),
+  battle_id uuid references battles(id),
+  league_id uuid references leagues(id),
+  body_markdown text not null,
+  meta_json jsonb not null default '{}'::jsonb,
+  published_at timestamptz not null default now()
+);
+```
+
+---
+
+## 3. Backend Modules & APIs (Next.js API Routes)
+
+### 3.1 Shared TS models
+
+Under `/lib/models/`, define TypeScript interfaces mirroring DB tables.
+
+```ts
+export interface League {
+  id: string;
+  name: string;
+  short_code: string;
+  round_length_minutes: number;
+  base_crowd_factor: number;
+  writing_weight: number;
+  performance_weight: number;
+  booking_pace_days: number;
+  description?: string;
+}
+
+export interface Battler {
+  id: string;
+  user_id: string | null;
+  stage_name: string;
+  region?: string;
+  primary_league_id: string;
+  style_tags: string[];
+  tier: 'low' | 'mid' | 'top' | 'god';
+  is_ai: boolean;
+}
+
+// Etc. for BattlerAttributes, Battle, PrepBlock, BattleRound, BattleSegment, NewsArticle.
+```
+
+### 3.2 Auth & context
+
+Implement a simple server-side auth helper that:
+
+* Retrieves `user` from Supabase.
+* Throws/returns 401 if not authenticated for protected endpoints.
+
+### 3.3 API endpoints
+
+#### 3.3.1 POST /api/battler/create
+
+* **Input**:
+
+  * `stage_name`
+  * `region`
+  * `primary_league_id`
+  * `style_tags` (string[])
+
+* **Logic**:
+
+  * Create battler for authenticated user.
+  * Initialize battler_attributes with baseline values (1–10 with a small pool of points).
+  * Initialize rankings row.
+
+* **Output**:
+
+  * Battler + attributes.
+
+#### 3.3.2 GET /api/battler/me
+
+* **Input**: none
+* **Logic**:
+
+  * Fetch user’s battler (assume 1 for V1).
+  * Include attributes, ranking, upcoming battles (next one).
+* **Output**:
+
+  * Battler, battler_attributes, rankings, `next_battle` (if any).
+
+#### 3.3.3 GET /api/battles/offers
+
+* **Input**: none
+* **Logic**:
+
+  * Return all `battles` where:
+
+    * `battler_player_id` = user’s battler
+    * `status` = `offered`.
+* **Output**:
+
+  * Array of battle offers.
+
+#### 3.3.4 POST /api/battles/:id/accept
+
+* **Input**: `battle_id` in URL.
+* **Logic**:
+
+  * Check that battle belongs to user’s battler and `status = offered`.
+  * Set `status = accepted`.
+* **Output**:
+
+  * Updated battle.
+
+#### 3.3.5 POST /api/battles/:id/decline
+
+* Same as above, `status = declined`, optional minor reputation penalty.
+
+#### 3.3.6 GET /api/battles/:id
+
+* **Input**: `battle_id` in URL.
+* **Logic**:
+
+  * Return battle, rounds, segments, prep summary.
+* **Output**:
+
+  * Battle details with nested data.
+
+#### 3.3.7 GET /api/battles/:id/prep
+
+* **Logic**:
+
+  * Return list of `prep_blocks` for that battle/battler.
+  * Also return `days_remaining`, `lock_prep_at`.
+
+#### 3.3.8 POST /api/battles/:id/prep
+
+* **Input**:
+
+  * `day_index` (int)
+  * `focus` (one of `research`, `writing`, `performance`, `life`, `rest`)
+* **Logic**:
+
+  * Validate user owns the battler and battle.
+  * Validate `now < lock_prep_at`.
+  * Upsert `prep_blocks` row for (battle, battler, day_index).
+
+#### 3.3.9 GET /api/news
+
+* **Input**:
+
+  * Optional query filters: `league_id`, `battler_id`, `type`.
+* **Logic**:
+
+  * Return recent `news_articles` ordered by `published_at DESC`.
+
+#### 3.3.10 Cron / internal: POST /api/internal/generate-battle-offers
+
+* **Auth**: protected by secret token.
+* **Logic**:
+
+  * For each **player battler**:
+
+    * Check time since last battle.
+    * With probability based on league’s `booking_pace_days`, generate a new `battles` record:
+
+      * Choose league (battler’s primary).
+      * Find AI opponent with similar rating.
+      * Set `scheduled_at` ~ 7–14 days ahead.
+      * `lock_prep_at = scheduled_at - 1 day`.
+* Called daily via Supabase cron.
+
+#### 3.3.11 Cron / internal: POST /api/internal/run-due-battles
+
+* **Logic**:
+
+  * Select all `battles` where:
+
+    * `scheduled_at <= now()`
+    * `status in ('accepted','locked')`
+  * For each:
+
+    * Detect no-show conditions (no prep_blocks by lock time).
+    * Generate auto `rest` or `life` prep if needed; mark `no_show_player = true`.
+    * Call `simulateBattle(battleId)` (see next section).
+    * Set `status = 'completed'` after sim.
+
+---
+
+## 4. Simulation Module
+
+Create `/lib/game/simulation.ts` with a pure function:
+
+```ts
+export async function simulateBattle(battleId: string, options?: { seed?: number }): Promise<void> {
+  // Load battle, battlers, attributes, prep, league.
+  // Run sim, write rounds, segments, update rankings.
+}
+```
+
+### 4.1 Steps inside simulateBattle
+
+1. **Load data**
+
+   * battle row
+   * league config
+   * battler_player attributes + ranking
+   * battler_ai attributes + ranking
+   * prep_blocks for both battlers
+
+2. **Build prep profiles**
+
+For each battler:
+
+```ts
+type PrepProfile = {
+  researchDays: number;
+  writingDays: number;
+  performanceDays: number;
+  lifeDays: number;
+  restDays: number;
+};
+```
+
+Compute counts per focus.
+
+3. **Apply prep modifiers**
+
+Define functions:
+
+```ts
+function applyPrepModifiers(
+  attributes: BattlerAttributes,
+  prep: PrepProfile
+): ModifiedAttributes {
+  // Increase relevant attributes slightly based on focus counts.
+  // Example: each writing day adds +0.2 to writing stats, capped at some max.
+}
+```
+
+4. **Determine segments per round**
+
+```ts
+const segmentsPerRound = league.round_length_minutes === 2 ? 4 : 6;
+```
+
+5. **Simulate each round**
+
+Pseudocode:
+
+```ts
+for roundIndex in [1,2,3]:
+  for each battler:
+    // Precompute base "writingPower" and "performancePower"
+    writingPower = weightedAverage(attributes.writing)
+    performancePower = weightedAverage(attributes.performance)
+    baseScore = writingPower * league.writing_weight + performancePower * league.performance_weight
+
+    // factor in personal/resilience for variance & choke likelihood
+
+  for segmentIndex in [1..segmentsPerRound]:
+    for each battler:
+      executionRoll = baseScore + randomNoise(resilience, prep)
+      // occasional peak if style_tags + researchDays align (angles, gun_bars, etc.)
+      if isPeakSegment(styleTags, prep, roundIndex, segmentIndex):
+         executionRoll *= 1.15 or similar
+      // check choke
+      if shouldChoke(resilience, prep, random):
+         executionRoll *= 0.4
+         markChokeThisRound(battler)
+
+      record segment_score
+      record event_flags: ["haymaker"], ["light"], ["choke"], etc.
+
+  // Compute round summaries per battler
+  average_score = mean(segment_scores)
+  peak_score = max(segment_scores)
+  consistency_score = some function of stddev
+  momentum_delta = (average_score_player - average_score_ai)
+  crowd_reaction = map average_score & performancePower into 0..100 adjusted by league.base_crowd_factor
+```
+
+6. **Battle outcome**
+
+* Score rounds for each battler:
+
+  * round winner = higher average_score (with tie logic).
+* Count rounds won → final winner.
+* Update:
+
+```ts
+update battles set winner_battler_id, status='completed' where id=...
+update rankings set rating, wins/losses/streak where battler_id ...
+insert battle_rounds / battle_segments rows
+```
+
+7. **Generate analysis summary**
+
+* For each round, create a structured summary object:
+
+  * `hadBigPeaks`, `wasConsistent`, `choked`, `crowdLoved`, etc.
+* Use that later as input to AI for news article and battle viewer text.
+
+---
+
+## 5. Media Generation Integration
+
+Create `/lib/services/newsGenerator.ts`.
+
+### 5.1 Function: createBattleRecapArticle
+
+```ts
+export async function createBattleRecapArticle(battleId: string): Promise<void> {
+  // Load battle, battlers, league, round and segment summaries.
+  // Build a structured JSON summary.
+  // Call an LLM (or leave placeholder) to turn it into a 300-500 word recap.
+  // Insert into news_articles.
+}
+```
+
+**For autonomous AI:**
+
+1. Define a deterministic `meta_json` with:
+
+```json
+{
+  "battle_result": "2-1",
+  "main_story": "upset" | "dominant_win" | "choke" | "classic",
+  "peak_moments": 1,
+  "scandal_level": 0
+}
+```
+
+2. Prompt template (pseudocode):
+
+> You are a battle rap blog writer. Given this JSON describing a simulated text-only battle, write a 300–500 word recap that sounds like a battle rap media site. Do not invent bars. Focus on performance, momentum, crowd reaction, angles, and narrative.
+
+Store result as `body_markdown` in `news_articles`.
+
+Call `createBattleRecapArticle(battleId)` from within `simulateBattle` after results are stored and before marking `status='completed'`.
+
+---
+
+## 6. Front-End – Pages & Components
+
+Use Next.js App Router.
+
+### 6.1 Pages
+
+1. `/onboarding`
+
+   * If user has no battler:
+
+     * Step 1: choose stage name + region.
+     * Step 2: choose primary league (Small Room vs Main Stage).
+     * Step 3: pick 1–2 style tags (angles/comedy/storytelling/gun_bars).
+   * On submit:
+
+     * Call `POST /api/battler/create`.
+
+2. `/dashboard`
+
+   * Fetch `GET /api/battler/me`.
+   * Show:
+
+     * Battler card (name, league, tier).
+     * Next battle (if any) with countdown.
+     * Button: “Go to Prep” if accepted.
+     * Button: “View Offers” if any.
+
+3. `/battle/offers`
+
+   * Fetch `GET /api/battles/offers`.
+   * List:
+
+     * Opponent name
+     * League
+     * Date/time
+     * Payout placeholder (can just be text for now).
+   * Buttons: Accept / Decline (POST to respective endpoints).
+
+4. `/battle/[id]/prep`
+
+   * Fetch `GET /api/battles/:id/prep`.
+   * Show timeline of days to lock.
+   * For each day:
+
+     * Tile with dropdown for `focus`.
+   * On change: call `POST /api/battles/:id/prep`.
+
+5. `/battle/[id]`
+
+   * Battle viewer.
+   * Fetch `GET /api/battles/:id` (with nested rounds + segments).
+   * UI:
+
+     * Header: battlers, league, result, final score (2–1, 3–0).
+     * Round tabs:
+
+       * Show round summary: average vs peak, crowd reaction.
+       * Timeline for segments with marks for “haymaker”, “choke” etc.
+     * Momentum bar (per round or overall).
+
+6. `/media`
+
+   * Fetch `GET /api/news`.
+   * List of latest articles (title, type, battlers).
+   * Clicking goes to `/media/[slug]`.
+
+7. `/media/[slug]`
+
+   * Fetch article by slug.
+   * Render `body_markdown` as HTML.
+
+### 6.2 Components (examples)
+
+* `BattlerCard`
+* `BattleOfferCard`
+* `PrepDayTile`
+* `RoundSummaryCard`
+* `SegmentTimeline`
+* `MomentumBar`
+* `NewsCard`
+
+---
+
+## 7. Seeding & Test Data
+
+**Seed script** (TS node script or Supabase SQL):
+
+1. Insert two leagues: Small Room & Main Stage.
+2. Insert ~10 AI battlers with:
+
+   * Stage names.
+   * Style tags.
+   * Attributes at different tiers (low/mid/top).
+   * Rankings.
+
+Example AI battler:
+
+```sql
+insert into battlers (stage_name, is_ai, primary_league_id, style_tags)
+values ('Young Pattern', true, '<small_room_league_id>', '["angles","storytelling"]');
+
+insert into battler_attributes (battler_id, writing, performance, personal, resilience, public_knowledge)
+values (
+  '<battler_id>',
+  '{"lyricism":7,"wordplay":8,"creativity":7}',
+  '{"stage_presence":6,"crowd_control":7,"delivery":7}',
+  '{"financial_stability":5,"reputation":6,"family_bond":5}',
+  7,
+  40
+);
+```
+
+---
+
+## 8. Dev Phases (for the Autonomous AI)
+
+The autonomous AI should implement in **this order**:
+
+1. **Phase 1 – DB + seed**
+
+   * Create DB schema.
+   * Seed leagues + AI battlers + attributes + rankings.
+
+2. **Phase 2 – Auth + onboarding + battler creation**
+
+   * Hook Supabase auth into Next.js.
+   * Implement `/onboarding` + `/api/battler/create`.
+   * Implement `/dashboard` + `/api/battler/me`.
+
+3. **Phase 3 – Battle offers (no sim yet)**
+
+   * Implement cron `/api/internal/generate-battle-offers`.
+   * Implement tables + endpoints for offers.
+   * Create `/battle/offers` UI and accept/decline.
+
+4. **Phase 4 – Prep planner**
+
+   * Implement `prep_blocks` + `/api/battles/:id/prep`.
+   * Build prep UI page.
+
+5. **Phase 5 – Simulation**
+
+   * Implement `simulateBattle(battleId)` with:
+
+     * Segment-based scoring.
+     * Round summaries.
+     * Winner calculation.
+   * Implement cron `/api/internal/run-due-battles`.
+   * Build `/battle/[id]` viewer.
+
+6. **Phase 6 – News / blog**
+
+   * Implement `news_articles` + `/api/news`.
+   * Implement `createBattleRecapArticle(battleId)` as a stub calling an LLM (or placeholder lorem text for now).
+   * Build `/media` and `/media/[slug]`.
+
+7. **Phase 7 – Polish & balancing hooks**
+
+   * Expose config constants in one place for tuning:
+
+     * Prep effect multipliers.
+     * Choke probability formula.
+     * League weights.
+   * Add minimal error handling, loading states, and basic styling.
+
+---
+
+This is enough to keep an “autonomous” AI busy building an actual game instead of another doc.
+
+If you want, next step I can do is: **write the actual SQL migrations + TypeScript interface file + skeleton API handlers** so you don’t even have to rely on the other AI to interpret this. But this spec alone is enough to get a working V1 if the agent isn’t lazy.

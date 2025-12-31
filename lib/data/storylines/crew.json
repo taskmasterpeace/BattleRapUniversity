@@ -1,0 +1,301 @@
+{
+  "code": "CREW_PRESSURE",
+  "name": "Crew Pressure",
+  "description": "Your old set is reaching out. They want you to rep. But this life and that life don't always mix.",
+  "category": "crew",
+  "min_chapters": 3,
+  "max_chapters": 6,
+
+  "trigger": {
+    "type": "attribute",
+    "probability": 0.10,
+    "conditions": { "min_battles": 10, "reputation_min": 6 }
+  },
+
+  "chapters": [
+    {
+      "id": "crew_ch1",
+      "chapter_number": 1,
+      "title": "The Request",
+      "description": "Big homie from back in the day hit you up. They're proud of your success. They want you to represent the set publicly.",
+      "delay": { "type": "immediate", "value": 0 },
+      "urgency": "timed",
+      "deadline_hours": 168,
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "rep_set",
+          "label": "Rep the Set",
+          "description": "They held you down before you had anything. You owe them.",
+          "effects": [
+            { "type": "permanent", "crew_loyalty": 2.0 },
+            { "type": "permanent", "reputation": 0.5 }
+          ],
+          "leads_to": { "type": "chapter", "id": "crew_ch2_repping" }
+        },
+        {
+          "id": "keep_separate",
+          "label": "Keep It Separate",
+          "description": "Love the homies but you can't mix these worlds.",
+          "effects": [
+            { "type": "permanent", "crew_loyalty": -1.0 },
+            { "type": "temporary", "stress": 15 }
+          ],
+          "leads_to": { "type": "chapter", "id": "crew_ch2_distance" }
+        },
+        {
+          "id": "delay_decision",
+          "label": "Buy Time",
+          "description": "Tell them you need to think about it.",
+          "effects": [
+            { "type": "temporary", "stress": 10 }
+          ],
+          "leads_to": { "type": "chapter", "id": "crew_ch3_pressed" }
+        }
+      ]
+    },
+    {
+      "id": "crew_ch2_repping",
+      "chapter_number": 2,
+      "title": "Colors in the Ring",
+      "description": "You showed up to your last battle repping the set. It made waves. Some leagues don't want that energy.",
+      "delay": { "type": "battles", "value": 1 },
+      "urgency": "passive",
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "stay_repping",
+          "label": "Keep Repping",
+          "description": "This is who you are. If leagues don't want you, that's on them.",
+          "effects": [
+            { "type": "permanent", "crew_loyalty": 1.0 },
+            { "type": "permanent", "reputation": -0.5 }
+          ],
+          "leads_to": { "type": "chapter", "id": "crew_ch4_consequences" }
+        },
+        {
+          "id": "tone_down",
+          "label": "Tone It Down",
+          "description": "You made your point. Now be strategic about it.",
+          "effects": [
+            { "type": "permanent", "crew_loyalty": -0.5 }
+          ],
+          "leads_to": { "type": "ending", "id": "crew_end_balanced" }
+        }
+      ]
+    },
+    {
+      "id": "crew_ch2_distance",
+      "chapter_number": 2,
+      "title": "Word Gets Back",
+      "description": "They heard you're acting different now that you're getting money. Some of them are taking it personal.",
+      "delay": { "type": "days", "value": 14 },
+      "urgency": "timed",
+      "deadline_hours": 72,
+      "prep_days_cost": 1,
+      "choices": [
+        {
+          "id": "explain_yourself",
+          "label": "Explain Yourself",
+          "description": "Pull up and talk to them face to face.",
+          "effects": [
+            { "type": "temporary", "prep_days_lost": 1 },
+            { "type": "permanent", "crew_loyalty": 0.5 }
+          ],
+          "leads_to": { "type": "ending", "id": "crew_end_respect" }
+        },
+        {
+          "id": "stay_away",
+          "label": "Stay Away",
+          "description": "You made your choice. Live with it.",
+          "effects": [
+            { "type": "permanent", "crew_loyalty": -1.5 },
+            { "type": "temporary", "stress": 20 }
+          ],
+          "leads_to": { "type": "chapter", "id": "crew_ch5_disrespect" }
+        }
+      ]
+    },
+    {
+      "id": "crew_ch3_pressed",
+      "chapter_number": 3,
+      "title": "Time's Up",
+      "description": "They're done waiting for an answer. Big homie showed up to your event. He's not happy.",
+      "delay": { "type": "battles", "value": 2 },
+      "urgency": "immediate",
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "commit_now",
+          "label": "Commit to the Set",
+          "description": "No more games. You're in.",
+          "effects": [
+            { "type": "permanent", "crew_loyalty": 2.5 },
+            { "type": "permanent", "reputation": 0.3 }
+          ],
+          "leads_to": { "type": "chapter", "id": "crew_ch4_consequences" }
+        },
+        {
+          "id": "stand_firm",
+          "label": "Stand on Your Decision",
+          "description": "You already told them no. That's your answer.",
+          "effects": [
+            { "type": "permanent", "crew_loyalty": -2.0 },
+            { "type": "temporary", "stress": 30 }
+          ],
+          "leads_to": { "type": "chapter", "id": "crew_ch5_disrespect" }
+        }
+      ]
+    },
+    {
+      "id": "crew_ch4_consequences",
+      "chapter_number": 4,
+      "title": "League Response",
+      "description": "Two major leagues just told your manager they won't book you anymore. The gang ties are too hot.",
+      "delay": { "type": "battles", "value": 2 },
+      "urgency": "timed",
+      "deadline_hours": 96,
+      "prep_days_cost": 1,
+      "choices": [
+        {
+          "id": "accept_consequences",
+          "label": "Accept It",
+          "description": "Some leagues don't want real ones. Their loss.",
+          "effects": [
+            { "type": "permanent", "crew_loyalty": 1.0 },
+            { "type": "permanent", "financial_stability": -1.5 }
+          ],
+          "leads_to": { "type": "ending", "id": "crew_end_blacklisted" }
+        },
+        {
+          "id": "damage_control",
+          "label": "Do Damage Control",
+          "description": "Put out a statement. Distance yourself professionally.",
+          "effects": [
+            { "type": "permanent", "crew_loyalty": -1.0 },
+            { "type": "permanent", "reputation": -0.5 }
+          ],
+          "leads_to": { "type": "ending", "id": "crew_end_pr_move" }
+        }
+      ]
+    },
+    {
+      "id": "crew_ch5_disrespect",
+      "chapter_number": 5,
+      "title": "Disrespect",
+      "description": "They're calling you a rat, a fake, a traitor. Some of them are showing up to your battles just to cause problems.",
+      "delay": { "type": "battles", "value": 2 },
+      "urgency": "battle_gated",
+      "prep_days_cost": 2,
+      "choices": [
+        {
+          "id": "address_publicly",
+          "label": "Address It in Your Rounds",
+          "description": "Put it in your bars. Let them know how you feel about it.",
+          "effects": [
+            { "type": "permanent", "reputation": 0.5 },
+            { "type": "permanent", "crew_loyalty": -0.5 }
+          ],
+          "leads_to": { "type": "ending", "id": "crew_end_spoke_on_it" }
+        },
+        {
+          "id": "security_up",
+          "label": "Increase Security",
+          "description": "Hire people. Don't go to events without protection.",
+          "effects": [
+            { "type": "permanent", "financial_stability": -1.0 },
+            { "type": "permanent", "crew_loyalty": -1.0 }
+          ],
+          "leads_to": { "type": "ending", "id": "crew_end_paranoid" }
+        },
+        {
+          "id": "reconcile",
+          "label": "Try to Reconcile",
+          "description": "Set up a meeting. Try to fix this before it gets worse.",
+          "effects": [
+            { "type": "temporary", "prep_days_lost": 2 },
+            { "type": "temporary", "stress": 25 }
+          ],
+          "leads_to": { "type": "ending", "id": "crew_end_uneasy_peace" }
+        }
+      ]
+    }
+  ],
+
+  "endings": [
+    {
+      "id": "crew_end_balanced",
+      "type": "positive",
+      "title": "Best of Both Worlds",
+      "description": "You found a balance. You show love when it matters but keep your career separate. The homies respect it.",
+      "effects": [
+        { "type": "permanent", "crew_loyalty": 0.5 },
+        { "type": "permanent", "resilience": 0.3 }
+      ]
+    },
+    {
+      "id": "crew_end_respect",
+      "type": "positive",
+      "title": "Mutual Respect",
+      "description": "They understood when you explained it. You're still family, just on different paths now.",
+      "effects": [
+        { "type": "permanent", "family_bond": 0.5 },
+        { "type": "temporary", "stress": -15, "duration_days": 30 }
+      ],
+      "badge": "Kept It Real"
+    },
+    {
+      "id": "crew_end_blacklisted",
+      "type": "negative",
+      "title": "League Blacklist",
+      "description": "Major leagues won't book you. You're making less money but the streets love you more than ever.",
+      "effects": [
+        { "type": "permanent", "financial_stability": -2.0 },
+        { "type": "permanent", "crew_loyalty": 2.0 },
+        { "type": "permanent", "reputation": 0.5 }
+      ],
+      "badge": "Too Real For TV"
+    },
+    {
+      "id": "crew_end_pr_move",
+      "type": "neutral",
+      "title": "Corporate Move",
+      "description": "You kept your booking money but some people see you different now. The streets talk.",
+      "effects": [
+        { "type": "permanent", "crew_loyalty": -1.5 },
+        { "type": "permanent", "financial_stability": 0.5 }
+      ]
+    },
+    {
+      "id": "crew_end_spoke_on_it",
+      "type": "neutral",
+      "title": "Said What You Said",
+      "description": "You addressed it publicly. Some respect it, some don't. At least you weren't quiet about it.",
+      "effects": [
+        { "type": "permanent", "reputation": 0.5 },
+        { "type": "permanent", "crew_loyalty": -1.0 }
+      ],
+      "badge": "Stood On It"
+    },
+    {
+      "id": "crew_end_paranoid",
+      "type": "negative",
+      "title": "Looking Over Your Shoulder",
+      "description": "You're safe but you're spending money on security. You can't enjoy events the same way anymore.",
+      "effects": [
+        { "type": "permanent", "financial_stability": -1.5 },
+        { "type": "temporary", "stress": 25, "duration_days": 60 }
+      ]
+    },
+    {
+      "id": "crew_end_uneasy_peace",
+      "type": "neutral",
+      "title": "Uneasy Peace",
+      "description": "You talked it out. They're not actively coming at you, but things will never be the same.",
+      "effects": [
+        { "type": "permanent", "crew_loyalty": -0.5 },
+        { "type": "temporary", "stress": 10, "duration_days": 30 }
+      ]
+    }
+  ]
+}

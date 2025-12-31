@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation"
 import Link from "next/link"
 import { ArrowLeft, Building } from "lucide-react"
-import { getLeague, getLeagueBlogger, getLeagueStats } from "@/lib/leagues"
+import { getLeagueBlogger, getLeagueStats, type League } from "@/lib/leagues"
 import { getVenueType } from "@/lib/venues"
 import { VenueCard } from "@/components/venue-card"
 import { LeagueHeader } from "@/components/leagues/league-header"
@@ -12,9 +12,25 @@ import { LeagueStats } from "@/components/leagues/league-stats"
 import { LeagueArticles } from "@/components/leagues/league-articles"
 import { LeagueExplainer } from "@/components/leagues/league-explainer"
 
-export default async function LeagueDetailPage({ params }: { params: { id: string } }) {
-  const { id } = params
-  const league = await getLeague(id)
+// Server-side fetch of league data
+async function getLeagueFromApi(idOrSlug: string): Promise<League | null> {
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+    const response = await fetch(`${baseUrl}/api/leagues/${idOrSlug}`, {
+      cache: 'no-store' // Always get fresh data
+    })
+    if (!response.ok) return null
+    const data = await response.json()
+    return data.league || null
+  } catch (error) {
+    console.error('Error fetching league:', error)
+    return null
+  }
+}
+
+export default async function LeagueDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  const league = await getLeagueFromApi(id)
 
   if (!league) {
     notFound()
@@ -43,9 +59,11 @@ export default async function LeagueDetailPage({ params }: { params: { id: strin
               <Building className="w-5 h-5 text-orange-400" />
               <h3 className="font-bold">HOME VENUE</h3>
             </div>
-            <Link href={`/venues/${homeVenue.id}`}>
-              <VenueCard venue={homeVenue} cityName={league.city ? `${league.city}, ${league.state}` : undefined} />
-            </Link>
+            <div className="max-w-md">
+              <Link href={`/venues/${homeVenue.id}`} className="block hover:opacity-80 transition-opacity">
+                <VenueCard venue={homeVenue} cityName={league.city ? `${league.city}, ${league.state}` : undefined} compact />
+              </Link>
+            </div>
           </div>
         )}
 

@@ -35,8 +35,8 @@ const focusTextColors: Record<FocusType, string> = {
 }
 
 const focusLabels: Record<FocusType, string> = {
-  research: "RESEARCH",
-  writing: "WRITING",
+  research: "STUDY ANGLES",
+  writing: "WRITE BARS",
   performance: "REHEARSE",
   life: "LIFE",
   rest: "REST",
@@ -51,11 +51,11 @@ const focusIcons: Record<FocusType, string> = {
 }
 
 const focusDescriptions: Record<FocusType, string> = {
-  research: "Study opponent, find angles, dig up info",
-  writing: "Write bars, schemes, punchlines",
-  performance: "Practice delivery, memorize material",
-  life: "Handle personal stuff, reduce stress",
-  rest: "Recover, mental prep, avoid burnout",
+  research: "Study your opponent - dig for angles, find weaknesses, prepare rebuttals",
+  writing: "Craft your bars - schemes, punchlines, haymakers, personals",
+  performance: "Rehearse your delivery - projection, cadence, crowd control",
+  life: "Handle your business - family, finances, mental health",
+  rest: "Recover and reset - avoid burnout, stay sharp for battle day",
 }
 
 export function FocusLegend() {

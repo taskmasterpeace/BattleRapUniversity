@@ -1,0 +1,258 @@
+{
+  "code": "RIVALRY_BLOOD",
+  "name": "Blood Feud",
+  "description": "This opponent won't let it go. The beef is personal now.",
+  "category": "rivalry",
+  "min_chapters": 3,
+  "max_chapters": 7,
+
+  "trigger": {
+    "type": "battle_result",
+    "probability": 0.25,
+    "conditions": { "same_opponent_losses": 1, "min_battles": 4 }
+  },
+
+  "chapters": [
+    {
+      "id": "rivalry_ch1",
+      "chapter_number": 1,
+      "title": "The Call Out",
+      "description": "Your last opponent dropped a track calling you out. They're all over social media saying you're ducking them.",
+      "delay": { "type": "immediate", "value": 0 },
+      "urgency": "timed",
+      "deadline_hours": 96,
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "respond_public",
+          "label": "Respond Publicly",
+          "description": "Fire back on social media. Let them know you're not scared.",
+          "effects": [
+            { "type": "permanent", "reputation": 0.5 },
+            { "type": "temporary", "stress": 15 }
+          ],
+          "leads_to": { "type": "chapter", "id": "rivalry_ch2_war" }
+        },
+        {
+          "id": "ignore_callout",
+          "label": "Ignore It",
+          "description": "You're focused on bigger things. Let them talk.",
+          "effects": [
+            { "type": "permanent", "reputation": -0.3 },
+            { "type": "temporary", "stress": -5 }
+          ],
+          "leads_to": { "type": "chapter", "id": "rivalry_ch2_escalate" }
+        },
+        {
+          "id": "accept_rematch",
+          "label": "Accept the Rematch",
+          "description": "You've got no reason to duck. Set it up.",
+          "effects": [
+            { "type": "permanent", "reputation": 0.8 }
+          ],
+          "leads_to": { "type": "chapter", "id": "rivalry_ch3_rematch" }
+        }
+      ]
+    },
+    {
+      "id": "rivalry_ch2_war",
+      "chapter_number": 2,
+      "title": "Social Media War",
+      "description": "It's back and forth daily. Fans are picking sides. This is taking up mental space you need for prep.",
+      "delay": { "type": "days", "value": 7 },
+      "urgency": "timed",
+      "deadline_hours": 72,
+      "prep_days_cost": 1,
+      "choices": [
+        {
+          "id": "keep_going",
+          "label": "Keep It Going",
+          "description": "You're winning this war. Don't stop now.",
+          "effects": [
+            { "type": "permanent", "reputation": 0.3 },
+            { "type": "temporary", "stress": 20 },
+            { "type": "temporary", "prep_days_lost": 1 }
+          ],
+          "leads_to": { "type": "chapter", "id": "rivalry_ch3_viral" }
+        },
+        {
+          "id": "settle_in_ring",
+          "label": "Settle It in the Ring",
+          "description": "Challenge them to stop talking and battle.",
+          "effects": [
+            { "type": "permanent", "reputation": 0.5 }
+          ],
+          "leads_to": { "type": "chapter", "id": "rivalry_ch3_rematch" }
+        }
+      ]
+    },
+    {
+      "id": "rivalry_ch2_escalate",
+      "chapter_number": 2,
+      "title": "They Won't Stop",
+      "description": "You ignored them but they kept going. Now they're making up lies about you. People are starting to believe it.",
+      "delay": { "type": "days", "value": 14 },
+      "urgency": "timed",
+      "deadline_hours": 48,
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "address_lies",
+          "label": "Address the Lies",
+          "description": "You have to say something now.",
+          "effects": [
+            { "type": "temporary", "stress": 25 },
+            { "type": "permanent", "reputation": 0.5 }
+          ],
+          "leads_to": { "type": "chapter", "id": "rivalry_ch3_viral" }
+        },
+        {
+          "id": "legal_route",
+          "label": "Threaten Legal Action",
+          "description": "This is defamation. Get a lawyer involved.",
+          "effects": [
+            { "type": "permanent", "financial_stability": -0.5 },
+            { "type": "permanent", "reputation": -0.3 }
+          ],
+          "leads_to": { "type": "ending", "id": "rivalry_end_legal" }
+        }
+      ]
+    },
+    {
+      "id": "rivalry_ch3_viral",
+      "chapter_number": 3,
+      "title": "Viral Moment",
+      "description": "The beef is everywhere. Every battle rap media outlet is covering it. The whole culture is watching.",
+      "delay": { "type": "battles", "value": 1 },
+      "urgency": "passive",
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "milk_it",
+          "label": "Milk the Attention",
+          "description": "This is good for business. Keep it going.",
+          "effects": [
+            { "type": "permanent", "reputation": 0.5 },
+            { "type": "temporary", "stress": 15 }
+          ],
+          "leads_to": { "type": "chapter", "id": "rivalry_ch4_big_battle" }
+        },
+        {
+          "id": "end_it",
+          "label": "End It Now",
+          "description": "Book the battle before this goes too far.",
+          "effects": []
+          ,
+          "leads_to": { "type": "chapter", "id": "rivalry_ch3_rematch" }
+        }
+      ]
+    },
+    {
+      "id": "rivalry_ch3_rematch",
+      "chapter_number": 3,
+      "title": "Rematch Booked",
+      "description": "It's official. You're battling them again. The stakes are higher than ever. Everyone's watching.",
+      "delay": { "type": "battles", "value": 1 },
+      "urgency": "battle_gated",
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "prepare_hard",
+          "label": "Prepare Like Your Life Depends On It",
+          "description": "Every waking moment goes into this battle.",
+          "effects": [
+            { "type": "temporary", "stress": 30 },
+            { "type": "permanent", "preparation": 0.5 }
+          ],
+          "leads_to": { "type": "ending", "id": "rivalry_end_rematch_win" }
+        },
+        {
+          "id": "stay_balanced",
+          "label": "Stay Balanced",
+          "description": "Prepare well but don't let it consume you.",
+          "effects": [
+            { "type": "temporary", "stress": 10 }
+          ],
+          "leads_to": { "type": "ending", "id": "rivalry_end_rematch_close" }
+        }
+      ]
+    },
+    {
+      "id": "rivalry_ch4_big_battle",
+      "chapter_number": 4,
+      "title": "Main Event",
+      "description": "A major league is offering to host the battle as their main event. Big money. Huge exposure. Everything on the line.",
+      "delay": { "type": "battles", "value": 2 },
+      "urgency": "timed",
+      "deadline_hours": 72,
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "take_main_event",
+          "label": "Take the Main Event",
+          "description": "This is what you've been building toward.",
+          "effects": [
+            { "type": "permanent", "reputation": 1.0 },
+            { "type": "permanent", "financial_stability": 1.5 },
+            { "type": "temporary", "stress": 25 }
+          ],
+          "leads_to": { "type": "ending", "id": "rivalry_end_main_event" }
+        },
+        {
+          "id": "smaller_platform",
+          "label": "Do It Smaller",
+          "description": "Less pressure. Keep it about the battle, not the spectacle.",
+          "effects": []
+          ,
+          "leads_to": { "type": "ending", "id": "rivalry_end_rematch_close" }
+        }
+      ]
+    }
+  ],
+
+  "endings": [
+    {
+      "id": "rivalry_end_legal",
+      "type": "negative",
+      "title": "Lawyered Up",
+      "description": "You went legal. Some people respect it, most think you're soft for not handling it in battle.",
+      "effects": [
+        { "type": "permanent", "reputation": -1.0 },
+        { "type": "permanent", "financial_stability": -0.5 }
+      ],
+      "badge": "Called the Cops"
+    },
+    {
+      "id": "rivalry_end_rematch_win",
+      "type": "positive",
+      "title": "Redemption Arc",
+      "description": "You came back and bodied them. The culture loves a redemption story. Your name is ringing now.",
+      "effects": [
+        { "type": "permanent", "reputation": 2.0 },
+        { "type": "permanent", "resilience": 1.0 },
+        { "type": "temporary", "stress": -25, "duration_days": 30 }
+      ],
+      "badge": "Redemption"
+    },
+    {
+      "id": "rivalry_end_rematch_close",
+      "type": "neutral",
+      "title": "Debatable",
+      "description": "The rematch was close. No clear winner. The beef might continue or both of you might move on.",
+      "effects": [
+        { "type": "permanent", "reputation": 0.3 }
+      ]
+    },
+    {
+      "id": "rivalry_end_main_event",
+      "type": "positive",
+      "title": "Main Event Energy",
+      "description": "The biggest battle of your career. Win or lose, everyone knows your name now.",
+      "effects": [
+        { "type": "permanent", "reputation": 1.5 },
+        { "type": "permanent", "financial_stability": 2.0 }
+      ],
+      "badge": "Main Event"
+    }
+  ]
+}

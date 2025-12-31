@@ -15,8 +15,9 @@ import { SegmentCreatorModal } from "@/components/battle-prep/segment-creator-mo
 import { ResearchLevelIndicator } from "@/components/battle-prep/research-level-indicator"
 import { RoundOrganizer } from "@/components/battle-prep/round-organizer"
 import { CounterSlotManager } from "@/components/battle-prep/counter-slot-manager"
-import { mockBattleInfo, prepTemplates, defaultRecommendations, calculateImpactPreview } from "@/lib/data"
-import type { FocusType, DayPlan, PrepTemplate, PrepSegment, PrepCounter, ResearchLevel } from "@/lib/types"
+import { OpponentIntelPanel } from "@/components/battle-prep/opponent-intel-panel"
+import { prepTemplates, defaultRecommendations, calculateImpactPreview } from "@/lib/data"
+import type { FocusType, DayPlan, PrepTemplate, PrepSegment, PrepCounter, ResearchLevel, BattleInfo } from "@/lib/types"
 import { Lock, Loader2, Swords, ChevronDown, ChevronUp, Plus, FileText, Mic2 } from "lucide-react"
 
 export default function BattlePrepPage() {
@@ -29,6 +30,7 @@ export default function BattlePrepPage() {
   const [totalPrepDays, setTotalPrepDays] = useState(10)
   const [prepLocked, setPrepLocked] = useState(false)
   const [showLockModal, setShowLockModal] = useState(false)
+  const [battleInfo, setBattleInfo] = useState<BattleInfo | null>(null)
 
   const [days, setDays] = useState<DayPlan[]>([])
   const [selectedDay, setSelectedDay] = useState<number | null>(null)
@@ -39,6 +41,8 @@ export default function BattlePrepPage() {
   const [showSegmentCreator, setShowSegmentCreator] = useState(false)
   const [showCrafting, setShowCrafting] = useState(true)
   const [showCounters, setShowCounters] = useState(false)
+  const [showIntel, setShowIntel] = useState(true)
+  const [opponentId, setOpponentId] = useState<string>('')
 
   const roundCount = 3
   const roundLength = 2 // 2 minutes
@@ -62,9 +66,46 @@ export default function BattlePrepPage() {
   useEffect(() => {
     async function fetchPrepData() {
       try {
-        const res = await fetch(`/api/battles/${params.id}/prep`)
-        if (res.ok) {
-          const data = await res.json()
+        // Fetch battle info, prep calendar and segments in parallel
+        const [battleRes, prepRes, segmentsRes] = await Promise.all([
+          fetch(`/api/battles/${params.id}`),
+          fetch(`/api/battles/${params.id}/prep`),
+          fetch(`/api/battles/${params.id}/segments`),
+        ])
+
+        // Parse battle info
+        if (battleRes.ok) {
+          const battleData = await battleRes.json()
+          // Store opponent ID for intel panel
+          if (battleData.battle.opponent?.id) {
+            setOpponentId(battleData.battle.opponent.id)
+          }
+          setBattleInfo({
+            id: battleData.battle.id,
+            opponent: {
+              name: battleData.battle.opponent?.stage_name || 'Unknown',
+              tier: battleData.battle.opponent?.tier || 'MID TIER',
+              rating: 1000,
+              avatar: battleData.battle.opponent?.avatar_url || '/rapper-portrait-pixel-art.jpg',
+              styles: [],
+              record: '0-0',
+            },
+            league: battleData.battle.league?.name || 'LEAGUE',
+            battleDate: new Date(battleData.battle.scheduled_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).toUpperCase(),
+            lockDate: '',
+            prepDays: 10,
+            status: battleData.battle.status as 'offered' | 'accepted' | 'locked',
+            payout: {
+              basePay: battleData.earnings?.basePay || 500,
+              winBonus: battleData.earnings?.winBonus || 1000,
+            },
+            isGrudgeMatch: false,
+            grudgeIntensity: 0,
+          })
+        }
+
+        if (prepRes.ok) {
+          const data = await prepRes.json()
           setTotalPrepDays(data.totalPrepDays)
           setPrepLocked(data.isLocked)
 
@@ -77,6 +118,11 @@ export default function BattlePrepPage() {
             }
           })
           setDays(initialDays)
+        }
+
+        if (segmentsRes.ok) {
+          const segmentsData = await segmentsRes.json()
+          setSegments(segmentsData.segments || [])
         }
       } catch (error) {
         console.error("Failed to fetch prep data:", error)
@@ -209,25 +255,73 @@ export default function BattlePrepPage() {
     }
   }, [params.id])
 
-  const handleCreateSegment = (segmentData: Omit<PrepSegment, "id" | "createdAt" | "updatedAt">) => {
-    const newSegment: PrepSegment = {
-      ...segmentData,
-      id: `seg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+  const handleCreateSegment = async (segmentData: Omit<PrepSegment, "id" | "createdAt" | "updatedAt">) => {
+    try {
+      const res = await fetch(`/api/battles/${params.id}/segments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(segmentData),
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setSegments([...segments, data.segment])
+      } else {
+        // Fallback to local-only if API fails
+        const newSegment: PrepSegment = {
+          ...segmentData,
+          id: `seg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        }
+        setSegments([...segments, newSegment])
+      }
+    } catch (error) {
+      console.error("Failed to create segment:", error)
+      // Fallback to local-only
+      const newSegment: PrepSegment = {
+        ...segmentData,
+        id: `seg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      }
+      setSegments([...segments, newSegment])
     }
-    setSegments([...segments, newSegment])
   }
 
-  const handleAssignSegment = (segmentId: string, roundNum: number | null, position: number | null) => {
-    setSegments(
-      segments.map((s) => (s.id === segmentId ? { ...s, roundNum, position, updatedAt: new Date().toISOString() } : s)),
+  const handleAssignSegment = async (segmentId: string, roundNum: number | null, position: number | null) => {
+    // Update local state immediately for responsiveness
+    const updatedSegments = segments.map((s) =>
+      s.id === segmentId ? { ...s, roundNum, position, updatedAt: new Date().toISOString() } : s
     )
+    setSegments(updatedSegments)
+
+    // Persist to API
+    try {
+      await fetch(`/api/battles/${params.id}/segments/organize`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          assignments: [{ segmentId, roundNum, position }],
+        }),
+      })
+    } catch (error) {
+      console.error("Failed to save segment assignment:", error)
+    }
   }
 
-  const handleRemoveSegment = (segmentId: string) => {
+  const handleRemoveSegment = async (segmentId: string) => {
+    // Update local state immediately
     setSegments(segments.filter((s) => s.id !== segmentId))
     setCounters(counters.filter((c) => c.segmentId !== segmentId))
+
+    // Delete via API
+    try {
+      await fetch(`/api/battles/${params.id}/segments?segmentId=${segmentId}`, {
+        method: "DELETE",
+      })
+    } catch (error) {
+      console.error("Failed to delete segment:", error)
+    }
   }
 
   const handleAddCounter = (counter: Omit<PrepCounter, "id">) => {
@@ -289,8 +383,8 @@ export default function BattlePrepPage() {
         <div className="mb-6 bg-zinc-900 border-2 border-zinc-700 p-4">
           <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
             <div>
-              <h2 className="text-xl font-display font-bold text-zinc-100">VS {mockBattleInfo.opponent.name}</h2>
-              <p className="text-sm text-zinc-400">{mockBattleInfo.league}</p>
+              <h2 className="text-xl font-display font-bold text-zinc-100">VS {battleInfo?.opponent.name || 'OPPONENT'}</h2>
+              <p className="text-sm text-zinc-400">{battleInfo?.league || 'LEAGUE'}</p>
             </div>
             <div className="flex gap-6 text-center">
               <div>
@@ -368,7 +462,7 @@ export default function BattlePrepPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-4">
-            <BattleInfoCard battle={mockBattleInfo} />
+            {battleInfo && <BattleInfoCard battle={battleInfo} />}
 
             <PrepCalendar
               days={days}
@@ -413,6 +507,17 @@ export default function BattlePrepPage() {
               {showCrafting && (
                 <div className="p-4 space-y-4">
                   <ResearchLevelIndicator level={researchLevel} daysSpent={researchDays} />
+
+                  {/* Opponent Intel Panel - shows discovered secrets */}
+                  {opponentId && battleInfo && (
+                    <OpponentIntelPanel
+                      battleId={params.id as string}
+                      opponentId={opponentId}
+                      opponentName={battleInfo.opponent.name}
+                      researchLevel={researchLevel}
+                      researchDays={researchDays}
+                    />
+                  )}
 
                   <button
                     onClick={() => setShowSegmentCreator(true)}

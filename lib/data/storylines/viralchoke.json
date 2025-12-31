@@ -1,0 +1,350 @@
+{
+  "code": "VIRAL_CHOKE",
+  "name": "Viral Choke",
+  "description": "That moment. On stage. Lights on you. And nothing comes out. Now it's everywhere.",
+  "category": "career",
+  "min_chapters": 3,
+  "max_chapters": 5,
+
+  "trigger": {
+    "type": "compound",
+    "probability": 0.90,
+    "conditions": {
+      "all": [
+        { "last_battle_had_choke": true },
+        { "min_battles": 8 },
+        {
+          "any": [
+            { "min_tier": "rising" },
+            { "min_attribute": { "reputation": 5 } }
+          ]
+        }
+      ]
+    }
+  },
+
+  "chapters": [
+    {
+      "id": "viral_ch1",
+      "chapter_number": 1,
+      "title": "It's Everywhere",
+      "description": "The video dropped. Someone edited together a compilation of just your choke - 45 seconds looped with sad music. It has 500k views. The comments are brutal. Other battlers are posting it with clown emojis. Your phone won't stop buzzing.",
+      "delay": { "type": "immediate", "value": 0 },
+      "urgency": "timed",
+      "deadline_hours": 48,
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "own_it",
+          "label": "Own It",
+          "description": "Post it yourself with a caption: 'Yeah I choked. It happens. Next battle I'm coming different.'",
+          "effects": [
+            { "type": "permanent", "resilience": 0.5 },
+            { "type": "permanent", "reputation": -0.3 },
+            { "type": "temporary", "stress": 20 }
+          ],
+          "leads_to": { "type": "chapter", "id": "viral_ch2_owned" }
+        },
+        {
+          "id": "make_excuses",
+          "label": "Make Excuses",
+          "description": "Post about being sick, family issues, mic problems - anything but 'I forgot my bars.'",
+          "effects": [
+            { "type": "permanent", "reputation": -1.0 },
+            { "type": "temporary", "stress": 15 }
+          ],
+          "leads_to": { "type": "chapter", "id": "viral_ch2_excuses" }
+        },
+        {
+          "id": "go_silent",
+          "label": "Go Dark",
+          "description": "Delete social media. Don't respond. Disappear until it blows over.",
+          "effects": [
+            { "type": "temporary", "stress": 30 },
+            { "type": "permanent", "reputation": -0.5 }
+          ],
+          "leads_to": { "type": "chapter", "id": "viral_ch2_silent" }
+        }
+      ]
+    },
+    {
+      "id": "viral_ch2_owned",
+      "chapter_number": 2,
+      "title": "Respect the Accountability",
+      "description": "Some people respect that you owned it. Others say you're just doing damage control. Either way, the memes aren't stopping. Your next opponent is already using it in their promo.",
+      "delay": { "type": "days", "value": 5 },
+      "urgency": "timed",
+      "deadline_hours": 72,
+      "prep_days_cost": 1,
+      "choices": [
+        {
+          "id": "address_in_battle",
+          "label": "Address It On Stage",
+          "description": "Your next battle, use it. 'Yeah I choked, but I'm still here. What's your excuse?'",
+          "effects": [
+            { "type": "temporary", "choke_chance_modifier": 0.05 },
+            { "type": "temporary", "stress": 25 }
+          ],
+          "leads_to": { "type": "chapter", "id": "viral_ch3_redemption" }
+        },
+        {
+          "id": "prove_it_quietly",
+          "label": "Let the Work Speak",
+          "description": "No more talking about it. Just show up and perform.",
+          "effects": [
+            { "type": "temporary", "prep_efficiency_modifier": 1.2 }
+          ],
+          "leads_to": { "type": "chapter", "id": "viral_ch3_proving" }
+        }
+      ]
+    },
+    {
+      "id": "viral_ch2_excuses",
+      "chapter_number": 2,
+      "title": "Nobody's Buying It",
+      "description": "People saw through the excuses. Now you're a 'choker AND a liar.' Someone even pulled up old footage of you looking fine before the battle. The narrative got worse.",
+      "delay": { "type": "days", "value": 3 },
+      "urgency": "timed",
+      "deadline_hours": 48,
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "double_down",
+          "label": "Double Down",
+          "description": "Keep insisting there were circumstances. Maybe some people will believe you.",
+          "effects": [
+            { "type": "permanent", "reputation": -1.5 },
+            { "type": "temporary", "stress": 35 }
+          ],
+          "leads_to": { "type": "ending", "id": "viral_end_excuse_king" }
+        },
+        {
+          "id": "finally_own_it",
+          "label": "Finally Come Clean",
+          "description": "Admit you made excuses because you were embarrassed. Real talk.",
+          "effects": [
+            { "type": "permanent", "reputation": -0.5 },
+            { "type": "permanent", "resilience": 0.3 }
+          ],
+          "leads_to": { "type": "chapter", "id": "viral_ch3_redemption" }
+        }
+      ]
+    },
+    {
+      "id": "viral_ch2_silent",
+      "chapter_number": 2,
+      "title": "The Silence Is Loud",
+      "description": "Your silence is being interpreted as guilt, weakness, or worse - that you quit. Leagues are wondering if you're still active. Some fans think you retired.",
+      "delay": { "type": "days", "value": 14 },
+      "urgency": "immediate",
+      "prep_days_cost": 1,
+      "choices": [
+        {
+          "id": "announce_return",
+          "label": "Announce Your Return",
+          "description": "Post that you're back and ready. Book a battle immediately.",
+          "effects": [
+            { "type": "permanent", "reputation": 0.3 },
+            { "type": "temporary", "stress": 30 }
+          ],
+          "leads_to": { "type": "chapter", "id": "viral_ch3_proving" }
+        },
+        {
+          "id": "stay_gone",
+          "label": "Take More Time",
+          "description": "You're not ready. Give it another month.",
+          "effects": [
+            { "type": "permanent", "reputation": -1.0 },
+            { "type": "temporary", "prep_days_lost": 14 }
+          ],
+          "leads_to": { "type": "chapter", "id": "viral_ch3_extended" }
+        }
+      ]
+    },
+    {
+      "id": "viral_ch3_redemption",
+      "chapter_number": 3,
+      "title": "The Pressure Battle",
+      "description": "Everyone's watching your next battle. Will you choke again? The venue is packed. Opponents are in the crowd hoping to see you fail. This is your moment.",
+      "delay": { "type": "battles", "value": 1 },
+      "urgency": "immediate",
+      "prep_days_cost": 2,
+      "choices": [
+        {
+          "id": "go_hard",
+          "label": "Leave Nothing in the Chamber",
+          "description": "Prepare like your career depends on it. Because it might.",
+          "effects": [
+            { "type": "temporary", "prep_efficiency_modifier": 1.5 },
+            { "type": "temporary", "stress": 40 },
+            { "type": "temporary", "choke_chance_modifier": -0.03 }
+          ],
+          "leads_to": { "type": "ending", "id": "viral_end_redemption" }
+        },
+        {
+          "id": "stay_calm",
+          "label": "Treat It Like Any Other Battle",
+          "description": "Don't overthink it. You've done this before. Just be yourself.",
+          "effects": [
+            { "type": "temporary", "stress": 20 }
+          ],
+          "leads_to": { "type": "ending", "id": "viral_end_moved_on" }
+        }
+      ]
+    },
+    {
+      "id": "viral_ch3_proving",
+      "chapter_number": 3,
+      "title": "Back to Work",
+      "description": "You're not addressing the choke. You're just battling. Some respect it. Others think you're avoiding the elephant in the room. Either way, you're in the ring again.",
+      "delay": { "type": "battles", "value": 2 },
+      "urgency": "passive",
+      "prep_days_cost": 1,
+      "choices": [
+        {
+          "id": "string_wins",
+          "label": "Focus on Winning",
+          "description": "Stack W's. Let the record speak for itself.",
+          "effects": [
+            { "type": "temporary", "prep_efficiency_modifier": 1.2 }
+          ],
+          "leads_to": { "type": "ending", "id": "viral_end_quiet_comeback" }
+        },
+        {
+          "id": "take_bigger_battle",
+          "label": "Book a Big Name",
+          "description": "A win over someone major will make people forget the choke.",
+          "effects": [
+            { "type": "temporary", "stress": 30 },
+            { "type": "temporary", "choke_chance_modifier": 0.03 }
+          ],
+          "leads_to": { "type": "ending", "id": "viral_end_statement" }
+        }
+      ]
+    },
+    {
+      "id": "viral_ch3_extended",
+      "chapter_number": 3,
+      "title": "Coming Back Cold",
+      "description": "It's been a while. You haven't battled. Haven't written much. The rust is real. But the pressure is off - people stopped talking about you. That's not necessarily good.",
+      "delay": { "type": "days", "value": 30 },
+      "urgency": "passive",
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "small_room_return",
+          "label": "Small Room Comeback",
+          "description": "Start in a small league. Build back up slowly.",
+          "effects": [
+            { "type": "permanent", "reputation": -0.5 },
+            { "type": "permanent", "resilience": 0.5 }
+          ],
+          "leads_to": { "type": "ending", "id": "viral_end_rebuild" }
+        },
+        {
+          "id": "big_return",
+          "label": "Big Stage Return",
+          "description": "Come back where you left. Main stage. All eyes.",
+          "effects": [
+            { "type": "temporary", "choke_chance_modifier": 0.08 },
+            { "type": "temporary", "stress": 45 }
+          ],
+          "leads_to": { "type": "ending", "id": "viral_end_gamble" }
+        }
+      ]
+    }
+  ],
+
+  "endings": [
+    {
+      "id": "viral_end_redemption",
+      "type": "positive",
+      "title": "Redemption",
+      "description": "You came back hard. Really hard. People are calling it one of your best performances ever. The choke is now part of your comeback story. 'Remember when he choked? Look at him now.'",
+      "effects": [
+        { "type": "permanent", "reputation": 2.0 },
+        { "type": "permanent", "resilience": 1.5 },
+        { "type": "temporary", "stress": -30, "duration_days": 30 }
+      ],
+      "badge": "Redemption"
+    },
+    {
+      "id": "viral_end_moved_on",
+      "type": "positive",
+      "title": "Moved On",
+      "description": "You didn't make a big deal about it. Just kept battling. The choke faded into your past. It's mentioned sometimes, but it doesn't define you.",
+      "effects": [
+        { "type": "permanent", "resilience": 0.5 },
+        { "type": "permanent", "reputation": 0.3 }
+      ]
+    },
+    {
+      "id": "viral_end_quiet_comeback",
+      "type": "positive",
+      "title": "Quiet Comeback",
+      "description": "Three wins in a row. No drama. Just results. The narrative slowly changed from 'the guy who choked' to 'the guy who's been winning lately.'",
+      "effects": [
+        { "type": "permanent", "reputation": 0.8 },
+        { "type": "permanent", "resilience": 0.5 }
+      ]
+    },
+    {
+      "id": "viral_end_statement",
+      "type": "positive",
+      "title": "Statement Made",
+      "description": "You beat a big name. Decisively. The choke video still exists, but now there's a new video people are posting - the one where you bodied a legend.",
+      "effects": [
+        { "type": "permanent", "reputation": 1.5 },
+        { "type": "permanent", "resilience": 0.5 }
+      ],
+      "badge": "Statement Maker"
+    },
+    {
+      "id": "viral_end_rebuild",
+      "type": "neutral",
+      "title": "Slow Rebuild",
+      "description": "You're working your way back up. The small rooms are humbling but helpful. You're relearning how to battle without the pressure. It's a longer road, but maybe the right one.",
+      "effects": [
+        { "type": "permanent", "resilience": 1.0 },
+        { "type": "permanent", "reputation": -0.3 }
+      ]
+    },
+    {
+      "id": "viral_end_gamble",
+      "type": "neutral",
+      "title": "All or Nothing",
+      "description": "You came back on the big stage after a long break. Either you'll prove yourself or dig a deeper hole. The battle hasn't happened yet, but you've committed. No turning back.",
+      "effects": [
+        { "type": "temporary", "stress": 40, "duration_days": 14 },
+        { "type": "temporary", "choke_chance_modifier": 0.05, "duration_battles": 1 }
+      ]
+    },
+    {
+      "id": "viral_end_excuse_king",
+      "type": "negative",
+      "title": "Excuse King",
+      "description": "You're known for excuses now as much as the choke. Every time you lose, people expect an excuse. The 'what's his excuse this time' memes are worse than the choke memes.",
+      "effects": [
+        { "type": "permanent", "reputation": -2.0 },
+        { "type": "permanent", "resilience": -0.5 }
+      ],
+      "badge": "Excuse King"
+    },
+    {
+      "id": "viral_end_choker_label",
+      "type": "negative",
+      "title": "Permanently Labeled",
+      "description": "It's been a year. You're still 'the guy who choked.' It's the first thing mentioned when your name comes up. The video gets reposted every anniversary. You can't escape it.",
+      "effects": [
+        { "type": "permanent", "reputation": -1.5 },
+        {
+          "type": "permanent",
+          "state_changes": {
+            "add_badge": "Known Choker"
+          }
+        }
+      ],
+      "badge": "Known Choker"
+    }
+  ]
+}

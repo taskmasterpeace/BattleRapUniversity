@@ -1,0 +1,1088 @@
+{
+  "version": "1.0.0",
+  "extractedAt": "2025-11-26T06:09:32.525Z",
+  "source": {
+    "filename": "image_1764135266885.png",
+    "dimensions": {
+      "width": 2752,
+      "height": 1536
+    },
+    "grid": {
+      "rows": 6,
+      "columns": 8,
+      "cellWidth": 344,
+      "cellHeight": 256,
+      "detectedAutomatically": false
+    }
+  },
+  "settings": {
+    "backgroundColor": "#00FF00",
+    "tolerance": 80,
+    "targetSize": 512,
+    "padding": 20
+  },
+  "sprites": [
+    {
+      "filename": "final_001.png",
+      "index": 0,
+      "gridPosition": {
+        "row": 0,
+        "column": 0
+      },
+      "originalBounds": {
+        "width": 344,
+        "height": 256
+      },
+      "contentBounds": {
+        "top": 0,
+        "left": 0,
+        "width": 289,
+        "height": 246
+      },
+      "finalSize": {
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "filename": "final_002.png",
+      "index": 1,
+      "gridPosition": {
+        "row": 0,
+        "column": 1
+      },
+      "originalBounds": {
+        "width": 344,
+        "height": 256
+      },
+      "contentBounds": {
+        "top": 0,
+        "left": 0,
+        "width": 291,
+        "height": 246
+      },
+      "finalSize": {
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "filename": "final_003.png",
+      "index": 2,
+      "gridPosition": {
+        "row": 0,
+        "column": 2
+      },
+      "originalBounds": {
+        "width": 344,
+        "height": 256
+      },
+      "contentBounds": {
+        "top": 0,
+        "left": 0,
+        "width": 281,
+        "height": 246
+      },
+      "finalSize": {
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "filename": "final_004.png",
+      "index": 3,
+      "gridPosition": {
+        "row": 0,
+        "column": 3
+      },
+      "originalBounds": {
+        "width": 344,
+        "height": 256
+      },
+      "contentBounds": {
+        "top": 13,
+        "left": 30,
+        "width": 257,
+        "height": 233
+      },
+      "finalSize": {
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "filename": "final_005.png",
+      "index": 4,
+      "gridPosition": {
+        "row": 0,
+        "column": 4
+      },
+      "originalBounds": {
+        "width": 344,
+        "height": 256
+      },
+      "contentBounds": {
+        "top": 13,
+        "left": 24,
+        "width": 266,
+        "height": 233
+      },
+      "finalSize": {
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "filename": "final_006.png",
+      "index": 5,
+      "gridPosition": {
+        "row": 0,
+        "column": 5
+      },
+      "originalBounds": {
+        "width": 344,
+        "height": 256
+      },
+      "contentBounds": {
+        "top": 0,
+        "left": 49,
+        "width": 285,
+        "height": 246
+      },
+      "finalSize": {
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "filename": "final_007.png",
+      "index": 6,
+      "gridPosition": {
+        "row": 0,
+        "column": 6
+      },
+      "originalBounds": {
+        "width": 344,
+        "height": 256
+      },
+      "contentBounds": {
+        "top": 0,
+        "left": 44,
+        "width": 290,
+        "height": 246
+      },
+      "finalSize": {
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "filename": "final_008.png",
+      "index": 7,
+      "gridPosition": {
+        "row": 0,
+        "column": 7
+      },
+      "originalBounds": {
+        "width": 344,
+        "height": 256
+      },
+      "contentBounds": {
+        "top": 0,
+        "left": 50,
+        "width": 284,
+        "height": 246
+      },
+      "finalSize": {
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "filename": "final_009.png",
+      "index": 8,
+      "gridPosition": {
+        "row": 1,
+        "column": 0
+      },
+      "originalBounds": {
+        "width": 344,
+        "height": 256
+      },
+      "contentBounds": {
+        "top": 0,
+        "left": 0,
+        "width": 334,
+        "height": 246
+      },
+      "finalSize": {
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "filename": "final_010.png",
+      "index": 9,
+      "gridPosition": {
+        "row": 1,
+        "column": 1
+      },
+      "originalBounds": {
+        "width": 344,
+        "height": 256
+      },
+      "contentBounds": {
+        "top": 0,
+        "left": 0,
+        "width": 334,
+        "height": 246
+      },
+      "finalSize": {
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "filename": "final_011.png",
+      "index": 10,
+      "gridPosition": {
+        "row": 1,
+        "column": 2
+      },
+      "originalBounds": {
+        "width": 344,
+        "height": 256
+      },
+      "contentBounds": {
+        "top": 0,
+        "left": 0,
+        "width": 334,
+        "height": 246
+      },
+      "finalSize": {
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "filename": "final_012.png",
+      "index": 11,
+      "gridPosition": {
+        "row": 1,
+        "column": 3
+      },
+      "originalBounds": {
+        "width": 344,
+        "height": 256
+      },
+      "contentBounds": {
+        "top": 0,
+        "left": 0,
+        "width": 334,
+        "height": 246
+      },
+      "finalSize": {
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "filename": "final_013.png",
+      "index": 12,
+      "gridPosition": {
+        "row": 1,
+        "column": 4
+      },
+      "originalBounds": {
+        "width": 344,
+        "height": 256
+      },
+      "contentBounds": {
+        "top": 0,
+        "left": 0,
+        "width": 334,
+        "height": 246
+      },
+      "finalSize": {
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "filename": "final_014.png",
+      "index": 13,
+      "gridPosition": {
+        "row": 1,
+        "column": 5
+      },
+      "originalBounds": {
+        "width": 344,
+        "height": 256
+      },
+      "contentBounds": {
+        "top": 0,
+        "left": 0,
+        "width": 334,
+        "height": 246
+      },
+      "finalSize": {
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "filename": "final_015.png",
+      "index": 14,
+      "gridPosition": {
+        "row": 1,
+        "column": 6
+      },
+      "originalBounds": {
+        "width": 344,
+        "height": 256
+      },
+      "contentBounds": {
+        "top": 0,
+        "left": 0,
+        "width": 334,
+        "height": 246
+      },
+      "finalSize": {
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "filename": "final_016.png",
+      "index": 15,
+      "gridPosition": {
+        "row": 1,
+        "column": 7
+      },
+      "originalBounds": {
+        "width": 344,
+        "height": 256
+      },
+      "contentBounds": {
+        "top": 0,
+        "left": 0,
+        "width": 334,
+        "height": 246
+      },
+      "finalSize": {
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "filename": "final_017.png",
+      "index": 16,
+      "gridPosition": {
+        "row": 2,
+        "column": 0
+      },
+      "originalBounds": {
+        "width": 344,
+        "height": 256
+      },
+      "contentBounds": {
+        "top": 0,
+        "left": 0,
+        "width": 334,
+        "height": 246
+      },
+      "finalSize": {
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "filename": "final_018.png",
+      "index": 17,
+      "gridPosition": {
+        "row": 2,
+        "column": 1
+      },
+      "originalBounds": {
+        "width": 344,
+        "height": 256
+      },
+      "contentBounds": {
+        "top": 0,
+        "left": 0,
+        "width": 334,
+        "height": 246
+      },
+      "finalSize": {
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "filename": "final_019.png",
+      "index": 18,
+      "gridPosition": {
+        "row": 2,
+        "column": 2
+      },
+      "originalBounds": {
+        "width": 344,
+        "height": 256
+      },
+      "contentBounds": {
+        "top": 0,
+        "left": 0,
+        "width": 334,
+        "height": 246
+      },
+      "finalSize": {
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "filename": "final_020.png",
+      "index": 19,
+      "gridPosition": {
+        "row": 2,
+        "column": 3
+      },
+      "originalBounds": {
+        "width": 344,
+        "height": 256
+      },
+      "contentBounds": {
+        "top": 0,
+        "left": 0,
+        "width": 334,
+        "height": 246
+      },
+      "finalSize": {
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "filename": "final_021.png",
+      "index": 20,
+      "gridPosition": {
+        "row": 2,
+        "column": 4
+      },
+      "originalBounds": {
+        "width": 344,
+        "height": 256
+      },
+      "contentBounds": {
+        "top": 0,
+        "left": 0,
+        "width": 334,
+        "height": 246
+      },
+      "finalSize": {
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "filename": "final_022.png",
+      "index": 21,
+      "gridPosition": {
+        "row": 2,
+        "column": 5
+      },
+      "originalBounds": {
+        "width": 344,
+        "height": 256
+      },
+      "contentBounds": {
+        "top": 0,
+        "left": 0,
+        "width": 334,
+        "height": 246
+      },
+      "finalSize": {
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "filename": "final_023.png",
+      "index": 22,
+      "gridPosition": {
+        "row": 2,
+        "column": 6
+      },
+      "originalBounds": {
+        "width": 344,
+        "height": 256
+      },
+      "contentBounds": {
+        "top": 0,
+        "left": 0,
+        "width": 334,
+        "height": 246
+      },
+      "finalSize": {
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "filename": "final_024.png",
+      "index": 23,
+      "gridPosition": {
+        "row": 2,
+        "column": 7
+      },
+      "originalBounds": {
+        "width": 344,
+        "height": 256
+      },
+      "contentBounds": {
+        "top": 0,
+        "left": 0,
+        "width": 334,
+        "height": 246
+      },
+      "finalSize": {
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "filename": "final_025.png",
+      "index": 24,
+      "gridPosition": {
+        "row": 3,
+        "column": 0
+      },
+      "originalBounds": {
+        "width": 344,
+        "height": 256
+      },
+      "contentBounds": {
+        "top": 0,
+        "left": 0,
+        "width": 334,
+        "height": 246
+      },
+      "finalSize": {
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "filename": "final_026.png",
+      "index": 25,
+      "gridPosition": {
+        "row": 3,
+        "column": 1
+      },
+      "originalBounds": {
+        "width": 344,
+        "height": 256
+      },
+      "contentBounds": {
+        "top": 0,
+        "left": 0,
+        "width": 334,
+        "height": 246
+      },
+      "finalSize": {
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "filename": "final_027.png",
+      "index": 26,
+      "gridPosition": {
+        "row": 3,
+        "column": 2
+      },
+      "originalBounds": {
+        "width": 344,
+        "height": 256
+      },
+      "contentBounds": {
+        "top": 0,
+        "left": 0,
+        "width": 334,
+        "height": 246
+      },
+      "finalSize": {
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "filename": "final_028.png",
+      "index": 27,
+      "gridPosition": {
+        "row": 3,
+        "column": 3
+      },
+      "originalBounds": {
+        "width": 344,
+        "height": 256
+      },
+      "contentBounds": {
+        "top": 0,
+        "left": 0,
+        "width": 334,
+        "height": 246
+      },
+      "finalSize": {
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "filename": "final_029.png",
+      "index": 28,
+      "gridPosition": {
+        "row": 3,
+        "column": 4
+      },
+      "originalBounds": {
+        "width": 344,
+        "height": 256
+      },
+      "contentBounds": {
+        "top": 0,
+        "left": 0,
+        "width": 334,
+        "height": 246
+      },
+      "finalSize": {
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "filename": "final_030.png",
+      "index": 29,
+      "gridPosition": {
+        "row": 3,
+        "column": 5
+      },
+      "originalBounds": {
+        "width": 344,
+        "height": 256
+      },
+      "contentBounds": {
+        "top": 0,
+        "left": 0,
+        "width": 334,
+        "height": 246
+      },
+      "finalSize": {
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "filename": "final_031.png",
+      "index": 30,
+      "gridPosition": {
+        "row": 3,
+        "column": 6
+      },
+      "originalBounds": {
+        "width": 344,
+        "height": 256
+      },
+      "contentBounds": {
+        "top": 0,
+        "left": 0,
+        "width": 334,
+        "height": 246
+      },
+      "finalSize": {
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "filename": "final_032.png",
+      "index": 31,
+      "gridPosition": {
+        "row": 3,
+        "column": 7
+      },
+      "originalBounds": {
+        "width": 344,
+        "height": 256
+      },
+      "contentBounds": {
+        "top": 0,
+        "left": 0,
+        "width": 334,
+        "height": 246
+      },
+      "finalSize": {
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "filename": "final_033.png",
+      "index": 32,
+      "gridPosition": {
+        "row": 4,
+        "column": 0
+      },
+      "originalBounds": {
+        "width": 344,
+        "height": 256
+      },
+      "contentBounds": {
+        "top": 0,
+        "left": 0,
+        "width": 334,
+        "height": 246
+      },
+      "finalSize": {
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "filename": "final_034.png",
+      "index": 33,
+      "gridPosition": {
+        "row": 4,
+        "column": 1
+      },
+      "originalBounds": {
+        "width": 344,
+        "height": 256
+      },
+      "contentBounds": {
+        "top": 0,
+        "left": 0,
+        "width": 334,
+        "height": 246
+      },
+      "finalSize": {
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "filename": "final_035.png",
+      "index": 34,
+      "gridPosition": {
+        "row": 4,
+        "column": 2
+      },
+      "originalBounds": {
+        "width": 344,
+        "height": 256
+      },
+      "contentBounds": {
+        "top": 0,
+        "left": 0,
+        "width": 334,
+        "height": 246
+      },
+      "finalSize": {
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "filename": "final_036.png",
+      "index": 35,
+      "gridPosition": {
+        "row": 4,
+        "column": 3
+      },
+      "originalBounds": {
+        "width": 344,
+        "height": 256
+      },
+      "contentBounds": {
+        "top": 0,
+        "left": 0,
+        "width": 334,
+        "height": 246
+      },
+      "finalSize": {
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "filename": "final_037.png",
+      "index": 36,
+      "gridPosition": {
+        "row": 4,
+        "column": 4
+      },
+      "originalBounds": {
+        "width": 344,
+        "height": 256
+      },
+      "contentBounds": {
+        "top": 0,
+        "left": 0,
+        "width": 334,
+        "height": 246
+      },
+      "finalSize": {
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "filename": "final_038.png",
+      "index": 37,
+      "gridPosition": {
+        "row": 4,
+        "column": 5
+      },
+      "originalBounds": {
+        "width": 344,
+        "height": 256
+      },
+      "contentBounds": {
+        "top": 0,
+        "left": 0,
+        "width": 334,
+        "height": 246
+      },
+      "finalSize": {
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "filename": "final_039.png",
+      "index": 38,
+      "gridPosition": {
+        "row": 4,
+        "column": 6
+      },
+      "originalBounds": {
+        "width": 344,
+        "height": 256
+      },
+      "contentBounds": {
+        "top": 0,
+        "left": 0,
+        "width": 334,
+        "height": 246
+      },
+      "finalSize": {
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "filename": "final_040.png",
+      "index": 39,
+      "gridPosition": {
+        "row": 4,
+        "column": 7
+      },
+      "originalBounds": {
+        "width": 344,
+        "height": 256
+      },
+      "contentBounds": {
+        "top": 0,
+        "left": 0,
+        "width": 334,
+        "height": 246
+      },
+      "finalSize": {
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "filename": "final_041.png",
+      "index": 40,
+      "gridPosition": {
+        "row": 5,
+        "column": 0
+      },
+      "originalBounds": {
+        "width": 344,
+        "height": 256
+      },
+      "contentBounds": {
+        "top": 0,
+        "left": 0,
+        "width": 307,
+        "height": 246
+      },
+      "finalSize": {
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "filename": "final_042.png",
+      "index": 41,
+      "gridPosition": {
+        "row": 5,
+        "column": 1
+      },
+      "originalBounds": {
+        "width": 344,
+        "height": 256
+      },
+      "contentBounds": {
+        "top": 0,
+        "left": 0,
+        "width": 314,
+        "height": 246
+      },
+      "finalSize": {
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "filename": "final_043.png",
+      "index": 42,
+      "gridPosition": {
+        "row": 5,
+        "column": 2
+      },
+      "originalBounds": {
+        "width": 344,
+        "height": 256
+      },
+      "contentBounds": {
+        "top": 0,
+        "left": 0,
+        "width": 308,
+        "height": 246
+      },
+      "finalSize": {
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "filename": "final_044.png",
+      "index": 43,
+      "gridPosition": {
+        "row": 5,
+        "column": 3
+      },
+      "originalBounds": {
+        "width": 344,
+        "height": 256
+      },
+      "contentBounds": {
+        "top": 0,
+        "left": 7,
+        "width": 294,
+        "height": 246
+      },
+      "finalSize": {
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "filename": "final_045.png",
+      "index": 44,
+      "gridPosition": {
+        "row": 5,
+        "column": 4
+      },
+      "originalBounds": {
+        "width": 344,
+        "height": 256
+      },
+      "contentBounds": {
+        "top": 0,
+        "left": 4,
+        "width": 304,
+        "height": 246
+      },
+      "finalSize": {
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "filename": "final_046.png",
+      "index": 45,
+      "gridPosition": {
+        "row": 5,
+        "column": 5
+      },
+      "originalBounds": {
+        "width": 344,
+        "height": 256
+      },
+      "contentBounds": {
+        "top": 0,
+        "left": 3,
+        "width": 331,
+        "height": 246
+      },
+      "finalSize": {
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "filename": "final_047.png",
+      "index": 46,
+      "gridPosition": {
+        "row": 5,
+        "column": 6
+      },
+      "originalBounds": {
+        "width": 344,
+        "height": 256
+      },
+      "contentBounds": {
+        "top": 0,
+        "left": 13,
+        "width": 321,
+        "height": 246
+      },
+      "finalSize": {
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "filename": "final_048.png",
+      "index": 47,
+      "gridPosition": {
+        "row": 5,
+        "column": 7
+      },
+      "originalBounds": {
+        "width": 344,
+        "height": 256
+      },
+      "contentBounds": {
+        "top": 0,
+        "left": 31,
+        "width": 303,
+        "height": 246
+      },
+      "finalSize": {
+        "width": 512,
+        "height": 512
+      }
+    }
+  ],
+  "stats": {
+    "totalCells": 48,
+    "successfulExtractions": 48,
+    "emptySlots": 0,
+    "processingTimeMs": 714
+  }
+}

@@ -1,0 +1,216 @@
+{
+  "code": "FINANCIAL_HOLE",
+  "name": "Financial Crisis",
+  "description": "Money's getting tight. The battle checks aren't covering what they used to.",
+  "category": "financial",
+  "min_chapters": 2,
+  "max_chapters": 4,
+
+  "trigger": {
+    "type": "attribute",
+    "probability": 0.15,
+    "conditions": { "financial_stability_max": 4, "min_battles": 5 }
+  },
+
+  "chapters": [
+    {
+      "id": "financial_ch1",
+      "chapter_number": 1,
+      "title": "Bills Due",
+      "description": "Rent's due and you're short. Your last few battle checks went to other things. Now you need money fast.",
+      "delay": { "type": "immediate", "value": 0 },
+      "urgency": "timed",
+      "deadline_hours": 72,
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "take_quick_battle",
+          "label": "Take a Quick Battle",
+          "description": "There's a small room battle paying quick. Low stakes, fast money.",
+          "effects": [
+            { "type": "permanent", "financial_stability": 0.5 },
+            { "type": "temporary", "prep_days_lost": 2 }
+          ],
+          "leads_to": { "type": "ending", "id": "financial_end_hustled" }
+        },
+        {
+          "id": "ask_for_advance",
+          "label": "Ask for an Advance",
+          "description": "Hit up your league. See if they'll front you on the next battle.",
+          "effects": [
+            { "type": "permanent", "financial_stability": 0.3 },
+            { "type": "permanent", "reputation": -0.3 }
+          ],
+          "leads_to": { "type": "chapter", "id": "financial_ch2_debt" }
+        },
+        {
+          "id": "side_hustle",
+          "label": "Find a Side Hustle",
+          "description": "Pick up some other work. It'll take time from prep.",
+          "effects": [
+            { "type": "permanent", "financial_stability": 1.0 },
+            { "type": "temporary", "prep_days_lost": 4 }
+          ],
+          "leads_to": { "type": "ending", "id": "financial_end_grind" }
+        }
+      ]
+    },
+    {
+      "id": "financial_ch2_debt",
+      "chapter_number": 2,
+      "title": "The Advance",
+      "description": "They gave you the advance. But now they own your next check. And they want you to take a battle you don't want.",
+      "delay": { "type": "battles", "value": 1 },
+      "urgency": "timed",
+      "deadline_hours": 48,
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "take_bad_battle",
+          "label": "Take the Battle",
+          "description": "You need the money. Fight whoever they say.",
+          "effects": [
+            { "type": "permanent", "financial_stability": 0.5 },
+            { "type": "temporary", "stress": 20 }
+          ],
+          "leads_to": { "type": "chapter", "id": "financial_ch3_controlled" }
+        },
+        {
+          "id": "refuse_battle",
+          "label": "Refuse",
+          "description": "You'll find another way to pay them back.",
+          "effects": [
+            { "type": "permanent", "reputation": 0.3 },
+            { "type": "permanent", "financial_stability": -0.5 }
+          ],
+          "leads_to": { "type": "chapter", "id": "financial_ch3_owe" }
+        }
+      ]
+    },
+    {
+      "id": "financial_ch3_controlled",
+      "chapter_number": 3,
+      "title": "Under Their Thumb",
+      "description": "You took their battle. Now they're talking about 'exclusive contracts' and 'long-term deals'. This is getting tight.",
+      "delay": { "type": "battles", "value": 2 },
+      "urgency": "passive",
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "sign_deal",
+          "label": "Sign the Deal",
+          "description": "Stable money. Less freedom. It's a trade-off.",
+          "effects": [
+            { "type": "permanent", "financial_stability": 2.0 },
+            { "type": "permanent", "reputation": -0.5 }
+          ],
+          "leads_to": { "type": "ending", "id": "financial_end_signed" }
+        },
+        {
+          "id": "break_free",
+          "label": "Break Free",
+          "description": "Pay them off however you can and get out.",
+          "effects": [
+            { "type": "permanent", "financial_stability": -1.0 },
+            { "type": "permanent", "reputation": 0.5 }
+          ],
+          "leads_to": { "type": "ending", "id": "financial_end_independent" }
+        }
+      ]
+    },
+    {
+      "id": "financial_ch3_owe",
+      "chapter_number": 3,
+      "title": "Debt Collector",
+      "description": "The league is pressing you for that advance money. They're threatening to blacklist you.",
+      "delay": { "type": "days", "value": 14 },
+      "urgency": "timed",
+      "deadline_hours": 72,
+      "prep_days_cost": 1,
+      "choices": [
+        {
+          "id": "pay_back",
+          "label": "Pay It Back",
+          "description": "Scrape together the money. Sell something if you have to.",
+          "effects": [
+            { "type": "permanent", "financial_stability": -1.0 },
+            { "type": "permanent", "reputation": 0.3 }
+          ],
+          "leads_to": { "type": "ending", "id": "financial_end_clean" }
+        },
+        {
+          "id": "negotiate",
+          "label": "Negotiate",
+          "description": "Work out a payment plan. It'll take longer but it's manageable.",
+          "effects": [
+            { "type": "temporary", "stress": 15, "duration_days": 30 }
+          ],
+          "leads_to": { "type": "ending", "id": "financial_end_payment_plan" }
+        }
+      ]
+    }
+  ],
+
+  "endings": [
+    {
+      "id": "financial_end_hustled",
+      "type": "neutral",
+      "title": "Quick Money",
+      "description": "You handled it. Took a battle below your level but the lights stayed on.",
+      "effects": [
+        { "type": "permanent", "resilience": 0.3 }
+      ]
+    },
+    {
+      "id": "financial_end_grind",
+      "type": "neutral",
+      "title": "Side Hustle Life",
+      "description": "You got another source of income. Less time for battles but more financial security.",
+      "effects": [
+        { "type": "permanent", "financial_stability": 1.0 }
+      ],
+      "badge": "Two Jobs"
+    },
+    {
+      "id": "financial_end_signed",
+      "type": "neutral",
+      "title": "Contract Bound",
+      "description": "You signed an exclusive deal. Steady pay but limited options.",
+      "effects": [
+        { "type": "permanent", "financial_stability": 2.0 },
+        { "type": "permanent", "reputation": -0.5 }
+      ],
+      "badge": "Signed and Sealed"
+    },
+    {
+      "id": "financial_end_independent",
+      "type": "positive",
+      "title": "Free Agent",
+      "description": "You paid off the debt and stayed independent. It was expensive but worth it.",
+      "effects": [
+        { "type": "permanent", "reputation": 0.5 },
+        { "type": "permanent", "resilience": 0.5 }
+      ],
+      "badge": "Own Boss"
+    },
+    {
+      "id": "financial_end_clean",
+      "type": "positive",
+      "title": "Debt Free",
+      "description": "You paid back every cent. Your name is clean.",
+      "effects": [
+        { "type": "permanent", "reputation": 0.3 },
+        { "type": "temporary", "stress": -10, "duration_days": 14 }
+      ]
+    },
+    {
+      "id": "financial_end_payment_plan",
+      "type": "neutral",
+      "title": "Payment Plan",
+      "description": "You're paying it off slowly. It's hanging over you but it's manageable.",
+      "effects": [
+        { "type": "temporary", "financial_stability": -0.5, "duration_days": 60 }
+      ]
+    }
+  ]
+}

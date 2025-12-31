@@ -1,0 +1,386 @@
+{
+  "code": "GHOST_WRITER_EXPOSED",
+  "name": "Ghost Writer Exposed",
+  "description": "Someone's claiming they wrote your best bars. And they have proof.",
+  "category": "career",
+  "min_chapters": 3,
+  "max_chapters": 5,
+
+  "trigger": {
+    "type": "compound",
+    "probability": 0.05,
+    "conditions": {
+      "all": [
+        { "min_battles": 20 },
+        { "min_tier": "established" },
+        { "min_attribute": { "reputation": 6 } }
+      ]
+    }
+  },
+
+  "chapters": [
+    {
+      "id": "ghost_ch1",
+      "chapter_number": 1,
+      "title": "The Accusation",
+      "description": "A writer you worked with years ago just posted screenshots. Texts of you asking for bars. Voice notes of him sending you material. He's saying he wrote 60% of your rounds from your breakout battle. The one everyone quotes.",
+      "delay": { "type": "immediate", "value": 0 },
+      "urgency": "timed",
+      "deadline_hours": 48,
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "deny_all",
+          "label": "Deny Everything",
+          "description": "Those screenshots are fake. You never worked with him.",
+          "effects": [
+            { "type": "temporary", "stress": 30 }
+          ],
+          "leads_to": { "type": "chapter", "id": "ghost_ch2_deny" }
+        },
+        {
+          "id": "admit_collab",
+          "label": "Admit Collaboration",
+          "description": "You worked together, but he was a consultant, not a ghost writer.",
+          "effects": [
+            { "type": "permanent", "reputation": -0.5 },
+            { "type": "temporary", "stress": 20 }
+          ],
+          "leads_to": { "type": "chapter", "id": "ghost_ch2_spin" }
+        },
+        {
+          "id": "full_admission",
+          "label": "Come Clean",
+          "description": "He's right. You used writers. Get ahead of it.",
+          "effects": [
+            { "type": "permanent", "reputation": -1.5 },
+            { "type": "permanent", "resilience": 0.5 }
+          ],
+          "leads_to": { "type": "chapter", "id": "ghost_ch2_clean" }
+        }
+      ]
+    },
+    {
+      "id": "ghost_ch2_deny",
+      "chapter_number": 2,
+      "title": "More Receipts",
+      "description": "He posted more. PayPal transactions. Voice recordings of you saying 'yo that bar is crazy, I'm using that.' Even battlers who were there are saying they remember him in your camp.",
+      "delay": { "type": "days", "value": 3 },
+      "urgency": "immediate",
+      "prep_days_cost": 1,
+      "choices": [
+        {
+          "id": "double_down",
+          "label": "Double Down",
+          "description": "He doctored it all. Stay on message.",
+          "effects": [
+            { "type": "permanent", "reputation": -2.0 },
+            { "type": "temporary", "stress": 40 }
+          ],
+          "leads_to": { "type": "ending", "id": "ghost_end_disgraced" }
+        },
+        {
+          "id": "pivot_admit",
+          "label": "Change Your Story",
+          "description": "Okay, you worked together. But it was collaboration, not ghostwriting.",
+          "effects": [
+            { "type": "permanent", "reputation": -1.0 }
+          ],
+          "leads_to": { "type": "chapter", "id": "ghost_ch3_damage" }
+        }
+      ]
+    },
+    {
+      "id": "ghost_ch2_spin",
+      "chapter_number": 2,
+      "title": "The Narrative Battle",
+      "description": "You're calling it 'collaboration' and 'having a camp.' Some battlers are defending you - 'everyone has a camp.' Others are saying there's a difference between sparring and having someone write your rounds.",
+      "delay": { "type": "days", "value": 5 },
+      "urgency": "timed",
+      "deadline_hours": 72,
+      "prep_days_cost": 1,
+      "choices": [
+        {
+          "id": "battle_proof",
+          "label": "Prove It On Stage",
+          "description": "Take a battle with no prep. Freestyle. Show you can write.",
+          "effects": [
+            { "type": "temporary", "choke_chance_modifier": 0.10 },
+            { "type": "temporary", "stress": 35 }
+          ],
+          "leads_to": { "type": "chapter", "id": "ghost_ch3_prove" }
+        },
+        {
+          "id": "interview_circuit",
+          "label": "Do the Interview Circuit",
+          "description": "Go on every podcast. Control the narrative.",
+          "effects": [
+            { "type": "permanent", "reputation": -0.3 },
+            { "type": "temporary", "prep_days_lost": 3 }
+          ],
+          "leads_to": { "type": "ending", "id": "ghost_end_survived" }
+        }
+      ]
+    },
+    {
+      "id": "ghost_ch2_clean",
+      "chapter_number": 2,
+      "title": "The Fallout",
+      "description": "You admitted it. Some respect the honesty. Others are stripping your legacy. That breakout battle? Doesn't count anymore according to the culture.",
+      "delay": { "type": "days", "value": 7 },
+      "urgency": "passive",
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "rebuild_honest",
+          "label": "Rebuild From Scratch",
+          "description": "Start fresh. Every bar from now on is 100% you.",
+          "effects": [
+            { "type": "permanent", "resilience": 1.0 },
+            { "type": "temporary", "stress": 20 }
+          ],
+          "leads_to": { "type": "chapter", "id": "ghost_ch3_rebuild" }
+        },
+        {
+          "id": "defend_practice",
+          "label": "Defend the Practice",
+          "description": "Drake uses writers. Kanye uses writers. Why is battle rap different?",
+          "effects": [
+            { "type": "permanent", "reputation": -1.0 }
+          ],
+          "leads_to": { "type": "ending", "id": "ghost_end_rationalized" }
+        }
+      ]
+    },
+    {
+      "id": "ghost_ch3_damage",
+      "chapter_number": 3,
+      "title": "The Debate",
+      "description": "The culture is debating where the line is. Camp help vs ghostwriting. What counts as 'your' material? Some are using you as the example of what NOT to do.",
+      "delay": { "type": "battles", "value": 2 },
+      "urgency": "passive",
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "stay_quiet",
+          "label": "Let It Die Down",
+          "description": "Stop talking about it. Let time heal.",
+          "effects": [
+            { "type": "permanent", "reputation": -0.5 }
+          ],
+          "leads_to": { "type": "ending", "id": "ghost_end_tainted" }
+        },
+        {
+          "id": "challenge_accuser",
+          "label": "Battle Your Accuser",
+          "description": "If he's such a great writer, let him rap his own bars.",
+          "effects": [
+            { "type": "permanent", "reputation": 0.3 },
+            { "type": "temporary", "stress": 30 }
+          ],
+          "leads_to": { "type": "chapter", "id": "ghost_ch4_battle" }
+        }
+      ]
+    },
+    {
+      "id": "ghost_ch3_prove",
+      "chapter_number": 3,
+      "title": "The Freestyle Test",
+      "description": "You agreed to a mostly freestyle battle. Limited prep. The world is watching to see if you can actually write.",
+      "delay": { "type": "battles", "value": 1 },
+      "urgency": "immediate",
+      "prep_days_cost": 1,
+      "choices": [
+        {
+          "id": "go_off_top",
+          "label": "Pure Freestyle",
+          "description": "No writtens at all. Prove beyond any doubt.",
+          "effects": [
+            { "type": "temporary", "choke_chance_modifier": 0.15 }
+          ],
+          "leads_to": { "type": "ending", "id": "ghost_end_proved" }
+        },
+        {
+          "id": "limited_prep",
+          "label": "48-Hour Prep",
+          "description": "Short prep window. Still impressive if you deliver.",
+          "effects": [
+            { "type": "temporary", "choke_chance_modifier": 0.05 }
+          ],
+          "leads_to": { "type": "ending", "id": "ghost_end_redeemed" }
+        }
+      ]
+    },
+    {
+      "id": "ghost_ch3_rebuild",
+      "chapter_number": 3,
+      "title": "The Comeback",
+      "description": "You've been writing everything yourself. It's harder. Takes longer. But when you deliver, everyone knows it's you.",
+      "delay": { "type": "battles", "value": 3 },
+      "urgency": "passive",
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "gradual_return",
+          "label": "Gradual Return",
+          "description": "Take smaller battles. Rebuild slowly.",
+          "effects": [
+            { "type": "permanent", "resilience": 0.5 }
+          ],
+          "leads_to": { "type": "ending", "id": "ghost_end_honest_career" }
+        },
+        {
+          "id": "big_stage",
+          "label": "Big Stage Comeback",
+          "description": "Go straight to a major battle. Prove yourself where it counts.",
+          "effects": [
+            { "type": "temporary", "stress": 25 },
+            { "type": "temporary", "choke_chance_modifier": 0.05 }
+          ],
+          "leads_to": { "type": "ending", "id": "ghost_end_vindicated" }
+        }
+      ]
+    },
+    {
+      "id": "ghost_ch4_battle",
+      "chapter_number": 4,
+      "title": "Writer vs Rapper",
+      "description": "The battle is set. You vs the guy who claims he wrote your bars. Winner settles the debate forever.",
+      "delay": { "type": "battles", "value": 2 },
+      "urgency": "immediate",
+      "prep_days_cost": 3,
+      "choices": [
+        {
+          "id": "body_him",
+          "label": "Body Him",
+          "description": "This is personal. Leave no doubt.",
+          "effects": [
+            { "type": "permanent", "reputation": 1.5 },
+            { "type": "temporary", "prep_efficiency_modifier": 1.3 }
+          ],
+          "leads_to": { "type": "ending", "id": "ghost_end_settled" }
+        },
+        {
+          "id": "respectful",
+          "label": "Win Respectfully",
+          "description": "Beat him but acknowledge his contribution.",
+          "effects": [
+            { "type": "permanent", "reputation": 0.5 },
+            { "type": "permanent", "resilience": 0.3 }
+          ],
+          "leads_to": { "type": "ending", "id": "ghost_end_closure" }
+        }
+      ]
+    }
+  ],
+
+  "endings": [
+    {
+      "id": "ghost_end_proved",
+      "type": "positive",
+      "title": "Proved Them Wrong",
+      "description": "You went pure freestyle and killed it. Nobody can ever question your pen again. The ghostwriter accusations die here.",
+      "effects": [
+        { "type": "permanent", "reputation": 2.0 },
+        { "type": "permanent", "resilience": 1.0 },
+        {
+          "type": "permanent",
+          "writing": { "creativity": 0.5 }
+        }
+      ],
+      "badge": "Pen Game Certified"
+    },
+    {
+      "id": "ghost_end_vindicated",
+      "type": "positive",
+      "title": "Vindicated",
+      "description": "Came back with all original material on the big stage. Delivered. The culture accepted your redemption.",
+      "effects": [
+        { "type": "permanent", "reputation": 1.5 },
+        { "type": "permanent", "resilience": 0.5 }
+      ],
+      "badge": "Redemption"
+    },
+    {
+      "id": "ghost_end_settled",
+      "type": "positive",
+      "title": "Settled the Score",
+      "description": "You bodied your accuser in a battle. 3-0 clear. He's not talking anymore. The narrative shifted back in your favor.",
+      "effects": [
+        { "type": "permanent", "reputation": 1.5 }
+      ]
+    },
+    {
+      "id": "ghost_end_redeemed",
+      "type": "positive",
+      "title": "Redeemed",
+      "description": "Short prep, great performance. Not total proof but enough. Most people moved on.",
+      "effects": [
+        { "type": "permanent", "reputation": 0.5 }
+      ]
+    },
+    {
+      "id": "ghost_end_closure",
+      "type": "neutral",
+      "title": "Closure",
+      "description": "Beat him but acknowledged you worked together in the past. Both moved on. Drama over.",
+      "effects": [
+        { "type": "permanent", "reputation": 0.3 },
+        { "type": "permanent", "resilience": 0.3 }
+      ]
+    },
+    {
+      "id": "ghost_end_survived",
+      "type": "neutral",
+      "title": "Survived",
+      "description": "Interview circuit worked. Narrative is muddied. Not cleared, not convicted. Just... moved on.",
+      "effects": [
+        { "type": "permanent", "reputation": -0.3 }
+      ]
+    },
+    {
+      "id": "ghost_end_honest_career",
+      "type": "neutral",
+      "title": "Honest Career",
+      "description": "You write everything yourself now. It's slower progress but it's real. Respect is being rebuilt.",
+      "effects": [
+        { "type": "permanent", "resilience": 1.0 }
+      ]
+    },
+    {
+      "id": "ghost_end_tainted",
+      "type": "negative",
+      "title": "Tainted Legacy",
+      "description": "The accusations never fully went away. Every time you deliver fire, someone in the comments asks who really wrote it.",
+      "effects": [
+        { "type": "permanent", "reputation": -1.0 }
+      ]
+    },
+    {
+      "id": "ghost_end_rationalized",
+      "type": "negative",
+      "title": "Industry Plant",
+      "description": "You defended ghostwriting as normal. Some agreed. But battle rap isn't the music industry. You're viewed differently now.",
+      "effects": [
+        { "type": "permanent", "reputation": -1.5 }
+      ],
+      "badge": "Industry Plant"
+    },
+    {
+      "id": "ghost_end_disgraced",
+      "type": "catastrophic",
+      "title": "Disgraced",
+      "description": "Denied it until the evidence was undeniable. Lied to everyone's face. Your credibility is gone. Every bar you ever spit is questioned.",
+      "effects": [
+        { "type": "permanent", "reputation": -3.0 },
+        {
+          "type": "permanent",
+          "state_changes": {
+            "set_ghostwriting_secret": true
+          }
+        }
+      ],
+      "badge": "Exposed"
+    }
+  ]
+}

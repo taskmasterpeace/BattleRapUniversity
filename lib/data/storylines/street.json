@@ -1,0 +1,308 @@
+{
+  "code": "STREET_ALTERCATION",
+  "name": "Street Altercation",
+  "description": "Someone got in your face after the battle. Now you have to decide how to handle it.",
+  "category": "street",
+  "min_chapters": 2,
+  "max_chapters": 5,
+
+  "trigger": {
+    "type": "battle_result",
+    "probability": 0.10,
+    "conditions": { "min_battles": 3 }
+  },
+
+  "chapters": [
+    {
+      "id": "street_ch1",
+      "chapter_number": 1,
+      "title": "After the Battle",
+      "description": "Someone from your opponent's crew stepped to you in the parking lot. Words were exchanged. Hands might be next.",
+      "delay": { "type": "immediate", "value": 0 },
+      "urgency": "immediate",
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "swing_first",
+          "label": "Swing First",
+          "description": "You're not about to let them think you're scared.",
+          "effects": [
+            { "type": "temporary", "stress": 30 }
+          ],
+          "leads_to": { "type": "chapter", "id": "street_ch2_fight" }
+        },
+        {
+          "id": "talk_tough",
+          "label": "Stand Your Ground",
+          "description": "Keep it verbal but don't back down an inch.",
+          "effects": [
+            { "type": "temporary", "stress": 15 },
+            { "type": "permanent", "reputation": 0.3 }
+          ],
+          "leads_to": { "type": "chapter", "id": "street_ch2_standoff" }
+        },
+        {
+          "id": "walk_away",
+          "label": "Walk Away",
+          "description": "Not worth it. You've got more to lose than they do.",
+          "effects": [
+            { "type": "permanent", "reputation": -0.5 },
+            { "type": "temporary", "stress": -10 }
+          ],
+          "leads_to": { "type": "ending", "id": "street_end_walked" }
+        }
+      ]
+    },
+    {
+      "id": "street_ch2_fight",
+      "chapter_number": 2,
+      "title": "Hands Thrown",
+      "description": "It's on. Security's coming but they're not here yet.",
+      "delay": { "type": "immediate", "value": 0 },
+      "urgency": "immediate",
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "win_fight",
+          "label": "Handle Your Business",
+          "description": "You're scrapping. Give them everything you got.",
+          "effects": [
+            { "type": "temporary", "stress": 20 }
+          ],
+          "leads_to": { "type": "chapter", "id": "street_ch3_aftermath_win" }
+        },
+        {
+          "id": "get_caught",
+          "label": "Security Breaks It Up",
+          "description": "Security pulls you apart before there's a clear winner.",
+          "effects": [
+            { "type": "temporary", "stress": 25 },
+            { "type": "permanent", "reputation": 0.2 }
+          ],
+          "leads_to": { "type": "ending", "id": "street_end_broken_up" }
+        }
+      ]
+    },
+    {
+      "id": "street_ch2_standoff",
+      "chapter_number": 2,
+      "title": "Eye to Eye",
+      "description": "You're face to face. Neither of you is backing down. The crowd is watching.",
+      "delay": { "type": "immediate", "value": 0 },
+      "urgency": "timed",
+      "deadline_hours": 1,
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "he_swings",
+          "label": "They Swing First",
+          "description": "They couldn't hold it together. Now you're defending yourself.",
+          "effects": [
+            { "type": "temporary", "stress": 25 }
+          ],
+          "leads_to": { "type": "chapter", "id": "street_ch3_aftermath_win" }
+        },
+        {
+          "id": "crew_pulls_apart",
+          "label": "Crews Separate You",
+          "description": "Both sides pull their people apart. It's over - for now.",
+          "effects": [
+            { "type": "permanent", "reputation": 0.5 },
+            { "type": "temporary", "stress": 10 }
+          ],
+          "leads_to": { "type": "ending", "id": "street_end_tension" }
+        },
+        {
+          "id": "you_snap",
+          "label": "You Can't Hold It",
+          "description": "Something snapped. You swing.",
+          "effects": [
+            { "type": "temporary", "stress": 30 },
+            { "type": "permanent", "reputation": -0.3 }
+          ],
+          "leads_to": { "type": "chapter", "id": "street_ch3_aftermath_mutual" }
+        }
+      ]
+    },
+    {
+      "id": "street_ch3_aftermath_win",
+      "chapter_number": 3,
+      "title": "The Aftermath",
+      "description": "You handled that. But now there's video everywhere and people are talking.",
+      "delay": { "type": "days", "value": 2 },
+      "urgency": "passive",
+      "prep_days_cost": 1,
+      "choices": [
+        {
+          "id": "stay_quiet",
+          "label": "Stay Quiet",
+          "description": "Don't say anything. Let the footage speak.",
+          "effects": [
+            { "type": "permanent", "reputation": 1.0 }
+          ],
+          "leads_to": { "type": "ending", "id": "street_end_respect" }
+        },
+        {
+          "id": "talk_shit",
+          "label": "Talk Your Shit",
+          "description": "Go on social media and clown them. You earned it.",
+          "effects": [
+            { "type": "permanent", "reputation": 0.5 },
+            { "type": "temporary", "stress": 10 }
+          ],
+          "leads_to": { "type": "chapter", "id": "street_ch4_retaliation" }
+        }
+      ]
+    },
+    {
+      "id": "street_ch3_aftermath_mutual",
+      "chapter_number": 3,
+      "title": "Both Sides Got Licks",
+      "description": "Nobody won that clean. You're both a little busted up. Leagues are watching.",
+      "delay": { "type": "days", "value": 1 },
+      "urgency": "timed",
+      "deadline_hours": 48,
+      "prep_days_cost": 2,
+      "choices": [
+        {
+          "id": "squash_it",
+          "label": "Squash It",
+          "description": "Reach out. Nobody needs this to go further.",
+          "effects": [
+            { "type": "permanent", "reputation": -0.3 },
+            { "type": "temporary", "stress": -15 }
+          ],
+          "leads_to": { "type": "ending", "id": "street_end_squashed" }
+        },
+        {
+          "id": "keep_energy",
+          "label": "Keep That Energy",
+          "description": "You see them again, it's on sight.",
+          "effects": [
+            { "type": "temporary", "stress": 20 }
+          ],
+          "leads_to": { "type": "chapter", "id": "street_ch4_retaliation" }
+        }
+      ]
+    },
+    {
+      "id": "street_ch4_retaliation",
+      "chapter_number": 4,
+      "title": "Round Two",
+      "description": "They caught you at the next event. This time they brought more people.",
+      "delay": { "type": "battles", "value": 2 },
+      "urgency": "immediate",
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "outnumbered_fight",
+          "label": "Fight Anyway",
+          "description": "Numbers don't matter. You're not running.",
+          "effects": [
+            { "type": "temporary", "stress": 40 }
+          ],
+          "leads_to": { "type": "ending", "id": "street_end_jumped" }
+        },
+        {
+          "id": "your_crew_shows",
+          "label": "Your People Show Up",
+          "description": "Your crew heard what happened. They're here now.",
+          "effects": [
+            { "type": "permanent", "crew_loyalty": 1.5 },
+            { "type": "temporary", "stress": 30 }
+          ],
+          "leads_to": { "type": "ending", "id": "street_end_crew_brawl" }
+        },
+        {
+          "id": "security_heavy",
+          "label": "Security Intervenes",
+          "description": "The league had extra security. They shut it down before it started.",
+          "effects": [
+            { "type": "permanent", "reputation": 0.3 },
+            { "type": "temporary", "stress": 15 }
+          ],
+          "leads_to": { "type": "ending", "id": "street_end_tension" }
+        }
+      ]
+    }
+  ],
+
+  "endings": [
+    {
+      "id": "street_end_walked",
+      "type": "neutral",
+      "title": "Cooler Heads",
+      "description": "You walked away. Some people respect it. Some people don't. You'll have to live with their opinions.",
+      "effects": [
+        { "type": "permanent", "reputation": -0.5 },
+        { "type": "permanent", "resilience": 0.3 }
+      ]
+    },
+    {
+      "id": "street_end_broken_up",
+      "type": "neutral",
+      "title": "Separated",
+      "description": "Security got there in time. Neither of you got hurt bad. The beef is officially on though.",
+      "effects": [
+        { "type": "permanent", "reputation": 0.3 }
+      ]
+    },
+    {
+      "id": "street_end_tension",
+      "type": "neutral",
+      "title": "Unfinished Business",
+      "description": "It's not over. Everyone knows it. You'll see them again eventually.",
+      "effects": [
+        { "type": "permanent", "reputation": 0.5 },
+        { "type": "temporary", "stress": 10, "duration_days": 30 }
+      ]
+    },
+    {
+      "id": "street_end_respect",
+      "type": "positive",
+      "title": "Street Credibility",
+      "description": "You handled yours and kept it moving. The culture respects that. People know not to play with you.",
+      "effects": [
+        { "type": "permanent", "reputation": 1.5 },
+        { "type": "permanent", "resilience": 0.5 }
+      ],
+      "badge": "About That Action"
+    },
+    {
+      "id": "street_end_squashed",
+      "type": "positive",
+      "title": "Beef Squashed",
+      "description": "You both agreed to leave it in the past. Respect was kept on both sides. It's over.",
+      "effects": [
+        { "type": "permanent", "resilience": 0.3 },
+        { "type": "temporary", "stress": -20, "duration_days": 14 }
+      ]
+    },
+    {
+      "id": "street_end_jumped",
+      "type": "negative",
+      "title": "Caught Slipping",
+      "description": "They got you good. You're hurt but you'll recover. This changed the dynamic though - they think they can touch you.",
+      "effects": [
+        { "type": "permanent", "reputation": -1.0 },
+        { "type": "temporary", "prep_days_lost": 7 },
+        { "type": "temporary", "stress": 40, "duration_days": 30 }
+      ],
+      "badge": "Battle Scars",
+      "branches_to_storyline": "HEALTH_CRISIS"
+    },
+    {
+      "id": "street_end_crew_brawl",
+      "type": "negative",
+      "title": "All Out Brawl",
+      "description": "It turned into a war. Multiple people hurt. Cops got called. Everyone involved is getting heat from the leagues.",
+      "effects": [
+        { "type": "permanent", "crew_loyalty": 1.0 },
+        { "type": "permanent", "reputation": -0.5 },
+        { "type": "temporary", "prep_days_lost": 3 },
+        { "type": "temporary", "stress": 35, "duration_days": 21 }
+      ],
+      "branches_to_storyline": "CREW_PRESSURE"
+    }
+  ]
+}

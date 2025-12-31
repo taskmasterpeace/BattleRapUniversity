@@ -1,79 +1,58 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { ArrowLeft, Upload, Search, Grid, List, Edit2, Trash2, Plus } from "lucide-react"
+import { ArrowLeft, Upload, Search, Grid, List, Edit2, Trash2, Plus, Crop, AlertCircle, Check, X, RefreshCw, FolderOpen, Layers, FileImage } from "lucide-react"
+import { ASSET_TYPES, AssetType } from "@/lib/game/assetTypes"
+import { AssetCropper, CropData } from "@/components/dev/asset-cropper"
+import { SpriteSheetExtractor, ExtractedSprite } from "@/components/dev/sprite-sheet-extractor"
 
 // Asset categories that need management
 const ASSET_CATEGORIES = [
-  { id: "battlers", name: "Battlers", prefix: "sprite_", folder: "characters", count: 2 },
-  { id: "leagues", name: "Leagues", prefix: "league_", folder: "leagues", count: 8 },
-  { id: "bloggers", name: "Bloggers", prefix: "blogger_", folder: "bloggers", count: 0 },
-  { id: "badges", name: "Badges", prefix: "badge_", folder: "badges", count: 2 },
-  { id: "cities", name: "Cities", prefix: "city_", folder: "cities", count: 1 },
-  { id: "venues", name: "Venues", prefix: "venue_", folder: "venues", count: 0 },
-  { id: "flyers", name: "Battle Flyers", prefix: "flyer_", folder: "flyers", count: 0 },
+  { id: "battlers", name: "Battler Portraits", assetType: "battler_portrait", folder: "characters" },
+  { id: "cities", name: "City Backgrounds", assetType: "city_background", folder: "cities" },
+  { id: "venues", name: "Venue Backgrounds", assetType: "venue_background", folder: "venues" },
+  { id: "crowd", name: "Crowd Members", assetType: "crowd_member", folder: "crowd" },
+  { id: "leagues", name: "League Logos", assetType: "league_logo", folder: "leagues" },
+  { id: "badges", name: "Badge Icons", assetType: "badge_icon", folder: "badges" },
 ]
 
 interface AssetItem {
   id: string
   filename: string
+  path: string  // Full path to sprite
   name: string
   category: string
+  assetTypeId: string
   assignedTo?: string
-  cropSettings?: {
-    scale: number
-    offsetX: number
-    offsetY: number
-  }
+  needsCrop?: boolean  // Flag if dimensions don't match recommended
 }
 
-// Mock assets
-const MOCK_ASSETS: AssetItem[] = [
-  {
-    id: "sprite_569",
-    filename: "sprite_569.png",
-    name: "Battler 569",
-    category: "battlers",
-    assignedTo: "Tech Wizard",
-  },
-  { id: "sprite_571", filename: "sprite_571.png", name: "Battler 571", category: "battlers" },
-  {
-    id: "league_089",
-    filename: "league_089.png",
-    name: "Stay Forever",
-    category: "leagues",
-    assignedTo: "Stay Forever Battle League",
-  },
-  {
-    id: "league_090",
-    filename: "league_090.png",
-    name: "Bar God",
-    category: "leagues",
-    assignedTo: "Bar God Battle League",
-  },
-  { id: "league_091", filename: "league_091.png", name: "Respect The Craft", category: "leagues" },
-  { id: "league_092", filename: "league_092.png", name: "Milwaukee Massacre", category: "leagues" },
-  { id: "league_093", filename: "league_093.png", name: "I Do What I Want", category: "leagues" },
-  { id: "league_094", filename: "league_094.png", name: "G.U.N.", category: "leagues" },
-  { id: "league_095", filename: "league_095.png", name: "Underground Kings", category: "leagues" },
-  { id: "league_096", filename: "league_096.png", name: "Global Word War", category: "leagues" },
-  {
-    id: "badge_046",
-    filename: "badge_046.png",
-    name: "Rebuttal King",
-    category: "badges",
-    assignedTo: "rebuttal-king",
-  },
-  {
-    id: "badge_054",
-    filename: "badge_054.png",
-    name: "Well Researched",
-    category: "badges",
-    assignedTo: "well-researched",
-  },
-  { id: "miami-day", filename: "miami-day.png", name: "Miami Day", category: "cities", assignedTo: "miami" },
+// Generate asset list from actual sprite folders
+function generateAssetId(filename: string): string {
+  return filename.replace(/\.[^/.]+$/, "").replace(/[^a-zA-Z0-9_-]/g, "_")
+}
+
+// These will be populated dynamically, but start with known assets
+const INITIAL_ASSETS: AssetItem[] = [
+  // Battler portraits - will scan public/sprites/characters
+  { id: "sprite_569", filename: "sprite_569.png", path: "/sprites/characters/sprite_569.png", name: "Battler 569", category: "battlers", assetTypeId: "battler_portrait", assignedTo: "Tech Wizard" },
+  { id: "sprite_571", filename: "sprite_571.png", path: "/sprites/characters/sprite_571.png", name: "Battler 571", category: "battlers", assetTypeId: "battler_portrait" },
+
+  // City backgrounds - will scan public/sprites/cities
+  { id: "miami-day", filename: "miami-day.png", path: "/sprites/cities/miami-day.png", name: "Miami Day", category: "cities", assetTypeId: "city_background", assignedTo: "miami" },
+  { id: "new-york-day", filename: "new-york-day.png", path: "/sprites/cities/new-york-day.png", name: "New York Day", category: "cities", assetTypeId: "city_background" },
+  { id: "atlanta-dusk", filename: "atlanta-dusk.png", path: "/sprites/cities/atlanta-dusk.png", name: "Atlanta Dusk", category: "cities", assetTypeId: "city_background" },
+  { id: "chicago-day", filename: "chicago-day.png", path: "/sprites/cities/chicago-day.png", name: "Chicago Day", category: "cities", assetTypeId: "city_background" },
+  { id: "los-angeles-night", filename: "los-angeles-night.png", path: "/sprites/cities/los-angeles-night.png", name: "Los Angeles Night", category: "cities", assetTypeId: "city_background" },
+
+  // Venues - will scan public/sprites/venues
+  { id: "venue_small_room_01", filename: "small_room_01.png", path: "/sprites/venues/small_room_01.png", name: "Small Room 01", category: "venues", assetTypeId: "venue_background" },
+
+  // Crowd - will scan public/sprites/crowd
+  { id: "crowd_black_cheer_001", filename: "cheer_001.png", path: "/sprites/crowd/black/cheer_001.png", name: "Cheer Black 001", category: "crowd", assetTypeId: "crowd_member" },
+  { id: "crowd_white_hype_005", filename: "hype_005.png", path: "/sprites/crowd/white/hype_005.png", name: "Hype White 005", category: "crowd", assetTypeId: "crowd_member" },
 ]
 
 export default function DevAssetsPage() {
@@ -81,8 +60,20 @@ export default function DevAssetsPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
   const [selectedAsset, setSelectedAsset] = useState<AssetItem | null>(null)
+  const [assets, setAssets] = useState<AssetItem[]>(INITIAL_ASSETS)
 
-  const filteredAssets = MOCK_ASSETS.filter((asset) => {
+  // Cropper state
+  const [showCropper, setShowCropper] = useState(false)
+  const [cropperAsset, setCropperAsset] = useState<AssetItem | null>(null)
+  const [isSaving, setIsSaving] = useState(false)
+  const [saveStatus, setSaveStatus] = useState<{ success: boolean; message: string } | null>(null)
+
+  // Sprite sheet extractor state
+  const [showExtractor, setShowExtractor] = useState(false)
+  const [extractStatus, setExtractStatus] = useState<{ success: boolean; message: string } | null>(null)
+
+  // Filter assets based on category and search
+  const filteredAssets = assets.filter((asset) => {
     const matchesCategory = selectedCategory === "all" || asset.category === selectedCategory
     const matchesSearch =
       asset.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -92,6 +83,120 @@ export default function DevAssetsPage() {
 
   const getCategoryFolder = (category: string) => {
     return ASSET_CATEGORIES.find((c) => c.id === category)?.folder || category
+  }
+
+  const getAssetType = (assetTypeId: string): AssetType | undefined => {
+    return ASSET_TYPES[assetTypeId]
+  }
+
+  // Open cropper for an asset
+  const openCropper = (asset: AssetItem) => {
+    setCropperAsset(asset)
+    setShowCropper(true)
+    setSaveStatus(null)
+  }
+
+  // Close cropper
+  const closeCropper = () => {
+    setShowCropper(false)
+    setCropperAsset(null)
+  }
+
+  // Handle crop save
+  const handleCropSave = async (cropData: CropData) => {
+    if (!cropperAsset) return
+
+    setIsSaving(true)
+    setSaveStatus(null)
+
+    try {
+      const response = await fetch('/api/dev/assets/crop', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sourceUrl: cropperAsset.path,
+          assetTypeId: cropperAsset.assetTypeId,
+          crop: cropData,
+        }),
+      })
+
+      const result = await response.json()
+
+      if (response.ok) {
+        setSaveStatus({ success: true, message: `${result.message}` })
+        // Close after a brief delay
+        setTimeout(() => {
+          closeCropper()
+          // Force refresh the image by adding timestamp
+          setAssets(prev => prev.map(a =>
+            a.id === cropperAsset.id
+              ? { ...a, path: `${a.path}?t=${Date.now()}` }
+              : a
+          ))
+        }, 1500)
+      } else {
+        setSaveStatus({ success: false, message: result.error || 'Crop failed' })
+      }
+    } catch (error) {
+      setSaveStatus({ success: false, message: 'Network error' })
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  // Get asset counts per category
+  const getAssetCount = (categoryId: string) => {
+    if (categoryId === 'all') return assets.length
+    return assets.filter(a => a.category === categoryId).length
+  }
+
+  // Handle sprite extraction
+  const handleSpriteExtract = async (sprite: ExtractedSprite, assetTypeId: string, filename: string) => {
+    setExtractStatus(null)
+    setIsSaving(true)
+
+    try {
+      const response = await fetch('/api/dev/assets/extract', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          dataUrl: sprite.dataUrl,
+          assetTypeId,
+          filename,
+          resize: true,
+        }),
+      })
+
+      const result = await response.json()
+
+      if (response.ok) {
+        setExtractStatus({ success: true, message: result.message })
+        // Add to assets list
+        const assetType = ASSET_TYPES[assetTypeId]
+        const category = ASSET_CATEGORIES.find(c => c.assetType === assetTypeId)
+        if (assetType && category) {
+          setAssets(prev => [...prev, {
+            id: result.output.filename.replace('.png', ''),
+            filename: result.output.filename,
+            path: result.output.path,
+            name: filename,
+            category: category.id,
+            assetTypeId,
+          }])
+        }
+        // Close extractor after success
+        setTimeout(() => {
+          setShowExtractor(false)
+          setExtractStatus(null)
+        }, 1500)
+      } else {
+        setExtractStatus({ success: false, message: result.error || 'Extraction failed' })
+      }
+    } catch (error) {
+      setExtractStatus({ success: false, message: 'Network error' })
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   return (
@@ -107,10 +212,19 @@ export default function DevAssetsPage() {
             <p className="text-sm text-zinc-500">Manage all game sprites and images</p>
           </div>
         </div>
-        <button className="flex items-center gap-2 px-4 py-2 bg-orange-600 hover:bg-orange-500 text-white font-display font-bold uppercase text-sm">
-          <Upload className="w-4 h-4" />
-          Upload
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowExtractor(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-display font-bold uppercase text-sm"
+          >
+            <Layers className="w-4 h-4" />
+            Sprite Sheet
+          </button>
+          <button className="flex items-center gap-2 px-4 py-2 bg-orange-600 hover:bg-orange-500 text-white font-display font-bold uppercase text-sm">
+            <Upload className="w-4 h-4" />
+            Upload
+          </button>
+        </div>
       </header>
 
       <div className="flex">
@@ -126,22 +240,28 @@ export default function DevAssetsPage() {
                   : "text-zinc-400 hover:bg-zinc-800 hover:text-white"
               }`}
             >
-              All Assets ({MOCK_ASSETS.length})
+              All Assets ({getAssetCount('all')})
             </button>
-            {ASSET_CATEGORIES.map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => setSelectedCategory(cat.id)}
-                className={`w-full text-left px-3 py-2 text-sm font-display flex justify-between ${
-                  selectedCategory === cat.id
-                    ? "bg-orange-600 text-white"
-                    : "text-zinc-400 hover:bg-zinc-800 hover:text-white"
-                }`}
-              >
-                <span>{cat.name}</span>
-                <span className="text-xs opacity-60">{MOCK_ASSETS.filter((a) => a.category === cat.id).length}</span>
-              </button>
-            ))}
+            {ASSET_CATEGORIES.map((cat) => {
+              const assetType = ASSET_TYPES[cat.assetType]
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => setSelectedCategory(cat.id)}
+                  className={`w-full text-left px-3 py-2 text-sm font-display flex justify-between ${
+                    selectedCategory === cat.id
+                      ? "bg-orange-600 text-white"
+                      : "text-zinc-400 hover:bg-zinc-800 hover:text-white"
+                  }`}
+                >
+                  <span className="flex items-center gap-2">
+                    {cat.name}
+                    <span className="text-[10px] text-zinc-600">{assetType?.aspectRatioLabel}</span>
+                  </span>
+                  <span className="text-xs opacity-60">{getAssetCount(cat.id)}</span>
+                </button>
+              )
+            })}
           </div>
 
           {/* Quick Links */}
@@ -213,80 +333,112 @@ export default function DevAssetsPage() {
                 <span className="text-xs text-zinc-500 font-display">Add Asset</span>
               </button>
 
-              {filteredAssets.map((asset) => (
-                <div
-                  key={asset.id}
-                  onClick={() => setSelectedAsset(asset)}
-                  className={`aspect-square bg-zinc-900 border-2 ${
-                    selectedAsset?.id === asset.id ? "border-orange-500" : "border-zinc-700 hover:border-zinc-600"
-                  } p-2 cursor-pointer transition-colors group relative`}
-                >
-                  <div className="w-full h-full bg-zinc-800 flex items-center justify-center overflow-hidden">
-                    <Image
-                      src={`/sprites/${getCategoryFolder(asset.category)}/${asset.filename}`}
-                      alt={asset.name}
-                      width={120}
-                      height={120}
-                      className="object-contain pixelated"
-                      onError={(e) => {
-                        ;(e.target as HTMLImageElement).src = "/sparkling-sprite.png"
-                      }}
-                    />
-                  </div>
-                  <div className="absolute bottom-0 left-0 right-0 bg-zinc-900/90 p-1 text-center">
-                    <div className="text-xs text-white font-display truncate">{asset.id}</div>
-                    {asset.assignedTo && <div className="text-[10px] text-orange-500 truncate">{asset.assignedTo}</div>}
-                  </div>
+              {filteredAssets.map((asset) => {
+                const assetType = getAssetType(asset.assetTypeId)
+                return (
+                  <div
+                    key={asset.id}
+                    onClick={() => setSelectedAsset(asset)}
+                    className={`aspect-square bg-zinc-900 border-2 ${
+                      selectedAsset?.id === asset.id ? "border-orange-500" : "border-zinc-700 hover:border-zinc-600"
+                    } p-2 cursor-pointer transition-colors group relative`}
+                  >
+                    <div className="w-full h-full bg-zinc-800 flex items-center justify-center overflow-hidden">
+                      <Image
+                        src={asset.path}
+                        alt={asset.name}
+                        width={120}
+                        height={120}
+                        className="object-contain pixelated"
+                        onError={(e) => {
+                          ;(e.target as HTMLImageElement).src = "/sparkling-sprite.png"
+                        }}
+                      />
+                    </div>
+                    <div className="absolute bottom-0 left-0 right-0 bg-zinc-900/90 p-1 text-center">
+                      <div className="text-xs text-white font-display truncate">{asset.id}</div>
+                      <div className="flex items-center justify-center gap-2">
+                        {asset.assignedTo && <span className="text-[10px] text-orange-500 truncate">{asset.assignedTo}</span>}
+                        {assetType && <span className="text-[10px] text-zinc-600">{assetType.aspectRatioLabel}</span>}
+                      </div>
+                    </div>
 
-                  {/* Hover Actions */}
-                  <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
-                    <button className="p-1 bg-zinc-800 hover:bg-orange-600 text-white">
-                      <Edit2 className="w-3 h-3" />
-                    </button>
-                    <button className="p-1 bg-zinc-800 hover:bg-red-600 text-white">
-                      <Trash2 className="w-3 h-3" />
-                    </button>
+                    {/* Hover Actions */}
+                    <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          openCropper(asset)
+                        }}
+                        className="p-1 bg-zinc-800 hover:bg-blue-600 text-white"
+                        title="Crop Image"
+                      >
+                        <Crop className="w-3 h-3" />
+                      </button>
+                      <button className="p-1 bg-zinc-800 hover:bg-orange-600 text-white" title="Edit Details">
+                        <Edit2 className="w-3 h-3" />
+                      </button>
+                      <button className="p-1 bg-zinc-800 hover:bg-red-600 text-white" title="Delete">
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           ) : (
             <div className="bg-zinc-900 border border-zinc-700">
-              {filteredAssets.map((asset, i) => (
-                <div
-                  key={asset.id}
-                  onClick={() => setSelectedAsset(asset)}
-                  className={`flex items-center gap-4 p-3 cursor-pointer ${
-                    i !== filteredAssets.length - 1 ? "border-b border-zinc-800" : ""
-                  } ${selectedAsset?.id === asset.id ? "bg-zinc-800" : "hover:bg-zinc-800/50"}`}
-                >
-                  <div className="w-12 h-12 bg-zinc-800 flex items-center justify-center overflow-hidden">
-                    <Image
-                      src={`/sprites/${getCategoryFolder(asset.category)}/${asset.filename}`}
-                      alt={asset.name}
-                      width={48}
-                      height={48}
-                      className="object-contain pixelated"
-                      onError={(e) => {
-                        ;(e.target as HTMLImageElement).src = "/sparkling-sprite.png"
-                      }}
-                    />
+              {filteredAssets.map((asset, i) => {
+                const assetType = getAssetType(asset.assetTypeId)
+                return (
+                  <div
+                    key={asset.id}
+                    onClick={() => setSelectedAsset(asset)}
+                    className={`flex items-center gap-4 p-3 cursor-pointer ${
+                      i !== filteredAssets.length - 1 ? "border-b border-zinc-800" : ""
+                    } ${selectedAsset?.id === asset.id ? "bg-zinc-800" : "hover:bg-zinc-800/50"}`}
+                  >
+                    <div className="w-12 h-12 bg-zinc-800 flex items-center justify-center overflow-hidden">
+                      <Image
+                        src={asset.path}
+                        alt={asset.name}
+                        width={48}
+                        height={48}
+                        className="object-contain pixelated"
+                        onError={(e) => {
+                          ;(e.target as HTMLImageElement).src = "/sparkling-sprite.png"
+                        }}
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <div className="text-sm font-display font-bold text-white">{asset.id}</div>
+                      <div className="text-xs text-zinc-500 flex gap-2">
+                        <span>{asset.category}</span>
+                        {assetType && <span className="text-zinc-600">• {assetType.aspectRatioLabel}</span>}
+                      </div>
+                    </div>
+                    {asset.assignedTo && <div className="text-xs text-orange-500">{asset.assignedTo}</div>}
+                    <div className="flex gap-2">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          openCropper(asset)
+                        }}
+                        className="p-2 hover:bg-blue-600 text-zinc-400 hover:text-white transition-colors"
+                        title="Crop Image"
+                      >
+                        <Crop className="w-4 h-4" />
+                      </button>
+                      <button className="p-2 hover:bg-orange-600 text-zinc-400 hover:text-white transition-colors" title="Edit Details">
+                        <Edit2 className="w-4 h-4" />
+                      </button>
+                      <button className="p-2 hover:bg-red-600 text-zinc-400 hover:text-white transition-colors" title="Delete">
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <div className="text-sm font-display font-bold text-white">{asset.id}</div>
-                    <div className="text-xs text-zinc-500">{asset.category}</div>
-                  </div>
-                  {asset.assignedTo && <div className="text-xs text-orange-500">{asset.assignedTo}</div>}
-                  <div className="flex gap-2">
-                    <button className="p-2 hover:bg-orange-600 text-zinc-400 hover:text-white transition-colors">
-                      <Edit2 className="w-4 h-4" />
-                    </button>
-                    <button className="p-2 hover:bg-red-600 text-zinc-400 hover:text-white transition-colors">
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           )}
         </main>
@@ -300,7 +452,7 @@ export default function DevAssetsPage() {
             <div className="bg-zinc-900 border border-zinc-700 p-4 mb-4">
               <div className="aspect-square bg-zinc-800 flex items-center justify-center overflow-hidden mb-3">
                 <Image
-                  src={`/sprites/${getCategoryFolder(selectedAsset.category)}/${selectedAsset.filename}`}
+                  src={selectedAsset.path}
                   alt={selectedAsset.name}
                   width={200}
                   height={200}
@@ -315,6 +467,28 @@ export default function DevAssetsPage() {
                 <div className="text-xs text-zinc-500">{selectedAsset.filename}</div>
               </div>
             </div>
+
+            {/* Asset Type Info */}
+            {(() => {
+              const assetType = getAssetType(selectedAsset.assetTypeId)
+              return assetType && (
+                <div className="bg-zinc-900 border border-zinc-700 p-3 mb-4">
+                  <div className="text-xs text-zinc-500 mb-2">Asset Type</div>
+                  <div className="font-display font-bold text-white text-sm">{assetType.name}</div>
+                  <div className="text-xs text-zinc-400 mt-1">{assetType.description}</div>
+                  <div className="flex items-center gap-4 mt-2 text-xs">
+                    <div>
+                      <span className="text-zinc-500">Ratio: </span>
+                      <span className="text-orange-400">{assetType.aspectRatioLabel}</span>
+                    </div>
+                    <div>
+                      <span className="text-zinc-500">Size: </span>
+                      <span className="text-orange-400">{assetType.recommendedWidth}×{assetType.recommendedHeight}</span>
+                    </div>
+                  </div>
+                </div>
+              )
+            })()}
 
             {/* Edit Fields */}
             <div className="space-y-4">
@@ -337,60 +511,100 @@ export default function DevAssetsPage() {
                 />
               </div>
 
-              {/* Crop Controls */}
-              <div>
-                <label className="block text-xs text-zinc-500 mb-2">Crop Settings</label>
-                <div className="space-y-3">
-                  <div>
-                    <div className="flex justify-between text-xs text-zinc-400 mb-1">
-                      <span>Scale</span>
-                      <span>{selectedAsset.cropSettings?.scale || 1.0}x</span>
-                    </div>
-                    <input
-                      type="range"
-                      min="0.5"
-                      max="2"
-                      step="0.1"
-                      defaultValue={selectedAsset.cropSettings?.scale || 1}
-                      className="w-full accent-orange-500"
-                    />
-                  </div>
-                  <div>
-                    <div className="flex justify-between text-xs text-zinc-400 mb-1">
-                      <span>Offset X</span>
-                      <span>{selectedAsset.cropSettings?.offsetX || 0}px</span>
-                    </div>
-                    <input
-                      type="range"
-                      min="-50"
-                      max="50"
-                      defaultValue={selectedAsset.cropSettings?.offsetX || 0}
-                      className="w-full accent-orange-500"
-                    />
-                  </div>
-                  <div>
-                    <div className="flex justify-between text-xs text-zinc-400 mb-1">
-                      <span>Offset Y</span>
-                      <span>{selectedAsset.cropSettings?.offsetY || 0}px</span>
-                    </div>
-                    <input
-                      type="range"
-                      min="-50"
-                      max="50"
-                      defaultValue={selectedAsset.cropSettings?.offsetY || 0}
-                      className="w-full accent-orange-500"
-                    />
-                  </div>
-                </div>
+              {/* Actions */}
+              <div className="flex gap-2">
+                <button
+                  onClick={() => openCropper(selectedAsset)}
+                  className="flex-1 py-2 bg-blue-600 hover:bg-blue-500 text-white font-display font-bold uppercase text-sm flex items-center justify-center gap-2"
+                >
+                  <Crop className="w-4 h-4" />
+                  Crop
+                </button>
+                <button className="flex-1 py-2 bg-orange-600 hover:bg-orange-500 text-white font-display font-bold uppercase text-sm">
+                  Save
+                </button>
               </div>
-
-              <button className="w-full py-2 bg-orange-600 hover:bg-orange-500 text-white font-display font-bold uppercase text-sm">
-                Save Changes
-              </button>
             </div>
           </aside>
         )}
       </div>
+
+      {/* Cropper Modal */}
+      {showCropper && cropperAsset && (() => {
+        const assetType = getAssetType(cropperAsset.assetTypeId)
+        return assetType && (
+          <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
+            <div className="bg-zinc-900 border-2 border-zinc-700 max-w-4xl w-full max-h-[90vh] flex flex-col">
+              {/* Modal Header */}
+              <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-700">
+                <div>
+                  <h3 className="font-display font-bold text-white">CROP: {cropperAsset.name}</h3>
+                  <div className="text-xs text-zinc-500">
+                    Target: {assetType.name} ({assetType.aspectRatioLabel}) - {assetType.recommendedWidth}×{assetType.recommendedHeight}px
+                  </div>
+                </div>
+                <button
+                  onClick={closeCropper}
+                  className="p-2 hover:bg-zinc-800 text-zinc-400 hover:text-white"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Status Messages */}
+              {saveStatus && (
+                <div className={`px-4 py-2 text-sm ${saveStatus.success ? 'bg-green-600/20 text-green-400' : 'bg-red-600/20 text-red-400'}`}>
+                  {saveStatus.success ? <Check className="w-4 h-4 inline mr-2" /> : <AlertCircle className="w-4 h-4 inline mr-2" />}
+                  {saveStatus.message}
+                </div>
+              )}
+
+              {/* Cropper Component */}
+              <div className="flex-1 overflow-auto p-4">
+                <AssetCropper
+                  imageUrl={cropperAsset.path.split('?')[0]} // Remove cache-busting query
+                  assetType={assetType}
+                  entityId={cropperAsset.id}
+                  entityName={cropperAsset.name}
+                  onSave={handleCropSave}
+                  onCancel={closeCropper}
+                />
+              </div>
+
+              {/* Loading Overlay */}
+              {isSaving && (
+                <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                  <div className="text-white font-display flex items-center gap-2">
+                    <RefreshCw className="w-5 h-5 animate-spin" />
+                    Cropping...
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )
+      })()}
+
+      {/* Sprite Sheet Extractor Modal */}
+      {showExtractor && (
+        <SpriteSheetExtractor
+          onExtract={handleSpriteExtract}
+          onClose={() => {
+            setShowExtractor(false)
+            setExtractStatus(null)
+          }}
+        />
+      )}
+
+      {/* Extract Status Toast */}
+      {extractStatus && (
+        <div className={`fixed bottom-4 right-4 z-50 px-4 py-3 rounded shadow-lg flex items-center gap-2 ${
+          extractStatus.success ? 'bg-green-600' : 'bg-red-600'
+        } text-white font-display`}>
+          {extractStatus.success ? <Check className="w-5 h-5" /> : <AlertCircle className="w-5 h-5" />}
+          {extractStatus.message}
+        </div>
+      )}
     </div>
   )
 }

@@ -1,0 +1,277 @@
+{
+  "code": "CAREER_CROSSROADS",
+  "name": "Career Crossroads",
+  "description": "A big opportunity just landed. But every door you open might close another.",
+  "category": "career",
+  "min_chapters": 3,
+  "max_chapters": 5,
+
+  "trigger": {
+    "type": "attribute",
+    "probability": 0.10,
+    "conditions": { "reputation_min": 7, "min_battles": 15 }
+  },
+
+  "chapters": [
+    {
+      "id": "career_ch1",
+      "chapter_number": 1,
+      "title": "The Offer",
+      "description": "A music label reached out. They want to sign you. Recording contract. Real money. But there are strings attached.",
+      "delay": { "type": "immediate", "value": 0 },
+      "urgency": "timed",
+      "deadline_hours": 168,
+      "prep_days_cost": 0,
+      "choices": [
+        {
+          "id": "hear_them_out",
+          "label": "Hear Them Out",
+          "description": "At least take the meeting. See what they're offering.",
+          "effects": [
+            { "type": "temporary", "prep_days_lost": 1 }
+          ],
+          "leads_to": { "type": "chapter", "id": "career_ch2_meeting" }
+        },
+        {
+          "id": "decline_flat",
+          "label": "Decline",
+          "description": "Battle rap is your lane. You're not trying to be an artist.",
+          "effects": [
+            { "type": "permanent", "reputation": 0.5 }
+          ],
+          "leads_to": { "type": "ending", "id": "career_end_stayed_true" }
+        },
+        {
+          "id": "leverage_offer",
+          "label": "Use It as Leverage",
+          "description": "Tell other people about the offer. See if better opportunities come.",
+          "effects": [
+            { "type": "permanent", "reputation": 0.3 }
+          ],
+          "leads_to": { "type": "chapter", "id": "career_ch2_competition" }
+        }
+      ]
+    },
+    {
+      "id": "career_ch2_meeting",
+      "chapter_number": 2,
+      "title": "The Meeting",
+      "description": "They flew you out. Nice offices. The deal is real. But they want exclusive rights. No battles without their approval.",
+      "delay": { "type": "days", "value": 3 },
+      "urgency": "timed",
+      "deadline_hours": 96,
+      "prep_days_cost": 2,
+      "choices": [
+        {
+          "id": "sign_exclusive",
+          "label": "Sign the Exclusive Deal",
+          "description": "Life-changing money. New doors opening. Worth the trade-off.",
+          "effects": [
+            { "type": "permanent", "financial_stability": 3.0 },
+            { "type": "permanent", "reputation": -0.5 }
+          ],
+          "leads_to": { "type": "chapter", "id": "career_ch3_signed" }
+        },
+        {
+          "id": "negotiate_terms",
+          "label": "Negotiate Better Terms",
+          "description": "Push back. See if they'll let you keep battling.",
+          "effects": [
+            { "type": "temporary", "stress": 15 }
+          ],
+          "leads_to": { "type": "chapter", "id": "career_ch3_negotiate" }
+        },
+        {
+          "id": "walk_away",
+          "label": "Walk Away",
+          "description": "The terms aren't right. You're not giving up battles.",
+          "effects": [
+            { "type": "permanent", "reputation": 0.8 }
+          ],
+          "leads_to": { "type": "ending", "id": "career_end_walked" }
+        }
+      ]
+    },
+    {
+      "id": "career_ch2_competition",
+      "chapter_number": 2,
+      "title": "Bidding War",
+      "description": "Word got out about the offer. Now other labels and platforms are reaching out. You've got options.",
+      "delay": { "type": "days", "value": 7 },
+      "urgency": "timed",
+      "deadline_hours": 72,
+      "prep_days_cost": 1,
+      "choices": [
+        {
+          "id": "take_best_offer",
+          "label": "Take the Best Offer",
+          "description": "Go with whoever's paying the most.",
+          "effects": [
+            { "type": "permanent", "financial_stability": 2.5 },
+            { "type": "permanent", "reputation": -0.3 }
+          ],
+          "leads_to": { "type": "ending", "id": "career_end_big_bag" }
+        },
+        {
+          "id": "battle_platform",
+          "label": "Partner with a Battle Platform",
+          "description": "Stay in the culture. Partner with someone who gets it.",
+          "effects": [
+            { "type": "permanent", "financial_stability": 1.5 },
+            { "type": "permanent", "reputation": 1.0 }
+          ],
+          "leads_to": { "type": "ending", "id": "career_end_platform_deal" }
+        }
+      ]
+    },
+    {
+      "id": "career_ch3_signed",
+      "chapter_number": 3,
+      "title": "Label Life",
+      "description": "You signed. The money hit. But now they want you in the studio when you should be prepping for battles.",
+      "delay": { "type": "battles", "value": 2 },
+      "urgency": "passive",
+      "prep_days_cost": 3,
+      "choices": [
+        {
+          "id": "prioritize_music",
+          "label": "Prioritize the Music",
+          "description": "This is your new career. Battling was the come-up.",
+          "effects": [
+            { "type": "permanent", "financial_stability": 1.0 },
+            { "type": "permanent", "reputation": -1.0 },
+            { "type": "temporary", "prep_days_lost": 5 }
+          ],
+          "leads_to": { "type": "ending", "id": "career_end_artist" }
+        },
+        {
+          "id": "balance_both",
+          "label": "Try to Balance Both",
+          "description": "Work twice as hard. Do both.",
+          "effects": [
+            { "type": "temporary", "stress": 40, "duration_days": 60 },
+            { "type": "temporary", "prep_days_lost": 2 }
+          ],
+          "leads_to": { "type": "ending", "id": "career_end_stretched" }
+        }
+      ]
+    },
+    {
+      "id": "career_ch3_negotiate",
+      "chapter_number": 3,
+      "title": "Counter Offer",
+      "description": "They came back with a modified deal. Less money but you can keep battling with approval. They get right of first refusal on booking.",
+      "delay": { "type": "days", "value": 5 },
+      "urgency": "timed",
+      "deadline_hours": 48,
+      "prep_days_cost": 1,
+      "choices": [
+        {
+          "id": "accept_modified",
+          "label": "Accept the Modified Deal",
+          "description": "This works. You keep your freedom and get paid.",
+          "effects": [
+            { "type": "permanent", "financial_stability": 1.5 },
+            { "type": "permanent", "reputation": 0.3 }
+          ],
+          "leads_to": { "type": "ending", "id": "career_end_good_deal" }
+        },
+        {
+          "id": "push_harder",
+          "label": "Push for More",
+          "description": "You've got leverage. Use it.",
+          "effects": [
+            { "type": "temporary", "stress": 20 }
+          ],
+          "leads_to": { "type": "ending", "id": "career_end_deal_fell_through" }
+        }
+      ]
+    }
+  ],
+
+  "endings": [
+    {
+      "id": "career_end_stayed_true",
+      "type": "positive",
+      "title": "Stayed True",
+      "description": "You turned down the money to stay in battles. The culture respects it. The offers might come again.",
+      "effects": [
+        { "type": "permanent", "reputation": 1.0 },
+        { "type": "permanent", "resilience": 0.3 }
+      ],
+      "badge": "Battle Bred"
+    },
+    {
+      "id": "career_end_walked",
+      "type": "neutral",
+      "title": "Walked Away",
+      "description": "You walked away from bad terms. Smart move. Other opportunities will come.",
+      "effects": [
+        { "type": "permanent", "reputation": 0.5 }
+      ]
+    },
+    {
+      "id": "career_end_big_bag",
+      "type": "positive",
+      "title": "Secured the Bag",
+      "description": "You got paid. Some people call it selling out. You call it getting what you're worth.",
+      "effects": [
+        { "type": "permanent", "financial_stability": 2.5 },
+        { "type": "permanent", "reputation": -0.5 }
+      ],
+      "badge": "Got Paid"
+    },
+    {
+      "id": "career_end_platform_deal",
+      "type": "positive",
+      "title": "Culture Partner",
+      "description": "You partnered with a battle platform. Getting paid while staying in the culture.",
+      "effects": [
+        { "type": "permanent", "financial_stability": 1.5 },
+        { "type": "permanent", "reputation": 1.0 }
+      ],
+      "badge": "Platform Partner"
+    },
+    {
+      "id": "career_end_artist",
+      "type": "neutral",
+      "title": "Artist Now",
+      "description": "You transitioned to music. Battles are in your past. Mixed feelings in the culture about it.",
+      "effects": [
+        { "type": "permanent", "financial_stability": 2.0 },
+        { "type": "permanent", "reputation": -1.5 }
+      ]
+    },
+    {
+      "id": "career_end_stretched",
+      "type": "negative",
+      "title": "Stretched Thin",
+      "description": "You're doing both but neither at your best. Something's gotta give eventually.",
+      "effects": [
+        { "type": "permanent", "financial_stability": 1.0 },
+        { "type": "temporary", "stress": 30, "duration_days": 60 }
+      ]
+    },
+    {
+      "id": "career_end_good_deal",
+      "type": "positive",
+      "title": "Best of Both Worlds",
+      "description": "You negotiated a deal that works. Money and freedom. This is how you play the game.",
+      "effects": [
+        { "type": "permanent", "financial_stability": 1.5 },
+        { "type": "permanent", "reputation": 0.5 }
+      ],
+      "badge": "Negotiator"
+    },
+    {
+      "id": "career_end_deal_fell_through",
+      "type": "negative",
+      "title": "Deal Fell Through",
+      "description": "You pushed too hard. They pulled the offer. Lesson learned about knowing when to take the deal.",
+      "effects": [
+        { "type": "permanent", "reputation": -0.3 },
+        { "type": "temporary", "stress": 15, "duration_days": 21 }
+      ]
+    }
+  ]
+}

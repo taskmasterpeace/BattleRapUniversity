@@ -3,7 +3,8 @@
 import { useParams } from "next/navigation"
 import Link from "next/link"
 import { ArrowLeft, Eye, Clock, Share2, Bookmark, Flame } from "lucide-react"
-import { mockArticles, mockRivalries } from "@/lib/data"
+import { useEffect, useState } from "react"
+import { ReactionBar } from "@/components/media/reaction-bar"
 
 const TYPE_COLORS: Record<string, string> = {
   battle_recap: "bg-blue-900/50 text-blue-400 border-blue-700/50",
@@ -13,16 +14,75 @@ const TYPE_COLORS: Record<string, string> = {
   grudge_coverage: "bg-orange-900/50 text-orange-400 border-orange-700/50",
 }
 
+interface Article {
+  id: string
+  slug: string
+  title: string
+  type: string
+  publishedAt: string
+  date: string
+  body: string
+  meta: Record<string, any>
+  primaryBattler?: { id: string; name: string; avatar?: string; tier?: string }
+  secondaryBattler?: { id: string; name: string; avatar?: string; tier?: string }
+  league?: { id: string; name: string; shortCode: string }
+  battle?: { id: string; verdict?: string; decisionType?: string; winnerId?: string }
+  readTime: number
+}
+
 export default function ArticleDetailPage() {
   const params = useParams()
   const slug = params.slug as string
+  const [article, setArticle] = useState<Article | null>(null)
+  const [relatedArticles, setRelatedArticles] = useState<Article[]>([])
+  const [loading, setLoading] = useState(true)
 
-  // Find article by slug
-  const article = mockArticles.find((a) => a.slug === slug) || mockArticles[0]
+  useEffect(() => {
+    async function fetchArticle() {
+      try {
+        const response = await fetch(`/api/news/${slug}`)
+        if (!response.ok) throw new Error('Article not found')
+        const data = await response.json()
+        setArticle(data)
+
+        // Fetch related articles
+        const newsResponse = await fetch('/api/news?limit=4')
+        if (newsResponse.ok) {
+          const newsData = await newsResponse.json()
+          setRelatedArticles(newsData.articles?.filter((a: Article) => a.slug !== slug).slice(0, 3) || [])
+        }
+      } catch (error) {
+        console.error('Error fetching article:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchArticle()
+  }, [slug])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
+        <p className="text-zinc-400">Loading article...</p>
+      </div>
+    )
+  }
+
+  if (!article) {
+    return (
+      <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-zinc-400 mb-4">Article not found</p>
+          <Link href="/media" className="text-orange-500 hover:text-orange-400">
+            Back to Media
+          </Link>
+        </div>
+      </div>
+    )
+  }
 
   // Check if this is a grudge match article
   const isGrudgeMatch = article.type === "grudge_coverage" || article.title.toLowerCase().includes("grudge")
-  const relatedRivalry = isGrudgeMatch ? mockRivalries[0] : null
 
   return (
     <div className="min-h-screen bg-zinc-950">
@@ -75,97 +135,56 @@ export default function ArticleDetailPage() {
             <span>{article.date}</span>
             <span className="text-zinc-700">•</span>
             <span className="flex items-center gap-1">
-              <Clock className="w-3 h-3" />5 min read
-            </span>
-            <span className="text-zinc-700">•</span>
-            <span className="flex items-center gap-1">
-              <Eye className="w-3 h-3" />
-              {article.views || 234} views
+              <Clock className="w-3 h-3" />
+              {article.readTime} min read
             </span>
           </div>
         </div>
 
         {/* Rivalry Context Panel (for grudge matches) */}
-        {isGrudgeMatch && relatedRivalry && (
+        {isGrudgeMatch && article.primaryBattler && article.secondaryBattler && (
           <div className="bg-zinc-900 border-2 border-orange-500/30 p-4 mb-8">
             <div className="flex items-center gap-2 mb-3">
               <Flame className="w-4 h-4 text-orange-500" />
               <h3 className="text-sm font-display font-bold text-orange-500 tracking-wide">RIVALRY CONTEXT</h3>
             </div>
             <p className="text-sm text-zinc-400 mb-3">
-              This battle is part of the ongoing rivalry between <span className="text-zinc-100">Tech Wizard</span> and{" "}
-              <span className="text-zinc-100">{relatedRivalry.opponent.name}</span>
+              This battle is part of the ongoing rivalry between{" "}
+              <span className="text-zinc-100">{article.primaryBattler.name}</span> and{" "}
+              <span className="text-zinc-100">{article.secondaryBattler.name}</span>
             </p>
-            <div className="grid grid-cols-2 gap-4 text-sm mb-3">
-              <div>
-                <span className="text-zinc-500">Head-to-Head:</span>
-                <span className="text-zinc-100 font-mono ml-2">2-1 (You lead)</span>
+            {article.battle && (
+              <div className="mb-3">
+                <Link
+                  href={`/battle/${article.battle.id}`}
+                  className="text-xs text-orange-500 hover:text-orange-400 font-display"
+                >
+                  VIEW BATTLE BREAKDOWN →
+                </Link>
               </div>
-              <div>
-                <span className="text-zinc-500">Grudge Intensity:</span>
-                <span className="text-orange-500 font-mono ml-2">{relatedRivalry.intensity}/100</span>
-              </div>
-            </div>
-            <Link href={`/battler/tech-wizard`} className="text-xs text-orange-500 hover:text-orange-400 font-display">
-              VIEW FULL RIVALRY HISTORY →
-            </Link>
+            )}
           </div>
         )}
 
         {/* Article Content */}
         <article className="prose prose-invert prose-zinc max-w-none">
-          <div className="text-zinc-300 leading-relaxed space-y-4">
-            <p className="text-lg">
-              {article.excerpt ||
-                "The atmosphere was electric as two of the league's most talented battlers faced off in what many are calling the most anticipated matchup of the season."}
-            </p>
-
-            <p>
-              From the opening round, it was clear that both competitors had done their homework. The crowd hung on
-              every bar, every punchline landing with devastating precision. The judges were visibly impressed by the
-              level of preparation on display.
-            </p>
-
-            <blockquote className="border-l-4 border-orange-500 pl-4 italic text-zinc-400">
-              "This is what battle rap is all about. Two warriors leaving it all on the stage. The culture is alive and
-              well."
-              <footer className="text-zinc-500 text-sm mt-2">— League Commissioner</footer>
-            </blockquote>
-
-            <p>
-              Round two saw the momentum shift dramatically. What started as a close contest became a masterclass in
-              wordplay and delivery. The crowd's reaction told the whole story - this was a performance for the ages.
-            </p>
-
-            <h2 className="text-xl font-display font-bold text-zinc-100 mt-8 mb-4">Key Moments</h2>
-
-            <ul className="list-disc list-inside space-y-2 text-zinc-400">
-              <li>Opening haymaker in Round 1 that set the tone for the entire battle</li>
-              <li>Mid-round scheme that had the crowd going wild</li>
-              <li>Devastating personal angle that nearly silenced the room</li>
-              <li>Comeback sequence that showed championship-level composure</li>
-            </ul>
-
-            <p>
-              As the final votes were tallied, the tension in the room was palpable. When the decision was announced,
-              the reaction was immediate and visceral. This battle will be talked about for years to come.
-            </p>
-
-            <h2 className="text-xl font-display font-bold text-zinc-100 mt-8 mb-4">What's Next</h2>
-
-            <p>
-              With this victory, questions immediately turn to what comes next. The rematch demands are already flooding
-              social media, and league officials are reportedly in discussions about a potential championship bout.
-            </p>
-          </div>
+          <div
+            className="text-zinc-300 leading-relaxed space-y-4"
+            dangerouslySetInnerHTML={{ __html: article.body || "" }}
+          />
         </article>
 
+        {/* Reaction Bar */}
+        <div className="mt-8">
+          <ReactionBar slug={slug} />
+        </div>
+
         {/* Battle Link */}
-        {article.type === "battle_recap" && (
+        {article.type === "battle_recap" && article.battle && (
           <div className="mt-8 p-4 bg-zinc-900 border-2 border-zinc-700">
             <p className="text-sm text-zinc-400 mb-3">Want to see the full breakdown?</p>
             <Link
-              href="/battle/1"
+              href={`/battle/${article.battle.id}`}
               className="inline-block bg-orange-600 hover:bg-orange-500 px-6 py-2.5 text-sm font-display font-bold text-white transition-colors"
             >
               VIEW BATTLE BREAKDOWN
@@ -174,13 +193,11 @@ export default function ArticleDetailPage() {
         )}
 
         {/* Related Articles */}
-        <div className="mt-12 pt-8 border-t border-zinc-800">
-          <h3 className="text-sm font-display font-bold text-zinc-100 tracking-wide mb-4">RELATED COVERAGE</h3>
-          <div className="space-y-3">
-            {mockArticles
-              .filter((a) => a.slug !== slug)
-              .slice(0, 3)
-              .map((related) => (
+        {relatedArticles.length > 0 && (
+          <div className="mt-12 pt-8 border-t border-zinc-800">
+            <h3 className="text-sm font-display font-bold text-zinc-100 tracking-wide mb-4">RELATED COVERAGE</h3>
+            <div className="space-y-3">
+              {relatedArticles.map((related) => (
                 <Link
                   key={related.id}
                   href={`/media/${related.slug}`}
@@ -190,8 +207,9 @@ export default function ArticleDetailPage() {
                   <span className="text-xs text-zinc-500">{related.date}</span>
                 </Link>
               ))}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Bottom Navigation */}
         <div className="mt-8 flex justify-between">

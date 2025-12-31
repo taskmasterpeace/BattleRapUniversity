@@ -85,7 +85,6 @@ export default function LifeEventDetailPage() {
   }
 
   const handleThreeChoiceMade = (choiceId: string) => {
-    console.log("[v0] Choice made:", choiceId)
     router.push("/life-events")
   }
 
