@@ -5,9 +5,14 @@
  * - PASSIVE events (behavior thresholds)
  * - CHOICE events (player decision points)
  * - TRIGGERED events (performance-based)
+ *
+ * Family Bond Effects:
+ * - Family Bond >= 7: Blocks "family_drama" type negative events
+ * - Family Bond >= 6: Can trigger "family_support" events after losses
  */
 
 import { SupabaseClient } from '@supabase/supabase-js';
+import { SIMULATION_CONFIG as CONFIG } from '@/lib/game/config';
 
 // ==========================================
 // TYPES
@@ -111,6 +116,11 @@ export async function evaluatePreBattleEvents(
 
   // Check each template for matching conditions
   for (const template of templates) {
+    // Check if blocked by family_bond (e.g., family drama events)
+    if (isBlockedByFamilyBond(template, playerContext)) {
+      continue;
+    }
+
     // Check cooldown
     if (!(await canTriggerEvent(supabase, template, playerContext.battlerId))) {
       continue;
@@ -158,8 +168,21 @@ export async function evaluatePostBattleEvents(
     await updateRecentChokes(supabase, playerContext.battlerId);
   }
 
+  // Determine if this was a loss (for family support events)
+  const isLoss = battleContext.winnerId !== playerContext.battlerId;
+
   // Check each template for matching conditions
   for (const template of templates) {
+    // Check if blocked by family_bond (e.g., family drama events)
+    if (isBlockedByFamilyBond(template, playerContext)) {
+      continue;
+    }
+
+    // Check if family support event conditions are met
+    if (!shouldTriggerFamilySupport(template, playerContext, isLoss)) {
+      continue;
+    }
+
     // Check cooldown
     if (!(await canTriggerEvent(supabase, template, playerContext.battlerId))) {
       continue;
@@ -180,7 +203,7 @@ export async function evaluatePostBattleEvents(
           battleContext.battleId,
           {
             battle_result: battleContext.result,
-            outcome: battleContext.winnerId === playerContext.battlerId ? 'win' : 'loss',
+            outcome: isLoss ? 'loss' : 'win',
             choked: battleContext.playerChoked,
             crowd_reaction: battleContext.playerAvgCrowdReaction,
             peak_score: battleContext.playerPeakScore,
@@ -471,6 +494,50 @@ function evaluateBattleResultCondition(
 // ==========================================
 // HELPER FUNCTIONS
 // ==========================================
+
+/**
+ * Check if event is blocked by family_bond
+ * High family bond protects against family drama events
+ */
+function isBlockedByFamilyBond(
+  template: LifeEventTemplate,
+  playerContext: BattlerContext
+): boolean {
+  const familyBond = playerContext.attributes?.personal?.family_bond || 5;
+
+  // Family drama events are blocked by high family bond
+  if (template.code?.includes('family_drama') || template.code?.includes('family_crisis')) {
+    if (familyBond >= CONFIG.FAMILY_DRAMA_BLOCK_THRESHOLD) {
+      console.log(`[Life Events] BLOCKED: ${template.code} - Family Bond ${familyBond} >= ${CONFIG.FAMILY_DRAMA_BLOCK_THRESHOLD}`);
+      return true;
+    }
+  }
+
+  return false;
+}
+
+/**
+ * Check if family support event should be triggered after a loss
+ * High family bond enables support events
+ */
+function shouldTriggerFamilySupport(
+  template: LifeEventTemplate,
+  playerContext: BattlerContext,
+  isLoss: boolean
+): boolean {
+  const familyBond = playerContext.attributes?.personal?.family_bond || 5;
+
+  // Family support events require high family bond and a recent loss
+  if (template.code?.includes('family_support') || template.code?.includes('family_rallies')) {
+    if (familyBond >= CONFIG.FAMILY_SUPPORT_THRESHOLD && isLoss) {
+      return true;
+    }
+    // If conditions aren't met, don't trigger this type of event
+    return false;
+  }
+
+  return true; // Other events are not affected
+}
 
 /**
  * Check if event can trigger based on cooldown

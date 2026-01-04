@@ -24,17 +24,16 @@ import type { BattlerAttributes, League } from '@/lib/models';
 // ============================================================================
 
 /**
- * These are actual battler IDs from the database, seeded specifically for validation.
- * We query their real attributes from the database rather than using synthetic profiles.
+ * These are stage names of battlers seeded specifically for validation.
+ * We query by stage_name to get the actual IDs dynamically.
  */
-const REAL_BATTLER_IDS = {
-  // Seeded test battlers with specific choke/stumble characteristics
-  knownChoker: '4ac69c8a-47b9-4195-a8ab-1b893f7409f0',      // Nervous Wreck (resilience 3 + Known Choker badge)
-  clutchPerformer: 'eab61fec-e435-4b85-b8a1-8477fbc23ff0',  // Pressure Diamond (resilience 9 + Clutch Performer badge)
-  averageBattler1: '14bf7a09-f926-4894-b986-4d1d136d2a95',  // Mid Tier Mike (resilience 5)
-  averageBattler2: '982f3adb-ff68-480a-a8fb-b7c74844233e',  // Average Joe (resilience 4)
-  lowResilience: '26645193-ac50-4310-99b8-403f347d67de',    // Shaky Stevens (resilience 2)
-  highResilience: '981bf828-d2d0-4b3e-a7eb-d45e689f43fb',   // Rock Steady (resilience 9, no badge)
+const REAL_BATTLER_NAMES = {
+  knownChoker: 'Nervous Wreck',       // resilience 3 + Known Choker badge
+  clutchPerformer: 'Pressure Diamond', // resilience 9 + Clutch Performer badge
+  averageBattler1: 'Mid Tier Mike',   // resilience 5
+  averageBattler2: 'Average Joe',     // resilience 4
+  lowResilience: 'Shaky Stevens',     // resilience 2
+  highResilience: 'Rock Steady',      // resilience 9, no badge
 };
 
 interface BattlerProfile {
@@ -56,23 +55,23 @@ interface BattlerProfile {
 async function loadBattlerProfiles(supabase: any): Promise<BattlerProfile[]> {
   const profiles: BattlerProfile[] = [];
 
-  // Load specific battlers by ID
-  for (const [key, id] of Object.entries(REAL_BATTLER_IDS)) {
+  // Load specific battlers by stage_name
+  for (const [key, stageName] of Object.entries(REAL_BATTLER_NAMES)) {
     const { data: battler } = await supabase
       .from('battlers')
       .select('id, stage_name, style_tags')
-      .eq('id', id)
+      .eq('stage_name', stageName)
       .single();
 
     if (!battler) {
-      console.warn(`⚠️  Battler ${key} (${id}) not found`);
+      console.warn(`⚠️  Battler ${key} (${stageName}) not found - run seedTestBattlers.ts first`);
       continue;
     }
 
     const { data: attrs } = await supabase
       .from('battler_attributes')
       .select('*')
-      .eq('battler_id', id)
+      .eq('battler_id', battler.id)
       .single();
 
     if (!attrs) {

@@ -1,9 +1,17 @@
 /**
  * League Booking System
  * Handles matchmaking, card building, and battle offer generation
+ *
+ * Financial Stability Effects:
+ * - Financial Stability < 4: Cannot access premier tier leagues (can't afford travel)
+ * - Financial Stability <= 3: May be forced to accept suboptimal matchups ("money tight")
+ *
+ * Reputation Effects:
+ * - High reputation gets better matchup offers (sorted by reputation-adjusted quality)
  */
 
 import { SupabaseClient } from '@supabase/supabase-js'
+import { SIMULATION_CONFIG as CONFIG } from './config'
 
 // =============================================================================
 // TYPES
@@ -536,17 +544,29 @@ export async function generateBattleOffersForPlayer(
   supabase: SupabaseClient
 ): Promise<{ success: boolean; offers: any[]; debug: any }> {
   const offers: any[] = []
-  const debug: any = { leagues_checked: [], errors: [] }
+  const debug: any = { leagues_checked: [], errors: [], financial_status: 'stable' }
 
-  // Get player battler
+  // Get player battler with attributes
   const { data: player, error: playerError } = await supabase
     .from('battlers')
-    .select(`*, rankings (rating, wins, losses, streak)`)
+    .select(`*, rankings (rating, wins, losses, streak), battler_attributes(*)`)
     .eq('id', playerBattlerId)
     .single()
 
   if (playerError || !player) {
     return { success: false, offers: [], debug: { error: 'Player not found' } }
+  }
+
+  // Get personal stats for filtering
+  const attrs = (player as any).battler_attributes || {}
+  const financialStability = attrs.personal?.financial_stability || 5
+  const reputation = attrs.personal?.reputation || 5
+
+  // Set financial status for debug/UI
+  if (financialStability <= CONFIG.FINANCIAL_DESPERATE_THRESHOLD) {
+    debug.financial_status = 'desperate' // Can't be picky, needs money
+  } else if (financialStability < CONFIG.FINANCIAL_LOW_THRESHOLD) {
+    debug.financial_status = 'tight' // Limited options
   }
 
   // Get leagues that could book this player
@@ -564,6 +584,12 @@ export async function generateBattleOffersForPlayer(
     if (offers.length >= count) break
 
     debug.leagues_checked.push(league.name)
+
+    // FINANCIAL STABILITY FILTER: Can't access premier leagues if financial_stability < 4
+    if (league.league_tier === 'premier' && financialStability < CONFIG.FINANCIAL_PREMIER_THRESHOLD) {
+      debug.errors.push(`${league.name}: Can't afford travel (Financial Stability ${financialStability} < ${CONFIG.FINANCIAL_PREMIER_THRESHOLD})`)
+      continue
+    }
 
     // Check if player tier fits league
     const tierScore = TIER_COMPATIBILITY[league.league_tier]?.[player.tier] || 0
@@ -638,6 +664,13 @@ export async function generateBattleOffersForPlayer(
         continue
       }
 
+      // Apply reputation bonus to offer quality
+      // High reputation = +10% per point above 5, better matchups
+      const reputationBonus = reputation > 5
+        ? (reputation - 5) * CONFIG.REPUTATION_OFFER_QUALITY_BONUS
+        : 0
+      const adjustedScore = score.total * (1 + reputationBonus)
+
       offers.push({
         battle,
         league,
@@ -645,13 +678,19 @@ export async function generateBattleOffersForPlayer(
         player_fee: playerFee,
         opponent_fee: calculateBookingFee(opponent),
         matchup_score: score.total,
+        adjusted_score: adjustedScore,
+        reputation_bonus: reputationBonus,
         is_sequel: sequelCheck?.is_sequel || false,
         sequel_info: sequelCheck,
+        financial_status: debug.financial_status,
       })
 
       break // Move to next league
     }
   }
+
+  // Sort offers by adjusted score (reputation-boosted quality)
+  offers.sort((a, b) => b.adjusted_score - a.adjusted_score)
 
   return { success: offers.length > 0, offers, debug }
 }

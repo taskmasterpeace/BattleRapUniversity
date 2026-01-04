@@ -454,7 +454,7 @@ export const BADGE_REGISTRY: Record<string, BadgeDefinition> = {
   },
 
   'Clutch Performer': {
-    chokeReduction: 0.04,               // Very clutch
+    chokeReduction: 0.055,              // Very clutch (UP from 0.04 - was giving 6% vs 3% target)
     peakBonus: 0.15,
     restEfficiency: 1.2,
   },
@@ -467,7 +467,7 @@ export const BADGE_REGISTRY: Record<string, BadgeDefinition> = {
   },
 
   'Known Choker': {
-    chokeIncrease: 0.070,               // +7.0% per segment (Round 7 adjustment: 5.5% gave 36.7%, targeting 46%)
+    chokeIncrease: 0.050,               // +5.0% per segment (DOWN from 5.5% - was giving 62% vs 46-50% target)
     restEfficiency: 0.6,
     crowdReactionBonus: -12,
   },

@@ -78,4 +78,36 @@ export const SIMULATION_CONFIG = {
 
   // Momentum decay between rounds
   MOMENTUM_ROUND_DECAY: 0.15, // Momentum trends back toward 50 by 15% between rounds
+
+  // === PERSONAL STATS EFFECTS ===
+  // These connect the 4 personal stats to gameplay
+
+  // PREPARATION (replaces resilience for choke risk)
+  // Higher preparation = less choking, better prep day gains, more consistency
+  PREP_SKILL_CHOKE_BASE: 0.12, // 12% choke rate at preparation=5
+  PREP_SKILL_CHOKE_REDUCTION: 0.015, // -1.5% per point above 5
+  PREP_SKILL_DAY_BONUS: [0.10, 0.12, 0.14, 0.16, 0.20, 0.22, 0.24, 0.28, 0.32, 0.36], // prep day value by level 1-10
+  PREP_SKILL_VARIANCE_REDUCTION: 0.01, // -1% variance per point above 5
+  PREP_SKILL_COUNTER_BONUS: 0.015, // +1.5% counter success per point above 5
+
+  // FINANCIAL_STABILITY
+  // Low = stress, limited league access, forced matchups
+  FINANCIAL_LOW_THRESHOLD: 4, // Below this = low financial stability
+  FINANCIAL_DESPERATE_THRESHOLD: 3, // Below this = forced to take bad matchups
+  FINANCIAL_LOW_STRESS_BASELINE: 15, // +15 stress if financial_stability <= 4
+  FINANCIAL_PREMIER_THRESHOLD: 4, // Can't access premier leagues if below this
+
+  // REPUTATION
+  // High = crowd favor, better offers, softer losses
+  REPUTATION_CROWD_BIAS_FACTOR: 0.02, // (reputation - 5) * 2% = crowd bias (-10% to +10%)
+  REPUTATION_OFFER_QUALITY_BONUS: 0.10, // +10% better matchups per point above 5
+  REPUTATION_LOSS_FORGIVENESS_THRESHOLD: 7, // 25% less rating loss if >= 7
+  REPUTATION_LOSS_FORGIVENESS_FACTOR: 0.75, // 75% of normal rating loss
+
+  // FAMILY_BOND
+  // High = stress recovery, event blocking, support triggers
+  FAMILY_STRESS_RECOVERY_THRESHOLD: 7, // 2x stress recovery if >= 7
+  FAMILY_STRESS_RECOVERY_MULTIPLIER: 2.0, // 2x faster stress decay
+  FAMILY_DRAMA_BLOCK_THRESHOLD: 7, // Blocks family drama events if >= 7
+  FAMILY_SUPPORT_THRESHOLD: 6, // Triggers support events after losses if >= 6
 }

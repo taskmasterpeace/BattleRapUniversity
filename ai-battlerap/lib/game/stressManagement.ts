@@ -5,6 +5,7 @@
 
 import { createClient } from '@supabase/supabase-js';
 import { getVirtualNow } from '@/lib/dev/timeManipulation';
+import { SIMULATION_CONFIG as CONFIG } from '@/lib/game/config';
 
 export interface StressFactors {
   activeBattleCount: number;
@@ -12,6 +13,7 @@ export interface StressFactors {
   recentBattleCount: number;
   financialStability: number;
   preparation: number;
+  familyBond: number;
 }
 
 /**
@@ -87,6 +89,7 @@ export async function getStressFactors(
   const attrs = battler?.battler_attributes || {};
   const financialStability = attrs.personal?.financial_stability || 5;
   const preparation = attrs.personal?.preparation || 5;
+  const familyBond = attrs.personal?.family_bond || 5;
 
   // Count active battles (accepted or locked)
   const { data: activeBattles } = await (supabase as any)
@@ -127,6 +130,7 @@ export async function getStressFactors(
     recentBattleCount,
     financialStability,
     preparation,
+    familyBond,
   };
 }
 
@@ -178,11 +182,15 @@ export async function updateBattlerStress(
 /**
  * Apply stress decay (reduces stress over time when inactive)
  * Call this periodically (e.g., daily cron job)
+ *
+ * Family Bond Effect:
+ * - Family Bond >= 7: 2x faster stress recovery (strong family support)
+ * - This reflects having a support system that helps you destress
  */
 export async function applyStressDecay(
   supabase: ReturnType<typeof createClient>,
   battlerId: string,
-  decayRate: number = 5
+  baseDecayRate: number = 5
 ): Promise<number> {
   const { data: battler } = await (supabase as any)
     .from('battlers')
@@ -192,9 +200,17 @@ export async function applyStressDecay(
 
   const attrs = battler?.battler_attributes || {};
   const currentStress = attrs.stress || 0;
+  const familyBond = attrs.personal?.family_bond || 5;
 
-  // Decay stress by rate (default 5 points per day)
-  const newStress = Math.max(0, currentStress - decayRate);
+  // Apply family bond recovery multiplier
+  // High family bond (7+) = 2x faster stress decay
+  let effectiveDecayRate = baseDecayRate;
+  if (familyBond >= CONFIG.FAMILY_STRESS_RECOVERY_THRESHOLD) {
+    effectiveDecayRate *= CONFIG.FAMILY_STRESS_RECOVERY_MULTIPLIER;
+  }
+
+  // Decay stress by rate
+  const newStress = Math.max(0, currentStress - effectiveDecayRate);
 
   const updatedAttrs = {
     ...attrs,

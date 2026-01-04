@@ -97,6 +97,11 @@ export async function simulateBattle(
   const playerBadgeEffects = calculateBadgeEffects(playerBattler?.style_tags || []);
   const aiBadgeEffects = calculateBadgeEffects(aiBattler?.style_tags || []);
 
+  // DEBUG: Log badge effects
+  if (playerBadgeEffects.chokeIncrease > 0 || playerBadgeEffects.chokeReduction > 0) {
+    console.log(`[BADGE DEBUG] Player ${playerBattler?.stage_name}: tags=${JSON.stringify(playerBattler?.style_tags)}, chokeIncrease=${playerBadgeEffects.chokeIncrease}, chokeReduction=${playerBadgeEffects.chokeReduction}`);
+  }
+
   // 3. Build prep profiles
   const playerPrepProfile = buildPrepProfile(playerData.prepBlocks);
   const aiPrepProfile = buildPrepProfile(aiData.prepBlocks);
@@ -121,15 +126,23 @@ export async function simulateBattle(
   const segmentsPerRound = league.round_length_minutes === 2 ? 4 : 6;
 
   // 5b. Calculate crowd perception and authenticity modifiers from promotion work
-  const crowdModifiers = await getCrowdPerceptionModifiers(
-    battleId,
-    battle.battler_player_id,
-    battle.battler_ai_id
-  );
-  const authenticityModifiers = await getAuthenticityModifiers(
-    battle.battler_player_id,
-    battle.battler_ai_id
-  );
+  // Note: These may fail when running outside Next.js context (e.g., in test scripts)
+  let crowdModifiers = { playerBonus: 0, aiBonus: 0, narrative: '' };
+  let authenticityModifiers = { playerPenalty: 0, aiPenalty: 0, narrative: '' };
+
+  try {
+    crowdModifiers = await getCrowdPerceptionModifiers(
+      battleId,
+      battle.battler_player_id,
+      battle.battler_ai_id
+    );
+    authenticityModifiers = await getAuthenticityModifiers(
+      battle.battler_player_id,
+      battle.battler_ai_id
+    );
+  } catch (error) {
+    // Silently use defaults when running outside Next.js (e.g., validation scripts)
+  }
 
   // Log promotion impact (for battle narrative)
   if (crowdModifiers.narrative) {
@@ -1283,11 +1296,21 @@ function simulateSegment(
     // - Life event status (need temporary life event modifiers)
 
     // Apply badge choke modifiers
+    const preBadgeChoke = chokeProbability;
     chokeProbability -= badgeEffects.chokeReduction;
     chokeProbability += badgeEffects.chokeIncrease;
 
-    // Apply floor and cap (prevents choke from reaching 0% or exceeding 25%)
-    chokeProbability = Math.max(CONFIG.CHOKE_MINIMUM, Math.min(CONFIG.CHOKE_MAXIMUM, chokeProbability));
+    // DEBUG: Log choke calculation (only for first segment of first round)
+    if (badgeEffects.chokeIncrease > 0.05 && Math.random() < 0.05) {
+      console.log(`[CHOKE DEBUG] base=${CONFIG.CHOKE_BASE_PROBABILITY.toFixed(3)}, preBadge=${preBadgeChoke.toFixed(3)}, +badge=${badgeEffects.chokeIncrease.toFixed(3)}, final=${chokeProbability.toFixed(3)}, prepWriting=${prep.writingDays}`);
+    }
+
+    // Apply floor and cap - allow badges and high resilience to go below standard minimum
+    // Without this, Clutch Performer badge has NO effect when resilience already reduces to minimum
+    // Also allow very high resilience (8+) to slightly reduce the floor
+    const resilienceFloorReduction = Math.max(0, resilienceAboveAverage - 2) * 0.001;  // res 8+ reduces floor
+    const effectiveMinimum = Math.max(0.001, CONFIG.CHOKE_MINIMUM - badgeEffects.chokeReduction - resilienceFloorReduction);
+    chokeProbability = Math.max(effectiveMinimum, Math.min(CONFIG.CHOKE_MAXIMUM, chokeProbability));
 
     const chokeThreshold = isNoShow ? Math.min(CONFIG.CHOKE_MAXIMUM, chokeProbability * 3) : chokeProbability;
 

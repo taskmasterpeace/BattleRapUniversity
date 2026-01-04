@@ -15,7 +15,13 @@ interface BattlerAttributes {
     crowd_control: number
     delivery: number
   }
-  resilience?: number
+  personal?: {
+    financial_stability: number
+    reputation: number
+    family_bond: number
+    preparation: number
+  }
+  resilience?: number // DEPRECATED: kept for backwards compatibility, use personal.preparation
 }
 
 interface PrepSegment {
@@ -227,7 +233,9 @@ export async function simulateBattle(
       allAiRounds,
       allSegments,
       battle,
-      verdict
+      verdict,
+      playerAttrs,
+      aiAttrs
     )
 
     return {
@@ -246,7 +254,13 @@ function getDefaultAttributes(): BattlerAttributes {
   return {
     writing: { lyricism: 5, wordplay: 5, creativity: 5, flow: 5 },
     performance: { stage_presence: 5, crowd_control: 5, delivery: 5 },
-    resilience: 5,
+    personal: {
+      financial_stability: 5,
+      reputation: 5,
+      family_bond: 5,
+      preparation: 5,
+    },
+    resilience: 5, // DEPRECATED: kept for backwards compatibility
   }
 }
 
@@ -297,9 +311,13 @@ function simulateRound(
   // Initialize momentum - apply decay from previous round toward neutral (50)
   let momentum = previousMomentum + (CONFIG.MOMENTUM_STARTING - previousMomentum) * CONFIG.MOMENTUM_ROUND_DECAY
 
-  // Apply prep bonuses to attributes
-  const writingBonus = prepProfile.writingDays * CONFIG.PREP_EFFECT_MULTIPLIER
-  const perfBonus = prepProfile.performanceDays * CONFIG.PREP_EFFECT_MULTIPLIER
+  // Get preparation skill - determines how effective prep days are
+  const prepSkill = attrs.personal?.preparation || 5
+  const prepDayValue = CONFIG.PREP_SKILL_DAY_BONUS[prepSkill - 1] || CONFIG.PREP_EFFECT_MULTIPLIER
+
+  // Apply prep bonuses to attributes (scaled by preparation skill)
+  const writingBonus = prepProfile.writingDays * prepDayValue
+  const perfBonus = prepProfile.performanceDays * prepDayValue
 
   const modifiedAttrs = {
     writing: {
@@ -312,8 +330,12 @@ function simulateRound(
       crowd_control: Math.min(10, attrs.performance.crowd_control + perfBonus),
       delivery: Math.min(10, attrs.performance.delivery + perfBonus),
     },
-    resilience: Math.min(10, (attrs.resilience || 5) + prepProfile.restDays * CONFIG.PREP_EFFECT_MULTIPLIER),
+    // Resilience deprecated - use preparation skill instead
+    resilience: prepSkill, // Use preparation skill as effective resilience
   }
+
+  // Get reputation for crowd bias
+  const reputation = attrs.personal?.reputation || 5
 
   // Calculate base power with attribute advantage scaling
   const rawWritingPower = (modifiedAttrs.writing.lyricism + modifiedAttrs.writing.wordplay + modifiedAttrs.writing.creativity) / 3
@@ -330,8 +352,10 @@ function simulateRound(
   const performancePower = rawPerformancePower * advantageMultiplier
 
   // Calculate consistency (higher attributes = less variance)
-  const consistencyBonus = Math.max(0, (avgPower - 7) * CONFIG.ATTRIBUTE_CONSISTENCY_BONUS)
-  const effectiveVariance = CONFIG.SEGMENT_VARIANCE * (1 - consistencyBonus)
+  // Also apply preparation skill variance reduction (experienced battlers are more consistent)
+  const attrConsistencyBonus = Math.max(0, (avgPower - 7) * CONFIG.ATTRIBUTE_CONSISTENCY_BONUS)
+  const prepVarianceReduction = Math.max(0, (prepSkill - 5) * CONFIG.PREP_SKILL_VARIANCE_REDUCTION)
+  const effectiveVariance = CONFIG.SEGMENT_VARIANCE * (1 - attrConsistencyBonus - prepVarianceReduction)
 
   // Determine battle format and adjust weights accordingly
   const battleFormat = league?.battle_format || 'live'
@@ -368,9 +392,12 @@ function simulateRound(
         events.push('rehearsed')
       }
 
-      // Counter check
+      // Counter check - preparation skill improves counter accuracy
       if (v2Segment.is_counter && v2Segment.counter_target) {
-        const counterTriggered = Math.random() < CONFIG.COUNTER_BASE_TRIGGER_CHANCE
+        // +1.5% counter success per prep point above 5
+        const prepCounterBonus = Math.max(0, prepSkill - 5) * CONFIG.PREP_SKILL_COUNTER_BONUS
+        const counterChance = CONFIG.COUNTER_BASE_TRIGGER_CHANCE + prepCounterBonus
+        const counterTriggered = Math.random() < counterChance
         if (counterTriggered) {
           baseScore *= CONFIG.COUNTER_TRIGGERED_MULTIPLIER
           events.push('counter_triggered')
@@ -414,8 +441,14 @@ function simulateRound(
     }
 
     // Choke check (adjusted for battle format and momentum)
-    const resilienceAboveAvg = Math.max(0, modifiedAttrs.resilience - 5)
-    let chokeProb = CONFIG.CHOKE_BASE_PROBABILITY - (resilienceAboveAvg * CONFIG.CHOKE_RESILIENCE_FACTOR)
+    // Preparation skill determines choke resistance: 12% base at prep=5, -1.5% per point above 5
+    const prepAboveAvg = Math.max(0, prepSkill - 5)
+    let chokeProb = CONFIG.PREP_SKILL_CHOKE_BASE - (prepAboveAvg * CONFIG.PREP_SKILL_CHOKE_REDUCTION)
+
+    // Low preparation increases choke risk
+    if (prepSkill < 5) {
+      chokeProb += (5 - prepSkill) * CONFIG.PREP_SKILL_CHOKE_REDUCTION * 1.5 // Steeper penalty for low prep
+    }
 
     // Momentum affects choke risk: low momentum = higher choke chance
     // Each point below 50 adds +0.3% choke risk
@@ -442,8 +475,13 @@ function simulateRound(
     }
 
     // Stumble check (only if not choked)
+    // Preparation skill also reduces stumble risk
     if (!events.includes('choke')) {
-      const stumbleProb = CONFIG.STUMBLE_BASE_PROBABILITY - (resilienceAboveAvg * 0.005)
+      let stumbleProb = CONFIG.STUMBLE_BASE_PROBABILITY - (prepAboveAvg * 0.005)
+      if (prepSkill < 5) {
+        stumbleProb += (5 - prepSkill) * 0.01 // +1% per point below 5
+      }
+      stumbleProb = Math.max(CONFIG.STUMBLE_MINIMUM, Math.min(CONFIG.STUMBLE_MAXIMUM, stumbleProb))
       if (Math.random() < stumbleProb) {
         finalScore *= CONFIG.STUMBLE_SCORE_MULTIPLIER
         events.push('stumble')
@@ -456,15 +494,19 @@ function simulateRound(
     finalScore = Math.max(CONFIG.SCORE_FLOOR, Math.min(CONFIG.SCORE_CEILING, finalScore))
     scores.push(finalScore)
 
-    // Crowd reaction (adjusted for battle format and momentum)
+    // Crowd reaction (adjusted for battle format, momentum, and reputation)
+    // Reputation affects starting crowd bias: (reputation - 5) * 2% = -10% to +10%
+    const reputationBias = (reputation - 5) * CONFIG.REPUTATION_CROWD_BIAS_FACTOR * 100
+
     let crowdReaction: number
     if (battleFormat === 'asynchronous') {
       // Crowd reaction = voting scores (more predictable, based on quality)
-      crowdReaction = Math.round((finalScore / 10) * 100)
+      // Reputation still matters in voting (name recognition)
+      crowdReaction = Math.round((finalScore / 10) * 100 + reputationBias * 0.5)
     } else if (battleFormat === 'recorded') {
       // Voting on videos - still influenced by performance but less volatile
       crowdReaction = Math.round(
-        (finalScore / 10) * 70 + (performancePower / 10) * 30 * (league?.base_crowd_factor || 1)
+        (finalScore / 10) * 70 + (performancePower / 10) * 30 * (league?.base_crowd_factor || 1) + reputationBias * 0.7
       )
     } else {
       // Live crowd - full performance factor with momentum boost
@@ -474,6 +516,9 @@ function simulateRound(
       if (momentum > CONFIG.MOMENTUM_STARTING) {
         baseCrowd += (momentum - CONFIG.MOMENTUM_STARTING) * CONFIG.MOMENTUM_CROWD_MODIFIER
       }
+
+      // Full reputation bias in live settings (crowd knows who you are)
+      baseCrowd += reputationBias
 
       crowdReaction = Math.round(baseCrowd)
     }
@@ -582,7 +627,9 @@ async function saveBattleResults(
   aiRounds: RoundResult[],
   segments: SegmentResult[],
   battle: any,
-  verdict: string
+  verdict: string,
+  playerAttrs: BattlerAttributes,
+  aiAttrs: BattlerAttributes
 ) {
   // Fetch current rankings to calculate rating changes
   const { data: playerRanking } = await supabase
@@ -597,13 +644,15 @@ async function saveBattleResults(
     .eq('battler_id', battle.battler_ai_id)
     .single()
 
-  // Calculate rating changes
+  // Calculate rating changes with reputation forgiveness
   const playerWon = winnerId === battle.battler_player_id
   const playerOldRating = playerRanking?.rating || 1000
   const aiOldRating = aiRanking?.rating || 1000
+  const playerReputation = playerAttrs.personal?.reputation || 5
+  const aiReputation = aiAttrs.personal?.reputation || 5
 
-  const playerNewRating = calculateNewRating(playerOldRating, aiOldRating, playerWon)
-  const aiNewRating = calculateNewRating(aiOldRating, playerOldRating, !playerWon)
+  const playerNewRating = calculateNewRating(playerOldRating, aiOldRating, playerWon, playerReputation)
+  const aiNewRating = calculateNewRating(aiOldRating, playerOldRating, !playerWon, aiReputation)
 
   const playerRatingChange = playerNewRating - playerOldRating
   const aiRatingChange = aiNewRating - aiOldRating
@@ -663,12 +712,24 @@ async function saveBattleResults(
   return data
 }
 
-function calculateNewRating(playerRating: number, opponentRating: number, won: boolean): number {
+function calculateNewRating(
+  playerRating: number,
+  opponentRating: number,
+  won: boolean,
+  reputation: number = 5
+): number {
   // Clamp rating difference to prevent overflow in exponentiation
   const ratingDiff = Math.max(-1000, Math.min(1000, opponentRating - playerRating))
   const expected = 1 / (1 + Math.pow(10, ratingDiff / 400))
   const actual = won ? 1 : 0
-  const newRating = Math.round(playerRating + CONFIG.RATING_K_FACTOR * (actual - expected))
+  let ratingChange = CONFIG.RATING_K_FACTOR * (actual - expected)
+
+  // Reputation forgiveness: high reputation (7+) = 25% less rating loss on defeats
+  if (!won && reputation >= CONFIG.REPUTATION_LOSS_FORGIVENESS_THRESHOLD) {
+    ratingChange *= CONFIG.REPUTATION_LOSS_FORGIVENESS_FACTOR
+  }
+
+  const newRating = Math.round(playerRating + ratingChange)
   // Cap rating to documented game range (1200-2500)
   return Math.max(0, Math.min(2500, newRating))
 }

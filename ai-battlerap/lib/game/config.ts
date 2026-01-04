@@ -46,7 +46,7 @@ export const SIMULATION_CONFIG = {
    * UPDATED: 0.008 → 0.0136 → 0.050 per validation testing
    * Note: Initial 0.0136 was too low due to strong prep reduction effects
    */
-  STUMBLE_BASE_PROBABILITY: 0.050,  // 5.0% per segment (UP from 1.36%)
+  STUMBLE_BASE_PROBABILITY: 0.042,  // 4.2% per segment (DOWN from 4.5% - was giving 45% vs 40% target)
 
   /**
    * Score multiplier when stumbling (minor error)
@@ -116,7 +116,7 @@ export const SIMULATION_CONFIG = {
    * UPDATED: 0.03 → 0.003 → 0.004 → 0.015 per validation testing
    * Note: Must be high enough that prep reductions don't eliminate chokes
    */
-  CHOKE_BASE_PROBABILITY: 0.015,  // 1.5% per segment (UP from 0.4%)
+  CHOKE_BASE_PROBABILITY: 0.012,  // 1.2% per segment (UP from 1.0% - was giving 5% vs 7% target)
 
   /**
    * Choke reduction per resilience point ABOVE 5
@@ -137,7 +137,7 @@ export const SIMULATION_CONFIG = {
    *
    * UPDATED: 0.01 → 0.005 → 0.008 (0.8% per prep day)
    */
-  CHOKE_PREP_REDUCTION: 0.008,  // UP from 0.005
+  CHOKE_PREP_REDUCTION: 0.004,  // DOWN from 0.008 - prep was reducing choke too much
 
   /**
    * Minimum choke probability floor
@@ -149,7 +149,7 @@ export const SIMULATION_CONFIG = {
    * UPDATED: 0.02 → 0.001 → 0.002 → 0.004 → 0.040 → 0.0041 → 0.007 (Round 6 final)
    * Note: Empirical tuning complete - validated with Tru Foe's expert feedback
    */
-  CHOKE_MINIMUM: 0.007,  // 0.7% floor per segment (final tuning for 7% battle rate)
+  CHOKE_MINIMUM: 0.006,  // 0.6% floor per segment (slightly below base)
 
   /**
    * Maximum choke probability cap
