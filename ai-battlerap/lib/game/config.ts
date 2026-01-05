@@ -116,7 +116,7 @@ export const SIMULATION_CONFIG = {
    * UPDATED: 0.03 → 0.003 → 0.004 → 0.015 per validation testing
    * Note: Must be high enough that prep reductions don't eliminate chokes
    */
-  CHOKE_BASE_PROBABILITY: 0.012,  // 1.2% per segment (UP from 1.0% - was giving 5% vs 7% target)
+  CHOKE_BASE_PROBABILITY: 0.011,  // 1.1% per segment (down from 1.3% - choke rate was 16% vs 5-15%)
 
   /**
    * Choke reduction per resilience point ABOVE 5
@@ -188,7 +188,7 @@ export const SIMULATION_CONFIG = {
    * Formula: If financial < 4: (4 - financial) × 0.008
    * Example: Financial 2 = (4-2) × 0.008 = 0.016 (1.6% additional choke)
    */
-  CHOKE_FINANCIAL_PRESSURE: 0.008,  // 0.8% per point below 4
+  CHOKE_FINANCIAL_PRESSURE: 0.003,  // 0.3% per point below 4 (DOWN from 0.8% - was causing 21% vs 11% target)
 
   /**
    * Reputation pressure impact on choking
@@ -314,7 +314,7 @@ export const SIMULATION_CONFIG = {
    * Phase 3: All 6 parallel tests showed 0% even matchup upsets (target: 40-60%)
    * This proves determinism bug - adding starting randomness should fix
    */
-  MOMENTUM_STARTING_VARIANCE: 0.5,  // NEW (Phase 3: fix 0% even upsets)
+  MOMENTUM_STARTING_VARIANCE: 0.8,  // UP from 0.5 - more variance in battle outcomes
 
   // ============================================================================
   // SEGMENT SCORING
@@ -445,8 +445,8 @@ export const SIMULATION_CONFIG = {
    *
    * NEW: 2.0 point margin or less = classic (if crowd is high)
    */
-  DECISION_CLASSIC_THRESHOLD: 2.0,  // Score margin for 2-1 classic
-  DECISION_CLASSIC_CROWD_MIN: 70,   // Min crowd reaction for classic designation
+  DECISION_CLASSIC_THRESHOLD: 2.5,  // Score margin for 2-1 classic (UP from 2.0 - more battles count as close)
+  DECISION_CLASSIC_CROWD_MIN: 60,   // Min crowd reaction for classic (DOWN from 70 - easier to qualify)
 };
 
 /**

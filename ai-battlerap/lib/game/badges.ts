@@ -132,47 +132,52 @@ export const BADGE_REGISTRY: Record<string, BadgeDefinition> = {
 
   'Freestyle Genius': {
     lowPrepBonus: true,                 // THRIVES on minimal prep
-    chokeReduction: 0.25,               // -25% choke chance (freestyle is safety net)
-    stumbleReduction: 0.005,            // -0.5% stumble (good at recovery) - NEW PHASE 4
-    rebuttalBonus: 0.15,                // +15% when going second - NEW PHASE 4
-    researchPrepEfficiency: 1.2,        // +20% research prep (preps scenarios, not bars)
-    writingPrepEfficiency: 1.0,         // Writing prep penalty REMOVED (was backwards)
-    performancePrepEfficiency: 1.2,     // Better at performance prep
-    creativityMultiplier: 1.3,
-    segmentVarianceMultiplier: 1.5,     // Wild variance - can be amazing or terrible
-    consistencyPenalty: 1.5,            // Very inconsistent
-    peakBonus: 0.20,                    // +20% peak score (CRITICAL FIX: rewards flashy freestyle moments with new 35% peak weighting)
+    chokeReduction: 0.12,               // -12% choke chance (DOWN from 0.15)
+    stumbleReduction: 0.005,            // -0.5% stumble (good at recovery)
+    rebuttalBonus: 0.08,                // +8% when going second (DOWN from 0.10)
+    researchPrepEfficiency: 1.10,       // +10% research prep (DOWN from 1.15)
+    writingPrepEfficiency: 1.0,         // Writing prep neutral
+    performancePrepEfficiency: 1.10,    // +10% performance prep (DOWN from 1.15)
+    creativityMultiplier: 1.12,         // +12% creativity (DOWN from 1.15)
+    segmentVarianceMultiplier: 1.2,     // Some variance (DOWN from 1.3)
+    consistencyPenalty: 1.2,            // Somewhat inconsistent (DOWN from 1.3)
+    peakBonus: 0.05,                    // +5% peak score (DOWN from 0.08)
   },
 
   'Creativity Beast': {
-    creativityMultiplier: 1.35,
-    wordplayMultiplier: 1.15,
-    researchPrepEfficiency: 1.3,        // Research fuels creativity
-    peakBonus: 0.1,
+    creativityMultiplier: 1.12,         // DOWN from 1.18 - still strong but not dominant
+    wordplayMultiplier: 1.05,           // DOWN from 1.10
+    researchPrepEfficiency: 1.10,       // DOWN from 1.15 - research fuels creativity
+    peakBonus: 0.03,                    // DOWN from 0.05
   },
 
   'Consistent Writer': {
     consistencyBonus: 2.0,              // Much more consistent
     segmentVarianceMultiplier: 0.6,     // Lower variance
-    writingPrepEfficiency: 1.15,
+    writingPrepEfficiency: 1.20,        // UP from 1.18 - better prep efficiency
+    lyricismMultiplier: 1.12,           // UP from 1.08 - solid lyricism boost
+    wordplayMultiplier: 1.08,           // NEW - small wordplay boost
+    crowdReactionBonus: 3,              // NEW - consistent = crowd appreciates reliability
     highPrepBonus: true,
   },
 
   'Technical Writer': {
-    writingPrepEfficiency: 1.35,        // Writing prep 35% more effective (nerfed from 1.45)
-    lyricismMultiplier: 1.25,           // Lyricism +25% (nerfed from 1.35)
-    stagePresenceMultiplier: 0.9,       // Stage Presence -10% (prep-focused, not performance)
+    writingPrepEfficiency: 1.25,        // Writing prep 25% more effective (UP from 1.20)
+    lyricismMultiplier: 1.18,           // Lyricism +18% (UP from 1.10 - undoing over-nerf)
+    stagePresenceMultiplier: 0.88,      // Stage Presence -12% (UP from 0.80 - less harsh)
+    crowdReactionBonus: -5,             // Crowds prefer entertainment (UP from -8)
+    crowdControlMultiplier: 0.92,       // -8% crowd control (UP from 0.90)
     highPrepBonus: true,
-    consistencyBonus: 1.0,
-    smallRoomBonus: 0.05,
+    smallRoomBonus: 0.04,               // Small room bonus (UP from 0.03)
   },
 
   'Angle Master': {
-    researchPrepEfficiency: 1.35,       // Research prep 35% more effective (nerfed from 1.5)
-    peakBonus: 0.2,                     // Great at big moments with angles
-    creativityMultiplier: 1.2,
-    wordplayMultiplier: 0.9,            // Less about wordplay
-    crowdReactionBonus: -10,            // Overly analytical style
+    researchPrepEfficiency: 1.25,       // Research prep 25% more effective (DOWN from 1.50)
+    peakBonus: 0.10,                    // Good at big moments (DOWN from 0.30 - was WAY too strong)
+    creativityMultiplier: 1.15,         // +15% creativity (DOWN from 1.30)
+    wordplayMultiplier: 1.0,            // No wordplay penalty
+    crowdReactionBonus: -5,             // Slight crowd penalty (personal angles can be uncomfortable)
+    consistencyBonus: 1.0,              // Prepared angles = very consistent
   },
 
   'Rebuttal King/Queen': {
@@ -191,12 +196,12 @@ export const BADGE_REGISTRY: Record<string, BadgeDefinition> = {
   },
 
   'Pen Game Elite': {
-    lyricismMultiplier: 1.25,
-    creativityMultiplier: 1.25,
-    wordplayMultiplier: 1.25,
-    writingPrepEfficiency: 1.3,
+    lyricismMultiplier: 1.18,           // DOWN from 1.25 to reduce stacking
+    creativityMultiplier: 1.15,         // DOWN from 1.25
+    wordplayMultiplier: 1.18,           // DOWN from 1.25
+    writingPrepEfficiency: 1.20,        // DOWN from 1.30
     highPrepBonus: true,
-    crowdReactionBonus: -10,            // Technical bars go over heads
+    crowdReactionBonus: -6,             // UP from -10 (less harsh penalty)
   },
 
   // Negative Writing Badges (EXPANDED)
@@ -291,45 +296,45 @@ export const BADGE_REGISTRY: Record<string, BadgeDefinition> = {
 
   // Positive Performance Badges
   'Crowd Favorite': {
-    crowdReactionBonus: 15,             // HUGE crowd bonus
-    crowdControlMultiplier: 1.3,
-    mainStageBonus: 0.08,
+    crowdReactionBonus: 8,              // DOWN from 15 - stacking was too strong
+    crowdControlMultiplier: 1.15,       // DOWN from 1.30
+    mainStageBonus: 0.04,               // DOWN from 0.08
   },
 
   'Stage Domination': {
-    stagePresenceMultiplier: 1.35,
-    crowdControlMultiplier: 1.25,
-    mainStageBonus: 0.1,
-    performancePrepEfficiency: 1.3,
+    stagePresenceMultiplier: 1.15,      // DOWN from 1.20
+    crowdControlMultiplier: 1.10,       // DOWN from 1.15
+    mainStageBonus: 0.03,               // DOWN from 0.05 - less main stage advantage
+    performancePrepEfficiency: 1.12,    // DOWN from 1.15
   },
 
   'Smooth Flow': {
-    deliveryMultiplier: 1.3,
+    deliveryMultiplier: 1.18,           // DOWN from 1.30
     consistencyBonus: 1.0,
-    performancePrepEfficiency: 1.2,
+    performancePrepEfficiency: 1.15,    // DOWN from 1.20
   },
 
   'Aggressive': {
-    deliveryMultiplier: 1.25,
-    stagePresenceMultiplier: 1.2,
-    chokeIncrease: 0.01,                // Slightly more likely to choke
-    crowdReactionBonus: 5,
-    mainStageBonus: 0.05,
+    deliveryMultiplier: 1.10,           // DOWN from 1.15
+    stagePresenceMultiplier: 1.08,      // DOWN from 1.10
+    chokeIncrease: 0.018,               // UP from 0.015 - more choke risk for aggression
+    crowdReactionBonus: 2,              // DOWN from 3
+    mainStageBonus: 0.02,               // DOWN from 0.03
   },
 
   'Charismatic': {
-    crowdControlMultiplier: 1.35,
-    stagePresenceMultiplier: 1.2,
-    crowdReactionBonus: 10,
-    performancePrepEfficiency: 1.15,
+    crowdControlMultiplier: 1.15,       // DOWN from 1.35 - was WAY too strong
+    stagePresenceMultiplier: 1.10,      // DOWN from 1.20
+    crowdReactionBonus: 5,              // DOWN from 10
+    performancePrepEfficiency: 1.10,    // DOWN from 1.15
   },
 
   'Theatrical': {
-    stagePresenceMultiplier: 1.3,
-    crowdControlMultiplier: 1.25,
-    mainStageBonus: 0.1,
+    stagePresenceMultiplier: 1.18,      // DOWN from 1.30
+    crowdControlMultiplier: 1.15,       // DOWN from 1.25
+    mainStageBonus: 0.05,               // DOWN from 0.10
     smallRoomBonus: -0.05,              // Less effective in small rooms
-    performancePrepEfficiency: 1.25,
+    performancePrepEfficiency: 1.15,    // DOWN from 1.25
   },
 
   'Speed Rapping': {
@@ -434,6 +439,19 @@ export const BADGE_REGISTRY: Record<string, BadgeDefinition> = {
     // Note: +2 reputation and +25% battle offers enforced in progression
   },
 
+  'Prepared Battler': {
+    // Strong baseline badge for well-rounded battlers - competes with specialists
+    writingPrepEfficiency: 1.25,        // +25% writing prep (UP from 1.20)
+    performancePrepEfficiency: 1.25,    // +25% performance prep (UP from 1.20)
+    researchPrepEfficiency: 1.25,       // +25% research prep (UP from 1.20)
+    chokeReduction: 0.05,               // -5% choke (UP from 0.04 - very prepared)
+    highPrepBonus: true,                // Thrives with good prep
+    consistencyBonus: 1.5,              // Very consistent (UP from 1.0)
+    lyricismMultiplier: 1.12,           // +12% lyricism (UP from 1.08)
+    stagePresenceMultiplier: 1.12,      // +12% stage presence (UP from 1.08)
+    crowdReactionBonus: 5,              // +5 crowd reaction (NEW - reliable = respected)
+  },
+
   'Clout Chaser': {
     crowdReactionBonus: 8,              // Gets crowd attention
     peakBonus: 0.1,                     // Focuses on viral moments
@@ -460,14 +478,14 @@ export const BADGE_REGISTRY: Record<string, BadgeDefinition> = {
   },
 
   'Battle Technician': {
-    researchPrepEfficiency: 1.4,
-    writingPrepEfficiency: 1.25,
+    researchPrepEfficiency: 1.15,       // DOWN from 1.40 - was stacking too much
+    writingPrepEfficiency: 1.12,        // DOWN from 1.25
     balancedPrepBonus: true,
-    consistencyBonus: 1.0,
+    consistencyBonus: 0.8,              // DOWN from 1.0
   },
 
   'Known Choker': {
-    chokeIncrease: 0.050,               // +5.0% per segment (DOWN from 5.5% - was giving 62% vs 46-50% target)
+    chokeIncrease: 0.058,               // +5.8% per segment (tuned for ~46% choke rate)
     restEfficiency: 0.6,
     crowdReactionBonus: -12,
   },
@@ -484,9 +502,13 @@ export const BADGE_REGISTRY: Record<string, BadgeDefinition> = {
   },
 
   'Controversial': {
-    creativityMultiplier: 1.2,          // +20% creativity (IF backed by skill)
-    crowdReactionBonus: 15,             // +15% crowd reaction
-    crowdControlMultiplier: 1.15,
+    // Double-edged sword: MORE costs than benefits to balance properly
+    creativityMultiplier: 1.05,         // +5% creativity (unique angles)
+    crowdReactionBonus: -8,             // DOWN from -3: more crowd penalty (very polarizing)
+    crowdControlMultiplier: 0.75,       // DOWN from 0.80: -25% crowd control (audience divided)
+    stagePresenceMultiplier: 0.85,      // DOWN from 0.90: -15% stage presence (distracting)
+    chokeIncrease: 0.025,               // UP from 0.020: +2.5% choke (high pressure)
+    peakBonus: 0.05,                    // DOWN from 0.15: smaller peak moments
     // Note: -1 reputation per battle and media attention enforced in progression system
   },
 
@@ -766,9 +788,9 @@ export const BADGE_REGISTRY: Record<string, BadgeDefinition> = {
   },
 
   'Personal Attacks': {
-    researchPrepEfficiency: 1.3,
-    peakBonus: 0.15,
-    crowdReactionBonus: 6,
+    researchPrepEfficiency: 1.12,       // DOWN from 1.30 - was stacking with other badges
+    peakBonus: 0.06,                    // DOWN from 0.15 - stacking with Angle Master
+    crowdReactionBonus: 3,              // DOWN from 6
   },
 
   'Pop Culture References': {

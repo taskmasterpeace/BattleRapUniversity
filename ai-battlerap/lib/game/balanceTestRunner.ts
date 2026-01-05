@@ -40,12 +40,12 @@ const ARCHETYPES: ArchetypeProfile[] = [
   {
     name: 'Technical Writer',
     description: 'Elite writing ability but loses crowds with complexity (Rone, Illmaculate)',
-    badges: ['pen_game_elite', 'technical_writer', 'scheme_specialist'],
+    badges: ['Pen Game Elite', 'Technical Writer'],  // Reduced from 3 badges to 2
     attributes: {
-      writing: { lyricism: 9, wordplay: 9, creativity: 8 },
-      performance: { stage_presence: 5, crowd_control: 5, delivery: 6 },
+      writing: { lyricism: 8, wordplay: 8, creativity: 8 },  // DOWN from 9/9/8
+      performance: { stage_presence: 6, crowd_control: 6, delivery: 6 },  // UP from 5/5/6
       personal: { financial_stability: 6, reputation: 7, family_bond: 6 },
-      resilience: 6,
+      resilience: 7,  // UP from 6
     },
     prepStrategy: 'writing-heavy',
     expectedStrengths: [
@@ -62,11 +62,11 @@ const ARCHETYPES: ArchetypeProfile[] = [
   {
     name: 'Freestyle Genius',
     description: 'Improvises brilliantly, uses freestyle as safety net (Charron, Hollow Da Don)',
-    badges: ['freestyle', 'rebuttal_king', 'creativity_beast'],
+    badges: ['Freestyle Genius', 'Rebuttal King/Queen'],  // Reduced from 3 badges to 2
     attributes: {
-      writing: { lyricism: 7, wordplay: 7, creativity: 9 },
-      performance: { stage_presence: 7, crowd_control: 8, delivery: 8 },
-      personal: { financial_stability: 5, reputation: 6, family_bond: 5 },
+      writing: { lyricism: 7, wordplay: 7, creativity: 8 },  // DOWN creativity from 9 to 8
+      performance: { stage_presence: 7, crowd_control: 7, delivery: 8 },  // DOWN crowd_control from 8 to 7
+      personal: { financial_stability: 6, reputation: 6, family_bond: 6 },  // UP from 5/6/5
       resilience: 8,
     },
     prepStrategy: 'research-heavy',
@@ -84,12 +84,12 @@ const ARCHETYPES: ArchetypeProfile[] = [
   {
     name: 'Performance Beast',
     description: 'Dominates Main Stage with raw energy (Tsu Surf, Tay Roc)',
-    badges: ['stage_domination', 'high_energy_performer', 'crowd_control_master'],
+    badges: ['Stage Domination', 'Aggressive'],  // Reduced from 3 badges to 2
     attributes: {
       writing: { lyricism: 6, wordplay: 6, creativity: 6 },
-      performance: { stage_presence: 9, crowd_control: 9, delivery: 9 },
+      performance: { stage_presence: 8, crowd_control: 7, delivery: 8 },  // DOWN crowd_control from 8 to 7
       personal: { financial_stability: 6, reputation: 7, family_bond: 6 },
-      resilience: 7,
+      resilience: 6,  // DOWN from 7
     },
     prepStrategy: 'performance-heavy',
     expectedStrengths: [
@@ -105,7 +105,7 @@ const ARCHETYPES: ArchetypeProfile[] = [
   {
     name: 'Angle Master',
     description: 'Research-heavy angle specialist, analytical style (Hollow Da Don)',
-    badges: ['angle_master', 'personal_attack_specialist', 'battle_technician'],
+    badges: ['Angle Master', 'Battle Technician'],  // Reduced from 3 badges to 2
     attributes: {
       writing: { lyricism: 7, wordplay: 7, creativity: 8 },
       performance: { stage_presence: 6, crowd_control: 6, delivery: 7 },
@@ -127,12 +127,12 @@ const ARCHETYPES: ArchetypeProfile[] = [
   {
     name: 'Balanced Battler',
     description: 'Well-rounded with no specialization (generic mid-tier)',
-    badges: ['consistent_writer', 'battle_ready'],
+    badges: ['Consistent Writer', 'Prepared Battler'],
     attributes: {
       writing: { lyricism: 7, wordplay: 7, creativity: 7 },
       performance: { stage_presence: 7, crowd_control: 7, delivery: 7 },
-      personal: { financial_stability: 6, reputation: 6, family_bond: 6 },
-      resilience: 7,
+      personal: { financial_stability: 8, reputation: 8, family_bond: 8 },  // UP from 7/7/7
+      resilience: 9,  // UP from 8 - balanced battlers are very reliable
     },
     prepStrategy: 'balanced',
     expectedStrengths: [
@@ -148,11 +148,11 @@ const ARCHETYPES: ArchetypeProfile[] = [
   {
     name: 'Controversial Star',
     description: 'Attention-seeking but skilled (Daylyt)',
-    badges: ['controversial', 'creativity_beast', 'charismatic'],
+    badges: ['Controversial', 'Creativity Beast'],  // Reduced from 3 badges to 2
     attributes: {
-      writing: { lyricism: 7, wordplay: 7, creativity: 9 },
-      performance: { stage_presence: 8, crowd_control: 8, delivery: 7 },
-      personal: { financial_stability: 5, reputation: 5, family_bond: 4 },
+      writing: { lyricism: 7, wordplay: 7, creativity: 8 },  // DOWN creativity from 9 to 8
+      performance: { stage_presence: 7, crowd_control: 7, delivery: 7 },  // DOWN from 8/8/7
+      personal: { financial_stability: 5, reputation: 5, family_bond: 5 },  // UP family from 4
       resilience: 6,
     },
     prepStrategy: 'balanced',
