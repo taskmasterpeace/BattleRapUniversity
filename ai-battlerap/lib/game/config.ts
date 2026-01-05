@@ -447,6 +447,14 @@ export const SIMULATION_CONFIG = {
    */
   DECISION_CLASSIC_THRESHOLD: 2.5,  // Score margin for 2-1 classic (UP from 2.0 - more battles count as close)
   DECISION_CLASSIC_CROWD_MIN: 60,   // Min crowd reaction for classic (DOWN from 70 - easier to qualify)
+
+  // Life Events
+  FAMILY_DRAMA_BLOCK_THRESHOLD: 8,  // Family bond level that blocks family drama events (1-10 scale)
+  FAMILY_SUPPORT_THRESHOLD: 7,       // Family bond level that enables support events after losses (1-10 scale)
+
+  // Stress Management
+  FAMILY_STRESS_RECOVERY_THRESHOLD: 7,    // Family bond level for faster stress recovery (1-10 scale)
+  FAMILY_STRESS_RECOVERY_MULTIPLIER: 2.0, // Stress decay multiplier with high family bond (2x faster)
 };
 
 /**

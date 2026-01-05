@@ -237,11 +237,12 @@ export async function createGrandPrix(
     }
 
     // 6. Create tournament
-    const originLabel = {
+    const originLabelMap: Record<string, string> = {
       text_forums: 'Text Forums',
       app_camera: 'App Camera',
       crew: 'Crew',
-    }[player.origin_type || 'text_forums'];
+    };
+    const originLabel = originLabelMap[player.origin_type || 'text_forums'] || 'Text Forums';
 
     const tournamentName = `${player.stage_name}'s Grand Prix`;
     const tournamentDescription = `${player.stage_name} has completed their ${originLabel} origin story and qualified for the Grand Prix! Win this 8-battler tournament to prove you're ready for the big leagues.`;

@@ -296,7 +296,7 @@ const DELIVERY_BADGE_BONUSES: BadgeContentBonus[] = [
   {
     badgeCode: 'SLOW_FLOW',
     badgeName: 'Slow Flow',
-    contentTypes: ['slow_deliberate'],
+    contentTypes: ['nonchalant'],  // Slow, deliberate delivery maps to nonchalant
     bonusPercent: 0.06,
   },
   {
@@ -326,7 +326,7 @@ const DELIVERY_BADGE_BONUSES: BadgeContentBonus[] = [
   {
     badgeCode: 'MELODIC',
     badgeName: 'Melodic',
-    contentTypes: ['melodic'],
+    contentTypes: ['smooth_flow'],  // Melodic delivery maps to smooth_flow
     bonusPercent: 0.06,
   },
 ];
