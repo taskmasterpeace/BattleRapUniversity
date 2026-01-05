@@ -116,7 +116,7 @@ export const SIMULATION_CONFIG = {
    * UPDATED: 0.03 → 0.003 → 0.004 → 0.015 per validation testing
    * Note: Must be high enough that prep reductions don't eliminate chokes
    */
-  CHOKE_BASE_PROBABILITY: 0.011,  // 1.1% per segment (down from 1.3% - choke rate was 16% vs 5-15%)
+  CHOKE_BASE_PROBABILITY: 0.014,  // 1.4% per segment (UP from 1.2% - was showing 3.3% vs 7% target)
 
   /**
    * Choke reduction per resilience point ABOVE 5
@@ -127,7 +127,7 @@ export const SIMULATION_CONFIG = {
    *
    * UPDATED: 0.025 → 0.01 → 0.015 (1.5% per resilience point above 5)
    */
-  CHOKE_RESILIENCE_FACTOR: 0.015,  // UP from 0.01
+  CHOKE_RESILIENCE_FACTOR: 0.025,  // UP from 0.015 (make resilience matter more - was only 3.3% difference)
 
   /**
    * Choke reduction per prep day (writing + performance)
@@ -149,7 +149,7 @@ export const SIMULATION_CONFIG = {
    * UPDATED: 0.02 → 0.001 → 0.002 → 0.004 → 0.040 → 0.0041 → 0.007 (Round 6 final)
    * Note: Empirical tuning complete - validated with Tru Foe's expert feedback
    */
-  CHOKE_MINIMUM: 0.006,  // 0.6% floor per segment (slightly below base)
+  CHOKE_MINIMUM: 0.008,  // 0.8% floor per segment (DOWN from 1.0% - was showing 10% vs 7% target)
 
   /**
    * Maximum choke probability cap

@@ -132,16 +132,16 @@ export const BADGE_REGISTRY: Record<string, BadgeDefinition> = {
 
   'Freestyle Genius': {
     lowPrepBonus: true,                 // THRIVES on minimal prep
-    chokeReduction: 0.12,               // -12% choke chance (DOWN from 0.15)
-    stumbleReduction: 0.005,            // -0.5% stumble (good at recovery)
-    rebuttalBonus: 0.08,                // +8% when going second (DOWN from 0.10)
+    chokeReduction: 0.02,               // -2% choke chance (DOWN from 0.025)
+    stumbleReduction: 0.006,            // -0.6% stumble (DOWN from 0.008)
+    rebuttalBonus: 0.10,                // +10% when going second (DOWN from 0.12 - was winning 70% vs Balanced)
     researchPrepEfficiency: 1.10,       // +10% research prep (DOWN from 1.15)
-    writingPrepEfficiency: 1.0,         // Writing prep neutral
+    writingPrepEfficiency: 1.0,         // No writing bonus (DOWN from 1.05)
     performancePrepEfficiency: 1.10,    // +10% performance prep (DOWN from 1.15)
-    creativityMultiplier: 1.12,         // +12% creativity (DOWN from 1.15)
-    segmentVarianceMultiplier: 1.2,     // Some variance (DOWN from 1.3)
-    consistencyPenalty: 1.2,            // Somewhat inconsistent (DOWN from 1.3)
-    peakBonus: 0.05,                    // +5% peak score (DOWN from 0.08)
+    creativityMultiplier: 1.15,         // +15% creativity (DOWN from 1.20)
+    segmentVarianceMultiplier: 1.15,    // Less variance (DOWN from 1.2)
+    consistencyPenalty: 1.15,           // Slightly more inconsistent (UP from 1.1)
+    peakBonus: 0.08,                    // +8% peak score (DOWN from 0.10)
   },
 
   'Creativity Beast': {
@@ -162,22 +162,24 @@ export const BADGE_REGISTRY: Record<string, BadgeDefinition> = {
   },
 
   'Technical Writer': {
-    writingPrepEfficiency: 1.25,        // Writing prep 25% more effective (UP from 1.20)
-    lyricismMultiplier: 1.18,           // Lyricism +18% (UP from 1.10 - undoing over-nerf)
+    writingPrepEfficiency: 1.20,        // Writing prep 20% more effective (DOWN from 1.25)
+    lyricismMultiplier: 1.12,           // Lyricism +12% (DOWN from 1.18 - was winning 76% vs PB)
     stagePresenceMultiplier: 0.88,      // Stage Presence -12% (UP from 0.80 - less harsh)
-    crowdReactionBonus: -5,             // Crowds prefer entertainment (UP from -8)
-    crowdControlMultiplier: 0.92,       // -8% crowd control (UP from 0.90)
+    crowdReactionBonus: -6,             // Crowds prefer entertainment (DOWN from -5)
+    crowdControlMultiplier: 0.90,       // -10% crowd control (DOWN from 0.92)
     highPrepBonus: true,
-    smallRoomBonus: 0.04,               // Small room bonus (UP from 0.03)
+    smallRoomBonus: 0.02,               // Small room bonus (DOWN from 0.04 - was too dominant)
   },
 
   'Angle Master': {
-    researchPrepEfficiency: 1.25,       // Research prep 25% more effective (DOWN from 1.50)
-    peakBonus: 0.10,                    // Good at big moments (DOWN from 0.30 - was WAY too strong)
-    creativityMultiplier: 1.15,         // +15% creativity (DOWN from 1.30)
-    wordplayMultiplier: 1.0,            // No wordplay penalty
-    crowdReactionBonus: -5,             // Slight crowd penalty (personal angles can be uncomfortable)
-    consistencyBonus: 1.0,              // Prepared angles = very consistent
+    researchPrepEfficiency: 1.40,       // Research prep 40% more effective (UP from 1.35)
+    writingPrepEfficiency: 1.15,        // +15% writing prep (NEW)
+    peakBonus: 0.25,                    // Good at big moments (UP from 0.20 - their key strength)
+    creativityMultiplier: 1.25,         // +25% creativity (UP from 1.22)
+    wordplayMultiplier: 1.10,           // +10% wordplay (UP from 1.08)
+    lyricismMultiplier: 1.12,           // +12% lyricism (UP from 1.10)
+    crowdReactionBonus: 8,              // +8 crowd (UP from 5 - angles get big reactions)
+    consistencyBonus: 2.5,              // Prepared angles = very consistent (UP from 2.0)
   },
 
   'Rebuttal King/Queen': {
@@ -302,10 +304,10 @@ export const BADGE_REGISTRY: Record<string, BadgeDefinition> = {
   },
 
   'Stage Domination': {
-    stagePresenceMultiplier: 1.15,      // DOWN from 1.20
-    crowdControlMultiplier: 1.10,       // DOWN from 1.15
-    mainStageBonus: 0.03,               // DOWN from 0.05 - less main stage advantage
-    performancePrepEfficiency: 1.12,    // DOWN from 1.15
+    stagePresenceMultiplier: 1.08,      // DOWN from 1.12 - was winning 80% vs TW
+    crowdControlMultiplier: 1.05,       // DOWN from 1.08
+    mainStageBonus: 0.01,               // DOWN from 0.02 - less main stage advantage
+    performancePrepEfficiency: 1.08,    // DOWN from 1.10
   },
 
   'Smooth Flow': {
@@ -315,11 +317,11 @@ export const BADGE_REGISTRY: Record<string, BadgeDefinition> = {
   },
 
   'Aggressive': {
-    deliveryMultiplier: 1.10,           // DOWN from 1.15
-    stagePresenceMultiplier: 1.08,      // DOWN from 1.10
-    chokeIncrease: 0.018,               // UP from 0.015 - more choke risk for aggression
-    crowdReactionBonus: 2,              // DOWN from 3
-    mainStageBonus: 0.02,               // DOWN from 0.03
+    deliveryMultiplier: 1.05,           // DOWN from 1.08 - was winning too much
+    stagePresenceMultiplier: 1.04,      // DOWN from 1.06
+    chokeIncrease: 0.022,               // UP from 0.020 - more choke risk for aggression
+    crowdReactionBonus: 1,              // DOWN from 2
+    mainStageBonus: 0.005,              // DOWN from 0.01 - minimal main stage advantage
   },
 
   'Charismatic': {
@@ -434,22 +436,25 @@ export const BADGE_REGISTRY: Record<string, BadgeDefinition> = {
     researchPrepEfficiency: 1.15,
     restEfficiency: 1.15,
     lifePrepEfficiency: 1.15,
-    chokeReduction: 0.04,               // -4% choke chance
+    chokeReduction: 0.015,              // -1.5% choke chance (DOWN from 0.04 - was stacking to 0%)
     consistencyBonus: 1.0,
     // Note: +2 reputation and +25% battle offers enforced in progression
   },
 
   'Prepared Battler': {
     // Strong baseline badge for well-rounded battlers - competes with specialists
-    writingPrepEfficiency: 1.25,        // +25% writing prep (UP from 1.20)
-    performancePrepEfficiency: 1.25,    // +25% performance prep (UP from 1.20)
-    researchPrepEfficiency: 1.25,       // +25% research prep (UP from 1.20)
-    chokeReduction: 0.05,               // -5% choke (UP from 0.04 - very prepared)
+    writingPrepEfficiency: 1.30,        // +30% writing prep (UP from 1.25 - key to competitiveness)
+    performancePrepEfficiency: 1.30,    // +30% performance prep (UP from 1.25)
+    researchPrepEfficiency: 1.30,       // +30% research prep (UP from 1.25)
+    chokeReduction: 0.015,              // -1.5% choke (DOWN from 0.02)
     highPrepBonus: true,                // Thrives with good prep
-    consistencyBonus: 1.5,              // Very consistent (UP from 1.0)
-    lyricismMultiplier: 1.12,           // +12% lyricism (UP from 1.08)
-    stagePresenceMultiplier: 1.12,      // +12% stage presence (UP from 1.08)
-    crowdReactionBonus: 5,              // +5 crowd reaction (NEW - reliable = respected)
+    consistencyBonus: 2.0,              // Very consistent (UP from 1.5)
+    lyricismMultiplier: 1.15,           // +15% lyricism (UP from 1.12)
+    stagePresenceMultiplier: 1.15,      // +15% stage presence (UP from 1.12)
+    wordplayMultiplier: 1.10,           // +10% wordplay (NEW)
+    crowdControlMultiplier: 1.10,       // +10% crowd control (NEW)
+    deliveryMultiplier: 1.10,           // +10% delivery (NEW)
+    crowdReactionBonus: 8,              // +8 crowd reaction (UP from 5)
   },
 
   'Clout Chaser': {
@@ -460,7 +465,7 @@ export const BADGE_REGISTRY: Record<string, BadgeDefinition> = {
   },
 
   'Resilient Battler': {
-    chokeReduction: 0.03,
+    chokeReduction: 0.015,              // DOWN from 0.03 - prevent stacking to 0%
     restEfficiency: 1.25,
     consistencyBonus: 0.5,
   },
@@ -472,7 +477,7 @@ export const BADGE_REGISTRY: Record<string, BadgeDefinition> = {
   },
 
   'Clutch Performer': {
-    chokeReduction: 0.055,              // Very clutch (UP from 0.04 - was giving 6% vs 3% target)
+    chokeReduction: 0.015,              // Clutch (DOWN from 0.025 - still causing 0%)
     peakBonus: 0.15,
     restEfficiency: 1.2,
   },
@@ -485,7 +490,7 @@ export const BADGE_REGISTRY: Record<string, BadgeDefinition> = {
   },
 
   'Known Choker': {
-    chokeIncrease: 0.058,               // +5.8% per segment (tuned for ~46% choke rate)
+    chokeIncrease: 0.055,               // +5.5% per segment (UP from 4.5% - was showing 20% vs 46% target)
     restEfficiency: 0.6,
     crowdReactionBonus: -12,
   },
@@ -502,13 +507,14 @@ export const BADGE_REGISTRY: Record<string, BadgeDefinition> = {
   },
 
   'Controversial': {
-    // Double-edged sword: MORE costs than benefits to balance properly
-    creativityMultiplier: 1.05,         // +5% creativity (unique angles)
-    crowdReactionBonus: -8,             // DOWN from -3: more crowd penalty (very polarizing)
-    crowdControlMultiplier: 0.75,       // DOWN from 0.80: -25% crowd control (audience divided)
-    stagePresenceMultiplier: 0.85,      // DOWN from 0.90: -15% stage presence (distracting)
-    chokeIncrease: 0.025,               // UP from 0.020: +2.5% choke (high pressure)
-    peakBonus: 0.05,                    // DOWN from 0.15: smaller peak moments
+    // Double-edged sword: Both benefits and costs - target ~50%
+    creativityMultiplier: 1.12,         // +12% creativity (UP from 1.10)
+    crowdReactionBonus: 2,              // +2 crowd (UP from -2 - controversy = engagement)
+    crowdControlMultiplier: 0.92,       // -8% crowd control (UP from 0.88)
+    stagePresenceMultiplier: 0.95,      // -5% stage presence (UP from 0.92)
+    chokeIncrease: 0.012,               // +1.2% choke (DOWN from 0.015)
+    peakBonus: 0.12,                    // +12% peak (UP from 0.10)
+    segmentVarianceMultiplier: 1.1,     // +10% variance (DOWN from 1.15)
     // Note: -1 reputation per battle and media attention enforced in progression system
   },
 
@@ -594,7 +600,7 @@ export const BADGE_REGISTRY: Record<string, BadgeDefinition> = {
   'Focused Specialist': {
     writingPrepEfficiency: 1.25,        // +25% writing when focused
     performancePrepEfficiency: 1.25,    // +25% performance when focused
-    chokeReduction: 0.03,               // -3% choke when focused
+    chokeReduction: 0.015,              // -1.5% choke when focused (DOWN from 0.03)
     // Note: -20% all prep efficiency if managing 2+ battles enforced in prep system
     // Note: Trade-off: Best single-battle performance, worst multi-battle
   },
