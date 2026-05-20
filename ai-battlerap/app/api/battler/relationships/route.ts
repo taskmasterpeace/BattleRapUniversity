@@ -60,16 +60,14 @@ export async function GET(request: NextRequest) {
           stage_name,
           region,
           avatar_url,
-          banner_url,
-          sprite
+          banner_url
         ),
         battler_b:battlers!battler_b_id(
           id,
           stage_name,
           region,
           avatar_url,
-          banner_url,
-          sprite
+          banner_url
         )
       `)
       .or(`battler_a_id.eq.${battler.id},battler_b_id.eq.${battler.id}`)

@@ -17,18 +17,19 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get player's battler
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('battler_id')
-      .eq('id', user.id)
-      .single();
+    // Get player's battler (battlers.user_id, not profiles.battler_id)
+    const { data: battler } = await supabase
+      .from('battlers')
+      .select('id')
+      .eq('user_id', user.id)
+      .eq('is_ai', false)
+      .maybeSingle();
 
-    if (!profile?.battler_id) {
+    if (!battler?.id) {
       return NextResponse.json({ error: 'Battler not found' }, { status: 404 });
     }
 
-    const battlerId = profile.battler_id;
+    const battlerId = battler.id;
 
     // Parse query parameters
     const searchParams = request.nextUrl.searchParams;
@@ -85,7 +86,7 @@ export async function GET(request: NextRequest) {
 
     // Get paginated results
     const { data: tournaments, error: tournamentsError } = await tournamentsQuery
-      .order('tournaments.created_at', { ascending: false })
+      .order('created_at', { referencedTable: 'tournaments', ascending: false })
       .range(offset, offset + limit - 1);
 
     if (tournamentsError) {

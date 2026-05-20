@@ -20,18 +20,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get user's battler
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('battler_id')
-      .eq('id', user.id)
-      .single();
+    // Get user's battler (battlers.user_id, not profiles.battler_id)
+    const { data: battler } = await supabase
+      .from('battlers')
+      .select('id')
+      .eq('user_id', user.id)
+      .eq('is_ai', false)
+      .maybeSingle();
 
-    if (!profile?.battler_id) {
+    if (!battler?.id) {
       return NextResponse.json({ error: 'No battler found' }, { status: 404 });
     }
 
-    const battlerId = profile.battler_id;
+    const battlerId = battler.id;
 
     // Mark all notifications as read
     const count = await markAllAsRead(supabase, battlerId);
