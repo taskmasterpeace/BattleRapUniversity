@@ -10,6 +10,7 @@ import BattleViewsDisplay from '@/components/battle/BattleViewsDisplay';
 import PostBattleSummary from '@/components/battle/PostBattleSummary';
 import JudgeScorecard from '@/components/battle/JudgeScorecard';
 import BattleAnalysis from '@/components/battle/BattleAnalysis';
+import LiveBattleViewer from '@/components/battle/LiveBattleViewer';
 import BadgeUnlockModal from '@/components/badges/BadgeUnlockModal';
 import { useBadgeQueue } from '@/lib/hooks/useBadgeQueue';
 import { getBadgeRarity } from '@/lib/game/badgeRarity';
@@ -152,6 +153,7 @@ export default function BattleViewerPage({
   const [pendingEvents, setPendingEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedRound, setSelectedRound] = useState(1);
+  const [liveMode, setLiveMode] = useState(false);
 
   const badgesEarned = progression?.badges_earned || [];
   const { currentBadge, dismiss } = useBadgeQueue(badgesEarned);
@@ -344,11 +346,33 @@ export default function BattleViewerPage({
         />
       )}
 
+      {liveMode && isCompleted && (
+        <LiveBattleViewer
+          player={battle.player_battler}
+          ai={battle.ai_battler}
+          segments={segments}
+          rounds={rounds}
+          winnerId={battle.winner_battler_id ?? null}
+          onClose={() => setLiveMode(false)}
+        />
+      )}
+
       <div className="max-w-7xl mx-auto px-6 py-8 space-y-8">
-        {/* Back Link */}
-        <Link href="/dashboard" className="inline-block text-[#ff8c42] hover:text-[#ff9d5c] font-display font-display font-black uppercase tracking-wider text-sm transition-colors">
-          ← BACK TO DASHBOARD
-        </Link>
+        {/* Back Link + Watch Live */}
+        <div className="flex items-center justify-between gap-4 flex-wrap">
+          <Link href="/dashboard" className="inline-block text-[#ff8c42] hover:text-[#ff9d5c] font-display font-display font-black uppercase tracking-wider text-sm transition-colors">
+            ← BACK TO DASHBOARD
+          </Link>
+          {isCompleted && segments.length > 0 && (
+            <button
+              onClick={() => setLiveMode(true)}
+              className="px-6 py-3 bg-gradient-to-r from-red-600 to-[#ff8c42] text-white font-display font-black uppercase tracking-wider text-sm hover:from-red-500 hover:to-[#ff9d5c] transition-all shadow-[0_0_20px_rgba(255,140,66,0.4)] flex items-center gap-2"
+            >
+              <span className="inline-block w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+              ▶ WATCH LIVE
+            </button>
+          )}
+        </div>
 
         {/* VS MATCHUP HEADER */}
         <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-8 relative overflow-hidden">
