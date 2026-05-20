@@ -32,11 +32,19 @@ export async function GET(
       .order('position', { ascending: true });
 
     if (thronesError) {
-      console.error('Error fetching thrones:', thronesError);
-      return NextResponse.json(
-        { error: 'Failed to fetch throne positions' },
-        { status: 500 }
-      );
+      // Table missing (migration not yet applied in this environment) — fall through
+      // to the empty-thrones response so the UI can still render a placeholder.
+      const missingTable =
+        thronesError.code === 'PGRST205' ||
+        thronesError.message?.toLowerCase().includes('schema cache') ||
+        thronesError.message?.toLowerCase().includes('does not exist');
+      if (!missingTable) {
+        console.error('Error fetching thrones:', thronesError);
+        return NextResponse.json(
+          { error: 'Failed to fetch throne positions' },
+          { status: 500 }
+        );
+      }
     }
 
     // If no thrones exist, create empty positions 1, 2, 3

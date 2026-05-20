@@ -493,11 +493,13 @@ export default function DashboardClient({
           </div>
         )}
 
-        {/* Career Stats Widget */}
-        <CareerStatsWidget
-          ranking={ranking}
-          totalBattles={ranking.wins + ranking.losses}
-        />
+        {/* Career Stats Widget — defensive against missing ranking rows */}
+        {ranking && (
+          <CareerStatsWidget
+            ranking={ranking}
+            totalBattles={(ranking.wins ?? 0) + (ranking.losses ?? 0)}
+          />
+        )}
 
         {/* Pending Life Events Widget */}
         <PendingLifeEventsWidget initialEvents={pendingEvents} />
