@@ -12,47 +12,35 @@ export interface BadgeSpriteProps extends HTMLAttributes<HTMLDivElement> {
 export function BadgeSprite({
   src,
   alt,
-  tier,
+  tier: _tier,
   size = 'md',
   className,
   ...props
 }: BadgeSpriteProps) {
+  // The sprite art is already framed in its own colored circle, so we render the
+  // PNG directly — no extra tier-colored gradient backdrop behind it. Sizes bumped
+  // so the artwork is actually legible in the compendium and showcase grids.
   const sizeStyles = {
-    sm: 'w-12 h-12',
-    md: 'w-16 h-16',
-    lg: 'w-24 h-24',
+    sm: 'w-16 h-16',
+    md: 'w-24 h-24',
+    lg: 'w-32 h-32',
   };
 
-  const tierGradients = {
-    gold: 'bg-gradient-to-br from-yellow-400 to-yellow-600',
-    silver: 'bg-gradient-to-br from-gray-300 to-gray-500',
-    bronze: 'bg-gradient-to-br from-amber-600 to-amber-800',
-    common: 'bg-gradient-to-br from-slate-500 to-slate-700',
+  const pixelDimensions = {
+    sm: 64,
+    md: 96,
+    lg: 128,
   };
 
   return (
-    <div
-      className={cn('relative', sizeStyles[size], className)}
-      {...props}
-    >
-      {/* Tier-based background circle */}
-      <div
-        className={cn(
-          'absolute inset-0 rounded-full',
-          tierGradients[tier]
-        )}
+    <div className={cn('relative shrink-0', sizeStyles[size], className)} {...props}>
+      <Image
+        src={src}
+        alt={alt}
+        width={pixelDimensions[size]}
+        height={pixelDimensions[size]}
+        className="w-full h-full object-contain"
       />
-
-      {/* Badge sprite */}
-      <div className="relative z-10 w-full h-full p-2">
-        <Image
-          src={src}
-          alt={alt}
-          width={64}
-          height={64}
-          className="w-full h-full object-contain"
-        />
-      </div>
     </div>
   );
 }

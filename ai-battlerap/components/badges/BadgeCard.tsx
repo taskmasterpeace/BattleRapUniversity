@@ -72,11 +72,11 @@ export default function BadgeCard({
             src={badge.icon_url}
             alt={badge.badge_name}
             tier={tier}
-            size="md"
+            size="lg"
           />
         ) : (
-          <div className="w-16 h-16 bg-zinc-800 rounded-full flex items-center justify-center">
-            <span className="text-2xl">{locked ? '🔒' : '🏅'}</span>
+          <div className="w-32 h-32 bg-zinc-800 rounded-full flex items-center justify-center">
+            <span className="text-5xl">{locked ? '🔒' : '🏅'}</span>
           </div>
         )}
 
