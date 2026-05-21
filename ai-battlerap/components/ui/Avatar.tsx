@@ -50,7 +50,11 @@ export default function Avatar({
           alt={alt}
           width={size}
           height={size}
-          className="pixelated transition-transform group-hover:scale-105"
+          className="pixelated transition-transform group-hover:scale-[1.85] absolute inset-0 w-full h-full object-cover"
+          style={{
+            transform: 'scale(1.75)',
+            transformOrigin: 'center 35%',
+          }}
           onError={() => setImageError(true)}
           unoptimized
         />
