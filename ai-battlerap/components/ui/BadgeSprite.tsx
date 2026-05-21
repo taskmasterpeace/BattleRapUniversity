@@ -17,13 +17,18 @@ export function BadgeSprite({
   className,
   ...props
 }: BadgeSpriteProps) {
-  // The sprite art is already framed in its own colored circle, so we render the
-  // PNG directly — no extra tier-colored gradient backdrop behind it. Sizes bumped
-  // so the artwork is actually legible in the compendium and showcase grids.
-  const sizeStyles = {
-    sm: 'w-16 h-16',
-    md: 'w-24 h-24',
-    lg: 'w-32 h-32',
+  // The sprite PNGs are 512x512 and contain BOTH the circular artwork (top ~70%)
+  // AND a baked-in text label (bottom ~30%) that's clipped at the canvas edge
+  // (e.g. "COMMENTARY" loses the descenders). Since BadgeCard already shows the
+  // badge name as text alongside, we crop the label out by making the container
+  // shorter than wide and letting overflow-hidden hide the bottom of the image.
+  // Artwork circle ends at ~65% of canvas height; label sits in the bottom ~35%
+  // and gets visually clipped at the PNG edge. Crop down to ~65% to hide labels
+  // entirely — the badge name shows as text in BadgeCard anyway.
+  const containerStyles = {
+    sm: 'w-16 h-[2.625rem]',   // 64x42 - shows top 65%
+    md: 'w-24 h-[3.875rem]',   // 96x62 - shows top 65%
+    lg: 'w-32 h-[5.25rem]',    // 128x84 - shows top 65%
   };
 
   const pixelDimensions = {
@@ -33,13 +38,16 @@ export function BadgeSprite({
   };
 
   return (
-    <div className={cn('relative shrink-0', sizeStyles[size], className)} {...props}>
+    <div
+      className={cn('relative shrink-0 overflow-hidden', containerStyles[size], className)}
+      {...props}
+    >
       <Image
         src={src}
         alt={alt}
         width={pixelDimensions[size]}
         height={pixelDimensions[size]}
-        className="w-full h-full object-contain"
+        className="w-full h-auto"
       />
     </div>
   );
