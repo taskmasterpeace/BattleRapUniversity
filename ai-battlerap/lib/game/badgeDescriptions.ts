@@ -13,6 +13,54 @@ export interface BadgeDescription {
 
 export const BADGE_DESCRIPTIONS: Record<string, BadgeDescription> = {
   // ==========================================
+  // ARCHETYPE / STYLE TAGS (selected at creation)
+  // ==========================================
+
+  'technical': {
+    name: 'Technical',
+    category: 'writing',
+    description: 'You build battles with precision — schemes, structure, intricate bars',
+    effects: [
+      'Writing prep 15% more effective',
+      'Crowd reaction +5 in technical-leaning leagues',
+    ],
+    tier: 'bronze',
+  },
+
+  'street': {
+    name: 'Street',
+    category: 'reputation_positive',
+    description: 'You bring authentic street credibility and raw energy',
+    effects: [
+      'Reputation +10%',
+      'Crowd reaction +10 in Street Cipher / Block Buster',
+    ],
+    tier: 'bronze',
+  },
+
+  'lyrical': {
+    name: 'Lyrical',
+    category: 'writing',
+    description: 'Your bars carry weight and depth',
+    effects: [
+      'Lyricism +15%',
+      'Writing prep 10% more effective',
+    ],
+    tier: 'bronze',
+  },
+
+  'performer': {
+    name: 'Performer',
+    category: 'performance',
+    description: 'You command the stage — presence over pen',
+    effects: [
+      'Stage Presence +15%',
+      'Performance prep 15% more effective',
+    ],
+    tier: 'bronze',
+  },
+
+  // ==========================================
   // WRITING BADGES
   // ==========================================
 

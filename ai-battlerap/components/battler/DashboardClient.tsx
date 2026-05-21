@@ -10,6 +10,8 @@ import GamingButton from '@/components/ui/GamingButton';
 import StressIndicator from './StressIndicator';
 import ArchetypeDisplay from './ArchetypeDisplay';
 import BadgeTooltip from '../ui/BadgeTooltip';
+import BadgeShowcase from './BadgeShowcase';
+import LeagueOverview from './LeagueOverview';
 import FanStatsWidget from './FanStatsWidget';
 import PendingLifeEventsWidget from './PendingLifeEventsWidget';
 import NotificationDropdown from '../notifications/NotificationDropdown';
@@ -337,6 +339,12 @@ export default function DashboardClient({
             />
           </div>
         </div>
+
+        {/* Badges Showcase */}
+        <BadgeShowcase styleTags={battler.style_tags} />
+
+        {/* League Overview */}
+        <LeagueOverview league={league} rating={ranking?.rating || 1000} />
 
         {/* Fan Stats Widget */}
         {fanData && (

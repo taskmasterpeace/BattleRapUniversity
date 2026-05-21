@@ -13,11 +13,40 @@ const run = async () => {
   await page.screenshot({ path: 'test-results/avatar-dashboard.png', fullPage: true });
   console.log('saved dashboard');
 
+  // Zoomed dashboard (top)
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.waitForTimeout(500);
+  await page.screenshot({ path: 'test-results/avatar-dashboard-top.png', fullPage: false });
+  console.log('saved dashboard top');
+
+  // Zoomed dashboard (badges + league section)
+  await page.evaluate(() => {
+    const el = document.querySelector('h2');
+    if (el) el.scrollIntoView();
+    window.scrollBy(0, 250);
+  });
+  await page.waitForTimeout(500);
+  await page.screenshot({ path: 'test-results/avatar-dashboard-badges.png', fullPage: false });
+  console.log('saved dashboard badges section');
+
   // Offers
   await page.goto(`${BASE}/battle/offers`, { waitUntil: 'networkidle' });
   await page.waitForTimeout(800);
   await page.screenshot({ path: 'test-results/avatar-offers.png', fullPage: true });
   console.log('saved offers');
+
+  // Badges
+  await page.goto(`${BASE}/badges`, { waitUntil: 'networkidle' });
+  await page.waitForTimeout(800);
+  await page.screenshot({ path: 'test-results/avatar-badges.png', fullPage: true });
+  console.log('saved badges');
+
+  // Leagues
+  await page.goto(`${BASE}/leagues`, { waitUntil: 'networkidle' });
+  await page.waitForTimeout(800);
+  await page.screenshot({ path: 'test-results/avatar-leagues.png', fullPage: true });
+  console.log('saved leagues');
 
   await browser.close();
 };
