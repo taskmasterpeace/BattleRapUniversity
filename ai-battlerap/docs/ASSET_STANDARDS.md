@@ -3,7 +3,9 @@
 **Date:** 2026-05-20
 **Backup of current assets:** `D:/asset-backups/battlerapuniversity-2026-05-20/` (1.05 GB, 1,860 sprites + 209 source files)
 
-## Recommended canvas sizes
+> **Canvas sizes have moved.** The source of truth for asset dimensions is now [`CANVAS_SIZES.md`](./CANVAS_SIZES.md). This file remains the reference for PixelLab API usage, body schemas, endpoints, and scripts. If the table below disagrees with `CANVAS_SIZES.md`, **`CANVAS_SIZES.md` wins**.
+
+## Recommended canvas sizes (see CANVAS_SIZES.md for authoritative values)
 
 | Asset type | Recommended size | Aspect | Why |
 |---|---|---|---|
