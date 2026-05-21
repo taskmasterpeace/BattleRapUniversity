@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { createClient } from '@/lib/db/client';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import BattlerSprite from '@/components/ui/BattlerSprite';
+import Avatar from '@/components/ui/Avatar';
 import StatCard from '@/components/ui/StatCard';
 import GamingButton from '@/components/ui/GamingButton';
 import StressIndicator from './StressIndicator';
@@ -202,7 +202,7 @@ export default function DashboardClient({
           <div className="flex flex-col md:flex-row items-center md:items-start gap-8 mb-6">
             {/* Large Sprite */}
             <div className="flex-shrink-0">
-              <BattlerSprite spriteId={battler.sprite_id} size={128} showBorder={true} />
+              <Avatar url={battler.avatar_url} size={128} showBorder={true} alt={battler.stage_name} />
             </div>
 
             {/* Battler Info */}

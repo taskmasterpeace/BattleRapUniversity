@@ -3,7 +3,7 @@
 import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import BattlerSprite from '@/components/ui/BattlerSprite';
+import Avatar from '@/components/ui/Avatar';
 import GamingButton from '@/components/ui/GamingButton';
 import StatCard from '@/components/ui/StatCard';
 
@@ -26,7 +26,7 @@ type Battle = {
   ai_battler: {
     stage_name: string;
     tier: string;
-    sprite_id?: number;
+    avatar_url?: string | null;
   };
 };
 
@@ -156,7 +156,7 @@ export default function PrepPage({ params }: { params: Promise<{ id: string }> }
           <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
             {/* Opponent Sprite */}
             <div className="flex-shrink-0">
-              <BattlerSprite spriteId={battle.ai_battler.sprite_id || null} size={120} />
+              <Avatar url={battle.ai_battler.avatar_url} size={120} alt={battle.ai_battler.stage_name} />
             </div>
 
             {/* Battle Details */}

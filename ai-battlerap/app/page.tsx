@@ -59,10 +59,14 @@ export default function Home() {
 
               {/* Character sprite showcase */}
               <div className="flex justify-center gap-8 mb-8">
-                {[1, 42, 157].map((spriteId) => (
-                  <div key={spriteId} className="relative w-24 h-24 border-2 border-[#3a3d44] bg-[#2d2f35] overflow-hidden">
+                {[
+                  '/sprites/characters/image_1764146494580/sprite_848.png',
+                  '/sprites/characters/image_1764146517369/sprite_815.png',
+                  '/sprites/characters/image_1764146527629/sprite_782.png',
+                ].map((src) => (
+                  <div key={src} className="relative w-24 h-24 border-2 border-[#3a3d44] bg-[#2d2f35] overflow-hidden">
                     <Image
-                      src={`/sprites/characters/image_1764147239421/sprite_${spriteId.toString().padStart(3, '0')}.png`}
+                      src={src}
                       alt="Battler sprite"
                       fill
                       className="object-contain pixelated"

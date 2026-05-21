@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import BattlerSprite from '@/components/ui/BattlerSprite';
+import Avatar from '@/components/ui/Avatar';
 import StatCard from '@/components/ui/StatCard';
 import GamingButton from '@/components/ui/GamingButton';
 
@@ -35,7 +35,7 @@ type BattleOffer = {
     stage_name: string;
     tier: string;
     style_tags: string[];
-    sprite_id: number | null;
+    avatar_url: string | null;
     battler_attributes: BattlerAttributes;
   };
   grudge: {
@@ -271,10 +271,11 @@ export default function BattleOffersPage() {
                     <div className="flex-1">
                       <div className="flex items-start gap-6 mb-6">
                         {/* Opponent Sprite */}
-                        <BattlerSprite
-                          spriteId={offer.ai_battler.sprite_id}
+                        <Avatar
+                          url={offer.ai_battler.avatar_url}
                           size={120}
                           showBorder={true}
+                          alt={offer.ai_battler.stage_name}
                         />
 
                         {/* Opponent Details */}

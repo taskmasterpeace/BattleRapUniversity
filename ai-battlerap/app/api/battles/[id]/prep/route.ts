@@ -32,7 +32,7 @@ export async function GET(
     .select(`
       *,
       league:leagues(*),
-      ai_battler:battler_ai_id(id, stage_name, tier)
+      ai_battler:battler_ai_id(id, stage_name, tier, avatar_url)
     `)
     .eq('id', id)
     .single();

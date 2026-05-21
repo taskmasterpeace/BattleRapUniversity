@@ -4,30 +4,37 @@ import Image from 'next/image';
 import { useState } from 'react';
 
 type Props = {
-  spriteId: number | null;
+  url?: string | null;
   size?: number;
   className?: string;
   showBorder?: boolean;
+  alt?: string;
 };
 
-export default function BattlerSprite({ spriteId, size = 96, className = '', showBorder = true }: Props) {
+/**
+ * Avatar — renders a battler's `avatar_url` (a full path under /public).
+ * Falls back to a 🎤 emoji placeholder when the url is missing or fails to load.
+ * Replaces the legacy BattlerSprite which selected from a hardcoded sheet
+ * by numeric sprite_id (a column that never existed on the battlers table).
+ */
+export default function Avatar({
+  url,
+  size = 96,
+  className = '',
+  showBorder = true,
+  alt = 'Battler avatar',
+}: Props) {
   const [imageError, setImageError] = useState(false);
-
-  const spritePath = spriteId
-    ? `/sprites/characters/image_1764147239421/sprite_${spriteId.toString().padStart(3, '0')}.png`
-    : null;
+  const showImage = !!url && !imageError;
 
   return (
     <div
       className={`relative overflow-hidden group ${showBorder ? 'border-4 border-[#3a3d44] bg-[#1a1b1e]' : ''} ${className}`}
       style={{ width: size, height: size }}
     >
-      {/* Corner accent */}
       {showBorder && (
         <div className="absolute top-0 right-0 w-3 h-3 bg-[#ff8c42] z-10" />
       )}
-
-      {/* Noise texture overlay */}
       {showBorder && (
         <div
           className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay z-10"
@@ -37,10 +44,10 @@ export default function BattlerSprite({ spriteId, size = 96, className = '', sho
         />
       )}
 
-      {spritePath && !imageError ? (
+      {showImage ? (
         <Image
-          src={spritePath}
-          alt="Battler sprite"
+          src={url as string}
+          alt={alt}
           width={size}
           height={size}
           className="pixelated transition-transform group-hover:scale-105"
@@ -48,9 +55,8 @@ export default function BattlerSprite({ spriteId, size = 96, className = '', sho
           unoptimized
         />
       ) : (
-        // Fallback placeholder
         <div className="w-full h-full flex items-center justify-center bg-[#1a1b1e]">
-          <span className="text-4xl">🎤</span>
+          <span style={{ fontSize: Math.max(16, Math.floor(size * 0.4)) }}>🎤</span>
         </div>
       )}
     </div>

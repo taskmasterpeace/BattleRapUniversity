@@ -2,7 +2,7 @@
 
 import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
-import BattlerSprite from '@/components/ui/BattlerSprite';
+import Avatar from '@/components/ui/Avatar';
 import StatCard from '@/components/ui/StatCard';
 import GamingButton from '@/components/ui/GamingButton';
 import CrowdReactionWindow from '@/components/battle/CrowdReactionWindow';
@@ -319,21 +319,17 @@ export default function BattleViewerPage({
     return changes;
   };
 
-  // Extract sprite ID from sprite_set (use first sprite as representative)
-  const getFirstSpriteId = (battler: Battler): number | null => {
-    if (battler.sprite_set && Array.isArray(battler.sprite_set) && battler.sprite_set.length > 0) {
-      // sprite_set contains paths like "/sprites/characters/image_1764147239421/sprite_001.png"
-      const firstSprite = battler.sprite_set[0];
-      const match = firstSprite.match(/sprite_(\d+)\.png/);
-      if (match) {
-        return parseInt(match[1], 10);
-      }
+  // Prefer avatar_url, fall back to first entry of legacy sprite_set
+  const getAvatarUrl = (battler: Battler): string | null => {
+    if (battler.avatar_url) return battler.avatar_url;
+    if (Array.isArray(battler.sprite_set) && battler.sprite_set.length > 0) {
+      return battler.sprite_set[0] ?? null;
     }
     return null;
   };
 
-  const playerSpriteId = getFirstSpriteId(battle.player_battler);
-  const aiSpriteId = getFirstSpriteId(battle.ai_battler);
+  const playerAvatarUrl = getAvatarUrl(battle.player_battler);
+  const aiAvatarUrl = getAvatarUrl(battle.ai_battler);
 
   return (
     <div className="min-h-screen bg-[#18191c] text-white">
@@ -395,10 +391,11 @@ export default function BattleViewerPage({
               {/* Player Side */}
               <div className="text-center space-y-4">
                 <div className="flex justify-center">
-                  <BattlerSprite
-                    spriteId={playerSpriteId}
+                  <Avatar
+                    url={playerAvatarUrl}
                     size={160}
                     className="shadow-[0_0_30px_rgba(255,140,66,0.3)]"
+                    alt={battle.player_battler.stage_name}
                   />
                 </div>
                 <div>
@@ -442,10 +439,11 @@ export default function BattleViewerPage({
               {/* AI Side */}
               <div className="text-center space-y-4">
                 <div className="flex justify-center">
-                  <BattlerSprite
-                    spriteId={aiSpriteId}
+                  <Avatar
+                    url={aiAvatarUrl}
                     size={160}
                     className="shadow-[0_0_30px_rgba(100,100,100,0.3)]"
+                    alt={battle.ai_battler.stage_name}
                   />
                 </div>
                 <div>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import BattlerSprite from '@/components/ui/BattlerSprite';
+import Avatar from '@/components/ui/Avatar';
 
 type Segment = {
   id: string;
@@ -26,6 +26,7 @@ type Round = {
 type Battler = {
   id: string;
   stage_name: string;
+  avatar_url?: string | null;
   sprite_set?: string[] | null;
 };
 
@@ -45,10 +46,10 @@ const SEGMENT_MS_BY_SPEED: Record<string, number> = {
   '4x': 350,
 };
 
-function getSpriteId(b: Battler): number | null {
-  if (!b.sprite_set || !Array.isArray(b.sprite_set) || b.sprite_set.length === 0) return null;
-  const m = b.sprite_set[0].match(/sprite_(\d+)\.png/);
-  return m ? parseInt(m[1], 10) : null;
+function getAvatarUrl(b: Battler): string | null {
+  if (b.avatar_url) return b.avatar_url;
+  if (Array.isArray(b.sprite_set) && b.sprite_set.length > 0) return b.sprite_set[0] ?? null;
+  return null;
 }
 
 function flagLabel(flag: string): { text: string; tone: 'good' | 'bad' | 'neutral' } {
@@ -144,8 +145,8 @@ export default function LiveBattleViewer({
     return out;
   }, [timeline, index, player.id, totalRounds]);
 
-  const playerSpriteId = getSpriteId(player);
-  const aiSpriteId = getSpriteId(ai);
+  const playerAvatarUrl = getAvatarUrl(player);
+  const aiAvatarUrl = getAvatarUrl(ai);
 
   const playerWon = winnerId === player.id;
 
@@ -201,7 +202,7 @@ export default function LiveBattleViewer({
           <div className="grid grid-cols-[1fr_auto_1fr] gap-6 items-center mb-10">
             {/* Player */}
             <div className="text-center">
-              <BattlerSprite spriteId={playerSpriteId} size={180} className="mx-auto" />
+              <Avatar url={playerAvatarUrl} size={180} className="mx-auto" alt={player.stage_name} />
               <h2 className="mt-3 text-3xl font-display font-black uppercase tracking-tight">
                 {player.stage_name}
               </h2>
@@ -219,7 +220,7 @@ export default function LiveBattleViewer({
             </div>
             {/* AI */}
             <div className="text-center">
-              <BattlerSprite spriteId={aiSpriteId} size={180} className="mx-auto" />
+              <Avatar url={aiAvatarUrl} size={180} className="mx-auto" alt={ai.stage_name} />
               <h2 className="mt-3 text-3xl font-display font-black uppercase tracking-tight">
                 {ai.stage_name}
               </h2>

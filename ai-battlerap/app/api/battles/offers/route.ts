@@ -41,7 +41,7 @@ export async function GET() {
         stage_name,
         tier,
         style_tags,
-        sprite_id,
+        avatar_url,
         battler_attributes!inner(writing, performance, resilience)
       )
     `)
