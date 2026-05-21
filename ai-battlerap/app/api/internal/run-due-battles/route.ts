@@ -74,7 +74,9 @@ export async function POST(request: Request) {
       let noShowFlag = false;
 
       if (!playerPrepBlocks || playerPrepBlocks.length === 0) {
-        // No-show detected - mark it and generate minimal prep
+        // No-show detected - player never opened the prep planner.
+        // Generate a default "winging it" prep plan: lighter than fully-planned,
+        // but no longer punitive all-rest (which used to guarantee chokes).
         noShowFlag = true;
 
         // Calculate prep days
@@ -85,14 +87,19 @@ export async function POST(request: Request) {
           Math.ceil((lockDate.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24))
         );
 
-        // Auto-generate "rest" prep for all days
+        // Default "winging it" plan: writing-leaning with rest buffers.
+        // Pattern (cycles): writing, performance, rest, writing, research, rest, ...
+        // Why this mix: keeps a writing focus (so player can still spit), some
+        // performance time, and rest to buffer resilience. No research-heavy
+        // angles since the player didn't bother researching.
+        const defaultPattern = ['writing', 'performance', 'rest', 'writing', 'research', 'rest'];
         const autoPrepBlocks = [];
         for (let i = 1; i <= prepDays; i++) {
           autoPrepBlocks.push({
             battle_id: battle.id,
             battler_id: battle.battler_player_id,
             day_index: i,
-            focus: 'rest',
+            focus: defaultPattern[(i - 1) % defaultPattern.length],
             auto_generated: true,
           });
         }
@@ -101,11 +108,44 @@ export async function POST(request: Request) {
           await supabase.from('prep_blocks').insert(autoPrepBlocks);
         }
 
-        // Update battle to mark no-show
+        // Update battle to mark no-show (player still pays the no_show penalty;
+        // they didn't choose their prep, just got a sensible default).
         await supabase
           .from('battles')
           .update({ no_show_player: true })
           .eq('id', battle.id);
+      } else {
+        // Player set SOME prep but maybe not all days — backfill missing days
+        // with 'rest' (their choice to leave gaps, no no_show flag).
+        const lockDate = new Date(battle.lock_prep_at);
+        const createdDate = new Date(battle.created_at);
+        const prepDays = Math.max(
+          1,
+          Math.ceil((lockDate.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24))
+        );
+
+        const { data: filledDays } = await supabase
+          .from('prep_blocks')
+          .select('day_index')
+          .eq('battle_id', battle.id)
+          .eq('battler_id', battle.battler_player_id);
+
+        const filledSet = new Set((filledDays || []).map((r: any) => r.day_index));
+        const backfill = [];
+        for (let i = 1; i <= prepDays; i++) {
+          if (!filledSet.has(i)) {
+            backfill.push({
+              battle_id: battle.id,
+              battler_id: battle.battler_player_id,
+              day_index: i,
+              focus: 'rest',
+              auto_generated: true,
+            });
+          }
+        }
+        if (backfill.length > 0) {
+          await supabase.from('prep_blocks').insert(backfill);
+        }
       }
 
       // Generate AI prep if missing

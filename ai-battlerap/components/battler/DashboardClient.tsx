@@ -46,6 +46,8 @@ type Props = {
     consistency_score: number;
     choked: boolean;
   }>;
+  prepStatusByBattle?: Record<string, { setDays: number; totalDays: number }>;
+  badgeProgress?: Array<{ code: string; label: string; pct: number; detail: string }>;
 };
 
 type NewsArticle = {
@@ -67,6 +69,8 @@ export default function DashboardClient({
   fanData,
   pendingEvents,
   careerRounds = [],
+  prepStatusByBattle = {},
+  badgeProgress = [],
 }: Props) {
   const nextBattle = activeBattles && activeBattles.length > 0 ? activeBattles[0] : null;
   const router = useRouter();
@@ -295,6 +299,135 @@ export default function DashboardClient({
           </div>
         </div>
 
+        {/* Next Battle Section — top of dashboard, most important active CTA */}
+        {activeBattles && activeBattles.length > 0 && (
+          <div className="mb-8">
+            <h2 className="text-2xl font-display font-black uppercase tracking-tighter text-[#ff8c42] mb-4">
+              🔥 NEXT BATTLE
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {activeBattles.map((battle: any) => {
+                const daysUntil = Math.ceil((new Date(battle.scheduled_at).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+                const isUrgent = daysUntil <= 3;
+                const prep = prepStatusByBattle[battle.id] || { setDays: 0, totalDays: 1 };
+                const prepPct = prep.totalDays > 0 ? Math.round((prep.setDays / prep.totalDays) * 100) : 0;
+                const needsPrep = prep.setDays < prep.totalDays;
+                const noPrepAtAll = prep.setDays === 0;
+
+                return (
+                  <div
+                    key={battle.id}
+                    className={`bg-[#2d2f35] border-2 p-6 ${
+                      isUrgent
+                        ? 'border-red-500 shadow-[0_0_20px_rgba(239,68,68,0.3)]'
+                        : 'border-[#ff8c42] shadow-[0_0_20px_rgba(255,140,66,0.2)]'
+                    }`}
+                  >
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      {isUrgent && (
+                        <div className="inline-block px-3 py-1 bg-red-500 text-white font-display font-black uppercase text-xs tracking-wider">
+                          ⚠️ URGENT
+                        </div>
+                      )}
+                      {noPrepAtAll && (
+                        <div className="inline-block px-3 py-1 bg-yellow-500 text-zinc-900 font-display font-black uppercase text-xs tracking-wider animate-pulse">
+                          ❗ NEEDS PREP
+                        </div>
+                      )}
+                      {!noPrepAtAll && needsPrep && (
+                        <div className="inline-block px-3 py-1 bg-blue-500/30 text-blue-300 border-2 border-blue-500/50 font-display font-black uppercase text-xs tracking-wider">
+                          📝 PREP IN PROGRESS
+                        </div>
+                      )}
+                      {!needsPrep && (
+                        <div className="inline-block px-3 py-1 bg-green-500/30 text-green-300 border-2 border-green-500/50 font-display font-black uppercase text-xs tracking-wider">
+                          ✓ PREP COMPLETE
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="mb-4">
+                      <p className="text-xs text-zinc-500 font-display font-display font-black uppercase tracking-wider mb-2">
+                        VS OPPONENT
+                      </p>
+                      <p className="text-3xl font-display font-black uppercase tracking-tighter text-zinc-100 mb-2">
+                        {battle.ai_battler?.stage_name}
+                      </p>
+                      <p className="text-sm text-zinc-400 font-display font-display font-black uppercase">
+                        {battle.league?.name}
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-3 mb-4">
+                      <div className="bg-[#18191c] border-2 border-[#3a3d44] p-3">
+                        <p className="text-xs text-zinc-500 font-display font-display font-black uppercase mb-1">SCHEDULED</p>
+                        <p className="text-sm font-display font-bold text-zinc-100">
+                          {new Date(battle.scheduled_at).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <div className="bg-[#18191c] border-2 border-[#3a3d44] p-3">
+                        <p className="text-xs text-zinc-500 font-display font-display font-black uppercase mb-1">DAYS LEFT</p>
+                        <p className={`text-2xl font-display font-black ${isUrgent ? 'text-red-400' : 'text-[#ff8c42]'}`}>
+                          {daysUntil}
+                        </p>
+                      </div>
+                      <div className="bg-[#18191c] border-2 border-[#3a3d44] p-3">
+                        <p className="text-xs text-zinc-500 font-display font-display font-black uppercase mb-1">PREP DAYS</p>
+                        <p className={`text-2xl font-display font-black ${needsPrep ? 'text-yellow-400' : 'text-green-400'}`}>
+                          {prep.setDays}/{prep.totalDays}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Prep progress bar */}
+                    <div className="mb-4">
+                      <div className="flex justify-between text-xs text-zinc-500 font-display font-black uppercase tracking-wider mb-1">
+                        <span>PREP PROGRESS</span>
+                        <span>{prepPct}%</span>
+                      </div>
+                      <div className="w-full bg-[#18191c] border-2 border-[#3a3d44] h-3 overflow-hidden">
+                        <div
+                          className={`h-full transition-all duration-500 ${
+                            prepPct === 100
+                              ? 'bg-gradient-to-r from-green-500 to-green-400'
+                              : prepPct === 0
+                              ? 'bg-yellow-500'
+                              : 'bg-gradient-to-r from-blue-500 to-blue-400'
+                          }`}
+                          style={{ width: `${Math.max(prepPct, prepPct === 0 ? 0 : 4)}%` }}
+                        />
+                      </div>
+                    </div>
+
+                    <GamingButton
+                      href={`/battle/${battle.id}/prep`}
+                      variant={noPrepAtAll || isUrgent ? 'danger' : 'primary'}
+                      size="lg"
+                      className="w-full"
+                    >
+                      {noPrepAtAll
+                        ? '❗ SET YOUR PREP NOW'
+                        : needsPrep
+                        ? '📝 CONTINUE PREP'
+                        : '✏️ REVIEW PREP'}
+                    </GamingButton>
+
+                    {nextBattle && battle.id === nextBattle.id && (
+                      <button
+                        onClick={handleSimulateBattle}
+                        disabled={simulating}
+                        className="w-full mt-3 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-display font-black uppercase tracking-wider transition disabled:opacity-50"
+                      >
+                        {simulating ? 'SIMULATING...' : '⚡ SIMULATE NOW (DEV)'}
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {/* Career Stats Grid */}
         <div className="mb-8">
           <h2 className="text-2xl font-display font-black uppercase tracking-tighter text-[#ff8c42] mb-4">
@@ -351,7 +484,7 @@ export default function DashboardClient({
         </div>
 
         {/* Badges Showcase */}
-        <BadgeShowcase styleTags={battler.style_tags} />
+        <BadgeShowcase styleTags={battler.style_tags} badgeProgress={badgeProgress} />
 
         {/* Career Highlights */}
         <CareerHighlights rounds={careerRounds} ranking={ranking} />
@@ -439,83 +572,7 @@ export default function DashboardClient({
           </div>
         </div>
 
-        {/* Next Battle Section */}
-        {activeBattles && activeBattles.length > 0 && (
-          <div className="mb-8">
-            <h2 className="text-2xl font-display font-black uppercase tracking-tighter text-[#ff8c42] mb-4">
-              🔥 NEXT BATTLE
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {activeBattles.map((battle: any, index: number) => {
-                const daysUntil = Math.ceil((new Date(battle.scheduled_at).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
-                const isUrgent = daysUntil <= 3;
-
-                return (
-                  <div
-                    key={battle.id}
-                    className={`bg-[#2d2f35] border-2 p-6 ${
-                      isUrgent
-                        ? 'border-red-500 shadow-[0_0_20px_rgba(239,68,68,0.3)]'
-                        : 'border-[#ff8c42] shadow-[0_0_20px_rgba(255,140,66,0.2)]'
-                    }`}
-                  >
-                    {isUrgent && (
-                      <div className="mb-3 inline-block px-3 py-1 bg-red-500 text-white font-display font-black uppercase text-xs tracking-wider">
-                        ⚠️ URGENT
-                      </div>
-                    )}
-
-                    <div className="mb-4">
-                      <p className="text-xs text-zinc-500 font-display font-display font-black uppercase tracking-wider mb-2">
-                        VS OPPONENT
-                      </p>
-                      <p className="text-3xl font-display font-black uppercase tracking-tighter text-zinc-100 mb-2">
-                        {battle.ai_battler?.stage_name}
-                      </p>
-                      <p className="text-sm text-zinc-400 font-display font-display font-black uppercase">
-                        {battle.league?.name}
-                      </p>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4 mb-4">
-                      <div className="bg-[#18191c] border-2 border-[#3a3d44] p-3">
-                        <p className="text-xs text-zinc-500 font-display font-display font-black uppercase mb-1">SCHEDULED</p>
-                        <p className="text-sm font-display font-bold text-zinc-100">
-                          {new Date(battle.scheduled_at).toLocaleDateString()}
-                        </p>
-                      </div>
-                      <div className="bg-[#18191c] border-2 border-[#3a3d44] p-3">
-                        <p className="text-xs text-zinc-500 font-display font-display font-black uppercase mb-1">DAYS UNTIL</p>
-                        <p className={`text-2xl font-display font-black ${isUrgent ? 'text-red-400' : 'text-[#ff8c42]'}`}>
-                          {daysUntil}
-                        </p>
-                      </div>
-                    </div>
-
-                    <GamingButton
-                      href={`/battle/${battle.id}/prep`}
-                      variant={isUrgent ? 'danger' : 'primary'}
-                      size="lg"
-                      className="w-full"
-                    >
-                      {isUrgent ? '⚠️ PREP NOW!' : '📝 PREP FOR BATTLE'}
-                    </GamingButton>
-
-                    {nextBattle && battle.id === nextBattle.id && (
-                      <button
-                        onClick={handleSimulateBattle}
-                        disabled={simulating}
-                        className="w-full mt-3 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-display font-black uppercase tracking-wider transition disabled:opacity-50"
-                      >
-                        {simulating ? 'SIMULATING...' : '⚡ SIMULATE NOW (DEV)'}
-                      </button>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
+        {/* Next Battle moved to top of dashboard */}
 
         {/* Career Stats Widget — defensive against missing ranking rows */}
         {ranking && (

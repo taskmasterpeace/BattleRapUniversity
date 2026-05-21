@@ -110,6 +110,88 @@ export default async function DashboardPage() {
       .eq('battler_id', battler.id)
   ]);
 
+  // Compute "badges in reach" — top 3 badges the player is closest to earning.
+  // Looks at career rounds + ranking to estimate progress percentages.
+  const earnedSet = new Set<string>(battler.style_tags || []);
+  const totalBattles = (ranking?.wins || 0) + (ranking?.losses || 0);
+  const winRate = totalBattles > 0 ? (ranking?.wins || 0) / totalBattles : 0;
+  const maxPeakSeen = (careerRounds || []).reduce(
+    (m: number, r: any) => Math.max(m, r.peak_score || 0),
+    0
+  );
+  const maxCrowdSeen = (careerRounds || []).reduce(
+    (m: number, r: any) => Math.max(m, r.crowd_reaction || 0),
+    0
+  );
+  const candidates: Array<{ code: string; label: string; pct: number; detail: string }> = [
+    {
+      code: 'punchline_heavy',
+      label: 'PUNCHLINE HEAVY',
+      pct: Math.min(100, Math.round((maxPeakSeen / 9.0) * 100)),
+      detail: `Best peak ${maxPeakSeen.toFixed(1)} / 9.0 needed`,
+    },
+    {
+      code: 'crowd_favorite',
+      label: 'CROWD FAVORITE',
+      pct: Math.min(100, Math.round((maxCrowdSeen / 85) * 100)),
+      detail: `Best crowd ${Math.round(maxCrowdSeen)}% / 85% needed`,
+    },
+    {
+      code: 'respected_veteran',
+      label: 'RESPECTED VETERAN',
+      pct: Math.min(100, Math.round((totalBattles / 25) * 100)),
+      detail: `${totalBattles} / 25 career battles`,
+    },
+    {
+      code: 'consummate_professional',
+      label: 'CONSUMMATE PRO',
+      pct:
+        totalBattles >= 5
+          ? Math.min(100, Math.round((winRate / 0.7) * 100))
+          : Math.round((totalBattles / 20) * 100),
+      detail:
+        totalBattles >= 5
+          ? `${Math.round(winRate * 100)}% win rate / 70% needed (20+ battles)`
+          : `Need 20+ battles (${totalBattles} so far)`,
+    },
+    {
+      code: 'main_stage_specialist',
+      label: 'MAIN STAGE SPEC',
+      pct: Math.min(100, Math.round(((ranking?.streak || 0) / 5) * 100)),
+      detail: `${ranking?.streak || 0} / 5 win streak`,
+    },
+  ];
+  const badgeProgress = candidates
+    .filter((c) => !earnedSet.has(c.code))
+    .sort((a, b) => b.pct - a.pct)
+    .slice(0, 3);
+
+  // For each active battle, count prep blocks the player has set (and compute totalPrepDays)
+  // Used to show "PREP: 3/7 DAYS" on the Next Battle card and surface "NEEDS PREP" CTA
+  const activeBattleIds = (activeBattles || []).map((b: any) => b.id);
+  let prepStatusByBattle: Record<string, { setDays: number; totalDays: number }> = {};
+  if (activeBattleIds.length > 0) {
+    const { data: prepRows } = await supabase
+      .from('prep_blocks')
+      .select('battle_id, focus')
+      .eq('battler_id', battler.id)
+      .in('battle_id', activeBattleIds);
+
+    for (const battle of activeBattles || []) {
+      const blocks = (prepRows || []).filter((r: any) => r.battle_id === battle.id && r.focus);
+      const created = new Date(battle.created_at);
+      const lock = new Date(battle.lock_prep_at);
+      const totalDays = Math.max(
+        1,
+        Math.ceil((lock.getTime() - created.getTime()) / (1000 * 60 * 60 * 24))
+      );
+      prepStatusByBattle[battle.id] = {
+        setDays: blocks.length,
+        totalDays,
+      };
+    }
+  }
+
   // Log any errors that occurred during parallel queries
   if (attributesError) console.error('Attributes query error:', attributesError);
   if (rankingError) console.error('Ranking query error:', rankingError);
@@ -134,6 +216,8 @@ export default async function DashboardPage() {
       fanData={fanData}
       pendingEvents={pendingEvents || []}
       careerRounds={careerRounds || []}
+      prepStatusByBattle={prepStatusByBattle}
+      badgeProgress={badgeProgress}
     />
   );
 }

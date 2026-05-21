@@ -4,8 +4,16 @@ import Link from 'next/link';
 import { BADGE_DESCRIPTIONS } from '@/lib/game/badgeDescriptions';
 import BadgeTooltip from '@/components/ui/BadgeTooltip';
 
+type BadgeProgress = {
+  code: string;
+  label: string;
+  pct: number;
+  detail: string;
+};
+
 type Props = {
   styleTags: string[] | null | undefined;
+  badgeProgress?: BadgeProgress[];
 };
 
 const tierColors = {
@@ -41,7 +49,7 @@ const categoryIcons: Record<string, string> = {
 const titleCase = (s: string) =>
   s.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 
-export default function BadgeShowcase({ styleTags }: Props) {
+export default function BadgeShowcase({ styleTags, badgeProgress = [] }: Props) {
   const tags = styleTags || [];
 
   return (
@@ -115,6 +123,49 @@ export default function BadgeShowcase({ styleTags }: Props) {
               })}
             </div>
           </>
+        )}
+
+        {/* Badges In Reach — concrete progress toward 3 nearest badges */}
+        {badgeProgress.length > 0 && (
+          <div className="mt-6 pt-6 border-t-2 border-[#3a3d44]">
+            <p className="text-xs font-display font-black uppercase tracking-wider text-zinc-400 mb-4">
+              🎯 BADGES IN REACH
+            </p>
+            <div className="space-y-3">
+              {badgeProgress.slice(0, 3).map((bp) => {
+                const desc = BADGE_DESCRIPTIONS[bp.code];
+                const tier = (desc?.tier || 'bronze') as keyof typeof tierColors;
+                const colors = tierColors[tier];
+                const icon = desc ? categoryIcons[desc.category] || '🏅' : '🏅';
+                return (
+                  <BadgeTooltip key={bp.code} badgeCode={bp.code}>
+                    <div className="bg-[#18191c] border-2 border-[#3a3d44] p-3 hover:border-[#ff8c42]/40 transition-colors">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <span className="text-base">{icon}</span>
+                          <span className={`font-display font-black uppercase text-sm tracking-wider ${colors.text}`}>
+                            {bp.label}
+                          </span>
+                        </div>
+                        <span className="text-xs font-display font-black text-zinc-400">
+                          {bp.pct}%
+                        </span>
+                      </div>
+                      <div className="w-full bg-[#0e0f12] h-2 overflow-hidden">
+                        <div
+                          className={`h-full transition-all duration-500 ${
+                            bp.pct >= 80 ? 'bg-green-500' : bp.pct >= 40 ? 'bg-[#ff8c42]' : 'bg-zinc-600'
+                          }`}
+                          style={{ width: `${Math.min(100, bp.pct)}%` }}
+                        />
+                      </div>
+                      <p className="text-xs text-zinc-500 mt-2 uppercase tracking-wide">{bp.detail}</p>
+                    </div>
+                  </BadgeTooltip>
+                );
+              })}
+            </div>
+          </div>
         )}
       </div>
     </div>
