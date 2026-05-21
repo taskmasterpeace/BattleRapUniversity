@@ -12,6 +12,8 @@ import ArchetypeDisplay from './ArchetypeDisplay';
 import BadgeTooltip from '../ui/BadgeTooltip';
 import BadgeShowcase from './BadgeShowcase';
 import LeagueOverview from './LeagueOverview';
+import EarningsWidget from './EarningsWidget';
+import CareerHighlights from './CareerHighlights';
 import FanStatsWidget from './FanStatsWidget';
 import PendingLifeEventsWidget from './PendingLifeEventsWidget';
 import NotificationDropdown from '../notifications/NotificationDropdown';
@@ -37,6 +39,13 @@ type Props = {
     avg_hype_multiplier: number;
   } | null;
   pendingEvents: any[];
+  careerRounds?: Array<{
+    peak_score: number;
+    average_score: number;
+    crowd_reaction: number;
+    consistency_score: number;
+    choked: boolean;
+  }>;
 };
 
 type NewsArticle = {
@@ -57,6 +66,7 @@ export default function DashboardClient({
   recentBattles,
   fanData,
   pendingEvents,
+  careerRounds = [],
 }: Props) {
   const nextBattle = activeBattles && activeBattles.length > 0 ? activeBattles[0] : null;
   const router = useRouter();
@@ -342,6 +352,12 @@ export default function DashboardClient({
 
         {/* Badges Showcase */}
         <BadgeShowcase styleTags={battler.style_tags} />
+
+        {/* Career Highlights */}
+        <CareerHighlights rounds={careerRounds} ranking={ranking} />
+
+        {/* Earnings */}
+        <EarningsWidget battler={battler} leaguePayout={league?.base_payout} />
 
         {/* League Overview */}
         <LeagueOverview league={league} rating={ranking?.rating || 1000} />

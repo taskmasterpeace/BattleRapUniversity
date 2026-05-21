@@ -7,13 +7,13 @@ export const metadata = {
 };
 
 type Props = {
-  params: {
+  params: Promise<{
     opponentId: string;
-  };
+  }>;
 };
 
 export default async function RelationshipDetailPage({ params }: Props) {
-  const { opponentId } = params;
+  const { opponentId } = await params;
   const supabase = await createServerSupabaseClient();
 
   // Get authenticated user

@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation';
 import { createServerSupabaseClient } from '@/lib/db/server';
 import TournamentBracketClient from '@/components/tournament/TournamentBracketClient';
 
-export default async function TournamentBracketPage({ params }: { params: { id: string } }) {
+export default async function TournamentBracketPage({ params }: { params: Promise<{ id: string }> }) {
   const { user, battler } = await getPlayerBattler();
 
   if (!user) {
@@ -15,7 +15,7 @@ export default async function TournamentBracketPage({ params }: { params: { id: 
   }
 
   const supabase = await createServerSupabaseClient();
-  const tournamentId = params.id;
+  const { id: tournamentId } = await params;
 
   // Get tournament details
   const { data: tournament } = await supabase

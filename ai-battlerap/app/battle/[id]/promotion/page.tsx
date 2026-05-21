@@ -8,13 +8,13 @@ export const metadata = {
 };
 
 type Props = {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 };
 
 export default async function PromotionPage({ params }: Props) {
-  const { id: battleId } = params;
+  const { id: battleId } = await params;
   const supabase = await createServerSupabaseClient();
 
   // Get authenticated user

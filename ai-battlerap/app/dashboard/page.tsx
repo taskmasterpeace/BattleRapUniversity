@@ -26,7 +26,8 @@ export default async function DashboardPage() {
     { count: offersCount, error: offersCountError },
     { data: recentBattles, error: recentBattlesError },
     { data: fanData, error: fanDataError },
-    { data: pendingEvents, error: pendingEventsError }
+    { data: pendingEvents, error: pendingEventsError },
+    { data: careerRounds, error: careerRoundsError }
   ] = await Promise.all([
     // Get battler attributes
     supabase
@@ -100,7 +101,13 @@ export default async function DashboardPage() {
       `)
       .eq('battler_id', battler.id)
       .eq('status', 'pending')
-      .order('triggered_at', { ascending: false })
+      .order('triggered_at', { ascending: false }),
+
+    // Get all rounds for this battler (for career highlights)
+    supabase
+      .from('battle_rounds')
+      .select('peak_score, average_score, crowd_reaction, consistency_score, choked')
+      .eq('battler_id', battler.id)
   ]);
 
   // Log any errors that occurred during parallel queries
@@ -113,6 +120,8 @@ export default async function DashboardPage() {
   if (fanDataError) console.error('Fan data query error:', fanDataError);
   if (pendingEventsError) console.error('Pending events query error:', pendingEventsError);
 
+  if (careerRoundsError) console.error('Career rounds query error:', careerRoundsError);
+
   return (
     <DashboardClient
       battler={battler}
@@ -124,6 +133,7 @@ export default async function DashboardPage() {
       recentBattles={recentBattles || []}
       fanData={fanData}
       pendingEvents={pendingEvents || []}
+      careerRounds={careerRounds || []}
     />
   );
 }
