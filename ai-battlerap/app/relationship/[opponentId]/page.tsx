@@ -40,7 +40,7 @@ export default async function RelationshipDetailPage({ params }: Props) {
   // Get opponent info
   const { data: opponent } = await supabase
     .from('battlers')
-    .select('id, stage_name, region, avatar_url, banner_url, sprite')
+    .select('id, stage_name, region, avatar_url, banner_url')
     .eq('id', opponentId)
     .single();
 
