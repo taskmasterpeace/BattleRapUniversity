@@ -13,11 +13,8 @@ import { NextResponse } from 'next/server';
  * - limit: max results (default 20, max 50)
  */
 export async function GET(request: Request) {
-  const user = await getUser();
-  if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
+  // Public: articles are the world's press — readable by anyone (the
+  // follow-from-outside surface, like the leaderboard and watch pages).
   const { searchParams } = new URL(request.url);
   const leagueId = searchParams.get('league_id');
   const battlerId = searchParams.get('battler_id');

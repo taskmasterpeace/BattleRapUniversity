@@ -38,7 +38,8 @@ export async function middleware(request: NextRequest) {
   // Protected routes require authentication.
   // Segment-aware matching: '/battle' must NOT capture '/battler/...' —
   // battler profiles are public (shareable from leaderboard/matchup pages).
-  const protectedPaths = ['/onboarding', '/dashboard', '/battle', '/media'];
+  // /media is public — the world's press is the follow-from-outside surface.
+  const protectedPaths = ['/onboarding', '/dashboard', '/battle'];
   const isProtectedPath = protectedPaths.some(
     (path) =>
       request.nextUrl.pathname === path ||

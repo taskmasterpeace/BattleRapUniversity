@@ -10,11 +10,7 @@ export async function GET(
   request: Request,
   { params }: { params: Promise<{ slug: string }> }
 ) {
-  const user = await getUser();
-  if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
+  // Public: the world's press is readable by anyone.
   const { slug } = await params;
   const supabase = await createServerSupabaseClient();
 
