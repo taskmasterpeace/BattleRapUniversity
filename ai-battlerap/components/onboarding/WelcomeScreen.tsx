@@ -12,10 +12,10 @@ export default function WelcomeScreen({ onQuickStart, onCustomBuild }: Props) {
         <div className="text-center mb-16 space-y-6">
           <div className="mb-8">
             <h1 className="text-8xl font-display font-black tracking-tighter mb-4 bg-gradient-to-r from-orange-500 to-orange-300 bg-clip-text text-transparent">
-              ALGORITHM INSTITUTE
+              BATTLE RAP UNIVERSITY
             </h1>
             <p className="text-2xl text-zinc-400 uppercase tracking-wider font-bold">
-              OF BATTLE RAP
+              BUILD YOUR LEGACY
             </p>
           </div>
 

@@ -31,7 +31,7 @@ export async function GET() {
   }
 
   // Get all offered battles with opponent details
-  const { data: offers } = await supabase
+  const { data: offersRaw } = await supabase
     .from('battles')
     .select(`
       *,
@@ -49,7 +49,60 @@ export async function GET() {
     .eq('status', 'offered')
     .order('scheduled_at', { ascending: true });
 
-  if (!offers || offers.length === 0) {
+  // Hide offers against internal Test_ profiles (validation battlers from balance
+  // testing) — they should never reach a player's screen.
+  let offers = (offersRaw || []).filter(
+    (o) => !o.ai_battler?.stage_name?.startsWith('Test_')
+  );
+
+  if (offers.length === 0) {
+    // Replenish: a player with no pending offers and no upcoming battle should
+    // always find fresh smoke. Promoters never sleep.
+    const { count: upcomingCount } = await supabase
+      .from('battles')
+      .select('id', { count: 'exact', head: true })
+      .eq('battler_player_id', battler.id)
+      .in('status', ['accepted', 'locked']);
+
+    if (!upcomingCount) {
+      try {
+        const { createClient } = await import('@supabase/supabase-js');
+        const { generateOffersForPlayer } = await import('@/lib/services/battleOffers');
+        const admin = createClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.SUPABASE_SERVICE_ROLE_KEY!,
+          { auth: { autoRefreshToken: false, persistSession: false } }
+        );
+        const created = await generateOffersForPlayer(admin, battler.id, 2);
+        if (created > 0) {
+          const { data: refreshed } = await supabase
+            .from('battles')
+            .select(`
+              *,
+              league:leagues(*),
+              ai_battler:battler_ai_id(
+                id,
+                stage_name,
+                tier,
+                style_tags,
+                avatar_url,
+                battler_attributes!inner(writing, performance, resilience)
+              )
+            `)
+            .eq('battler_player_id', battler.id)
+            .eq('status', 'offered')
+            .order('scheduled_at', { ascending: true });
+          offers = (refreshed || []).filter(
+            (o) => !o.ai_battler?.stage_name?.startsWith('Test_')
+          );
+        }
+      } catch (replenishError) {
+        console.error('Offer replenish failed (non-fatal):', replenishError);
+      }
+    }
+  }
+
+  if (offers.length === 0) {
     return NextResponse.json({ offers: [] });
   }
 

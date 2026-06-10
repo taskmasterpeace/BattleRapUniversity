@@ -7,11 +7,11 @@ INSERT INTO news_articles (slug, title, type, body_markdown, meta_json, publishe
 VALUES
 (
   'welcome-to-algorithm-institute',
-  'Welcome to the Algorithm Institute of BattleRap',
+  'Welcome to the Battle Rap University',
   'league_update',
   '## A New Era Begins
 
-The Algorithm Institute of BattleRap is now open for business. This isn''t your typical battle league - this is where careers are made, legends are born, and the culture evolves.
+The Battle Rap University is now open for business. This isn''t your typical battle league - this is where careers are made, legends are born, and the culture evolves.
 
 ### Two Leagues, Two Paths
 
@@ -58,7 +58,7 @@ This is your chance to prove you belong among the elite. Will you answer the cal
   'power_ranking',
   '## Week 1 Power Rankings
 
-The first official power rankings of the Algorithm Institute are in. Here''s who''s making noise:
+The first official power rankings of Battle Rap University are in. Here''s who''s making noise:
 
 ### TOP 10
 

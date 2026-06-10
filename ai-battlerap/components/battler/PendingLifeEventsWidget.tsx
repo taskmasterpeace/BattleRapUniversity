@@ -42,8 +42,9 @@ export default function PendingLifeEventsWidget({ initialEvents = [] }: Props) {
       if (response.ok) {
         setEvents(data.events || []);
       }
-    } catch (error) {
-      console.error('Error fetching life events:', error);
+    } catch {
+      // Benign: navigation can abort this fetch mid-flight; the widget simply
+      // doesn't render when events can't load.
     } finally {
       setLoading(false);
     }

@@ -3,6 +3,7 @@ import { Rajdhani, Inter, JetBrains_Mono, Bebas_Neue, Anton } from 'next/font/go
 import "./globals.css";
 import GlobalNav from '@/components/nav/GlobalNav';
 import QueryProvider from '@/components/providers/QueryProvider';
+import { Toaster } from '@/components/ui/Toast';
 
 // Font configurations
 const bebasNeue = Bebas_Neue({
@@ -39,8 +40,8 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Algorithm Institute of BattleRap",
-  description: "Battle rap simulation and strategy game",
+  title: "Battle Rap University",
+  description: "Battle rap career simulation — build your battler, prep your bars, take the stage.",
 };
 
 export default function RootLayout({
@@ -54,6 +55,7 @@ export default function RootLayout({
         <QueryProvider>
           <GlobalNav />
           {children}
+          <Toaster />
         </QueryProvider>
       </body>
     </html>

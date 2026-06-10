@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import Avatar from '@/components/ui/Avatar';
 import GamingButton from '@/components/ui/GamingButton';
 import StatCard from '@/components/ui/StatCard';
+import { toast } from '@/components/ui/Toast';
 
 type PrepBlock = {
   id: string;
@@ -73,11 +74,11 @@ export default function PrepPage({ params }: { params: Promise<{ id: string }> }
         setTotalPrepDays(data.totalPrepDays);
         setLockPrepAt(data.lockPrepAt);
       } else {
-        alert(data.error || 'Failed to load prep data');
+        toast(data.error || 'Failed to load prep data', 'error');
       }
     } catch (error) {
       console.error('Error fetching prep data:', error);
-      alert('Failed to load prep data');
+      toast('Failed to load prep data', 'error');
     }
     setLoading(false);
   };
@@ -95,11 +96,11 @@ export default function PrepPage({ params }: { params: Promise<{ id: string }> }
         await fetchPrepData();
       } else {
         const data = await response.json();
-        alert(data.error || 'Failed to update prep');
+        toast(data.error || 'Failed to update prep', 'error');
       }
     } catch (error) {
       console.error('Error updating prep:', error);
-      alert('Failed to update prep');
+      toast('Failed to update prep', 'error');
     }
     setUpdating(null);
   };
@@ -324,7 +325,7 @@ export default function PrepPage({ params }: { params: Promise<{ id: string }> }
           {allDaysSelected && !isLocked && (
             <GamingButton
               onClick={() => {
-                alert(`Prep saved! Your battle will simulate on ${new Date(battle.scheduled_at).toLocaleDateString()}.`);
+                toast(`Prep saved! Your battle will simulate on ${new Date(battle.scheduled_at).toLocaleDateString()}.`, 'success');
                 router.push('/dashboard');
               }}
               variant="primary"

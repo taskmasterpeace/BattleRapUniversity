@@ -130,7 +130,7 @@ export default function GlobalNav() {
             className="flex items-center gap-2 font-anton uppercase tracking-tighter hover:text-[#ff8c42] transition shrink-0"
           >
             <span className="text-[#ff8c42] text-2xl">⚔</span>
-            <span className="hidden sm:inline text-lg">BattleRap U</span>
+            <span className="hidden sm:inline text-lg">Battle Rap U</span>
           </Link>
 
           {/* Desktop primary links */}

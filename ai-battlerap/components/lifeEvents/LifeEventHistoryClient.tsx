@@ -110,7 +110,7 @@ export default function LifeEventHistoryClient({ events, battler }: Props) {
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-3">
               <Link href="/dashboard" className="text-xl font-bold tracking-tight hover:text-[#ff8c42] transition">
-                ALGORITHM INSTITUTE
+                BATTLE RAP UNIVERSITY
               </Link>
               <span className="text-zinc-700">|</span>
               <span className="text-sm text-zinc-500 uppercase tracking-wider">Life Event History</span>

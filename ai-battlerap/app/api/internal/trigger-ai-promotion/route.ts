@@ -81,9 +81,11 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Execute the promotion via the promotion API
+    // Execute the promotion via the promotion API on this same deployment —
+    // derive the origin from the incoming request so it works locally and on Vercel.
+    const origin = new URL(request.url).origin;
     const promotionResponse = await fetch(
-      `http://localhost:3000/api/battles/${battleId}/promotion`,
+      `${origin}/api/battles/${battleId}/promotion`,
       {
         method: 'POST',
         headers: {

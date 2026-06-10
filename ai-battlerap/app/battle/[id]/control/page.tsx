@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { Battle, BattleWithDetails, ScoringContext, PrepBlock } from '@/lib/models';
+import { toast } from '@/components/ui/Toast';
 
 export default function BattleControlPage() {
   const router = useRouter();
@@ -67,18 +68,18 @@ export default function BattleControlPage() {
           if (simulateRes.ok) {
             router.push(`/battle/${battleId}/results`);
           } else {
-            alert('Failed to simulate battle');
+            toast('Failed to simulate battle', 'error');
             setSubmitting(false);
           }
         }
       } else {
         const data = await response.json();
-        alert(data.error || 'Failed to lock in mode');
+        toast(data.error || 'Failed to lock in mode', 'error');
         setSubmitting(false);
       }
     } catch (error) {
       console.error('Error locking in mode:', error);
-      alert('Failed to lock in mode');
+      toast('Failed to lock in mode', 'error');
       setSubmitting(false);
     }
   };

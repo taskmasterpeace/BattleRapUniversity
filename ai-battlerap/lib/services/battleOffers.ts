@@ -105,7 +105,7 @@ export async function generateOffersForPlayer(
   const rivals = (relationships || []).map(rel => {
     const isPlayerA = rel.battler_a_id === battler.id;
     return isPlayerA ? rel.battler_b : rel.battler_a;
-  }).filter(b => b && b.is_ai); // Only AI rivals
+  }).filter(b => b && b.is_ai && !b.stage_name?.startsWith('Test_')); // Only AI rivals, never test profiles
 
   // Find AI opponents with similar rating (centered around target rating)
   const ratingRange = 200;
@@ -117,6 +117,7 @@ export async function generateOffersForPlayer(
     `)
     .eq('is_ai', true)
     .neq('id', battler.id)
+    .not('stage_name', 'like', 'Test_%')
     .gte('ranking.rating', targetRating - ratingRange)
     .lte('ranking.rating', targetRating + ratingRange)
     .limit(20);
@@ -138,6 +139,7 @@ export async function generateOffersForPlayer(
       .from('battlers')
       .select('*')
       .eq('is_ai', true)
+      .not('stage_name', 'like', 'Test_%')
       .limit(20);
 
     opponentPool = anyAi || [];

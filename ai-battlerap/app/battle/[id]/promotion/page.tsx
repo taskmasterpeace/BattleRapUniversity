@@ -4,7 +4,7 @@ import Link from 'next/link';
 import PromotionClient from './PromotionClient';
 
 export const metadata = {
-  title: 'Promotion Phase | Algorithm Institute',
+  title: 'Promotion Phase | Battle Rap University',
 };
 
 type Props = {

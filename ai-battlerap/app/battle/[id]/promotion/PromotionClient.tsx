@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { toast } from '@/components/ui/Toast';
 
 type Props = {
   battle: any;
@@ -239,11 +240,11 @@ export default function PromotionClient({
         ? `✓ SUCCESS!\n\n${result.title}\n\nCrowd Gain: +${result.crowdGain}\nAuthenticity: ${result.newAuthenticity}/100\n\n"${result.keyQuote}"`
         : `PARTIAL EFFECT\n\n${result.title}\n\nCrowd Gain: +${result.crowdGain} (reduced)\nAuthenticity: ${result.newAuthenticity}/100`;
 
-      alert(message);
+      toast(message, result.success ? 'success' : 'info');
       router.refresh();
     } catch (error: any) {
       console.error('Failed to execute promotion:', error);
-      alert(error.message || 'Failed to execute promotion action');
+      toast(error.message || 'Failed to execute promotion action', 'error');
     }
     setExecuting(false);
     setSelectedAction(null);
@@ -256,7 +257,7 @@ export default function PromotionClient({
         <div className="max-w-5xl mx-auto px-6 py-6 flex justify-between items-center">
           <div className="flex items-center gap-3">
             <Link href="/dashboard" className="text-xl font-bold tracking-tight hover:text-[#ff8c42] transition">
-              ALGORITHM INSTITUTE
+              BATTLE RAP UNIVERSITY
             </Link>
             <span className="text-zinc-700">|</span>
             <span className="text-sm text-zinc-500 uppercase tracking-wider">Promotion Phase</span>

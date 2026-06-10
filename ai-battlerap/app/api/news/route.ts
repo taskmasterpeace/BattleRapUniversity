@@ -65,5 +65,14 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Failed to fetch news' }, { status: 500 });
   }
 
-  return NextResponse.json({ articles: articles || [] });
+  // Hide articles about internal Test_ validation battlers and test recaps.
+  const visibleArticles = (articles || []).filter((a) => {
+    const primary = (a.primary_battler as { stage_name?: string } | null)?.stage_name ?? '';
+    const secondary = (a.secondary_battler as { stage_name?: string } | null)?.stage_name ?? '';
+    if (primary.startsWith('Test_') || secondary.startsWith('Test_')) return false;
+    if (/^test\b/i.test(a.title ?? '')) return false;
+    return true;
+  });
+
+  return NextResponse.json({ articles: visibleArticles });
 }

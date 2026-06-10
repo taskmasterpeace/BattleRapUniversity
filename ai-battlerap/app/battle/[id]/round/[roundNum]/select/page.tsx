@@ -9,6 +9,7 @@ import { RoundContentSelector, ContentSelection } from '@/components/battle/Roun
 import { EffectivenessForecast } from '@/components/battle/EffectivenessForecast';
 import { predictOpponentContent } from '@/lib/game/roundContentSelection';
 import { validateContentSelection } from '@/lib/game/roundContentSelection';
+import { toast } from '@/components/ui/Toast';
 
 export default function RoundSelectPage() {
   const router = useRouter();
@@ -56,7 +57,7 @@ export default function RoundSelectPage() {
     // Validate selection
     const validation = validateContentSelection(selection);
     if (!validation.valid) {
-      alert('Invalid selection:\n' + validation.errors.join('\n'));
+      toast('Invalid selection:\n' + validation.errors.join('\n'), 'error');
       return;
     }
 
@@ -77,12 +78,12 @@ export default function RoundSelectPage() {
         router.push(`/battle/${battleId}/round/${roundNum}/results`);
       } else {
         const data = await response.json();
-        alert(data.error || 'Failed to save content selection');
+        toast(data.error || 'Failed to save content selection', 'error');
         setSubmitting(false);
       }
     } catch (error) {
       console.error('Error saving content selection:', error);
-      alert('Failed to save content selection');
+      toast('Failed to save content selection', 'error');
       setSubmitting(false);
     }
   };

@@ -1,0 +1,12 @@
+{
+  "crons": [
+    {
+      "path": "/api/internal/run-due-battles",
+      "schedule": "0 6 * * *"
+    },
+    {
+      "path": "/api/internal/generate-battle-offers",
+      "schedule": "30 6 * * *"
+    }
+  ]
+}

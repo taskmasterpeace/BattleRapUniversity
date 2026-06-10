@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 
 export const metadata = {
-  title: 'Relationship Detail | Algorithm Institute',
+  title: 'Relationship Detail | Battle Rap University',
 };
 
 type Props = {
@@ -64,7 +64,7 @@ export default async function RelationshipDetailPage({ params }: Props) {
           <div className="max-w-5xl mx-auto px-6 py-6 flex justify-between items-center">
             <div className="flex items-center gap-3">
               <Link href="/dashboard" className="text-xl font-bold tracking-tight hover:text-[#ff8c42] transition">
-                ALGORITHM INSTITUTE
+                BATTLE RAP UNIVERSITY
               </Link>
               <span className="text-zinc-700">|</span>
               <span className="text-sm text-zinc-500 uppercase tracking-wider">Relationship</span>
@@ -214,7 +214,7 @@ export default async function RelationshipDetailPage({ params }: Props) {
         <div className="max-w-5xl mx-auto px-6 py-6 flex justify-between items-center">
           <div className="flex items-center gap-3">
             <Link href="/dashboard" className="text-xl font-bold tracking-tight hover:text-[#ff8c42] transition">
-              ALGORITHM INSTITUTE
+              BATTLE RAP UNIVERSITY
             </Link>
             <span className="text-zinc-700">|</span>
             <span className="text-sm text-zinc-500 uppercase tracking-wider">Relationship Detail</span>

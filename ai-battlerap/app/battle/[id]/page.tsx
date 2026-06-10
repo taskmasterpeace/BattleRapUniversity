@@ -14,6 +14,7 @@ import LiveBattleViewer from '@/components/battle/LiveBattleViewer';
 import BadgeUnlockModal from '@/components/badges/BadgeUnlockModal';
 import { useBadgeQueue } from '@/lib/hooks/useBadgeQueue';
 import { getBadgeRarity } from '@/lib/game/badgeRarity';
+import { toast } from '@/components/ui/Toast';
 
 type BattleRound = {
   id: string;
@@ -180,11 +181,11 @@ export default function BattleViewerPage({
         setPrepBlocks(data.prepBlocks || []);
         setPendingEvents(data.pendingEvents || []);
       } else {
-        alert(data.error || 'Failed to load battle');
+        toast(data.error || 'Failed to load battle', 'error');
       }
     } catch (error) {
       console.error('Error fetching battle:', error);
-      alert('Failed to load battle');
+      toast('Failed to load battle', 'error');
     }
     setLoading(false);
   };

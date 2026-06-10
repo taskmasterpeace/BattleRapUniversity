@@ -235,6 +235,23 @@ export async function POST(request: Request) {
     ? [...new Set([...style_tags, regionalBadge])]  // Add regional badge, avoid duplicates
     : style_tags;
 
+  // Auto-assign a character sprite not already used by another battler, so new
+  // players get a face instead of the generic mic icon.
+  let avatarUrl: string | null = null;
+  try {
+    const sprites: string[] = (await import('@/lib/game/characterSprites.json')).default;
+    const { data: usedRows } = await supabase
+      .from('battlers')
+      .select('avatar_url')
+      .not('avatar_url', 'is', null);
+    const used = new Set((usedRows || []).map((r: { avatar_url: string }) => r.avatar_url));
+    const available = sprites.filter((s) => !used.has(s));
+    const pool = available.length > 0 ? available : sprites;
+    avatarUrl = pool[Math.floor(Math.random() * pool.length)];
+  } catch (spriteError) {
+    console.error('Avatar auto-assign failed (non-fatal):', spriteError);
+  }
+
   // Create battler
   const { data: battler, error: battlerError } = await supabase
     .from('battlers')
@@ -246,6 +263,7 @@ export async function POST(request: Request) {
       style_tags: allBadges,
       tier: 'low',
       is_ai: false,
+      avatar_url: avatarUrl,
     })
     .select()
     .single();
@@ -301,6 +319,15 @@ export async function POST(request: Request) {
     await supabase.from('battler_attributes').delete().eq('battler_id', battler.id);
     await supabase.from('battlers').delete().eq('id', battler.id);
     return NextResponse.json({ error: 'Failed to create ranking' }, { status: 500 });
+  }
+
+  // First battle offers, ready before the player even reaches the dashboard —
+  // a new battler should never stare at an empty inbox.
+  try {
+    const { generateOffersForPlayer } = await import('@/lib/services/battleOffers');
+    await generateOffersForPlayer(supabase, battler.id, 2);
+  } catch (offerError) {
+    console.error('Initial offer generation failed (non-fatal):', offerError);
   }
 
   return NextResponse.json({

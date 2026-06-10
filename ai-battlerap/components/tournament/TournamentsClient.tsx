@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { formatCurrency } from '@/lib/game/paymentCalculator';
 import { useState } from 'react';
+import { toast } from '@/components/ui/Toast';
 
 type Tournament = {
   id: string;
@@ -52,11 +53,11 @@ export default function TournamentsClient({
         router.refresh();
       } else {
         const data = await response.json();
-        alert(data.error || 'Failed to register');
+        toast(data.error || 'Failed to register', 'error');
       }
     } catch (error) {
       console.error('Error registering:', error);
-      alert('Failed to register');
+      toast('Failed to register', 'error');
     }
     setRegistering(null);
   };

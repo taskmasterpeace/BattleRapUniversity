@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { toast } from '@/components/ui/Toast';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
@@ -102,12 +103,12 @@ export default function LifeEventResolutionClient({ event, battler }: Props) {
         router.refresh();
       } else {
         const data = await response.json();
-        alert(`Failed to resolve event: ${data.error}`);
+        toast(`Failed to resolve event: ${data.error}`, 'error');
         setResolving(false);
       }
     } catch (error) {
       console.error('Error resolving life event:', error);
-      alert('Failed to resolve life event');
+      toast('Failed to resolve life event', 'error');
       setResolving(false);
     }
   };
@@ -168,7 +169,7 @@ export default function LifeEventResolutionClient({ event, battler }: Props) {
         <div className="max-w-5xl mx-auto px-6 py-6 flex justify-between items-center">
           <div className="flex items-center gap-3">
             <Link href="/dashboard" className="text-xl font-bold tracking-tight hover:text-[#ff8c42] transition">
-              ALGORITHM INSTITUTE
+              BATTLE RAP UNIVERSITY
             </Link>
             <span className="text-zinc-700">|</span>
             <span className="text-sm text-zinc-500 uppercase tracking-wider">Life Event</span>

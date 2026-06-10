@@ -6,6 +6,7 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { Battle, BattleWithDetails, BattleRound, BattleSegment } from '@/lib/models';
 import { RoundResultsBreakdown } from '@/components/battle/RoundResultsBreakdown';
+import { toast } from '@/components/ui/Toast';
 
 export default function RoundResultsPage() {
   const router = useRouter();
@@ -62,11 +63,11 @@ export default function RoundResultsPage() {
         await fetchRoundData();
       } else {
         const data = await response.json();
-        alert(data.error || 'Failed to simulate round');
+        toast(data.error || 'Failed to simulate round', 'error');
       }
     } catch (error) {
       console.error('Error simulating round:', error);
-      alert('Failed to simulate round');
+      toast('Failed to simulate round', 'error');
     }
     setSimulating(false);
   };

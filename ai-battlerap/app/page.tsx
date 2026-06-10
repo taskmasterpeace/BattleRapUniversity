@@ -102,13 +102,13 @@ export default function Home() {
                   </span>
                 </div>
                 <h1 className="font-bebas text-7xl md:text-9xl text-white uppercase tracking-wide leading-[0.85] drop-shadow-[0_0_30px_rgba(255,140,66,0.4)]">
-                  <span className="text-[#ff8c42]">ALGORITHM</span>
+                  <span className="text-[#ff8c42]">BATTLE RAP</span>
                   <br />
-                  <span className="text-white">INSTITUTE</span>
+                  <span className="text-white">UNIVERSITY</span>
                 </h1>
                 <div className="mt-5 inline-block px-8 py-2 bg-[#ff8c42] border-4 border-[#ff8c42] relative overflow-hidden skew-x-[-8deg]">
                   <p className="font-anton text-xl md:text-2xl text-black uppercase tracking-[0.25em] relative z-10 skew-x-[8deg]">
-                    OF BATTLE RAP
+                    BUILD YOUR LEGACY
                   </p>
                 </div>
               </div>

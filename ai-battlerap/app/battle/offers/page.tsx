@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Avatar from '@/components/ui/Avatar';
 import StatCard from '@/components/ui/StatCard';
 import GamingButton from '@/components/ui/GamingButton';
+import { toast } from '@/components/ui/Toast';
 
 type BattlerAttributes = {
   writing: {
@@ -92,12 +93,12 @@ export default function BattleOffersPage() {
         router.push(`/battle/${battleId}/prep`);
       } else {
         const data = await response.json();
-        alert(data.error || 'Failed to accept battle');
+        toast(data.error || 'Failed to accept battle', 'error');
         setActionLoading(null);
       }
     } catch (error) {
       console.error('Error accepting battle:', error);
-      alert('Failed to accept battle');
+      toast('Failed to accept battle', 'error');
       setActionLoading(null);
     }
   };
@@ -117,11 +118,11 @@ export default function BattleOffersPage() {
         await fetchOffers();
       } else {
         const data = await response.json();
-        alert(data.error || 'Failed to decline battle');
+        toast(data.error || 'Failed to decline battle', 'error');
       }
     } catch (error) {
       console.error('Error declining battle:', error);
-      alert('Failed to decline battle');
+      toast('Failed to decline battle', 'error');
     }
     setActionLoading(null);
   };

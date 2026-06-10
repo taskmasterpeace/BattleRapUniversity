@@ -75,7 +75,6 @@ export default function DashboardClient({
   const router = useRouter();
   const [recentNews, setRecentNews] = useState<NewsArticle[]>([]);
   const [simulating, setSimulating] = useState(false);
-  const [generatingOffers, setGeneratingOffers] = useState(false);
   const [tournamentData, setTournamentData] = useState<any>(null);
 
   // Convert battler tier to CharacterPortrait tier format
@@ -117,52 +116,31 @@ export default function DashboardClient({
     }
   };
 
-  const handleSimulateBattle = async () => {
+  const [startError, setStartError] = useState<string | null>(null);
+
+  const handleStartBattle = async () => {
     if (!nextBattle) return;
 
     setSimulating(true);
+    setStartError(null);
     try {
-      const response = await fetch(`/api/internal/run-due-battles?battle_id=${nextBattle.id}`, {
+      const response = await fetch(`/api/battles/${nextBattle.id}/start`, {
         method: 'POST',
-        headers: {
-          'authorization': 'Bearer local-dev-secret-123',
-        },
       });
 
       if (response.ok) {
-        // Redirect directly to battle results page
+        // Straight to the battle results
         router.push(`/battle/${nextBattle.id}`);
       } else {
-        alert('Failed to simulate battle');
+        const data = await response.json().catch(() => ({}));
+        setStartError(data.error || 'Could not start the battle — try again.');
         setSimulating(false);
       }
     } catch (error) {
-      console.error('Error simulating battle:', error);
-      alert('Failed to simulate battle');
+      console.error('Error starting battle:', error);
+      setStartError('Could not start the battle — try again.');
       setSimulating(false);
     }
-  };
-
-  const handleGenerateOffers = async () => {
-    setGeneratingOffers(true);
-    try {
-      const response = await fetch('/api/internal/generate-battle-offers', {
-        method: 'POST',
-        headers: {
-          'authorization': 'Bearer local-dev-secret-123',
-        },
-      });
-
-      if (response.ok) {
-        router.refresh(); // Refresh to show new offers
-      } else {
-        alert('Failed to generate offers');
-      }
-    } catch (error) {
-      console.error('Error generating offers:', error);
-      alert('Failed to generate offers');
-    }
-    setGeneratingOffers(false);
   };
 
   return (
@@ -395,13 +373,18 @@ export default function DashboardClient({
                     </GamingButton>
 
                     {nextBattle && battle.id === nextBattle.id && (
-                      <button
-                        onClick={handleSimulateBattle}
-                        disabled={simulating}
-                        className="w-full mt-3 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-display font-black uppercase tracking-wider transition disabled:opacity-50"
-                      >
-                        {simulating ? 'SIMULATING...' : '⚡ SIMULATE NOW (DEV)'}
-                      </button>
+                      <>
+                        <button
+                          onClick={handleStartBattle}
+                          disabled={simulating}
+                          className="w-full mt-3 px-6 py-4 bg-[#ff8c42] hover:bg-[#ff9d5c] text-black font-display font-black uppercase tracking-wider transition disabled:opacity-50 shadow-[0_0_20px_-5px_rgba(255,140,66,0.6)] animate-pulse-orange"
+                        >
+                          {simulating ? '🔥 ON STAGE…' : '🎤 BATTLE TIME — TAKE THE STAGE'}
+                        </button>
+                        {startError && (
+                          <p className="mt-2 text-sm text-red-400 font-bold text-center">{startError}</p>
+                        )}
+                      </>
                     )}
                   </div>
                 );
@@ -588,39 +571,21 @@ export default function DashboardClient({
                     PENDING {offersCount === 1 ? 'OFFER' : 'OFFERS'}
                   </p>
                 </div>
-                <div className="space-y-3">
-                  <GamingButton href="/battle/offers" variant="primary" size="lg" className="w-full">
-                    📋 VIEW ALL OFFERS
-                  </GamingButton>
-                  <button
-                    onClick={handleGenerateOffers}
-                    disabled={generatingOffers}
-                    className="w-full py-3 px-6 bg-blue-600 hover:bg-blue-700 text-white font-display font-black uppercase tracking-wider transition disabled:opacity-50"
-                  >
-                    {generatingOffers ? 'GENERATING...' : '🔄 GENERATE MORE (DEV)'}
-                  </button>
-                </div>
+                <GamingButton href="/battle/offers" variant="primary" size="lg" className="w-full">
+                  📋 VIEW ALL OFFERS
+                </GamingButton>
               </>
             ) : (
               <>
                 <div className="mb-6 text-center">
                   <div className="text-6xl mb-2">📪</div>
                   <p className="text-zinc-400 font-display font-display font-black uppercase tracking-wider">
-                    NO OFFERS AVAILABLE
+                    NO OFFERS YET — PROMOTERS ARE WATCHING
                   </p>
                 </div>
-                <div className="space-y-3">
-                  <GamingButton href="/battle/offers" variant="secondary" size="lg" className="w-full">
-                    📋 CHECK OFFERS
-                  </GamingButton>
-                  <button
-                    onClick={handleGenerateOffers}
-                    disabled={generatingOffers}
-                    className="w-full py-3 px-6 bg-blue-600 hover:bg-blue-700 text-white font-display font-black uppercase tracking-wider transition disabled:opacity-50"
-                  >
-                    {generatingOffers ? 'GENERATING...' : '🔄 GENERATE OFFERS (DEV)'}
-                  </button>
-                </div>
+                <GamingButton href="/battle/offers" variant="secondary" size="lg" className="w-full">
+                  📋 CHECK OFFERS
+                </GamingButton>
               </>
             )}
           </div>

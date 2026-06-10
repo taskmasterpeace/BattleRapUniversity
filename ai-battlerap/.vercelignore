@@ -1,0 +1,8 @@
+# Dev-only weight — never needed in the deployment
+public/sprites.zip
+tools/
+docs/screenshots/
+test-results/
+dev*.log
+scripts/.beta-stranger-state.json
+supabase/.temp/

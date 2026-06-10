@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Modal } from '@/components/ui/Modal';
+import { toast } from '@/components/ui/Toast';
 import { ThronePosition } from '@/lib/types/throne';
 
 type Props = {
@@ -55,7 +56,7 @@ export default function ThroneChallengeModal({
       }
 
       // Success - close modal and refresh
-      alert('Throne challenge issued! The throne holder has 48 hours to accept or forfeit.');
+      toast('Throne challenge issued! The throne holder has 48 hours to accept or forfeit.', 'success');
       onClose();
       window.location.reload();
     } catch (err) {
