@@ -103,3 +103,88 @@ html, body {
     animation: none !important;
   }
 }
+
+/* ───────────────────────── Landing page (fight-poster kit) ───────────────────────── */
+
+/* Infinite marquee tape — duplicate content inside .marquee-track for seamless loop */
+@keyframes marqueeScroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.marquee-track {
+  display: inline-flex;
+  white-space: nowrap;
+  animation: marqueeScroll 32s linear infinite;
+}
+.marquee-track--slow { animation-duration: 55s; }
+
+/* Verdict stamp slamming onto the page */
+@keyframes stampIn {
+  0%   { opacity: 0; transform: scale(2.4) rotate(-14deg); }
+  60%  { opacity: 1; transform: scale(0.92) rotate(-7deg); }
+  80%  { transform: scale(1.06) rotate(-8deg); }
+  100% { opacity: 1; transform: scale(1) rotate(-8deg); }
+}
+.animate-stamp-in { animation: stampIn 480ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+/* Round score bar filling — width set via --bar-w custom property */
+@keyframes barFill {
+  from { width: 0; }
+  to   { width: var(--bar-w, 80%); }
+}
+.animate-bar-fill { animation: barFill 900ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+/* Haymaker flash */
+@keyframes haymakerFlash {
+  0%, 100% { opacity: 0; transform: scale(0.8) rotate(-3deg); }
+  15%      { opacity: 1; transform: scale(1.15) rotate(2deg); }
+  35%      { transform: scale(1) rotate(-1deg); }
+  85%      { opacity: 1; }
+}
+.animate-haymaker { animation: haymakerFlash 1.4s ease-out both; }
+
+/* Typewriter headline — pair with steps() and a ch-based width */
+@keyframes typeReveal { from { width: 0; } to { width: 100%; } }
+.animate-typewriter {
+  overflow: hidden;
+  white-space: nowrap;
+  animation: typeReveal 1.6s steps(42, end) both;
+}
+
+/* Pop-in chips (rating/xp/badge rewards) */
+@keyframes chipPop {
+  0%   { opacity: 0; transform: translateY(8px) scale(0.85); }
+  70%  { transform: translateY(-2px) scale(1.04); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+.animate-chip-pop { animation: chipPop 420ms cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+
+/* Slow float for hero portraits */
+@keyframes heroFloat {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+.animate-hero-float { animation: heroFloat 5s ease-in-out infinite; }
+
+/* Film grain overlay — apply to a fixed/absolute pseudo-layer */
+.grain-overlay {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+/* Diagonal section edge */
+.clip-diagonal-top { clip-path: polygon(0 3rem, 100% 0, 100% 100%, 0 100%); }
+.clip-diagonal-bottom { clip-path: polygon(0 0, 100% 0, 100% calc(100% - 3rem), 0 100%); }
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track,
+  .animate-stamp-in,
+  .animate-bar-fill,
+  .animate-haymaker,
+  .animate-typewriter,
+  .animate-chip-pop,
+  .animate-hero-float {
+    animation: none !important;
+  }
+  .animate-bar-fill { width: var(--bar-w, 80%); }
+}
