@@ -1,0 +1,17 @@
+[mcp_servers.filesystem]
+args = [
+    "-y",
+    "@modelcontextprotocol/server-filesystem",
+    'C:\git\battlerapuniversity',
+]
+command = "npx"
+
+[mcp_servers.postgres]
+args = [
+    "-y",
+    "@modelcontextprotocol/server-postgres",
+]
+command = "npx"
+
+[mcp_servers.postgres.env]
+POSTGRES_CONNECTION_STRING = "postgresql://postgres:postgres@127.0.0.1:54322/postgres"

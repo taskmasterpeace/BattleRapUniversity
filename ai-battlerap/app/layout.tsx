@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Rajdhani, Inter, JetBrains_Mono, Bebas_Neue, Anton } from 'next/font/google';
 import "./globals.css";
+import GlobalNav from '@/components/nav/GlobalNav';
+import QueryProvider from '@/components/providers/QueryProvider';
 
 // Font configurations
 const bebasNeue = Bebas_Neue({
@@ -49,7 +51,10 @@ export default function RootLayout({
   return (
     <html lang="en" className={`dark ${bebasNeue.variable} ${anton.variable} ${rajdhani.variable} ${inter.variable} ${jetbrainsMono.variable}`}>
       <body className="antialiased bg-[#0a0a0a] text-zinc-100">
-        {children}
+        <QueryProvider>
+          <GlobalNav />
+          {children}
+        </QueryProvider>
       </body>
     </html>
   );

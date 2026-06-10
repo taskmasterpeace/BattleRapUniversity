@@ -9,6 +9,7 @@ import { createServerSupabaseClient, getUser } from '@/lib/db/server';
 import { redirect } from 'next/navigation';
 import ThroneDisplay from '@/components/leagues/throne-display';
 import ThroneChallengesWidget from '@/components/leagues/throne-challenges-widget';
+import type { ThronePosition } from '@/lib/types/throne';
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -67,18 +68,52 @@ export default async function LeagueThronesPage({ params }: Props) {
 
   const playerRating = ranking?.rating || 1200;
 
-  // Fetch throne positions
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_SUPABASE_URL?.replace('/auth/v1', '')}/api/leagues/${leagueId}/thrones`,
-    {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      cache: 'no-store',
-    }
-  );
+  // Fetch throne positions directly via Supabase (same logic as /api route, no HTTP roundtrip).
+  // The previous implementation fetch()'d an absolute URL built from NEXT_PUBLIC_SUPABASE_URL —
+  // which points at Supabase, not this app — so it always 500'd.
+  const { data: thronesRaw, error: thronesError } = await supabase
+    .from('throne_positions')
+    .select('id, league_id, position, battler_id, started_at, defense_count')
+    .eq('league_id', leagueId)
+    .order('position', { ascending: true });
 
-  const { thrones } = await response.json();
+  // If the throne_positions table is missing or empty, render three vacant slots.
+  const missingTable =
+    !!thronesError &&
+    (thronesError.code === 'PGRST205' ||
+      thronesError.message?.toLowerCase().includes('schema cache') ||
+      thronesError.message?.toLowerCase().includes('does not exist'));
+
+  let thrones: ThronePosition[] = [];
+
+  if (missingTable || !thronesRaw || thronesRaw.length === 0) {
+    thrones = ([1, 2, 3] as const).map((position) => ({
+      id: '',
+      league_id: leagueId,
+      position,
+      battler_id: null,
+      started_at: new Date().toISOString(),
+      defense_count: 0,
+    }));
+  } else {
+    const battlerIds = thronesRaw.filter((t) => t.battler_id).map((t) => t.battler_id as string);
+    let nameMap = new Map<string, string>();
+    let ratingMap = new Map<string, number>();
+    if (battlerIds.length > 0) {
+      const [{ data: bs }, { data: rs }] = await Promise.all([
+        supabase.from('battlers').select('id, stage_name').in('id', battlerIds),
+        supabase.from('rankings').select('battler_id, rating').in('battler_id', battlerIds),
+      ]);
+      nameMap = new Map((bs ?? []).map((b) => [b.id as string, b.stage_name as string]));
+      ratingMap = new Map((rs ?? []).map((r) => [r.battler_id as string, r.rating as number]));
+    }
+    thrones = thronesRaw.map((t) => ({
+      ...t,
+      position: t.position as 1 | 2 | 3,
+      battlerName: t.battler_id ? nameMap.get(t.battler_id) ?? 'Unknown' : undefined,
+      battlerRating: t.battler_id ? ratingMap.get(t.battler_id) ?? 1200 : undefined,
+    }));
+  }
 
   return (
     <div className="min-h-screen bg-zinc-950">
@@ -110,11 +145,11 @@ export default async function LeagueThronesPage({ params }: Props) {
         {/* Back Button */}
         <div className="mt-8">
           <a
-            href="/dashboard"
+            href={`/leagues/${league.id}`}
             className="inline-block bg-zinc-800 hover:bg-zinc-700 border-2 border-zinc-700 px-6 py-3 transition-colors"
           >
             <p className="text-sm font-black uppercase text-zinc-300 tracking-wide">
-              ← BACK TO DASHBOARD
+              ← BACK TO {league.short_code}
             </p>
           </a>
         </div>

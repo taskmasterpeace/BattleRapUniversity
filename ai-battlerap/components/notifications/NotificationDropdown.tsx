@@ -169,7 +169,7 @@ export default function NotificationDropdown({ battlerId }: NotificationDropdown
           />
         </svg>
         {unreadCount > 0 && (
-          <span className="absolute top-0 right-0 flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-[#ff8c42] rounded-full">
+          <span className="absolute top-0 right-0 flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-[#ff8c42] rounded-full animate-pulse-orange">
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}
@@ -177,7 +177,7 @@ export default function NotificationDropdown({ battlerId }: NotificationDropdown
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-96 bg-[#2d2f35] border-2 border-[#3a3d44] rounded-lg shadow-xl z-50">
+        <div className="absolute right-0 mt-2 w-96 bg-[#2d2f35] border-2 border-[#3a3d44] rounded-lg shadow-xl z-50 animate-fade-in-up">
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b-2 border-[#3a3d44]">
             <h3 className="text-sm font-black text-zinc-100 uppercase tracking-wider">

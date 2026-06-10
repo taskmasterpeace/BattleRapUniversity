@@ -16,7 +16,6 @@ import EarningsWidget from './EarningsWidget';
 import CareerHighlights from './CareerHighlights';
 import FanStatsWidget from './FanStatsWidget';
 import PendingLifeEventsWidget from './PendingLifeEventsWidget';
-import NotificationDropdown from '../notifications/NotificationDropdown';
 import { CharacterPortrait } from '../ui/CharacterPortrait';
 import BattlerBanner from './BattlerBanner';
 import ActiveBeefsWidget from '../relationships/ActiveBeefsWidget';
@@ -118,12 +117,6 @@ export default function DashboardClient({
     }
   };
 
-  const handleSignOut = async () => {
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    router.push('/login');
-  };
-
   const handleSimulateBattle = async () => {
     if (!nextBattle) return;
 
@@ -174,28 +167,7 @@ export default function DashboardClient({
 
   return (
     <div className="min-h-screen bg-[#18191c] text-zinc-100">
-      {/* Header */}
-      <div className="border-b-2-2 border-[#3a3d44] bg-[#2d2f35]">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-4">
-            <Link href="/dashboard" className="text-2xl font-display font-black uppercase tracking-tighter hover:text-[#ff8c42] transition">
-              BATTLERAP UNIVERSITY
-            </Link>
-            <span className="text-[#3a3d44]">|</span>
-            <span className="text-sm text-zinc-500 font-display font-display font-black uppercase tracking-wider">DASHBOARD</span>
-          </div>
-          <div className="flex items-center gap-4">
-            <NotificationDropdown battlerId={battler.id} />
-            <button
-              onClick={handleSignOut}
-              className="px-4 py-2 text-sm text-zinc-400 hover:text-zinc-100 transition font-display font-display font-black uppercase tracking-wider"
-            >
-              SIGN OUT
-            </button>
-          </div>
-        </div>
-      </div>
-
+      {/* Global nav lives in app/layout.tsx — no local header needed */}
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-12">
         {/* Quick Nav */}
         <div className="mb-8 flex flex-col sm:flex-row gap-3">
@@ -350,9 +322,19 @@ export default function DashboardClient({
                       <p className="text-xs text-zinc-500 font-display font-display font-black uppercase tracking-wider mb-2">
                         VS OPPONENT
                       </p>
-                      <p className="text-3xl font-display font-black uppercase tracking-tighter text-zinc-100 mb-2">
-                        {battle.ai_battler?.stage_name}
-                      </p>
+                      {battle.ai_battler?.id ? (
+                        <Link
+                          href={`/battler/${battle.ai_battler.id}`}
+                          className="inline-block text-3xl font-display font-black uppercase tracking-tighter text-zinc-100 mb-2 hover:text-[#ff8c42] transition-colors"
+                          title={`View ${battle.ai_battler.stage_name}'s career`}
+                        >
+                          {battle.ai_battler.stage_name}
+                        </Link>
+                      ) : (
+                        <p className="text-3xl font-display font-black uppercase tracking-tighter text-zinc-100 mb-2">
+                          {battle.ai_battler?.stage_name}
+                        </p>
+                      )}
                       <p className="text-sm text-zinc-400 font-display font-display font-black uppercase">
                         {battle.league?.name}
                       </p>

@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import { HTMLAttributes } from 'react';
 import { cn } from '@/lib/utils';
 
@@ -15,40 +14,33 @@ export function BadgeSprite({
   tier: _tier,
   size = 'md',
   className,
+  style,
   ...props
 }: BadgeSpriteProps) {
-  // The sprite PNGs are 512x512 and contain BOTH the circular artwork (top ~70%)
-  // AND a baked-in text label (bottom ~30%) that's clipped at the canvas edge
-  // (e.g. "COMMENTARY" loses the descenders). Since BadgeCard already shows the
-  // badge name as text alongside, we crop the label out by making the container
-  // shorter than wide and letting overflow-hidden hide the bottom of the image.
-  // Artwork circle ends at ~65% of canvas height; label sits in the bottom ~35%
-  // and gets visually clipped at the PNG edge. Crop down to ~65% to hide labels
-  // entirely — the badge name shows as text in BadgeCard anyway.
+  // The sprite PNGs are 512x512 with the circle artwork in the top ~70%
+  // and a baked-in text label in the bottom ~30%. We use background-image
+  // sized to ~140% (so the top 70% of the source fills the container) and
+  // positioned at the top, which cleanly crops out the label.
   const containerStyles = {
-    sm: 'w-16 h-[2.625rem]',   // 64x42 - shows top 65%
-    md: 'w-24 h-[3.875rem]',   // 96x62 - shows top 65%
-    lg: 'w-32 h-[5.25rem]',    // 128x84 - shows top 65%
-  };
-
-  const pixelDimensions = {
-    sm: 64,
-    md: 96,
-    lg: 128,
+    sm: 'w-16 h-16',  // 64x64 square
+    md: 'w-24 h-24',  // 96x96 square
+    lg: 'w-32 h-32',  // 128x128 square
   };
 
   return (
     <div
-      className={cn('relative shrink-0 overflow-hidden', containerStyles[size], className)}
+      role="img"
+      aria-label={alt}
+      className={cn('shrink-0 bg-no-repeat', containerStyles[size], className)}
+      style={{
+        backgroundImage: `url(${src})`,
+        // Sprites are 512x512 squares: circle artwork on top + baked-in label below.
+        // Show the full image (no crop) so both the icon and the label are visible.
+        backgroundSize: 'contain',
+        backgroundPosition: 'center',
+        ...style,
+      }}
       {...props}
-    >
-      <Image
-        src={src}
-        alt={alt}
-        width={pixelDimensions[size]}
-        height={pixelDimensions[size]}
-        className="w-full h-auto"
-      />
-    </div>
+    />
   );
 }

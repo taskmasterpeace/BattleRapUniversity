@@ -25,12 +25,14 @@ export async function GET(
     const supabase = await createServerSupabaseClient();
 
     // 1. Load battler data
+    // NOTE: column is `is_ai` in schema (not is_player_battler) — selecting a
+    // non-existent column causes the query to fail and bubble up as 404 here.
     const { data: battler, error: battlerError } = await supabase
       .from('battlers')
       .select(`
         id,
         stage_name,
-        is_player_battler,
+        is_ai,
         created_at,
         battler_attributes (
           writing,
@@ -72,7 +74,7 @@ export async function GET(
       battler: {
         id: battler.id,
         stageName: battler.stage_name,
-        isPlayer: battler.is_player_battler,
+        isPlayer: !battler.is_ai,
         joinedAt: battler.created_at,
         attributes: battler.battler_attributes,
         rating: ranking?.rating || 1200,

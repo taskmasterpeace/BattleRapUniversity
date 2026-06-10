@@ -34,7 +34,7 @@ export default async function LeaguesIndexPage() {
   const list: League[] = leagues ?? [];
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-zinc-100">
+    <div className="min-h-screen bg-[#0a0a0a] text-zinc-100 animate-fade-in-up">
       <div className="border-b-2 border-[#3a3d44] bg-[#18191c]">
         <div className="max-w-7xl mx-auto px-6 py-6">
           <Link
@@ -64,8 +64,8 @@ export default async function LeaguesIndexPage() {
             {list.map((l) => (
               <Link
                 key={l.id}
-                href={`/leagues/${l.id}/thrones`}
-                className="group bg-[#18191c] border-2 border-[#3a3d44] hover:border-[#ff8c42] p-6 transition-colors block"
+                href={`/leagues/${l.id}`}
+                className="group bg-[#18191c] border-2 border-[#3a3d44] hover:border-[#ff8c42] hover:-translate-y-[2px] hover:shadow-[0_14px_36px_-18px_rgba(255,140,66,0.6)] p-6 transition-all duration-200 block"
               >
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-xs font-mono uppercase tracking-wider text-[#ff8c42]">

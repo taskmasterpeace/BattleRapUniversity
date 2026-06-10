@@ -52,6 +52,19 @@ export async function GET() {
       .order('created_at', { ascending: false });
 
     if (challengesError) {
+      // Table missing in this environment — treat as "no challenges" instead of 500
+      // so the widget can render its empty state. Same pattern as /api/leagues/[id]/thrones.
+      const missingTable =
+        challengesError.code === 'PGRST205' ||
+        challengesError.message?.toLowerCase().includes('schema cache') ||
+        challengesError.message?.toLowerCase().includes('does not exist');
+      if (missingTable) {
+        return NextResponse.json({
+          outgoingChallenges: [],
+          incomingChallenges: [],
+          totalPending: 0,
+        });
+      }
       console.error('Error fetching throne challenges:', challengesError);
       return NextResponse.json(
         { error: 'Failed to fetch throne challenges' },

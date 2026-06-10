@@ -438,22 +438,28 @@ export default function BattleViewerPage({
 
               {/* AI Side */}
               <div className="text-center space-y-4">
-                <div className="flex justify-center">
-                  <Avatar
-                    url={aiAvatarUrl}
-                    size={160}
-                    className="shadow-[0_0_30px_rgba(100,100,100,0.3)]"
-                    alt={battle.ai_battler.stage_name}
-                  />
-                </div>
-                <div>
-                  <h2 className="text-3xl font-display font-black uppercase tracking-tight mb-1">
-                    {battle.ai_battler.stage_name}
-                  </h2>
-                  <p className="text-xs text-zinc-500 uppercase tracking-wider capitalize">
-                    {battle.ai_battler.tier} TIER
-                  </p>
-                </div>
+                <Link
+                  href={`/battler/${battle.ai_battler.id}`}
+                  className="block group"
+                  title={`View ${battle.ai_battler.stage_name}'s career`}
+                >
+                  <div className="flex justify-center">
+                    <Avatar
+                      url={aiAvatarUrl}
+                      size={160}
+                      className="shadow-[0_0_30px_rgba(100,100,100,0.3)] transition-transform duration-200 group-hover:scale-[1.04]"
+                      alt={battle.ai_battler.stage_name}
+                    />
+                  </div>
+                  <div className="mt-4">
+                    <h2 className="text-3xl font-display font-black uppercase tracking-tight mb-1 group-hover:text-[#ff8c42] transition-colors">
+                      {battle.ai_battler.stage_name}
+                    </h2>
+                    <p className="text-xs text-zinc-500 uppercase tracking-wider capitalize">
+                      {battle.ai_battler.tier} TIER
+                    </p>
+                  </div>
+                </Link>
                 {isCompleted && (
                   <div className="text-6xl font-display font-black text-zinc-500">
                     {aiRoundsWon}
