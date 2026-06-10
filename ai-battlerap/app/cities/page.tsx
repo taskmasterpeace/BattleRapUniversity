@@ -70,26 +70,28 @@ export default async function CitiesIndexPage() {
                 key={city.id}
                 className="group bg-[#18191c] border-2 border-[#3a3d44] hover:border-[#ff8c42] hover:-translate-y-[2px] hover:shadow-[0_14px_36px_-18px_rgba(255,140,66,0.6)] transition-all duration-200 overflow-hidden"
               >
-                {/* Skyline / background image */}
-                <div
-                  className="aspect-[16/9] bg-[#2d2f35] bg-cover bg-center relative transition-transform duration-500 group-hover:scale-[1.03]"
-                  style={hero ? { backgroundImage: `url(${hero})` } : undefined}
-                >
-                  {!hero && (
-                    <div className="absolute inset-0 flex items-center justify-center text-zinc-600 text-xs uppercase tracking-widest">
-                      No skyline
+                {/* Skyline / background image — links to the city scene hub */}
+                <Link href={`/cities/${city.id}`} className="block">
+                  <div
+                    className="aspect-[16/9] bg-[#2d2f35] bg-cover bg-center relative transition-transform duration-500 group-hover:scale-[1.03]"
+                    style={hero ? { backgroundImage: `url(${hero})` } : undefined}
+                  >
+                    {!hero && (
+                      <div className="absolute inset-0 flex items-center justify-center text-zinc-600 text-xs uppercase tracking-widest">
+                        No skyline
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#18191c] via-transparent to-transparent" />
+                    <div className="absolute bottom-2 left-3 right-3">
+                      <h2 className="text-2xl font-black uppercase tracking-tight text-zinc-100 drop-shadow-lg group-hover:text-[#ff8c42] transition">
+                        {city.name}
+                      </h2>
+                      <p className="text-xs uppercase tracking-widest text-zinc-300 drop-shadow">
+                        {[city.state, city.country].filter(Boolean).join(' · ')}
+                      </p>
                     </div>
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#18191c] via-transparent to-transparent" />
-                  <div className="absolute bottom-2 left-3 right-3">
-                    <h2 className="text-2xl font-black uppercase tracking-tight text-zinc-100 drop-shadow-lg">
-                      {city.name}
-                    </h2>
-                    <p className="text-xs uppercase tracking-widest text-zinc-300 drop-shadow">
-                      {[city.state, city.country].filter(Boolean).join(' · ')}
-                    </p>
                   </div>
-                </div>
+                </Link>
 
                 {/* Meta */}
                 <div className="p-4 space-y-3">
@@ -131,6 +133,13 @@ export default async function CitiesIndexPage() {
                       No leagues based here yet
                     </div>
                   )}
+
+                  <Link
+                    href={`/cities/${city.id}`}
+                    className="inline-block text-[10px] font-black uppercase tracking-widest text-[#ff8c42] hover:underline"
+                  >
+                    Enter the scene →
+                  </Link>
                 </div>
               </div>
             );

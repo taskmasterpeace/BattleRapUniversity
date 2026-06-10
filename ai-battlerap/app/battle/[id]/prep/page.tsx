@@ -16,6 +16,12 @@ type PrepBlock = {
   auto_generated: boolean;
 };
 
+type PvpState = {
+  mySide: 'challenger' | 'challenged';
+  myLockedAt: string | null;
+  opponentLockedAt: string | null;
+};
+
 type Battle = {
   id: string;
   scheduled_at: string;
@@ -52,6 +58,9 @@ export default function PrepPage({ params }: { params: Promise<{ id: string }> }
   const [allDaysSelected, setAllDaysSelected] = useState(false);
   // Bumped after every prep save so the scouting report refetches live
   const [scoutRefresh, setScoutRefresh] = useState(0);
+  // PvP lock-in state (null for AI battles)
+  const [pvp, setPvp] = useState<PvpState | null>(null);
+  const [lockingIn, setLockingIn] = useState(false);
 
   useEffect(() => {
     fetchPrepData();
@@ -76,6 +85,7 @@ export default function PrepPage({ params }: { params: Promise<{ id: string }> }
         setPrepBlocks(data.prepBlocks);
         setTotalPrepDays(data.totalPrepDays);
         setLockPrepAt(data.lockPrepAt);
+        setPvp(data.pvp || null);
       } else {
         toast(data.error || 'Failed to load prep data', 'error');
       }
@@ -114,7 +124,32 @@ export default function PrepPage({ params }: { params: Promise<{ id: string }> }
     return block?.focus || '';
   };
 
-  const isLocked = lockPrepAt && new Date() >= new Date(lockPrepAt);
+  const handleLockIn = async () => {
+    setLockingIn(true);
+    try {
+      const response = await fetch(`/api/battles/${id}/lockin`, { method: 'POST' });
+      const data = await response.json();
+      if (!response.ok) {
+        toast(data.error || 'Failed to lock in', 'error');
+      } else if (data.simulated) {
+        toast('Both sides locked in — battle ran!', 'success');
+        router.push(`/battle/${id}`);
+        return;
+      } else {
+        setPvp((prev) =>
+          prev ? { ...prev, myLockedAt: data.lockedAt || new Date().toISOString() } : prev
+        );
+        toast('Locked in! Waiting on your opponent.', 'success');
+      }
+    } catch (error) {
+      console.error('Error locking in:', error);
+      toast('Failed to lock in', 'error');
+    }
+    setLockingIn(false);
+  };
+
+  const isLocked =
+    (lockPrepAt && new Date() >= new Date(lockPrepAt)) || Boolean(pvp?.myLockedAt);
 
   const getDaysUntilBattle = () => {
     const now = new Date();
@@ -220,6 +255,48 @@ export default function PrepPage({ params }: { params: Promise<{ id: string }> }
             </div>
           )}
         </div>
+
+        {/* PvP Lock-In Panel */}
+        {pvp && ['accepted', 'locked'].includes(battle.status) && (
+          <div className="bg-[#2d2f35] border-2 border-[#ff8c42]/50 p-6 md:p-8 mb-6 md:mb-8">
+            <div className="flex items-center gap-3 mb-2">
+              <span className="px-3 py-1 bg-[#ff8c42] text-black font-display font-black uppercase text-xs tracking-wider">
+                👤 PLAYER BATTLE
+              </span>
+              <h3 className="font-display font-black text-lg uppercase tracking-wider text-zinc-300">
+                ASYNC CHALLENGE
+              </h3>
+            </div>
+            {!pvp.myLockedAt ? (
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <p className="text-sm text-zinc-400 font-display font-black uppercase tracking-wide">
+                  Your opponent preps on their own time. Lock in when your prep is set — the
+                  battle runs the moment you both do.
+                </p>
+                <GamingButton
+                  onClick={handleLockIn}
+                  disabled={lockingIn}
+                  variant="primary"
+                  size="lg"
+                  className="flex-shrink-0"
+                >
+                  {lockingIn ? 'LOCKING IN...' : '🔒 LOCK IN — READY TO BATTLE'}
+                </GamingButton>
+              </div>
+            ) : (
+              <div className="p-4 bg-[#ff8c42]/10 border-2 border-[#ff8c42]/30 font-display font-black uppercase tracking-wider text-sm text-[#ff8c42]">
+                🔒 LOCKED IN — WAITING ON OPPONENT • SIMS AUTOMATICALLY{' '}
+                {new Date(battle.scheduled_at).toLocaleString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  hour: 'numeric',
+                  minute: '2-digit',
+                })}{' '}
+                IF THEY GHOST
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Focus Legend */}
         <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-6 md:p-8 mb-6 md:mb-8">

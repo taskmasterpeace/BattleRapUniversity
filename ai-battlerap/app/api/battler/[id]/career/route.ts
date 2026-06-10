@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerSupabaseClient } from '@/lib/db/server';
+import { createServerSupabaseClient, getUser } from '@/lib/db/server';
 
 /**
  * Battler Career API Endpoint
@@ -23,6 +23,7 @@ export async function GET(
 
   try {
     const supabase = await createServerSupabaseClient();
+    const viewer = await getUser();
 
     // 1. Load battler data
     // NOTE: column is `is_ai` in schema (not is_player_battler) — selecting a
@@ -33,6 +34,7 @@ export async function GET(
         id,
         stage_name,
         is_ai,
+        user_id,
         is_real,
         bio,
         avatar_url,
@@ -85,6 +87,7 @@ export async function GET(
         id: battler.id,
         stageName: battler.stage_name,
         isPlayer: !battler.is_ai,
+        isOwn: !!viewer && battler.user_id === viewer.id,
         isReal: !!battler.is_real,
         bio: battler.bio ?? null,
         avatarUrl: battler.avatar_url ?? null,

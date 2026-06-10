@@ -41,6 +41,14 @@ export interface Battler {
   bonus_battle_slots?: number | null;
   slots_reset_at?: string | null;
   slots_used_today?: number | null;
+  /** UniverCity: location identity (travel + recruiting) */
+  current_city_id?: string | null;
+  hometown_city_id?: string | null;
+  /** Verified real battlers */
+  is_real?: boolean | null;
+  verified_user_id?: string | null;
+  bio?: string | null;
+  likeness_status?: 'licensed' | 'pending' | 'unofficial' | null;
   created_at: string;
 }
 

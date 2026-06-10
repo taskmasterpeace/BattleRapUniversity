@@ -41,8 +41,12 @@ export async function GET(
     return NextResponse.json({ error: 'Battle not found' }, { status: 404 });
   }
 
-  // Verify user is a participant
-  if (battle.battler_player_id !== battler.id) {
+  // Verify user is a participant (PvP battles have humans on BOTH sides —
+  // the challenged player sits in battler_ai_id and may view results too)
+  const isParticipant = battle.is_pvp
+    ? battle.battler_player_id === battler.id || battle.battler_ai_id === battler.id
+    : battle.battler_player_id === battler.id;
+  if (!isParticipant) {
     return NextResponse.json({ error: 'Not your battle' }, { status: 403 });
   }
 

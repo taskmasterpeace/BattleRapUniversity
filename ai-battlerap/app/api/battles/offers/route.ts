@@ -46,6 +46,7 @@ export async function GET() {
       )
     `)
     .eq('battler_player_id', battler.id)
+    .eq('is_pvp', false) // outgoing PvP challenges are NOT acceptable by the challenger
     .eq('status', 'offered')
     .order('scheduled_at', { ascending: true });
 
@@ -54,6 +55,33 @@ export async function GET() {
   let offers = (offersRaw || []).filter(
     (o) => !o.ai_battler?.stage_name?.startsWith('Test_')
   );
+
+  // PvP: incoming player challenges — this battler is the CHALLENGED side
+  // (battler_ai_id). Normalize the challenger into the ai_battler slot so the
+  // offers UI renders them like any other opponent.
+  const { data: pvpRaw } = await supabase
+    .from('battles')
+    .select(`
+      *,
+      league:leagues(*),
+      challenger:battler_player_id(
+        id,
+        stage_name,
+        tier,
+        style_tags,
+        avatar_url,
+        battler_attributes!inner(writing, performance, resilience)
+      )
+    `)
+    .eq('battler_ai_id', battler.id)
+    .eq('is_pvp', true)
+    .eq('status', 'offered')
+    .order('scheduled_at', { ascending: true });
+
+  const pvpOffers = (pvpRaw || []).map((row) => {
+    const { challenger, ...rest } = row;
+    return { ...rest, ai_battler: challenger };
+  });
 
   if (offers.length === 0) {
     // Replenish: a player with no pending offers and no upcoming battle should
@@ -90,6 +118,7 @@ export async function GET() {
               )
             `)
             .eq('battler_player_id', battler.id)
+            .eq('is_pvp', false)
             .eq('status', 'offered')
             .order('scheduled_at', { ascending: true });
           offers = (refreshed || []).filter(
@@ -101,6 +130,9 @@ export async function GET() {
       }
     }
   }
+
+  // Merge: player challenges surface on top of AI offers
+  offers = [...pvpOffers, ...offers];
 
   if (offers.length === 0) {
     return NextResponse.json({ offers: [] });
@@ -194,8 +226,12 @@ export async function GET() {
     };
   });
 
-  // GRUDGE SYSTEM: Sort grudge matches to top
+  // Sort: player challenges first, then grudge matches, then by date
   const sortedOffers = enrichedOffers.sort((a, b) => {
+    // PvP player challenges always lead the card stack
+    if (a.is_pvp && !b.is_pvp) return -1;
+    if (!a.is_pvp && b.is_pvp) return 1;
+
     // Grudge matches first
     if (a.grudge && !b.grudge) return -1;
     if (!a.grudge && b.grudge) return 1;

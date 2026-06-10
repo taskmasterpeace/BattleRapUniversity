@@ -27,6 +27,7 @@ type BattleOffer = {
   id: string;
   scheduled_at: string;
   lock_prep_at: string;
+  is_pvp?: boolean;
   league: {
     name: string;
     round_length_minutes: number;
@@ -190,11 +191,27 @@ export default function BattleOffersPage() {
                 <div
                   key={offer.id}
                   className={`bg-[#2d2f35] border-2 p-6 transition-all ${
-                    isGrudgeMatch
+                    offer.is_pvp
+                      ? 'border-[#ff8c42] shadow-[0_0_30px_rgba(255,140,66,0.25)]'
+                      : isGrudgeMatch
                       ? 'border-[#ff8c42] shadow-[0_0_30px_rgba(255,140,66,0.3)]'
                       : 'border-[#3a3d44] hover:border-[#ff8c42]/30'
                   }`}
                 >
+                  {/* PvP Player Challenge Banner */}
+                  {offer.is_pvp && (
+                    <div className="mb-6 pb-6 border-b-2 border-[#ff8c42]/30">
+                      <div className="flex items-center gap-4">
+                        <div className="px-4 py-2 bg-[#ff8c42] text-black font-display font-black uppercase tracking-wider text-sm">
+                          👤 PLAYER CHALLENGE
+                        </div>
+                        <p className="text-zinc-400 font-display font-black uppercase tracking-wider text-xs">
+                          A real player called you out — accept, prep, and lock in
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Grudge Match Banner */}
                   {offer.grudge && (
                     <div className={`mb-6 pb-6 border-b-2-2 ${isGrudgeMatch ? 'border-[#ff8c42]/30' : 'border-[#3a3d44]'}`}>

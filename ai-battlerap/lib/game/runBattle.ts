@@ -143,6 +143,49 @@ export async function runBattleSimulation(
     }
   }
 
+  // ── CREW CONTRIBUTIONS ──────────────────────────────────────────────
+  // Each crew member adds ONE extra prep day matching their specialty
+  // (research/writing/performance), appended after the player's own prep
+  // days. Capped at one per member, max 3 (crew size limit). These flow
+  // through buildPrepProfile() in the sim like any other prep block.
+  try {
+    const { data: crewMembers } = await supabase
+      .from('crew_members')
+      .select('id, specialty')
+      .eq('owner_battler_id', battle.battler_player_id)
+      .order('recruited_at')
+      .limit(3);
+
+    if (crewMembers && crewMembers.length > 0) {
+      // Find the highest existing day_index for the player so crew days
+      // never collide with planned/backfilled days.
+      const { data: maxDayRow } = await supabase
+        .from('prep_blocks')
+        .select('day_index')
+        .eq('battle_id', battle.id)
+        .eq('battler_id', battle.battler_player_id)
+        .order('day_index', { ascending: false })
+        .limit(1);
+
+      const maxDay = maxDayRow && maxDayRow.length > 0 ? maxDayRow[0].day_index : 0;
+
+      const crewPrepBlocks = crewMembers.slice(0, 3).map((member: any, i: number) => ({
+        battle_id: battle.id,
+        battler_id: battle.battler_player_id,
+        day_index: maxDay + 1 + i,
+        focus: member.specialty, // 'research' | 'writing' | 'performance'
+        auto_generated: true,
+      }));
+
+      if (crewPrepBlocks.length > 0) {
+        await supabase.from('prep_blocks').insert(crewPrepBlocks);
+      }
+    }
+  } catch (crewError) {
+    // Crew bonuses are additive flavor — never block the battle on them.
+    console.error('Error applying crew prep contributions:', crewError);
+  }
+
   // Generate AI prep if missing
   const { data: aiPrepBlocks } = await supabase
     .from('prep_blocks')

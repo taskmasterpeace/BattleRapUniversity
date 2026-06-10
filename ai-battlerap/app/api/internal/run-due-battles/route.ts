@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 import { getVirtualNowISO } from '@/lib/dev/timeManipulation';
 import { runBattleSimulation } from '@/lib/game/runBattle';
+import { runPvpBattle } from '@/lib/game/runPvpBattle';
 
 /**
  * POST /api/internal/run-due-battles
@@ -68,6 +69,20 @@ export async function POST(request: Request) {
 
   for (const battle of dueBattles) {
     try {
+      if (battle.is_pvp) {
+        // PvP: symmetric two-human pipeline. Reaching the cron means at least
+        // one side ghosted — sim with whatever prep exists (backfilled inside).
+        const pvpResult = await runPvpBattle(battle, supabase);
+        results.push({
+          battleId: battle.id,
+          status: 'success',
+          isPvp: true,
+          challengerNoShow: pvpResult.challengerNoShow,
+          challengedNoShow: pvpResult.challengedNoShow,
+        });
+        continue;
+      }
+
       const { noShow, offersGenerated } = await runBattleSimulation(battle, supabase);
       results.push({
         battleId: battle.id,

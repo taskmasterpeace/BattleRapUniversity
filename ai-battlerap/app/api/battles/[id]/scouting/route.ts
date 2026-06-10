@@ -54,21 +54,26 @@ export async function GET(
     return NextResponse.json({ error: 'No battler found' }, { status: 404 });
   }
 
-  // The battle — must belong to this player
+  // The battle — must belong to this player. PvP battles have humans on
+  // BOTH sides: each participant scouts the OTHER side.
   const { data: battle } = await supabase
     .from('battles')
-    .select('id, battler_player_id, battler_ai_id')
+    .select('id, battler_player_id, battler_ai_id, is_pvp')
     .eq('id', id)
     .single();
 
   if (!battle) {
     return NextResponse.json({ error: 'Battle not found' }, { status: 404 });
   }
-  if (battle.battler_player_id !== battler.id) {
+  const isParticipant = battle.is_pvp
+    ? battle.battler_player_id === battler.id || battle.battler_ai_id === battler.id
+    : battle.battler_player_id === battler.id;
+  if (!isParticipant) {
     return NextResponse.json({ error: 'Not your battle' }, { status: 403 });
   }
 
-  const opponentId = battle.battler_ai_id;
+  const opponentId =
+    battle.battler_player_id === battler.id ? battle.battler_ai_id : battle.battler_player_id;
 
   // Research days the player has banked for this battle
   const { count: researchCount } = await supabase

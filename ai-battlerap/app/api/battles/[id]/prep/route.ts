@@ -26,13 +26,15 @@ export async function GET(
     return NextResponse.json({ error: 'No battler found' }, { status: 404 });
   }
 
-  // Get battle with league info
+  // Get battle with league info (both battler joins so PvP can show the
+  // correct opponent to whichever side is looking)
   const { data: battle } = await supabase
     .from('battles')
     .select(`
       *,
       league:leagues(*),
-      ai_battler:battler_ai_id(id, stage_name, tier, avatar_url)
+      ai_battler:battler_ai_id(id, stage_name, tier, avatar_url),
+      player_battler:battler_player_id(id, stage_name, tier, avatar_url)
     `)
     .eq('id', id)
     .single();
@@ -41,12 +43,15 @@ export async function GET(
     return NextResponse.json({ error: 'Battle not found' }, { status: 404 });
   }
 
-  // Verify ownership
-  if (battle.battler_player_id !== battler.id) {
+  // Verify ownership. PvP battles have humans on BOTH sides — each preps
+  // their own calendar on the same battle row.
+  const isChallenger = battle.battler_player_id === battler.id;
+  const isChallenged = battle.battler_ai_id === battler.id;
+  if (battle.is_pvp ? !(isChallenger || isChallenged) : !isChallenger) {
     return NextResponse.json({ error: 'Not your battle' }, { status: 403 });
   }
 
-  // Get existing prep blocks
+  // Get existing prep blocks (only the caller's own side)
   const { data: prepBlocks } = await supabase
     .from('prep_blocks')
     .select('*')
@@ -59,11 +64,25 @@ export async function GET(
   const createdDate = new Date(battle.created_at);
   const totalPrepDays = Math.max(1, Math.ceil((lockDate.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24)));
 
+  // Normalize: the UI renders the opponent from `ai_battler`. For the
+  // challenged side of a PvP battle, the opponent is the challenger.
+  const { player_battler, ...responseBattle } = battle;
+  if (battle.is_pvp && isChallenged) {
+    responseBattle.ai_battler = player_battler;
+  }
+
   return NextResponse.json({
-    battle,
+    battle: responseBattle,
     prepBlocks: prepBlocks || [],
     totalPrepDays,
     lockPrepAt: battle.lock_prep_at,
+    pvp: battle.is_pvp
+      ? {
+          mySide: isChallenger ? 'challenger' : 'challenged',
+          myLockedAt: isChallenger ? battle.challenger_locked_at : battle.challenged_locked_at,
+          opponentLockedAt: isChallenger ? battle.challenged_locked_at : battle.challenger_locked_at,
+        }
+      : null,
   });
 }
 
@@ -115,8 +134,11 @@ export async function POST(
     return NextResponse.json({ error: 'Battle not found' }, { status: 404 });
   }
 
-  // Verify ownership
-  if (battle.battler_player_id !== battler.id) {
+  // Verify ownership (PvP: either human side may save their own prep)
+  const isParticipant = battle.is_pvp
+    ? battle.battler_player_id === battler.id || battle.battler_ai_id === battler.id
+    : battle.battler_player_id === battler.id;
+  if (!isParticipant) {
     return NextResponse.json({ error: 'Not your battle' }, { status: 403 });
   }
 
@@ -125,6 +147,20 @@ export async function POST(
   const lockDate = new Date(battle.lock_prep_at);
   if (now >= lockDate) {
     return NextResponse.json({ error: 'Prep is locked' }, { status: 400 });
+  }
+
+  // PvP: once you've locked in, your prep is final
+  if (battle.is_pvp) {
+    const myLockedAt =
+      battle.battler_player_id === battler.id
+        ? battle.challenger_locked_at
+        : battle.challenged_locked_at;
+    if (myLockedAt) {
+      return NextResponse.json(
+        { error: 'You are locked in — prep is final' },
+        { status: 400 }
+      );
+    }
   }
 
   // Validate day_index is within range

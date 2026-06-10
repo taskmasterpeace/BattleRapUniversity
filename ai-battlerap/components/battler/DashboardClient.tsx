@@ -48,6 +48,7 @@ type Props = {
   }>;
   prepStatusByBattle?: Record<string, { setDays: number; totalDays: number }>;
   badgeProgress?: Array<{ code: string; label: string; pct: number; detail: string }>;
+  currentCity?: { id: string; name: string } | null;
 };
 
 type NewsArticle = {
@@ -71,6 +72,7 @@ export default function DashboardClient({
   careerRounds = [],
   prepStatusByBattle = {},
   badgeProgress = [],
+  currentCity = null,
 }: Props) {
   const nextBattle = activeBattles && activeBattles.length > 0 ? activeBattles[0] : null;
   const router = useRouter();
@@ -203,6 +205,15 @@ export default function DashboardClient({
                   <span className="px-4 py-2 bg-[#3a3d44] text-zinc-400 border-2 border-[#3a3d44] font-display font-display font-black uppercase tracking-wider text-sm">
                     📍 {battler.region}
                   </span>
+                )}
+                {currentCity && (
+                  <Link
+                    href={`/cities/${currentCity.id}`}
+                    className="px-4 py-2 bg-[#ff8c42]/10 text-[#ff8c42] border-2 border-[#ff8c42]/40 hover:border-[#ff8c42] font-display font-black uppercase tracking-wider text-sm transition-colors"
+                    title="Your current city — recruit and battle the local scene"
+                  >
+                    ✈️ IN {currentCity.name}
+                  </Link>
                 )}
               </div>
 

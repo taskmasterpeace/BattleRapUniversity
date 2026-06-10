@@ -50,8 +50,17 @@ export async function POST(
     return NextResponse.json({ error: 'Battle not found' }, { status: 404 });
   }
 
-  // Verify ownership
-  if (battle.battler_player_id !== battler.id) {
+  // Verify ownership.
+  // PvP: battler_player_id is the CHALLENGER, battler_ai_id is the CHALLENGED
+  // player's battler — only the challenged side may accept the offer.
+  if (battle.is_pvp) {
+    if (battle.battler_ai_id !== battler.id) {
+      return NextResponse.json(
+        { error: 'Only the challenged player can accept this challenge' },
+        { status: 403 }
+      );
+    }
+  } else if (battle.battler_player_id !== battler.id) {
     return NextResponse.json({ error: 'Not your battle' }, { status: 403 });
   }
 
@@ -90,6 +99,26 @@ export async function POST(
   } catch (stressError) {
     console.error('Error updating stress:', stressError);
     // Don't fail the request, stress is a secondary system
+  }
+
+  // PvP: let the challenger know the challenge is on
+  if (battle.is_pvp) {
+    try {
+      const { createNotification } = await import('@/lib/services/notificationService');
+      const { data: challenged } = await supabase
+        .from('battlers')
+        .select('stage_name')
+        .eq('id', battle.battler_ai_id)
+        .single();
+      await createNotification(supabase, battle.battler_player_id, {
+        type: 'system_message',
+        title: 'Challenge Accepted!',
+        message: `${challenged?.stage_name || 'Your opponent'} accepted your challenge. Prep up and lock in.`,
+        metadata: { battleId: battle.id, isPvp: true },
+      });
+    } catch (notifyError) {
+      console.error('Error notifying challenger of acceptance:', notifyError);
+    }
   }
 
   return NextResponse.json({ battle: updatedBattle });

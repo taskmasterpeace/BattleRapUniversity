@@ -110,6 +110,17 @@ export default async function DashboardPage() {
       .eq('battler_id', battler.id)
   ]);
 
+  // Current city (UniverCity: where you are determines who you can recruit/battle)
+  let currentCity: { id: string; name: string } | null = null;
+  if (battler.current_city_id) {
+    const { data: cityRow } = await supabase
+      .from('cities')
+      .select('id, name')
+      .eq('id', battler.current_city_id)
+      .single();
+    currentCity = cityRow ?? null;
+  }
+
   // Compute "badges in reach" — top 3 badges the player is closest to earning.
   // Looks at career rounds + ranking to estimate progress percentages.
   const earnedSet = new Set<string>(battler.style_tags || []);
@@ -218,6 +229,7 @@ export default async function DashboardPage() {
       careerRounds={careerRounds || []}
       prepStatusByBattle={prepStatusByBattle}
       badgeProgress={badgeProgress}
+      currentCity={currentCity}
     />
   );
 }

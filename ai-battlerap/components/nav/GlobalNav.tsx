@@ -53,6 +53,7 @@ const DRAWER_GROUPS: { title: string; items: NavItem[] }[] = [
       { href: '/calendar', label: 'Calendar', icon: CalendarDaysIcon },
       { href: '/life-events', label: 'Life Events', icon: HeartIcon },
       { href: '/relationships', label: 'Relationships', icon: UserGroupIcon },
+      { href: '/crew', label: 'Crew', icon: UsersIcon },
       { href: '/finances', label: 'Finances', icon: BanknotesIcon },
     ],
   },

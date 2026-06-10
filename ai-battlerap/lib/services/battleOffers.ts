@@ -32,7 +32,7 @@ export async function generateOffersForPlayer(
   // Get player battler info
   const { data: battler } = await supabase
     .from('battlers')
-    .select('id, primary_league_id, is_ai')
+    .select('id, primary_league_id, is_ai, current_city_id')
     .eq('id', playerBattlerId)
     .single();
 
@@ -109,6 +109,27 @@ export async function generateOffersForPlayer(
 
   // Find AI opponents with similar rating (centered around target rating)
   const ratingRange = 200;
+
+  // LOCAL FLAVOR: fetch same-city opponents first — the local scene calls
+  // you out before anyone else does. Same rating-range and Test_ filters.
+  let localOpponents: any[] = [];
+  if (battler.current_city_id) {
+    const { data: sameCity } = await supabase
+      .from('battlers')
+      .select(`
+        *,
+        ranking:rankings(rating)
+      `)
+      .eq('is_ai', true)
+      .eq('current_city_id', battler.current_city_id)
+      .neq('id', battler.id)
+      .not('stage_name', 'like', 'Test_%')
+      .gte('ranking.rating', targetRating - ratingRange)
+      .lte('ranking.rating', targetRating + ratingRange)
+      .limit(10);
+    localOpponents = sameCity || [];
+  }
+
   const { data: aiOpponents } = await supabase
     .from('battlers')
     .select(`
@@ -130,8 +151,13 @@ export async function generateOffersForPlayer(
     opponentPool.push(...rivals);
   }
 
-  // Add regular opponents
-  opponentPool.push(...(aiOpponents || []));
+  // Add regular opponents — same-city battlers first, then the wider pool
+  // (deduped so a local never appears twice).
+  const localIds = new Set(localOpponents.map((o) => o.id));
+  opponentPool.push(
+    ...localOpponents,
+    ...(aiOpponents || []).filter((o: any) => !localIds.has(o.id))
+  );
 
   // Fall back to any AI battlers if no similar-rated opponents found
   if (opponentPool.length === 0) {
@@ -164,8 +190,15 @@ export async function generateOffersForPlayer(
       break; // No more unique opponents available
     }
 
-    const randomOpponent =
-      availableOpponents[Math.floor(Math.random() * availableOpponents.length)];
+    // LOCAL FLAVOR: when the player has a current city and locals are in the
+    // pool, 70% of picks come from the local scene first.
+    const localOpponents = battler.current_city_id
+      ? availableOpponents.filter((opp) => opp.current_city_id === battler.current_city_id)
+      : [];
+    const pickFrom =
+      localOpponents.length > 0 && Math.random() < 0.7 ? localOpponents : availableOpponents;
+
+    const randomOpponent = pickFrom[Math.floor(Math.random() * pickFrom.length)];
 
     usedOpponentIds.add(randomOpponent.id);
 

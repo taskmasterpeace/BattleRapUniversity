@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
 import { GrudgeMeter, RematchDemandBar } from '@/components/grudge';
+import ChallengeButton from '@/components/battlers/ChallengeButton';
 
 /**
  * Battler Career Page - GAMING UI REDESIGN
@@ -24,6 +25,7 @@ interface CareerData {
     id: string;
     stageName: string;
     isPlayer: boolean;
+    isOwn?: boolean;
     isReal?: boolean;
     bio?: string | null;
     avatarUrl?: string | null;
@@ -178,6 +180,19 @@ export default function BattlerCareerPage({ params }: { params: Promise<{ id: st
                     ? 'Licensed likeness — real career, real legacy'
                     : `Joined ${formatDistanceToNow(new Date(data.battler.joinedAt), { addSuffix: true })}`}
                 </div>
+                {data.battler.isPlayer && !data.battler.isOwn && (
+                  <div className="mt-4 max-w-xs">
+                    <ChallengeButton
+                      opponentBattlerId={data.battler.id}
+                      stageName={data.battler.stageName}
+                      size="lg"
+                      label="⚔️ CHALLENGE THIS PLAYER"
+                    />
+                    <p className="text-[10px] text-zinc-500 uppercase tracking-widest mt-2">
+                      ⚔️ Challenge this player — async PvP, prep on your own time
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
 

@@ -24,7 +24,8 @@ const PROGRESSION_CONFIG = {
  */
 export async function applyAttributeProgression(
   battleId: string,
-  supabase: any
+  supabase: any,
+  forBattlerId?: string
 ): Promise<void> {
   // 1. Load battle data
   const { data: battle } = await supabase
@@ -49,8 +50,10 @@ export async function applyAttributeProgression(
     return;
   }
 
-  // 3. Apply progression to player battler only (AI battlers don't need progression)
-  const playerBattlerId = battle.battler_player_id;
+  // 3. Apply progression to the human battler. Defaults to the battle's
+  //    battler_player_id; PvP battles pass each side explicitly so BOTH
+  //    humans progress (AI battlers are skipped below either way).
+  const playerBattlerId = forBattlerId ?? battle.battler_player_id;
   const { data: battler } = await supabase
     .from('battlers')
     .select('is_ai')
@@ -357,7 +360,7 @@ async function saveProgressionSnapshot(
   const stressChange = stressAfter - stressBefore;
 
   // Save progression snapshot (including XP data)
-  await supabase.from('battle_progression').insert({
+  const { error: snapshotError } = await supabase.from('battle_progression').insert({
     battle_id: battleId,
     battler_id: battlerId,
     rating_before: ratingBefore,
@@ -382,6 +385,15 @@ async function saveProgressionSnapshot(
     level_after: levelUpResult.newLevel,
     skill_points_earned: levelUpResult.skillPointsEarned,
   });
+
+  if (snapshotError) {
+    // Don't fail progression for a snapshot miss, but never swallow it silently
+    console.error(
+      `Failed to save progression snapshot for battle ${battleId}, battler ${battlerId}:`,
+      snapshotError.message
+    );
+    return;
+  }
 
   console.log(`Saved progression snapshot for battle ${battleId}, battler ${battlerId}`);
 }
