@@ -36,6 +36,24 @@ await shot('02_onboarding');
 // onboarding quick-start walk
 for (let i = 0; i < 12 && !page.url().includes('/dashboard'); i++) {
   await page.waitForTimeout(1000);
+
+  // If a fullscreen modal is open, capture it and try to dismiss/continue through it.
+  const modal = page.locator('div.fixed.inset-0').last();
+  if (await modal.isVisible().catch(() => false)) {
+    await shot(`modal_step_${i}`);
+    const modalText = (await modal.innerText().catch(() => '')).slice(0, 150).replace(/\n/g, ' | ');
+    console.log(`modal detected at step ${i}: ${modalText}`);
+    const modalBtn = modal.locator('button').last();
+    if (await modalBtn.count()) {
+      await modalBtn.click({ timeout: 5000 }).catch(() => {});
+      await page.waitForTimeout(800);
+      continue;
+    }
+    await page.keyboard.press('Escape');
+    await page.waitForTimeout(500);
+    continue;
+  }
+
   const heading = (await page.locator('h2:visible').first().textContent().catch(() => '')) || '';
   const quick = page.locator('button:has-text("QUICK START")').first();
   if (await quick.count()) { await quick.click(); continue; }
@@ -63,7 +81,7 @@ for (let i = 0; i < 12 && !page.url().includes('/dashboard'); i++) {
     const label = ((await btns.nth(b).textContent()) || '').trim().toUpperCase();
     if (!label || label.includes('BACK') || label.includes('EDIT')) continue;
     if (/NEXT|CONTINUE|CONFIRM|CREATE|ENTER|START/.test(label) && (await btns.nth(b).isEnabled().catch(() => false))) {
-      await btns.nth(b).click(); clicked = true; break;
+      await btns.nth(b).click({ timeout: 8000 }).catch(() => {}); clicked = true; break;
     }
   }
   if (!clicked) { const c = page.locator('div.cursor-pointer').first(); if (await c.count()) await c.click(); }
