@@ -17,6 +17,7 @@ import CareerHighlights from './CareerHighlights';
 import FanStatsWidget from './FanStatsWidget';
 import PendingLifeEventsWidget from './PendingLifeEventsWidget';
 import { CharacterPortrait } from '../ui/CharacterPortrait';
+import FirstWeekGoals from './FirstWeekGoals';
 import BattlerBanner from './BattlerBanner';
 import ActiveBeefsWidget from '../relationships/ActiveBeefsWidget';
 import CareerStatsWidget from './CareerStatsWidget';
@@ -180,6 +181,18 @@ export default function DashboardClient({
             🏆 TOURNAMENTS
           </GamingButton>
         </div>
+
+        {/* New-player roadmap — retires itself after 5 career battles */}
+        <FirstWeekGoals
+          totalBattles={(ranking?.wins || 0) + (ranking?.losses || 0)}
+          wins={ranking?.wins || 0}
+          hasActiveBattle={!!nextBattle}
+          hasFullPrep={Object.values(prepStatusByBattle).some(
+            (p) => p.totalDays > 0 && p.setDays >= p.totalDays
+          )}
+          offersCount={offersCount}
+          inCity={!!currentCity}
+        />
 
         {/* Battler Profile Header */}
         <div className="mb-8 bg-[#2d2f35] border-2 border-[#3a3d44] p-8">

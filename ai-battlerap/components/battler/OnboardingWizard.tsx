@@ -460,11 +460,21 @@ export default function OnboardingWizard() {
                   BACK
                 </button>
                 <button
-                  onClick={() => setStep(4)}
+                  // Quick Start: the template already set attributes + styles, so
+                  // skip straight to review (edit buttons there reopen any step).
+                  onClick={() =>
+                    setStep(
+                      selectedTemplate && selectedTemplate.id !== 'custom' && allocatedAttributes && selectedStyles.length > 0
+                        ? 6
+                        : 4
+                    )
+                  }
                   disabled={!selectedLeague}
                   className="flex-1 py-4 bg-[#ff8c42] hover:bg-[#ff9d5c] text-black font-black uppercase tracking-wider transition disabled:opacity-30 disabled:cursor-not-allowed"
                 >
-                  NEXT
+                  {selectedTemplate && selectedTemplate.id !== 'custom' && allocatedAttributes && selectedStyles.length > 0
+                    ? 'REVIEW & CREATE →'
+                    : 'NEXT'}
                 </button>
               </div>
             </div>
