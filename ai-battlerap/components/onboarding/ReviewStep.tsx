@@ -1,5 +1,7 @@
 'use client';
 
+import { getRegionalBadge } from '@/lib/game/regionalBadges';
+
 type League = {
   id: string;
   name: string;
@@ -12,7 +14,8 @@ type League = {
 
 type Props = {
   stageName: string;
-  region: string;
+  avatarUrl: string | null;
+  cityName: string;
   league: League;
   attributes: {
     writing: { lyricism: number; wordplay: number; creativity: number; flow: number };
@@ -28,7 +31,8 @@ type Props = {
 
 export default function ReviewStep({
   stageName,
-  region,
+  avatarUrl,
+  cityName,
   league,
   attributes,
   styles,
@@ -89,17 +93,34 @@ export default function ReviewStep({
             EDIT
           </button>
         </div>
-        <div className="space-y-2">
-          <div>
-            <span className="text-xs text-zinc-600 uppercase">Stage Name:</span>
-            <p className="text-xl font-black uppercase">{stageName}</p>
-          </div>
-          {region && (
-            <div>
-              <span className="text-xs text-zinc-600 uppercase">Region:</span>
-              <p className="text-sm font-display font-black uppercase text-zinc-400">{region}</p>
+        <div className="flex items-start gap-4">
+          {avatarUrl && (
+            <div className="w-24 h-24 shrink-0 bg-[#0a0a0a] border-2 border-[#ff8c42] shadow-[0_0_15px_rgba(255,140,66,0.4)] overflow-hidden">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={avatarUrl}
+                alt="Your claimed face"
+                className="w-full h-full object-contain [image-rendering:pixelated]"
+              />
             </div>
           )}
+          <div className="space-y-2">
+            <div>
+              <span className="text-xs text-zinc-600 uppercase">Stage Name:</span>
+              <p className="text-xl font-black uppercase">{stageName}</p>
+            </div>
+            {cityName && (
+              <div>
+                <span className="text-xs text-zinc-600 uppercase">Home City:</span>
+                <p className="text-sm font-display font-black uppercase text-zinc-400">{cityName}</p>
+              </div>
+            )}
+            {avatarUrl && (
+              <p className="font-mono text-[10px] uppercase tracking-wider text-[#ff8c42]">
+                FACE CLAIMED ON CREATE — YOURS FOREVER
+              </p>
+            )}
+          </div>
         </div>
       </div>
 
@@ -368,6 +389,24 @@ export default function ReviewStep({
               className="px-3 py-1 bg-[#ff8c42]/20 border-2 border-[#ff8c42]/30 text-orange-400 text-xs font-display font-black uppercase tracking-wider"
             >
               {style}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* Starting Badges — what you automatically walk in with */}
+      <div className="bg-[#18191c] border-2 border-[#3a3d44] p-6">
+        <h3 className="text-sm font-black uppercase text-zinc-400 mb-1">STARTING BADGES</h3>
+        <p className="font-mono text-[10px] uppercase tracking-widest text-zinc-600 mb-4">
+          AUTOMATIC ON CREATION — YOUR STYLES PLUS YOUR CITY REP
+        </p>
+        <div className="flex flex-wrap gap-2">
+          {[...new Set([...styles, getRegionalBadge(cityName || null)])].map((badge) => (
+            <span
+              key={badge}
+              className="px-3 py-1 bg-green-500/10 border-2 border-green-500/30 text-green-400 text-xs font-display font-black uppercase tracking-wider"
+            >
+              🏅 {badge}
             </span>
           ))}
         </div>

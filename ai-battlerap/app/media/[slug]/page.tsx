@@ -84,7 +84,7 @@ export default function ArticlePage({
   return (
     <div className="min-h-screen bg-[#18191c]">
       {/* Header */}
-      <div className="bg-[#2d2f35] border-b-2-4 border-[#ff8c42]">
+      <div className="bg-[#2d2f35] border-b-4 border-[#ff8c42]">
         <div className="max-w-4xl mx-auto px-6 py-6">
           <Link
             href="/media"
@@ -113,7 +113,7 @@ export default function ArticlePage({
           </h1>
 
           {/* Metadata */}
-          <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-zinc-400 mb-8 pb-6 border-b-2-2 border-[#3a3d44] font-display uppercase tracking-wide">
+          <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-zinc-400 mb-8 pb-6 border-b-2 border-[#3a3d44] font-display uppercase tracking-wide">
             {article.league && (
               <div>
                 <span className="font-black text-[#ff8c42]">League: </span>
@@ -174,7 +174,7 @@ export default function ArticlePage({
 
           {/* Battle Link */}
           {article.battle && (
-            <div className="mt-8 pt-6 border-t-2-2 border-[#3a3d44]">
+            <div className="mt-8 pt-6 border-t-2 border-[#3a3d44]">
               <GamingButton href={`/battle/${article.battle.id}`} variant="primary" size="lg">
                 View Battle Breakdown →
               </GamingButton>

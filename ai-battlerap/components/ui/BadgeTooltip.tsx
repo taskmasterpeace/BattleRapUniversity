@@ -114,7 +114,7 @@ export default function BadgeTooltip({ badgeCode, children }: Props) {
           </div>
 
           {/* Arrow */}
-          <div className={`w-3 h-3 ${colors.bg} ${colors.border} border-b-2-2 border-r-2 rotate-45 mx-auto -mt-1.5`} />
+          <div className={`w-3 h-3 ${colors.bg} ${colors.border} border-b-2 border-r-2 rotate-45 mx-auto -mt-1.5`} />
         </div>
       )}
     </div>

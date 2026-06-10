@@ -160,7 +160,7 @@ export default async function RelationshipsPage() {
     return (
       <Link
         href={`/relationship/${rel.opponent.id}`}
-        className={`block border-2 border-[#3a3d44] hover:border-orange-500/50 rounded-lg p-5 transition ${stateInfo.bgColor}`}
+        className={`block border-2 border-[#3a3d44] hover:border-orange-500/50 hover:-translate-y-0.5 p-5 transition-all ${stateInfo.bgColor}`}
       >
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
@@ -232,22 +232,22 @@ export default async function RelationshipsPage() {
         {/* Status badges */}
         <div className="flex gap-2 flex-wrap">
           {rel.twitterBeefActive && (
-            <span className="px-2 py-1 bg-blue-500/20 text-blue-400 border-2 border-blue-500/30 text-xs font-display font-black uppercase tracking-wide rounded">
+            <span className="px-2 py-1 bg-blue-500/20 text-blue-400 border-2 border-blue-500/30 text-xs font-display font-black uppercase tracking-wide">
               🐦 TWITTER BEEF
             </span>
           )}
           {rel.playerIsDucking && (
-            <span className="px-2 py-1 bg-red-500/20 text-red-400 border-2 border-red-500/30 text-xs font-display font-black uppercase tracking-wide rounded">
+            <span className="px-2 py-1 bg-red-500/20 text-red-400 border-2 border-red-500/30 text-xs font-display font-black uppercase tracking-wide">
               ⚠️ DUCKING
             </span>
           )}
           {rel.opponentIsDucking && (
-            <span className="px-2 py-1 bg-green-500/20 text-green-400 border-2 border-green-500/30 text-xs font-display font-black uppercase tracking-wide rounded">
+            <span className="px-2 py-1 bg-green-500/20 text-green-400 border-2 border-green-500/30 text-xs font-display font-black uppercase tracking-wide">
               ✓ THEY'RE DUCKING
             </span>
           )}
           {rel.highWaterMark !== rel.currentState && (
-            <span className="px-2 py-1 bg-purple-500/20 text-purple-400 border-2 border-purple-500/30 text-xs font-display font-black uppercase tracking-wide rounded">
+            <span className="px-2 py-1 bg-purple-500/20 text-purple-400 border-2 border-purple-500/30 text-xs font-display font-black uppercase tracking-wide">
               PEAK: {getStateInfo(rel.highWaterMark).label}
             </span>
           )}
@@ -257,49 +257,39 @@ export default async function RelationshipsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#18191c] text-zinc-100">
+    <div className="min-h-screen bg-[#0a0a0a] text-zinc-100">
       {/* Header */}
-      <div className="border-b-2 border-[#3a3d44] bg-[#2d2f35]/50">
-        <div className="max-w-5xl mx-auto px-6 py-6 flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <Link href="/dashboard" className="text-xl font-bold tracking-tight hover:text-[#ff8c42] transition">
-              BATTLE RAP UNIVERSITY
-            </Link>
-            <span className="text-zinc-700">|</span>
-            <span className="text-sm text-zinc-500 uppercase tracking-wider">Relationships</span>
-          </div>
+      <div className="border-b-2 border-[#3a3d44] bg-[#101114]">
+        <div className="max-w-5xl mx-auto px-6 py-8">
           <Link
             href="/dashboard"
-            className="px-4 py-2 text-sm text-zinc-400 hover:text-zinc-100 transition uppercase tracking-wider"
+            className="inline-block text-sm font-bold text-[#ff8c42] hover:text-[#ff9d5c] uppercase tracking-wider transition-colors mb-4"
           >
-            ← DASHBOARD
+            ← Dashboard
           </Link>
-        </div>
-      </div>
-
-      <div className="max-w-5xl mx-auto px-6 py-12">
-        {/* Page Header */}
-        <div className="mb-12">
-          <h1 className="text-4xl font-display font-black tracking-tighter mb-3">
+          <h1 className="text-3xl sm:text-4xl font-display font-black uppercase tracking-tighter mb-2">
             YOUR RELATIONSHIPS
           </h1>
           <p className="text-zinc-400 text-sm uppercase tracking-wide">
             {allRelationships.length} {allRelationships.length === 1 ? 'RELATIONSHIP' : 'RELATIONSHIPS'} TRACKED
           </p>
         </div>
+      </div>
+
+      <div className="max-w-5xl mx-auto px-6 py-12">
 
         {/* No Relationships */}
         {allRelationships.length === 0 && (
-          <div className="bg-[#2d2f35] border-2 border-[#3a3d44] rounded-lg p-12 text-center">
-            <p className="text-zinc-500 text-lg mb-6">
-              NO RELATIONSHIPS YET
+          <div className="bg-[#18191c] border-2 border-[#3a3d44] p-12 text-center">
+            <p className="text-2xl font-display font-black uppercase tracking-tighter text-zinc-300 mb-3">
+              NO BEEF YET — STAY DANGEROUS
             </p>
-            <p className="text-zinc-600 text-sm mb-6">
-              Battle more opponents to develop storylines and rivalries
+            <p className="text-zinc-500 text-sm uppercase tracking-wide mb-8">
+              Every battle plants a storyline. Take an offer and give the blogs something to write about.
             </p>
             <Link
               href="/battle/offers"
-              className="inline-block px-6 py-3 bg-[#ff8c42] hover:bg-[#ff9d5c] text-black font-display font-black uppercase tracking-wider rounded transition"
+              className="inline-block px-6 py-3 bg-[#ff8c42] hover:bg-[#ff9d5c] text-black font-display font-black uppercase tracking-wider transition-all hover:-translate-y-0.5 hover:shadow-[0_4px_20px_-4px_rgba(255,140,66,0.5)]"
             >
               VIEW BATTLE OFFERS
             </Link>

@@ -237,6 +237,61 @@ export async function runBattleSimulation(
     console.error('Error awarding bonus battle slots:', slotError);
   }
 
+  // Crew loyalty — recruiting somebody is not marriage. Wins build the bond,
+  // losses and no-shows bleed it, and every member past the first strains your
+  // attention. At zero loyalty they walk, and the player hears about it.
+  try {
+    const { data: crewRows } = await supabase
+      .from('crew_members')
+      .select('id, member_battler_id, loyalty')
+      .eq('owner_battler_id', battle.battler_player_id);
+
+    if (crewRows && crewRows.length > 0) {
+      const { data: resultRow } = await supabase
+        .from('battles')
+        .select('winner_battler_id, no_show_player')
+        .eq('id', battle.id)
+        .single();
+
+      const won = resultRow?.winner_battler_id === battle.battler_player_id;
+      const noShow = !!resultRow?.no_show_player;
+      const strain = Math.max(0, crewRows.length - 1); // attention is finite
+
+      for (const member of crewRows) {
+        let delta = won ? 3 : -3;
+        if (noShow) delta -= 5; // they showed up for you; you didn't show up at all
+        delta -= strain;
+        const newLoyalty = Math.max(0, Math.min(100, (member.loyalty ?? 70) + delta));
+
+        if (newLoyalty <= 0) {
+          // They walk.
+          const { data: leaver } = await supabase
+            .from('battlers')
+            .select('stage_name')
+            .eq('id', member.member_battler_id)
+            .single();
+          await supabase.from('crew_members').delete().eq('id', member.id);
+          try {
+            const { createNotification } = await import('@/lib/services/notificationService');
+            await createNotification(supabase, battle.battler_player_id, {
+              type: 'system_message',
+              title: `${leaver?.stage_name ?? 'A crew member'} left your camp`,
+              message:
+                'Loyalty hit zero. Wins keep a crew together — and nobody stays loyal to a manager stretched too thin.',
+              metadata: { link: '/crew', event: 'crew_departure' },
+            });
+          } catch (notifyError) {
+            console.error('Crew departure notification failed:', notifyError);
+          }
+        } else if (newLoyalty !== member.loyalty) {
+          await supabase.from('crew_members').update({ loyalty: newLoyalty }).eq('id', member.id);
+        }
+      }
+    }
+  } catch (loyaltyError) {
+    console.error('Error updating crew loyalty:', loyaltyError);
+  }
+
   // Post-battle life event evaluation
   try {
     const { data: completedBattle } = await supabase

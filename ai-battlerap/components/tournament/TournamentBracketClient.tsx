@@ -138,7 +138,7 @@ export default function TournamentBracketClient({
               onClick={() => setActiveTab('bracket')}
               className={`px-6 py-3 font-display font-black uppercase tracking-wide text-sm transition-all ${
                 activeTab === 'bracket'
-                  ? 'text-[#ff8c42] border-b-2-2 border-[#ff8c42]'
+                  ? 'text-[#ff8c42] border-b-2 border-[#ff8c42]'
                   : 'text-zinc-500 hover:text-zinc-300'
               }`}
             >
@@ -148,7 +148,7 @@ export default function TournamentBracketClient({
               onClick={() => setActiveTab('mystats')}
               className={`px-6 py-3 font-display font-black uppercase tracking-wide text-sm transition-all ${
                 activeTab === 'mystats'
-                  ? 'text-[#ff8c42] border-b-2-2 border-[#ff8c42]'
+                  ? 'text-[#ff8c42] border-b-2 border-[#ff8c42]'
                   : 'text-zinc-500 hover:text-zinc-300'
               }`}
             >

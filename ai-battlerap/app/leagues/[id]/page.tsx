@@ -326,7 +326,7 @@ export default async function LeagueHomePage({ params }: { params: Promise<{ id:
               </h2>
               {upcoming.length === 0 ? (
                 <div className="bg-[#18191c] border-2 border-[#3a3d44] p-6 text-center text-zinc-500 text-sm uppercase tracking-wide">
-                  No battles booked
+                  Card&apos;s empty — somebody call out somebody
                 </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -341,7 +341,7 @@ export default async function LeagueHomePage({ params }: { params: Promise<{ id:
               </h2>
               {recent.length === 0 ? (
                 <div className="bg-[#18191c] border-2 border-[#3a3d44] p-6 text-center text-zinc-500 text-sm uppercase tracking-wide">
-                  No completed battles yet
+                  No tape on the books yet — history starts with the first battle
                 </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

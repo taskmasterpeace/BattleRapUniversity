@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { getUser } from '@/lib/db/server';
 import { NextResponse } from 'next/server';
+import spriteManifest from '@/lib/game/characterSprites.json';
 
 /**
  * Get regional badge based on city name
@@ -154,7 +155,7 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json();
-  const { stage_name, region, primary_league_id, style_tags, allocated_attributes } = body;
+  const { stage_name, region, primary_league_id, style_tags, allocated_attributes, avatar_url, home_city_id } = body;
 
   // Validation
   if (!stage_name || typeof stage_name !== 'string') {
@@ -229,60 +230,144 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Invalid league ID' }, { status: 400 });
   }
 
+  // Home city: must be a real city from our database — hometowns can't be made
+  // up. The city becomes identity (hometown + starting location) and its name
+  // doubles as the legacy `region` so regional badges keep working.
+  let homeCityId: string | null = null;
+  let effectiveRegion: string | null =
+    region && typeof region === 'string' ? region.trim().slice(0, 100) : null;
+
+  let homeCityCulture: { culture_style: string | null; scene_size: string | null } | null = null;
+
+  if (home_city_id) {
+    if (typeof home_city_id !== 'string') {
+      return NextResponse.json({ error: 'Invalid home city' }, { status: 400 });
+    }
+    const { data: city } = await supabase
+      .from('cities')
+      .select('id, name, culture_style, scene_size')
+      .eq('id', home_city_id)
+      .maybeSingle();
+
+    if (!city) {
+      return NextResponse.json({ error: 'Invalid home city' }, { status: 400 });
+    }
+    homeCityId = city.id;
+    effectiveRegion = city.name;
+    homeCityCulture = { culture_style: city.culture_style, scene_size: city.scene_size };
+  }
+
   // Get regional badge based on hometown
-  const regionalBadge = getRegionalBadge(region);
+  const regionalBadge = getRegionalBadge(effectiveRegion);
   const allBadges = regionalBadge
     ? [...new Set([...style_tags, regionalBadge])]  // Add regional badge, avoid duplicates
     : style_tags;
 
-  // Auto-assign a character sprite not already used by another battler, so new
-  // players get a face instead of the generic mic icon.
+  // Face claim: faces are exclusive. Use the player's pick when it's a real
+  // manifest sprite that nobody owns; otherwise fall back to a random unused
+  // one (legacy behavior). The unique index on battlers.avatar_url is the
+  // final arbiter — a race just means we retry with a fresh random face.
+  const sprites = spriteManifest as string[];
+
+  const pickRandomUnusedAvatar = async (): Promise<string | null> => {
+    try {
+      const { data: usedRows } = await supabase
+        .from('battlers')
+        .select('avatar_url')
+        .not('avatar_url', 'is', null);
+      const used = new Set((usedRows || []).map((r: { avatar_url: string }) => r.avatar_url));
+      const available = sprites.filter((s) => !used.has(s));
+      if (available.length === 0) return null;
+      return available[Math.floor(Math.random() * available.length)];
+    } catch (spriteError) {
+      console.error('Avatar auto-assign failed (non-fatal):', spriteError);
+      return null;
+    }
+  };
+
   let avatarUrl: string | null = null;
-  try {
-    const sprites: string[] = (await import('@/lib/game/characterSprites.json')).default;
-    const { data: usedRows } = await supabase
+  if (avatar_url && typeof avatar_url === 'string' && sprites.includes(avatar_url)) {
+    const { data: claimedRow } = await supabase
       .from('battlers')
-      .select('avatar_url')
-      .not('avatar_url', 'is', null);
-    const used = new Set((usedRows || []).map((r: { avatar_url: string }) => r.avatar_url));
-    const available = sprites.filter((s) => !used.has(s));
-    const pool = available.length > 0 ? available : sprites;
-    avatarUrl = pool[Math.floor(Math.random() * pool.length)];
-  } catch (spriteError) {
-    console.error('Avatar auto-assign failed (non-fatal):', spriteError);
+      .select('id')
+      .eq('avatar_url', avatar_url)
+      .maybeSingle();
+    avatarUrl = claimedRow ? await pickRandomUnusedAvatar() : avatar_url;
+  } else {
+    avatarUrl = await pickRandomUnusedAvatar();
   }
 
-  // Create battler
-  const { data: battler, error: battlerError } = await supabase
-    .from('battlers')
-    .insert({
-      user_id: user.id,
-      stage_name: trimmedName,
-      region: region && typeof region === 'string' ? region.trim().slice(0, 100) : null,
-      primary_league_id,
-      style_tags: allBadges,
-      tier: 'low',
-      is_ai: false,
-      avatar_url: avatarUrl,
-    })
-    .select()
-    .single();
+  // Create battler (retry once with a fresh face if we lose an avatar race)
+  let battler: any = null;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const { data: inserted, error: battlerError } = await supabase
+      .from('battlers')
+      .insert({
+        user_id: user.id,
+        stage_name: trimmedName,
+        region: effectiveRegion,
+        primary_league_id,
+        style_tags: allBadges,
+        tier: 'low',
+        is_ai: false,
+        avatar_url: avatarUrl,
+        hometown_city_id: homeCityId,
+        current_city_id: homeCityId,
+      })
+      .select()
+      .single();
 
-  if (battlerError) {
+    if (!battlerError) {
+      battler = inserted;
+      break;
+    }
+
+    // 23505 = unique violation: someone claimed this face between our check
+    // and the insert. Grab a fresh random face and try once more.
+    if (battlerError.code === '23505' && battlerError.message?.includes('avatar') && attempt === 0) {
+      console.warn('Avatar race lost, retrying with a fresh face:', avatarUrl);
+      avatarUrl = await pickRandomUnusedAvatar();
+      continue;
+    }
+
     console.error('Error creating battler:', battlerError);
     return NextResponse.json({ error: 'Failed to create battler' }, { status: 500 });
   }
 
-  // Create attributes from allocation
+  if (!battler) {
+    return NextResponse.json({ error: 'Failed to create battler' }, { status: 500 });
+  }
+
+  // Create attributes from allocation, then apply the home city's culture
+  // bonus — where you're from determines what you start with.
+  const { getCityBonus, applyCityBonus } = await import('@/lib/game/cityBonuses');
+  const cityBonus = homeCityCulture
+    ? getCityBonus(homeCityCulture.culture_style, homeCityCulture.scene_size)
+    : null;
+  const boosted = cityBonus
+    ? applyCityBonus(
+        {
+          writing: { ...allocated_attributes.writing },
+          performance: { ...allocated_attributes.performance },
+          resilience: allocated_attributes.resilience,
+        },
+        cityBonus
+      )
+    : {
+        writing: allocated_attributes.writing,
+        performance: allocated_attributes.performance,
+        resilience: allocated_attributes.resilience,
+      };
+
   const battlerAttributes = {
     battler_id: battler.id,
-    writing: allocated_attributes.writing,
-    performance: allocated_attributes.performance,
+    writing: boosted.writing,
+    performance: boosted.performance,
     personal: {
       ...allocated_attributes.personal,
       preparation: 5, // Start with baseline preparation (not allocated)
     },
-    resilience: allocated_attributes.resilience,
+    resilience: boosted.resilience,
     public_knowledge: 10, // Start with baseline public knowledge
     xp: {},
   };
@@ -334,5 +419,7 @@ export async function POST(request: Request) {
     battler,
     attributes,
     ranking,
+    cityBonus: cityBonus ? cityBonus.labels : [],
+    startingBadges: allBadges,
   });
 }

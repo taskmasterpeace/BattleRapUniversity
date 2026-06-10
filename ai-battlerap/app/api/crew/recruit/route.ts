@@ -41,13 +41,30 @@ export async function POST(request: Request) {
   // Player's battler
   const { data: player } = await supabase
     .from('battlers')
-    .select('id, stage_name, current_city_id, current_balance')
+    .select('id, stage_name, current_city_id, current_balance, last_recruited_at')
     .eq('user_id', user.id)
     .eq('is_ai', false)
     .single();
 
   if (!player) {
     return NextResponse.json({ error: 'No battler found for this account' }, { status: 404 });
+  }
+
+  // One signing per week — a signature should mean something.
+  const RECRUIT_COOLDOWN_MS = 7 * 24 * 60 * 60 * 1000;
+  if (player.last_recruited_at) {
+    const since = Date.now() - new Date(player.last_recruited_at).getTime();
+    if (since < RECRUIT_COOLDOWN_MS) {
+      const nextAt = new Date(new Date(player.last_recruited_at).getTime() + RECRUIT_COOLDOWN_MS);
+      return NextResponse.json(
+        {
+          error: `One signing per week — you can recruit again ${nextAt.toLocaleDateString()}`,
+          code: 'recruit_cooldown',
+          nextRecruitAt: nextAt.toISOString(),
+        },
+        { status: 429 }
+      );
+    }
   }
 
   // Target battler
@@ -162,6 +179,12 @@ export async function POST(request: Request) {
     await supabase.from('battlers').update({ current_balance: balance }).eq('id', player.id);
     return NextResponse.json({ error: 'Failed to recruit' }, { status: 500 });
   }
+
+  // Start the weekly signing cooldown
+  await supabase
+    .from('battlers')
+    .update({ last_recruited_at: new Date().toISOString() })
+    .eq('id', player.id);
 
   return NextResponse.json({
     member: {

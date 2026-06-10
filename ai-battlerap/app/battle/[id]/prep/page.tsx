@@ -181,7 +181,7 @@ export default function PrepPage({ params }: { params: Promise<{ id: string }> }
   return (
     <div className="min-h-screen bg-[#18191c] text-zinc-100">
       {/* Header */}
-      <div className="border-b-2-2 border-[#3a3d44] bg-[#2d2f35]">
+      <div className="border-b-2 border-[#3a3d44] bg-[#2d2f35]">
         <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-6">
           <Link href="/dashboard" className="text-[#ff8c42] hover:text-[#ff9d5c] text-sm font-display font-display font-black uppercase tracking-wider min-h-[44px] inline-flex items-center transition">
             ← DASHBOARD
@@ -381,7 +381,7 @@ export default function PrepPage({ params }: { params: Promise<{ id: string }> }
           </div>
 
           {/* Prep Summary */}
-          <div className="mt-8 pt-8 border-t-2-2 border-[#3a3d44]">
+          <div className="mt-8 pt-8 border-t-2 border-[#3a3d44]">
             <h4 className="font-display font-black uppercase tracking-wider text-zinc-400 mb-6 text-lg">PREP DISTRIBUTION</h4>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
               {FOCUS_OPTIONS.map((option) => {

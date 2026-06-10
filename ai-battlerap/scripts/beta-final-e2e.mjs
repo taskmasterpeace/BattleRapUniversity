@@ -59,6 +59,12 @@ for (let i = 0; i < 12 && !page.url().includes('/dashboard'); i++) {
   }
   if (heading.includes('IDENTITY')) {
     await page.locator('input[placeholder="Enter your battle name"]').fill('FINAL BOSS');
+    // claim a face + home city (both required, both div.cursor-pointer cards)
+    const face = page.locator('div.cursor-pointer[data-face]').first();
+    await face.waitFor({ timeout: 10000 }).catch(() => {});
+    if (await face.count()) await face.click();
+    const city = page.locator('div.cursor-pointer[data-city]').first();
+    if (await city.count()) await city.click();
     await page.locator('button:has-text("NEXT")').first().click();
     continue;
   }

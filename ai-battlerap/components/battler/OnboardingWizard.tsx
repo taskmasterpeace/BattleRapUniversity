@@ -11,6 +11,7 @@ import ReviewStep from '@/components/onboarding/ReviewStep';
 import OnboardingSuccess from '@/components/onboarding/OnboardingSuccess';
 import { BattlerTemplate } from '@/lib/game/battlerTemplates';
 import Tooltip from '@/components/onboarding/Tooltip';
+import { getCityBonus } from '@/lib/game/cityBonuses';
 
 type League = {
   id: string;
@@ -22,6 +23,22 @@ type League = {
   performance_weight: number;
   logo_url?: string | null;
   base_crowd_factor: number;
+};
+
+type City = {
+  id: string;
+  name: string;
+  state: string | null;
+  country: string | null;
+  culture_style: string | null;
+  scene_size: string | null;
+  skyline_url: string | null;
+};
+
+type AvatarPool = {
+  total: number;
+  claimed: number;
+  available: string[];
 };
 
 const STYLE_TAGS = [
@@ -112,15 +129,37 @@ export default function OnboardingWizard() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [leagues, setLeagues] = useState<League[]>([]);
+  const [cities, setCities] = useState<City[]>([]);
   const [showSuccess, setShowSuccess] = useState(false);
 
   // Form data
   const [selectedTemplate, setSelectedTemplate] = useState<BattlerTemplate | null>(null);
   const [stageName, setStageName] = useState('');
-  const [region, setRegion] = useState('');
+  const [selectedAvatar, setSelectedAvatar] = useState<string | null>(null);
+  const [selectedHomeCity, setSelectedHomeCity] = useState<string | null>(null);
   const [selectedLeague, setSelectedLeague] = useState('');
   const [allocatedAttributes, setAllocatedAttributes] = useState<AllocatedAttributes | null>(null);
   const [selectedStyles, setSelectedStyles] = useState<string[]>([]);
+  const [createdAvatarUrl, setCreatedAvatarUrl] = useState<string | null>(null);
+
+  // Face pool (exclusive: claimed faces never show up here)
+  const [avatarPool, setAvatarPool] = useState<AvatarPool | null>(null);
+  const [avatarLoading, setAvatarLoading] = useState(false);
+
+  const fetchAvatarPool = async () => {
+    setAvatarLoading(true);
+    try {
+      const res = await fetch('/api/avatars', { cache: 'no-store' });
+      if (res.ok) {
+        const data = await res.json();
+        setAvatarPool(data);
+      }
+    } catch (e) {
+      console.error('Failed to load face pool:', e);
+    } finally {
+      setAvatarLoading(false);
+    }
+  };
 
   // Load draft from localStorage
   useEffect(() => {
@@ -129,7 +168,8 @@ export default function OnboardingWizard() {
       try {
         const parsed = JSON.parse(draft);
         if (parsed.stageName) setStageName(parsed.stageName);
-        if (parsed.region) setRegion(parsed.region);
+        if (parsed.selectedAvatar) setSelectedAvatar(parsed.selectedAvatar);
+        if (parsed.selectedHomeCity) setSelectedHomeCity(parsed.selectedHomeCity);
         if (parsed.selectedLeague) setSelectedLeague(parsed.selectedLeague);
         if (parsed.allocatedAttributes) setAllocatedAttributes(parsed.allocatedAttributes);
         if (parsed.selectedStyles) setSelectedStyles(parsed.selectedStyles);
@@ -146,14 +186,15 @@ export default function OnboardingWizard() {
       const draft = {
         step,
         stageName,
-        region,
+        selectedAvatar,
+        selectedHomeCity,
         selectedLeague,
         allocatedAttributes,
         selectedStyles,
       };
       localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
     }
-  }, [step, stageName, region, selectedLeague, allocatedAttributes, selectedStyles]);
+  }, [step, stageName, selectedAvatar, selectedHomeCity, selectedLeague, allocatedAttributes, selectedStyles]);
 
   useEffect(() => {
     const fetchLeagues = async () => {
@@ -163,7 +204,20 @@ export default function OnboardingWizard() {
         setLeagues(data);
       }
     };
+    const fetchCities = async () => {
+      const supabase = createClient();
+      const { data } = await supabase
+        .from('cities')
+        .select('id, name, state, country, culture_style, scene_size, skyline_url')
+        .order('name');
+      if (data) {
+        setCities(data);
+      }
+    };
     fetchLeagues();
+    fetchCities();
+    fetchAvatarPool();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const toggleStyle = (style: string) => {
@@ -230,7 +284,8 @@ export default function OnboardingWizard() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           stage_name: stageName,
-          region: region || null,
+          avatar_url: selectedAvatar,
+          home_city_id: selectedHomeCity,
           primary_league_id: selectedLeague,
           style_tags: selectedStyles,
           allocated_attributes: allocatedAttributes,
@@ -242,6 +297,10 @@ export default function OnboardingWizard() {
       if (!response.ok) {
         throw new Error(data.error || 'Failed to create battler');
       }
+
+      // The server is the final arbiter of the face claim (race fallback) —
+      // show whatever actually got assigned.
+      setCreatedAvatarUrl(data?.battler?.avatar_url || selectedAvatar);
 
       // Clear draft
       localStorage.removeItem(DRAFT_KEY);
@@ -259,8 +318,17 @@ export default function OnboardingWizard() {
     router.refresh();
   };
 
-  // Get selected league object
+  // Get selected league/city objects
   const selectedLeagueObj = leagues.find((l) => l.id === selectedLeague);
+  const selectedCityObj = cities.find((c) => c.id === selectedHomeCity);
+
+  // The face grid always includes the player's current pick, even after a
+  // shuffle swaps the sample underneath them.
+  const faceGrid = avatarPool
+    ? selectedAvatar && !avatarPool.available.includes(selectedAvatar)
+      ? [selectedAvatar, ...avatarPool.available.slice(0, Math.max(avatarPool.available.length - 1, 0))]
+      : avatarPool.available
+    : [];
 
   // Step 0: Welcome Screen
   if (step === 0) {
@@ -281,6 +349,8 @@ export default function OnboardingWizard() {
       <OnboardingSuccess
         stageName={stageName}
         league={selectedLeagueObj.name}
+        avatarUrl={createdAvatarUrl}
+        cityName={selectedCityObj ? `${selectedCityObj.name}${selectedCityObj.state ? `, ${selectedCityObj.state}` : ''}` : null}
         attributes={allocatedAttributes}
         styles={selectedStyles}
         onContinue={handleSuccessContinue}
@@ -340,53 +410,165 @@ export default function OnboardingWizard() {
             />
           )}
 
-          {/* Step 2: Identity */}
+          {/* Step 2: Identity — name, face, home city */}
           {step === 2 && (
-            <div className="space-y-6">
+            <div className="space-y-8">
               <div>
-                <h2 className="text-2xl font-black uppercase tracking-tight mb-6">YOUR IDENTITY</h2>
-                <div className="space-y-4">
-                  <div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <label className="block text-xs uppercase tracking-wider text-zinc-500 font-bold">
-                        Stage Name *
-                      </label>
-                      <Tooltip content="Your battle rap persona name. This will be displayed in all battles and rankings. Choose wisely - you can't change it later!">
-                        <span className="text-zinc-500 cursor-help text-xs">ⓘ</span>
-                      </Tooltip>
-                    </div>
-                    <input
-                      type="text"
-                      value={stageName}
-                      onChange={(e) => setStageName(e.target.value)}
-                      placeholder="Enter your battle name"
-                      maxLength={30}
-                      className="w-full px-4 py-3 bg-[#18191c] border-2 border-[#3a3d44] text-zinc-100 placeholder-zinc-600 focus:border-[#ff8c42] focus:outline-none uppercase font-bold tracking-wide"
-                    />
-                    <p className="text-xs text-zinc-600 mt-1">{stageName.length}/30 characters</p>
+                <h2 className="text-2xl font-display font-black uppercase tracking-tight mb-1">WHO ARE YOU — IDENTITY</h2>
+                <p className="text-sm text-zinc-500 uppercase tracking-wide">NAME. FACE. CITY. THIS IS PERMANENT.</p>
+              </div>
+
+              {/* Stage Name */}
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <label className="block text-xs uppercase tracking-wider text-zinc-500 font-bold">
+                    Stage Name *
+                  </label>
+                  <Tooltip content="Your battle rap persona name. This will be displayed in all battles and rankings. Choose wisely - you can't change it later!">
+                    <span className="text-zinc-500 cursor-help text-xs">ⓘ</span>
+                  </Tooltip>
+                </div>
+                <input
+                  type="text"
+                  value={stageName}
+                  onChange={(e) => setStageName(e.target.value)}
+                  placeholder="Enter your battle name"
+                  maxLength={30}
+                  className="w-full px-4 py-3 bg-[#18191c] border-2 border-[#3a3d44] text-zinc-100 placeholder-zinc-600 focus:border-[#ff8c42] focus:outline-none uppercase font-bold tracking-wide"
+                />
+                <p className="text-xs text-zinc-600 mt-1">{stageName.length}/30 characters</p>
+              </div>
+
+              {/* Face Selection */}
+              <div>
+                <div className="flex items-end justify-between mb-1">
+                  <div className="flex items-center gap-2">
+                    <label className="block text-xs uppercase tracking-wider text-zinc-500 font-bold">
+                      Choose Your Face *
+                    </label>
+                    <Tooltip content="Faces are exclusive. Once a face gets claimed by any battler, it's gone from the pool forever. Shuffle to see more of what's left.">
+                      <span className="text-zinc-500 cursor-help text-xs">ⓘ</span>
+                    </Tooltip>
                   </div>
-                  <div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <label className="block text-xs uppercase tracking-wider text-zinc-500 font-bold">
-                        Region (Optional)
-                      </label>
-                      <Tooltip content="Your geographical origin. This is purely for flavor and doesn't affect gameplay.">
-                        <span className="text-zinc-500 cursor-help text-xs">ⓘ</span>
-                      </Tooltip>
+                  <button
+                    onClick={fetchAvatarPool}
+                    disabled={avatarLoading}
+                    className="px-3 py-1.5 border-2 border-[#3a3d44] text-zinc-300 text-xs font-display font-black uppercase tracking-wider hover:border-[#ff8c42] hover:text-[#ff8c42] transition disabled:opacity-40"
+                  >
+                    🔀 SHUFFLE THE LINEUP
+                  </button>
+                </div>
+                {avatarPool && (
+                  <p className="font-mono text-[11px] uppercase tracking-wider text-zinc-500 mb-3">
+                    <span className="text-[#ff8c42] font-bold">{avatarPool.claimed}</span> OF {avatarPool.total} FACES CLAIMED — YOURS IS FOREVER
+                  </p>
+                )}
+                <div className="bg-[#101114] border-2 border-[#3a3d44] p-3">
+                  {faceGrid.length === 0 ? (
+                    <p className="py-10 text-center text-xs font-mono uppercase tracking-wider text-zinc-600">
+                      {avatarLoading ? 'LOADING THE LINEUP...' : 'NO FACES LEFT IN THE POOL'}
+                    </p>
+                  ) : (
+                    <div className={`grid grid-cols-6 gap-2 transition-opacity ${avatarLoading ? 'opacity-40' : 'opacity-100'}`}>
+                      {faceGrid.map((sprite) => {
+                        const isSelected = selectedAvatar === sprite;
+                        return (
+                          <div
+                            key={sprite}
+                            data-face={sprite}
+                            onClick={() => setSelectedAvatar(sprite)}
+                            className={`cursor-pointer aspect-square bg-[#0a0a0a] overflow-hidden transition ${
+                              isSelected
+                                ? 'border-[3px] border-[#ff8c42] shadow-[0_0_15px_rgba(255,140,66,0.6)]'
+                                : 'border-2 border-[#3a3d44] hover:border-zinc-500'
+                            }`}
+                          >
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                              src={sprite}
+                              alt="Battler face"
+                              className="w-full h-full object-contain [image-rendering:pixelated]"
+                              loading="lazy"
+                            />
+                          </div>
+                        );
+                      })}
                     </div>
-                    <input
-                      type="text"
-                      value={region}
-                      onChange={(e) => setRegion(e.target.value)}
-                      placeholder="e.g., NYC, LONDON, LA"
-                      className="w-full px-4 py-3 bg-[#18191c] border-2 border-[#3a3d44] text-zinc-100 placeholder-zinc-600 focus:border-[#ff8c42] focus:outline-none uppercase tracking-wide"
-                    />
-                  </div>
+                  )}
                 </div>
               </div>
+
+              {/* Home City Selection */}
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <label className="block text-xs uppercase tracking-wider text-zinc-500 font-bold">
+                    Claim Your City *
+                  </label>
+                  <Tooltip content="Your hometown is your identity. It's where your career starts, who you can recruit, and where the local crowd rides for you.">
+                    <span className="text-zinc-500 cursor-help text-xs">ⓘ</span>
+                  </Tooltip>
+                </div>
+                <p className="font-mono text-[11px] uppercase tracking-wider text-zinc-500 mb-3">
+                  HOMETOWNS AREN'T MADE UP — PICK A REAL SCENE
+                </p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {cities.map((city) => {
+                    const isSelected = selectedHomeCity === city.id;
+                    return (
+                      <div
+                        key={city.id}
+                        data-city={city.id}
+                        onClick={() => setSelectedHomeCity(city.id)}
+                        className={`relative cursor-pointer overflow-hidden min-h-[96px] transition group ${
+                          isSelected
+                            ? 'border-[3px] border-[#ff8c42] shadow-[0_0_15px_rgba(255,140,66,0.5)]'
+                            : 'border-2 border-[#3a3d44] hover:border-zinc-500'
+                        }`}
+                      >
+                        <div className="absolute inset-0 bg-gradient-to-br from-zinc-800 via-zinc-900 to-black" />
+                        {city.skyline_url && (
+                          <div className="absolute inset-0">
+                            <Image
+                              src={city.skyline_url}
+                              alt={`${city.name} skyline`}
+                              fill
+                              className="object-cover opacity-60 [image-rendering:pixelated] group-hover:opacity-75 transition-opacity"
+                              unoptimized
+                              onError={(e) => {
+                                e.currentTarget.style.display = 'none';
+                              }}
+                            />
+                          </div>
+                        )}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+                        <div className="relative p-3 pt-8 flex flex-col justify-end h-full">
+                          <h4 className="font-display font-black uppercase tracking-tight text-sm text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
+                            {city.name}
+                          </h4>
+                          <div className="flex items-center justify-between mt-1">
+                            <span className="font-mono text-[10px] uppercase tracking-wider text-zinc-400">
+                              {city.state || city.country || ''}
+                            </span>
+                            {city.culture_style && (
+                              <span className="px-1.5 py-0.5 bg-[#ff8c42]/20 border border-[#ff8c42]/40 text-[#ff8c42] font-mono text-[9px] uppercase tracking-wider">
+                                {city.culture_style}
+                              </span>
+                            )}
+                          </div>
+                          {/* Where you're from determines what you start with */}
+                          <p className="font-mono text-[9px] uppercase tracking-wider text-green-400/90 mt-1 drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
+                            {getCityBonus(city.culture_style, city.scene_size).labels.join(' · ')}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
               <button
                 onClick={() => setStep(3)}
-                disabled={!stageName.trim()}
+                disabled={!stageName.trim() || !selectedAvatar || !selectedHomeCity}
                 className="w-full py-4 bg-[#ff8c42] hover:bg-[#ff9d5c] text-black font-black uppercase tracking-wider transition disabled:opacity-30 disabled:cursor-not-allowed"
               >
                 NEXT
@@ -558,7 +740,8 @@ export default function OnboardingWizard() {
           {step === 6 && allocatedAttributes && selectedLeagueObj && (
             <ReviewStep
               stageName={stageName}
-              region={region}
+              avatarUrl={selectedAvatar}
+              cityName={selectedCityObj ? `${selectedCityObj.name}${selectedCityObj.state ? `, ${selectedCityObj.state}` : ''}` : ''}
               league={selectedLeagueObj}
               attributes={allocatedAttributes}
               styles={selectedStyles}

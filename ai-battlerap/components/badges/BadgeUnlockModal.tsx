@@ -260,12 +260,12 @@ export default function BadgeUnlockModal({
       >
         {/* Glow Effect */}
         <div
-          className={`absolute inset-0 rounded-2xl blur-xl ${rarityConfig.glow} animate-pulse-glow`}
+          className={`absolute inset-0 blur-xl ${rarityConfig.glow} animate-pulse-glow`}
           style={{ animationDuration: '2s' }}
         />
 
         {/* Card Content */}
-        <div className="relative bg-[#2d2f35] border-4 border-[#3a3d44] rounded-2xl overflow-hidden">
+        <div className="relative bg-[#18191c] border-4 border-[#3a3d44] overflow-hidden">
           {/* Header with Gradient */}
           <div className={`bg-gradient-to-r ${rarityConfig.gradient} p-8 text-center`}>
             <div className="text-6xl mb-4 animate-icon-wobble" style={{ animationDuration: '0.5s' }}>
@@ -301,7 +301,7 @@ export default function BadgeUnlockModal({
                   {effects.map((effect, index) => (
                     <div
                       key={index}
-                      className="flex items-center gap-2 px-4 py-2 bg-zinc-800/50 border-2 border-[#3a3d44] rounded"
+                      className="flex items-center gap-2 px-4 py-2 bg-zinc-800/50 border-2 border-[#3a3d44]"
                     >
                       <span className="text-[#ff8c42] text-xs">▸</span>
                       <span className="text-sm text-zinc-300">{effect}</span>
@@ -314,7 +314,7 @@ export default function BadgeUnlockModal({
             {/* Action Button */}
             <button
               onClick={handleDismiss}
-              className="w-full py-4 bg-[#ff8c42] hover:bg-[#ff9d5c] text-black font-black uppercase tracking-wider text-lg transition-all duration-200 rounded-lg hover:scale-105"
+              className="w-full py-4 bg-[#ff8c42] hover:bg-[#ff9d5c] text-black font-display font-black uppercase tracking-wider text-lg transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_4px_20px_-4px_rgba(255,140,66,0.5)]"
               autoFocus
             >
               CLAIM BADGE

@@ -5,6 +5,8 @@ import { useEffect, useState } from 'react';
 type Props = {
   stageName: string;
   league: string;
+  avatarUrl?: string | null;
+  cityName?: string | null;
   onContinue: () => void;
   attributes: {
     writing: { lyricism: number; wordplay: number; creativity: number; flow: number };
@@ -18,6 +20,8 @@ type Props = {
 export default function OnboardingSuccess({
   stageName,
   league,
+  avatarUrl,
+  cityName,
   onContinue,
   attributes,
   styles,
@@ -87,11 +91,33 @@ export default function OnboardingSuccess({
           </p>
         </div>
 
+        {/* The Face Claim Moment */}
+        {avatarUrl && (
+          <div className="text-center mb-8">
+            <div className="inline-block bg-[#0a0a0a] border-[3px] border-[#ff8c42] shadow-[0_0_40px_rgba(255,140,66,0.5)] p-2">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={avatarUrl}
+                alt={`${stageName}'s face`}
+                className="w-40 h-40 object-contain [image-rendering:pixelated]"
+              />
+            </div>
+            <p className="mt-4 font-mono text-sm uppercase tracking-widest text-[#ff8c42] font-bold">
+              THIS FACE IS YOURS. FOREVER.
+            </p>
+            <p className="font-mono text-[11px] uppercase tracking-wider text-zinc-500 mt-1">
+              NO OTHER BATTLER CAN EVER CLAIM IT
+            </p>
+          </div>
+        )}
+
         {/* Battler Summary Card */}
         <div className="bg-[#18191c] border-2 border-[#3a3d44] p-6 mb-8">
           <div className="text-center mb-6">
             <h2 className="text-3xl font-black uppercase tracking-tight mb-2">{stageName}</h2>
-            <p className="text-sm text-zinc-500 uppercase tracking-wider">{league}</p>
+            <p className="text-sm text-zinc-500 uppercase tracking-wider">
+              {cityName ? `${cityName} — ` : ''}{league}
+            </p>
           </div>
 
           {/* Stats Grid */}

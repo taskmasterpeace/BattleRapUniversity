@@ -151,7 +151,7 @@ export default function BattleOffersPage() {
   return (
     <div className="min-h-screen bg-[#18191c]">
       {/* Header */}
-      <div className="bg-[#2d2f35] border-b-2-4 border-[#3a3d44]">
+      <div className="bg-[#2d2f35] border-b-4 border-[#3a3d44]">
         <div className="max-w-7xl mx-auto px-6 py-6">
           <Link
             href="/dashboard"
@@ -214,7 +214,7 @@ export default function BattleOffersPage() {
 
                   {/* Grudge Match Banner */}
                   {offer.grudge && (
-                    <div className={`mb-6 pb-6 border-b-2-2 ${isGrudgeMatch ? 'border-[#ff8c42]/30' : 'border-[#3a3d44]'}`}>
+                    <div className={`mb-6 pb-6 border-b-2 ${isGrudgeMatch ? 'border-[#ff8c42]/30' : 'border-[#3a3d44]'}`}>
                       <div className="flex items-center gap-4 mb-4">
                         <div className={`px-4 py-2 font-display font-black uppercase tracking-wider text-sm ${
                           isGrudgeMatch

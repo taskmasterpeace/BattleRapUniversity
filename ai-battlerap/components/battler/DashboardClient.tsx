@@ -636,7 +636,7 @@ export default function DashboardClient({
                   <span className="text-zinc-400 font-display font-display font-black uppercase text-xs tracking-wide">PREPARATION</span>
                   <span className="font-display font-black text-blue-500">{attributes?.preparation || 0}/10</span>
                 </div>
-                <div className="pt-2 border-t-2-2 border-[#3a3d44]">
+                <div className="pt-2 border-t-2 border-[#3a3d44]">
                   <StressIndicator
                     stress={attributes?.stress || 0}
                     daysSinceRest={0}

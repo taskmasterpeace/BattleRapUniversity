@@ -31,11 +31,11 @@ export default function StatCard({ label, value, icon, subtext, variant = 'defau
       }`} />
 
       <div className="relative z-10">
-        <div className="flex items-center gap-2 mb-2">
-          {icon && <span className="text-2xl">{icon}</span>}
-          <span className="text-xs text-zinc-500 font-bebas uppercase tracking-widest">{label}</span>
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-2 min-w-0">
+          {icon && <span className="text-xl sm:text-2xl">{icon}</span>}
+          <span className="text-xs text-zinc-500 font-bebas uppercase tracking-wide sm:tracking-widest">{label}</span>
         </div>
-        <div className="text-4xl font-anton text-[#ff8c42] mb-1 leading-none">{value}</div>
+        <div className="text-3xl sm:text-4xl font-anton text-[#ff8c42] mb-1 leading-none">{value}</div>
         {subtext && (
           <p className="text-xs text-zinc-400 uppercase tracking-wide font-display font-bold">{subtext}</p>
         )}

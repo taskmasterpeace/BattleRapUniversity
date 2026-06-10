@@ -78,7 +78,7 @@ function AuthConfirmContent() {
               Confirming authentication...
             </h2>
             <div className="mt-4 flex justify-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2-2 border-orange-500"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
             </div>
           </div>
         )}
@@ -97,7 +97,7 @@ export default function AuthConfirmPage() {
               Loading...
             </h2>
             <div className="mt-4 flex justify-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2-2 border-orange-500"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
             </div>
           </div>
         </div>

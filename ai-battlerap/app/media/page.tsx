@@ -66,7 +66,7 @@ export default function MediaPage() {
   return (
     <div className="min-h-screen bg-[#18191c]">
       {/* Header */}
-      <div className="bg-[#2d2f35] border-b-2-4 border-[#ff8c42]">
+      <div className="bg-[#2d2f35] border-b-4 border-[#ff8c42]">
         <div className="max-w-7xl mx-auto px-6 py-8">
           <Link
             href="/dashboard"

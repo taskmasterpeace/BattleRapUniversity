@@ -1,0 +1,230 @@
+[
+  {
+    "page": "dashboard",
+    "ctx": "desktop",
+    "href": "/dashboard",
+    "issues": []
+  },
+  {
+    "page": "offers",
+    "ctx": "desktop",
+    "href": "/battle/offers",
+    "issues": []
+  },
+  {
+    "page": "prep",
+    "ctx": "desktop",
+    "href": "/battle/f06b4a33-4fba-4d57-90e9-9dd119641137/prep",
+    "issues": []
+  },
+  {
+    "page": "battle-result",
+    "ctx": "desktop",
+    "href": "/battle/531d0a82-9577-457d-9519-025a476191d6",
+    "issues": []
+  },
+  {
+    "page": "battlers",
+    "ctx": "desktop",
+    "href": "/battlers",
+    "issues": []
+  },
+  {
+    "page": "battler-profile",
+    "ctx": "desktop",
+    "href": "/battler/b762ea47-ca90-482a-903f-e927cb2aa38a",
+    "issues": []
+  },
+  {
+    "page": "leagues",
+    "ctx": "desktop",
+    "href": "/leagues",
+    "issues": []
+  },
+  {
+    "page": "league-detail",
+    "ctx": "desktop",
+    "href": "/leagues/7c1fc4a2-79e9-40ff-872e-a93e4b58758a",
+    "issues": []
+  },
+  {
+    "page": "cities",
+    "ctx": "desktop",
+    "href": "/cities",
+    "issues": []
+  },
+  {
+    "page": "city-detail",
+    "ctx": "desktop",
+    "href": "/cities/6d2641ec-922d-4be1-b504-15ffa91e2260",
+    "issues": []
+  },
+  {
+    "page": "crew",
+    "ctx": "desktop",
+    "href": "/crew",
+    "issues": []
+  },
+  {
+    "page": "matchup",
+    "ctx": "desktop",
+    "href": "/matchup",
+    "issues": []
+  },
+  {
+    "page": "matchup-result",
+    "ctx": "desktop",
+    "href": "/matchup/anything-goes-vs-bag-em-up-fj4mc",
+    "issues": []
+  },
+  {
+    "page": "media",
+    "ctx": "desktop",
+    "href": "/media",
+    "issues": []
+  },
+  {
+    "page": "badges",
+    "ctx": "desktop",
+    "href": "/badges",
+    "issues": []
+  },
+  {
+    "page": "tournaments",
+    "ctx": "desktop",
+    "href": "/tournaments",
+    "issues": []
+  },
+  {
+    "page": "finances",
+    "ctx": "desktop",
+    "href": "/finances",
+    "issues": []
+  },
+  {
+    "page": "notifications",
+    "ctx": "desktop",
+    "href": "/notifications",
+    "issues": []
+  },
+  {
+    "page": "relationships",
+    "ctx": "desktop",
+    "href": "/relationships",
+    "issues": []
+  },
+  {
+    "page": "dashboard",
+    "ctx": "mobile",
+    "href": "/dashboard",
+    "issues": []
+  },
+  {
+    "page": "offers",
+    "ctx": "mobile",
+    "href": "/battle/offers",
+    "issues": []
+  },
+  {
+    "page": "prep",
+    "ctx": "mobile",
+    "href": "/battle/f06b4a33-4fba-4d57-90e9-9dd119641137/prep",
+    "issues": []
+  },
+  {
+    "page": "battle-result",
+    "ctx": "mobile",
+    "href": "/battle/531d0a82-9577-457d-9519-025a476191d6",
+    "issues": []
+  },
+  {
+    "page": "battlers",
+    "ctx": "mobile",
+    "href": "/battlers",
+    "issues": []
+  },
+  {
+    "page": "battler-profile",
+    "ctx": "mobile",
+    "href": "/battler/b762ea47-ca90-482a-903f-e927cb2aa38a",
+    "issues": []
+  },
+  {
+    "page": "leagues",
+    "ctx": "mobile",
+    "href": "/leagues",
+    "issues": []
+  },
+  {
+    "page": "league-detail",
+    "ctx": "mobile",
+    "href": "/leagues/7c1fc4a2-79e9-40ff-872e-a93e4b58758a",
+    "issues": []
+  },
+  {
+    "page": "cities",
+    "ctx": "mobile",
+    "href": "/cities",
+    "issues": []
+  },
+  {
+    "page": "city-detail",
+    "ctx": "mobile",
+    "href": "/cities/6d2641ec-922d-4be1-b504-15ffa91e2260",
+    "issues": []
+  },
+  {
+    "page": "crew",
+    "ctx": "mobile",
+    "href": "/crew",
+    "issues": []
+  },
+  {
+    "page": "matchup",
+    "ctx": "mobile",
+    "href": "/matchup",
+    "issues": []
+  },
+  {
+    "page": "matchup-result",
+    "ctx": "mobile",
+    "href": "/matchup/anything-goes-vs-bag-em-up-fj4mc",
+    "issues": []
+  },
+  {
+    "page": "media",
+    "ctx": "mobile",
+    "href": "/media",
+    "issues": []
+  },
+  {
+    "page": "badges",
+    "ctx": "mobile",
+    "href": "/badges",
+    "issues": []
+  },
+  {
+    "page": "tournaments",
+    "ctx": "mobile",
+    "href": "/tournaments",
+    "issues": []
+  },
+  {
+    "page": "finances",
+    "ctx": "mobile",
+    "href": "/finances",
+    "issues": []
+  },
+  {
+    "page": "notifications",
+    "ctx": "mobile",
+    "href": "/notifications",
+    "issues": []
+  },
+  {
+    "page": "relationships",
+    "ctx": "mobile",
+    "href": "/relationships",
+    "issues": []
+  }
+]

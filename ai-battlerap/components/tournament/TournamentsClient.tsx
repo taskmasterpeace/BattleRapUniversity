@@ -109,20 +109,20 @@ export default function TournamentsClient({
   };
 
   return (
-    <div className="min-h-screen bg-[#18191c] text-zinc-100">
+    <div className="min-h-screen bg-[#0a0a0a] text-zinc-100">
       {/* Header */}
-      <div className="border-b-2 border-[#3a3d44] bg-[#2d2f35]/50">
-        <div className="max-w-6xl mx-auto px-6 py-6 flex justify-between items-center">
+      <div className="border-b-2 border-[#3a3d44] bg-[#101114]">
+        <div className="max-w-6xl mx-auto px-6 py-6 flex flex-wrap justify-between items-center gap-x-6 gap-y-2">
           <div className="flex items-center gap-4">
             <Link
               href="/dashboard"
-              className="text-zinc-400 hover:text-zinc-100 transition"
+              className="text-zinc-400 hover:text-zinc-100 transition whitespace-nowrap"
             >
               ← BACK
             </Link>
-            <h1 className="text-xl font-bold tracking-tight">TOURNAMENTS</h1>
+            <h1 className="text-xl font-display font-black uppercase tracking-tight">TOURNAMENTS</h1>
           </div>
-          <div className="text-sm text-zinc-400">
+          <div className="text-sm text-zinc-400 whitespace-nowrap">
             {battler.stage_name} • <span className="text-[#ff8c42] font-display font-black uppercase">{playerTier} TIER</span>
           </div>
         </div>
@@ -170,9 +170,9 @@ export default function TournamentsClient({
             AVAILABLE TOURNAMENTS
           </h2>
           {tournaments.length === 0 ? (
-            <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-12 text-center">
-              <p className="text-zinc-500">No tournaments available right now</p>
-              <p className="text-xs text-zinc-600 mt-2">Check back soon for upcoming events</p>
+            <div className="bg-[#18191c] border-2 border-[#3a3d44] p-12 text-center">
+              <p className="text-xl font-display font-black uppercase tracking-tighter text-zinc-300 mb-2">No Brackets Open</p>
+              <p className="text-xs text-zinc-500 uppercase tracking-wide">The next tournament announcement drops when you least expect it</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

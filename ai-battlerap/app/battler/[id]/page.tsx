@@ -122,7 +122,7 @@ export default function BattlerCareerPage({ params }: { params: Promise<{ id: st
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#18191c] text-zinc-100 flex items-center justify-center">
+      <div className="min-h-screen bg-[#0a0a0a] text-zinc-100 flex items-center justify-center">
         <div className="text-center">
           <div className="text-2xl font-display font-black text-[#ff8c42] mb-2 uppercase tracking-tighter">Loading Career Data...</div>
           <div className="text-zinc-400 uppercase tracking-wide text-sm">Fetching battle history and rivalries</div>
@@ -133,7 +133,7 @@ export default function BattlerCareerPage({ params }: { params: Promise<{ id: st
 
   if (error || !data) {
     return (
-      <div className="min-h-screen bg-[#18191c] text-zinc-100 flex items-center justify-between">
+      <div className="min-h-screen bg-[#0a0a0a] text-zinc-100 flex items-center justify-center">
         <div className="text-center">
           <div className="text-2xl font-display font-black text-red-500 mb-2 uppercase tracking-tighter">Error</div>
           <div className="text-zinc-400 uppercase tracking-wide text-sm">Failed to load career data</div>
@@ -143,9 +143,9 @@ export default function BattlerCareerPage({ params }: { params: Promise<{ id: st
   }
 
   return (
-    <div className="min-h-screen bg-[#18191c] text-zinc-100">
+    <div className="min-h-screen bg-[#0a0a0a] text-zinc-100">
       {/* Hero Section */}
-      <div className="bg-gradient-to-br from-[#2d2f35] via-[#2d2f35] to-[#ff8c42]/20 border-b-2-2 border-[#3a3d44]">
+      <div className="bg-gradient-to-br from-[#2d2f35] via-[#2d2f35] to-[#ff8c42]/20 border-b-2 border-[#3a3d44]">
         <div className="container mx-auto px-6 py-12">
           <div className="flex items-start justify-between gap-6 flex-wrap">
             <div className="flex items-start gap-6">
@@ -198,15 +198,15 @@ export default function BattlerCareerPage({ params }: { params: Promise<{ id: st
 
             {/* Quick Stats */}
             <div className="flex gap-6">
-              <div className="text-center bg-[#2d2f35] border-2 border-[#3a3d44] rounded px-6 py-4">
+              <div className="text-center bg-[#2d2f35] border-2 border-[#3a3d44] px-6 py-4">
                 <div className="text-3xl font-display font-black text-[#ff8c42]">{data.careerStats.totalBattles}</div>
                 <div className="text-xs text-zinc-400 uppercase tracking-wider font-bold mt-1">Battles</div>
               </div>
-              <div className="text-center bg-[#2d2f35] border-2 border-[#3a3d44] rounded px-6 py-4">
+              <div className="text-center bg-[#2d2f35] border-2 border-[#3a3d44] px-6 py-4">
                 <div className="text-3xl font-display font-black text-green-500">{data.careerStats.winRate}%</div>
                 <div className="text-xs text-zinc-400 uppercase tracking-wider font-bold mt-1">Win Rate</div>
               </div>
-              <div className="text-center bg-[#2d2f35] border-2 border-[#3a3d44] rounded px-6 py-4">
+              <div className="text-center bg-[#2d2f35] border-2 border-[#3a3d44] px-6 py-4">
                 <div className="text-3xl font-display font-black text-blue-500">{data.careerStats.avgCrowdReaction}%</div>
                 <div className="text-xs text-zinc-400 uppercase tracking-wider font-bold mt-1">Avg Crowd</div>
               </div>
@@ -256,17 +256,17 @@ export default function BattlerCareerPage({ params }: { params: Promise<{ id: st
       )}
 
       {/* Tab Navigation */}
-      <div className="bg-[#2d2f35] border-b-2-2 border-[#3a3d44] sticky top-0 z-10">
+      <div className="bg-[#2d2f35] border-b-2 border-[#3a3d44] sticky top-0 z-10">
         <div className="container mx-auto px-6">
-          <div className="flex gap-1">
+          <div className="flex gap-1 overflow-x-auto">
             {(['overview', 'battles', 'rivalries', 'media'] as TabType[]).map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`px-6 py-4 font-display font-black uppercase text-sm tracking-tighter transition-all ${
+                className={`px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap font-display font-black uppercase text-sm tracking-tighter transition-all ${
                   activeTab === tab
-                    ? 'bg-[#ff8c42] text-black border-b-2-4 border-[#ff8c42]'
-                    : 'bg-[#2d2f35] text-zinc-400 hover:bg-[#3a3d44] hover:text-zinc-200 border-b-2-4 border-transparent'
+                    ? 'bg-[#ff8c42] text-black border-b-4 border-[#ff8c42]'
+                    : 'bg-[#2d2f35] text-zinc-400 hover:bg-[#3a3d44] hover:text-zinc-200 border-b-4 border-transparent'
                 }`}
               >
                 {tab}
@@ -302,7 +302,7 @@ function OverviewTab({ data }: { data: CareerData }) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Career Highlights */}
-      <div className="lg:col-span-2 bg-[#2d2f35] border-2 border-[#3a3d44] rounded-lg p-6">
+      <div className="lg:col-span-2 bg-[#2d2f35] border-2 border-[#3a3d44] p-6">
         <h2 className="text-2xl font-display font-black uppercase tracking-tighter mb-6 text-[#ff8c42]">Career Highlights</h2>
         <div className="grid grid-cols-3 gap-4">
           <StatCard label="Total Battles" value={stats.totalBattles} />
@@ -318,14 +318,14 @@ function OverviewTab({ data }: { data: CareerData }) {
       </div>
 
       {/* Active Rivalries Summary */}
-      <div className="bg-[#2d2f35] border-2 border-[#3a3d44] rounded-lg p-6">
+      <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-6">
         <h2 className="text-2xl font-display font-black uppercase tracking-tighter mb-4 text-[#ff8c42]">Active Rivalries</h2>
         {data.rivalries.length === 0 ? (
-          <p className="text-zinc-500 text-center py-8 uppercase tracking-wide text-sm">No active rivalries</p>
+          <p className="text-zinc-500 text-center py-8 uppercase tracking-wide text-sm">No smoke yet — rivalries start on the stage</p>
         ) : (
           <div className="space-y-3">
             {data.rivalries.slice(0, 3).map((rivalry) => (
-              <div key={rivalry.relationshipId} className="bg-[#18191c] p-3 rounded border-2 border-[#3a3d44]">
+              <div key={rivalry.relationshipId} className="bg-[#18191c] p-3 border-2 border-[#3a3d44]">
                 <div className="font-display font-black text-[#ff8c42] mb-1 uppercase tracking-tight">{rivalry.opponentName}</div>
                 <div className="text-xs text-zinc-400 mb-2 uppercase tracking-wide">
                   H2H: {rivalry.headToHead?.myRecord || 'N/A'}
@@ -338,14 +338,19 @@ function OverviewTab({ data }: { data: CareerData }) {
       </div>
 
       {/* Recent Battles */}
-      <div className="lg:col-span-3 bg-[#2d2f35] border-2 border-[#3a3d44] rounded-lg p-6">
+      <div className="lg:col-span-3 bg-[#2d2f35] border-2 border-[#3a3d44] p-6">
         <h2 className="text-2xl font-display font-black uppercase tracking-tighter mb-4 text-[#ff8c42]">Recent Battles</h2>
+        {data.battleHistory.length === 0 && (
+          <p className="text-zinc-500 text-center py-8 uppercase tracking-wide text-sm">
+            No tape yet — the first battle is still on the books
+          </p>
+        )}
         <div className="space-y-2">
           {data.battleHistory.slice(0, 5).map((battle) => (
             <Link
               key={battle.battleId}
               href={`/battle/${battle.battleId}/viewer`}
-              className="block bg-[#18191c] p-4 rounded hover:bg-[#3a3d44] transition-colors border-2 border-[#3a3d44] hover:border-[#ff8c42]"
+              className="block bg-[#18191c] p-4 hover:bg-[#3a3d44] transition-colors border-2 border-[#3a3d44] hover:border-[#ff8c42]"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
@@ -376,16 +381,17 @@ function OverviewTab({ data }: { data: CareerData }) {
 function BattlesTab({ battles }: { battles: CareerData['battleHistory'] }) {
   if (battles.length === 0) {
     return (
-      <div className="bg-[#2d2f35] border-2 border-[#3a3d44] rounded-lg p-12 text-center">
-        <p className="text-zinc-500 text-lg uppercase tracking-wide">No battles yet</p>
+      <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-12 text-center">
+        <p className="text-xl font-display font-black uppercase tracking-tighter text-zinc-300 mb-2">No Tape Yet</p>
+        <p className="text-zinc-500 uppercase tracking-wide text-sm">Every legend starts 0-0 — the first battle writes the record</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-[#2d2f35] border-2 border-[#3a3d44] rounded-lg overflow-hidden">
+    <div className="bg-[#2d2f35] border-2 border-[#3a3d44] overflow-hidden">
       <table className="w-full">
-        <thead className="bg-[#18191c] border-b-2-2 border-[#3a3d44]">
+        <thead className="bg-[#18191c] border-b-2 border-[#3a3d44]">
           <tr>
             <th className="px-4 py-3 text-left text-xs font-display font-black uppercase tracking-tight text-zinc-400">Result</th>
             <th className="px-4 py-3 text-left text-xs font-display font-black uppercase tracking-tight text-zinc-400">Opponent</th>
@@ -434,7 +440,7 @@ function BattlesTab({ battles }: { battles: CareerData['battleHistory'] }) {
 function RivalriesTab({ rivalries, battlerId }: { rivalries: CareerData['rivalries']; battlerId: string }) {
   if (rivalries.length === 0) {
     return (
-      <div className="bg-[#2d2f35] border-2 border-[#3a3d44] rounded-lg p-12 text-center">
+      <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-12 text-center">
         <h3 className="text-xl font-display font-black uppercase tracking-tighter text-zinc-400 mb-2">No Active Rivalries</h3>
         <p className="text-zinc-500 uppercase tracking-wide text-sm">Rivalries emerge from controversial decisions, upsets, and heated battles.</p>
       </div>
@@ -453,8 +459,9 @@ function RivalriesTab({ rivalries, battlerId }: { rivalries: CareerData['rivalri
 function MediaTab({ mentions }: { mentions: CareerData['mediaMentions'] }) {
   if (mentions.length === 0) {
     return (
-      <div className="bg-[#2d2f35] border-2 border-[#3a3d44] rounded-lg p-12 text-center">
-        <p className="text-zinc-500 text-lg uppercase tracking-wide">No media mentions yet</p>
+      <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-12 text-center">
+        <p className="text-xl font-display font-black uppercase tracking-tighter text-zinc-300 mb-2">No Press Yet</p>
+        <p className="text-zinc-500 uppercase tracking-wide text-sm">The blogs haven't caught on — give them a moment worth writing about</p>
       </div>
     );
   }
@@ -465,14 +472,14 @@ function MediaTab({ mentions }: { mentions: CareerData['mediaMentions'] }) {
         <Link
           key={mention.articleId}
           href={`/media/${mention.slug}`}
-          className="block bg-[#2d2f35] border-2 border-[#3a3d44] rounded-lg p-6 hover:border-[#ff8c42] transition-colors"
+          className="block bg-[#2d2f35] border-2 border-[#3a3d44] p-6 hover:border-[#ff8c42] transition-colors"
         >
           <div className="flex items-start justify-between mb-2">
             <h3 className="text-xl font-display font-black uppercase tracking-tighter text-[#ff8c42] hover:text-[#ff9d5c]">
               {mention.title}
             </h3>
             {mention.isGrudgeArticle && (
-              <span className="bg-red-600 px-2 py-1 rounded text-xs font-black uppercase tracking-wide">
+              <span className="bg-red-600 px-2 py-1 text-xs font-black uppercase tracking-wide">
                 Grudge Coverage
               </span>
             )}
@@ -502,7 +509,7 @@ function MediaTab({ mentions }: { mentions: CareerData['mediaMentions'] }) {
 
 function StatCard({ label, value, color = 'text-zinc-100' }: { label: string; value: string | number; color?: string }) {
   return (
-    <div className="bg-[#18191c] p-4 rounded border-2 border-[#3a3d44] text-center">
+    <div className="bg-[#18191c] p-4 border-2 border-[#3a3d44] text-center">
       <div className={`text-2xl font-display font-black ${color}`}>{value}</div>
       <div className="text-xs text-zinc-400 uppercase tracking-wide mt-1">{label}</div>
     </div>
@@ -511,7 +518,7 @@ function StatCard({ label, value, color = 'text-zinc-100' }: { label: string; va
 
 function RivalryCard({ rivalry, battlerId }: { rivalry: CareerData['rivalries'][0]; battlerId: string }) {
   return (
-    <div className="bg-[#2d2f35] border-2 border-[#3a3d44] rounded-lg p-6">
+    <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-6">
       <div className="flex items-start justify-between mb-4">
         <div>
           <h3 className="text-2xl font-display font-black uppercase tracking-tighter text-[#ff8c42] mb-1">{rivalry.opponentName}</h3>
@@ -541,7 +548,7 @@ function RivalryCard({ rivalry, battlerId }: { rivalry: CareerData['rivalries'][
       </div>
 
       {/* Origin Story */}
-      <div className="bg-[#18191c] p-4 rounded border-2 border-[#3a3d44]">
+      <div className="bg-[#18191c] p-4 border-2 border-[#3a3d44]">
         <div className="text-xs uppercase font-bold tracking-wide text-zinc-400 mb-2">Origin Story</div>
         <p className="text-sm text-zinc-300 leading-relaxed">{rivalry.originStory}</p>
       </div>

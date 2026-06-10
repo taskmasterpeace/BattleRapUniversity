@@ -83,21 +83,21 @@ export default async function LeaguesIndexPage() {
                     {l.description}
                   </p>
                 )}
-                <div className="grid grid-cols-3 gap-2 text-xs uppercase tracking-wide">
-                  <div>
-                    <div className="text-zinc-500">Writing</div>
+                <div className="grid grid-cols-3 gap-3 text-xs uppercase tracking-wide">
+                  <div className="min-w-0">
+                    <div className="text-zinc-500 truncate">Writing</div>
                     <div className="text-zinc-200 font-bold">
                       {Math.round(Number(l.writing_weight) * 100)}%
                     </div>
                   </div>
-                  <div>
-                    <div className="text-zinc-500">Performance</div>
+                  <div className="min-w-0">
+                    <div className="text-zinc-500 truncate">Performance</div>
                     <div className="text-zinc-200 font-bold">
                       {Math.round(Number(l.performance_weight) * 100)}%
                     </div>
                   </div>
-                  <div>
-                    <div className="text-zinc-500">Crowd</div>
+                  <div className="min-w-0">
+                    <div className="text-zinc-500 truncate">Crowd</div>
                     <div className="text-zinc-200 font-bold">
                       {Math.round(Number(l.base_crowd_factor) * 100)}%
                     </div>

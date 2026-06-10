@@ -67,7 +67,7 @@ export default function FinancesClient({
   return (
     <div className="min-h-screen bg-[#18191c] text-zinc-100">
       {/* Header */}
-      <div className="border-b-2-2 border-[#3a3d44] bg-[#2d2f35]">
+      <div className="border-b-2 border-[#3a3d44] bg-[#2d2f35]">
         <div className="max-w-5xl mx-auto px-6 py-6 flex justify-between items-center">
           <div className="flex items-center gap-4">
             <GamingButton variant="secondary" size="sm" href="/dashboard">
