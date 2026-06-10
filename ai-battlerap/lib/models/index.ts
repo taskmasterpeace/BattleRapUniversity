@@ -37,6 +37,10 @@ export interface Battler {
   level?: number | null;
   total_xp?: number | null;
   sprite_set?: string[] | null;
+  /** Daily battle slots (see lib/game/battleSlots.ts) */
+  bonus_battle_slots?: number | null;
+  slots_reset_at?: string | null;
+  slots_used_today?: number | null;
   created_at: string;
 }
 

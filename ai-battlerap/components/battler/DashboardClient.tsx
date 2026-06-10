@@ -20,6 +20,7 @@ import { CharacterPortrait } from '../ui/CharacterPortrait';
 import BattlerBanner from './BattlerBanner';
 import ActiveBeefsWidget from '../relationships/ActiveBeefsWidget';
 import CareerStatsWidget from './CareerStatsWidget';
+import { getSlotStatus, MAX_BONUS_SLOTS_PER_DAY } from '@/lib/game/battleSlots';
 
 type Props = {
   battler: any;
@@ -118,6 +119,15 @@ export default function DashboardClient({
 
   const [startError, setStartError] = useState<string | null>(null);
 
+  // Daily battle slots — lazy-reset view of the battler's slot columns
+  const slots = getSlotStatus(battler);
+  const slotsExhausted = slots.remaining === 0;
+
+  const formatResetTime = (iso: string) => {
+    const reset = new Date(iso);
+    return reset.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+  };
+
   const handleStartBattle = async () => {
     if (!nextBattle) return;
 
@@ -133,7 +143,13 @@ export default function DashboardClient({
         router.push(`/battle/${nextBattle.id}`);
       } else {
         const data = await response.json().catch(() => ({}));
-        setStartError(data.error || 'Could not start the battle — try again.');
+        if (response.status === 429 && data.resetsAt) {
+          setStartError(
+            `NO BATTLE SLOTS LEFT TODAY — SLOTS RESET AT ${formatResetTime(data.resetsAt)}`
+          );
+        } else {
+          setStartError(data.error || 'Could not start the battle — try again.');
+        }
         setSimulating(false);
       }
     } catch (error) {
@@ -374,15 +390,87 @@ export default function DashboardClient({
 
                     {nextBattle && battle.id === nextBattle.id && (
                       <>
+                        {/* TODAY'S SLOTS — daily battle allowance */}
+                        <div
+                          className={`mt-3 flex items-center justify-between gap-4 bg-[#0a0a0a] border-2 px-4 py-3 ${
+                            slotsExhausted ? 'border-red-500/50' : 'border-[#3a3d44]'
+                          }`}
+                        >
+                          <div>
+                            <p className="text-[10px] text-zinc-500 font-display font-black uppercase tracking-wider mb-1.5">
+                              TODAY&apos;S SLOTS
+                            </p>
+                            <div className="flex items-center gap-1.5" aria-label={`${slots.remaining} of ${slots.base + slots.bonus} battle slots remaining today`}>
+                              {Array.from({ length: slots.base + slots.bonus }, (_, i) => {
+                                const isUsed = i < slots.used;
+                                const isBonus = i >= slots.base;
+                                return (
+                                  <span
+                                    key={i}
+                                    className={`relative text-xl leading-none transition ${
+                                      isUsed
+                                        ? 'opacity-25 grayscale'
+                                        : 'drop-shadow-[0_0_6px_rgba(255,140,66,0.8)]'
+                                    }`}
+                                    title={
+                                      isBonus
+                                        ? isUsed
+                                          ? 'Bonus slot — used'
+                                          : 'Bonus slot — earned today'
+                                        : isUsed
+                                        ? 'Slot used'
+                                        : 'Slot available'
+                                    }
+                                  >
+                                    🎤
+                                    {isBonus && (
+                                      <span className="absolute -top-1 -right-1.5 text-[9px] font-display font-black text-[#ff8c42] not-italic">
+                                        +
+                                      </span>
+                                    )}
+                                  </span>
+                                );
+                              })}
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <p
+                              className={`text-sm font-display font-black uppercase tracking-wider ${
+                                slotsExhausted ? 'text-red-400' : 'text-zinc-100'
+                              }`}
+                            >
+                              {slots.remaining} OF {slots.base + slots.bonus} BATTLE
+                              {slots.base + slots.bonus === 1 ? '' : 'S'} LEFT
+                            </p>
+                            <p className="text-[10px] text-zinc-500 font-display font-black uppercase tracking-wider mt-0.5">
+                              {slotsExhausted
+                                ? `RESETS AT ${formatResetTime(slots.resetsAt)}`
+                                : slots.bonus >= MAX_BONUS_SLOTS_PER_DAY
+                                ? 'MAX BONUS EARNED TODAY'
+                                : 'WIN TO EARN +1'}
+                            </p>
+                          </div>
+                        </div>
+
                         <button
                           onClick={handleStartBattle}
                           disabled={simulating}
-                          className="w-full mt-3 px-6 py-4 bg-[#ff8c42] hover:bg-[#ff9d5c] text-black font-display font-black uppercase tracking-wider transition disabled:opacity-50 shadow-[0_0_20px_-5px_rgba(255,140,66,0.6)] animate-pulse-orange"
+                          className={`w-full mt-3 px-6 py-4 font-display font-black uppercase tracking-wider transition disabled:opacity-50 ${
+                            slotsExhausted
+                              ? 'bg-[#3a3d44] text-zinc-500 cursor-not-allowed'
+                              : 'bg-[#ff8c42] hover:bg-[#ff9d5c] text-black shadow-[0_0_20px_-5px_rgba(255,140,66,0.6)] animate-pulse-orange'
+                          }`}
                         >
-                          {simulating ? '🔥 ON STAGE…' : '🎤 BATTLE TIME — TAKE THE STAGE'}
+                          {simulating
+                            ? '🔥 ON STAGE…'
+                            : slotsExhausted
+                            ? '🚫 NO SLOTS LEFT TODAY'
+                            : '🎤 BATTLE TIME — TAKE THE STAGE'}
                         </button>
                         {startError && (
-                          <p className="mt-2 text-sm text-red-400 font-bold text-center">{startError}</p>
+                          <div className="mt-3 px-4 py-3 bg-red-500/10 border-2 border-red-500/50 text-red-400 text-sm font-display font-black uppercase tracking-wider text-center">
+                            ⛔ {startError}
+                          </div>
                         )}
                       </>
                     )}

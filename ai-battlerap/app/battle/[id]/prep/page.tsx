@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import Avatar from '@/components/ui/Avatar';
 import GamingButton from '@/components/ui/GamingButton';
 import StatCard from '@/components/ui/StatCard';
+import ScoutingReport from '@/components/battle/ScoutingReport';
 import { toast } from '@/components/ui/Toast';
 
 type PrepBlock = {
@@ -32,7 +33,7 @@ type Battle = {
 };
 
 const FOCUS_OPTIONS = [
-  { value: 'research', label: 'RESEARCH', icon: '🔬', color: 'bg-purple-500/20 text-purple-400 border-purple-500/50', hoverColor: 'hover:border-purple-400', description: 'Study opponent angles' },
+  { value: 'research', label: 'RESEARCH', icon: '🔬', color: 'bg-purple-500/20 text-purple-400 border-purple-500/50', hoverColor: 'hover:border-purple-400', description: 'Angles + unlock scouting intel' },
   { value: 'writing', label: 'WRITING', icon: '📝', color: 'bg-blue-500/20 text-blue-400 border-blue-500/50', hoverColor: 'hover:border-blue-400', description: 'Bars & wordplay' },
   { value: 'performance', label: 'PERFORMANCE', icon: '🎤', color: 'bg-green-500/20 text-green-400 border-green-500/50', hoverColor: 'hover:border-green-400', description: 'Delivery & presence' },
   { value: 'life', label: 'LIFE', icon: '🏠', color: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/50', hoverColor: 'hover:border-yellow-400', description: 'Handle personal' },
@@ -49,6 +50,8 @@ export default function PrepPage({ params }: { params: Promise<{ id: string }> }
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState<number | null>(null);
   const [allDaysSelected, setAllDaysSelected] = useState(false);
+  // Bumped after every prep save so the scouting report refetches live
+  const [scoutRefresh, setScoutRefresh] = useState(0);
 
   useEffect(() => {
     fetchPrepData();
@@ -94,6 +97,7 @@ export default function PrepPage({ params }: { params: Promise<{ id: string }> }
 
       if (response.ok) {
         await fetchPrepData();
+        setScoutRefresh((n) => n + 1);
       } else {
         const data = await response.json();
         toast(data.error || 'Failed to update prep', 'error');
@@ -232,6 +236,9 @@ export default function PrepPage({ params }: { params: Promise<{ id: string }> }
             ))}
           </div>
         </div>
+
+        {/* Scouting Report — research days unlock opponent intel */}
+        <ScoutingReport battleId={id} refreshKey={scoutRefresh} />
 
         {/* Prep Calendar */}
         <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-6 md:p-8 mb-6 md:mb-8">

@@ -33,7 +33,12 @@ export async function GET(
         id,
         stage_name,
         is_ai,
+        is_real,
+        bio,
+        avatar_url,
+        region,
         created_at,
+        hometown:hometown_city_id (name, state),
         battler_attributes (
           writing,
           performance,
@@ -63,18 +68,29 @@ export async function GET(
     // 5. Load media mentions
     const mediaMentions = await getMediaMentions(supabase, battlerId);
 
-    // 6. Load current ranking
-    const { data: ranking } = await supabase
-      .from('rankings')
-      .select('*')
-      .eq('battler_id', battlerId)
-      .single();
+    // 6. Load current ranking + accolades (real-world honors for verified battlers,
+    //    in-game records for everyone)
+    const [{ data: ranking }, { data: accolades }] = await Promise.all([
+      supabase.from('rankings').select('*').eq('battler_id', battlerId).single(),
+      supabase
+        .from('battler_accolades')
+        .select('rank, title, scope, region, year, source')
+        .eq('battler_id', battlerId)
+        .order('scope', { ascending: false }) // real_world first
+        .order('year', { ascending: false }),
+    ]);
 
     return NextResponse.json({
       battler: {
         id: battler.id,
         stageName: battler.stage_name,
         isPlayer: !battler.is_ai,
+        isReal: !!battler.is_real,
+        bio: battler.bio ?? null,
+        avatarUrl: battler.avatar_url ?? null,
+        region: battler.region ?? null,
+        hometown: battler.hometown ?? null,
+        accolades: accolades ?? [],
         joinedAt: battler.created_at,
         attributes: battler.battler_attributes,
         rating: ranking?.rating || 1200,

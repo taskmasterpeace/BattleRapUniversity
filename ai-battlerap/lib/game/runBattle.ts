@@ -13,6 +13,7 @@
 import { simulateBattle } from '@/lib/game/simulation';
 import { generateOffersForPlayer } from '@/lib/services/battleOffers';
 import { updateBattlerStress } from '@/lib/game/stressManagement';
+import { awardBonusSlot } from '@/lib/game/battleSlots';
 import {
   evaluatePreBattleEvents,
   evaluatePostBattleEvents,
@@ -71,11 +72,18 @@ export async function runBattleSimulation(
   // Check for no-show (player has no prep blocks)
   const { data: playerPrepBlocks } = await supabase
     .from('prep_blocks')
-    .select('id')
+    .select('id, auto_generated')
     .eq('battle_id', battle.id)
     .eq('battler_id', battle.battler_player_id);
 
   let noShowFlag = false;
+
+  // Capture BEFORE any backfill: did the player personally plan every prep day?
+  // (Full hand-planned prep earns a bonus battle slot after the battle.)
+  const playerFullyPrepped =
+    !!playerPrepBlocks &&
+    playerPrepBlocks.length >= prepDayCount(battle) &&
+    playerPrepBlocks.every((b: any) => !b.auto_generated);
 
   if (!playerPrepBlocks || playerPrepBlocks.length === 0) {
     // No-show detected - player never opened the prep planner.
@@ -165,6 +173,26 @@ export async function runBattleSimulation(
   // Apply progression (attributes, badges, XP)
   const { applyAttributeProgression } = await import('@/lib/game/progression');
   await applyAttributeProgression(battle.id, supabase);
+
+  // Bonus battle slots — earn extra stage time today (capped at +2/day):
+  //  - WIN the battle            → +1 slot
+  //  - fully hand-planned prep   → +1 slot (no auto-generated player blocks)
+  try {
+    const { data: resultRow } = await supabase
+      .from('battles')
+      .select('winner_battler_id')
+      .eq('id', battle.id)
+      .single();
+
+    if (resultRow?.winner_battler_id === battle.battler_player_id) {
+      await awardBonusSlot(supabase, battle.battler_player_id, 'win');
+    }
+    if (playerFullyPrepped) {
+      await awardBonusSlot(supabase, battle.battler_player_id, 'full_prep');
+    }
+  } catch (slotError) {
+    console.error('Error awarding bonus battle slots:', slotError);
+  }
 
   // Post-battle life event evaluation
   try {

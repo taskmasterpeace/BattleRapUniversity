@@ -2,6 +2,7 @@ import { createClient } from '@supabase/supabase-js';
 import { getUser } from '@/lib/db/server';
 import { NextResponse } from 'next/server';
 import { runBattleSimulation } from '@/lib/game/runBattle';
+import { consumeSlot, refundSlot } from '@/lib/game/battleSlots';
 
 /**
  * POST /api/battles/[id]/start
@@ -60,6 +61,35 @@ export async function POST(
     );
   }
 
+  // Daily slot enforcement — AI battles burn one of the player's daily slots.
+  // PvP battles (both battlers human) never consume slots.
+  const { data: opponent } = await supabase
+    .from('battlers')
+    .select('id, is_ai')
+    .eq('id', battle.battler_ai_id)
+    .single();
+
+  const isPvP = opponent ? opponent.is_ai === false : false;
+  let slotConsumed = false;
+
+  if (!isPvP) {
+    const consume = await consumeSlot(supabase, battler.id);
+    if (!consume.ok) {
+      if (consume.error === 'no_slots_remaining') {
+        return NextResponse.json(
+          {
+            error: 'No battle slots left today',
+            resetsAt: consume.status.resetsAt,
+            slots: consume.status,
+          },
+          { status: 429 }
+        );
+      }
+      return NextResponse.json({ error: 'Could not reserve a battle slot' }, { status: 500 });
+    }
+    slotConsumed = true;
+  }
+
   try {
     const { noShow, offersGenerated } = await runBattleSimulation(battle, supabase);
     return NextResponse.json({
@@ -70,6 +100,10 @@ export async function POST(
     });
   } catch (error: any) {
     console.error(`Error starting battle ${battleId}:`, error);
+    // Don't charge the player a slot for a battle that never happened.
+    if (slotConsumed) {
+      await refundSlot(supabase, battler.id);
+    }
     return NextResponse.json({ error: 'Battle simulation failed' }, { status: 500 });
   }
 }

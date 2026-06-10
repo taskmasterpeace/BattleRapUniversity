@@ -146,12 +146,12 @@ export default function LandingPage() {
               >
                 🎤 ENTER THE CIRCUIT
               </Link>
-              <a
-                href="#the-loop"
+              <Link
+                href="/matchup"
                 className="px-8 py-4 border-2 border-[#3a3d44] hover:border-[#ff8c42] text-zinc-300 font-display font-black uppercase tracking-wider text-lg transition-all"
               >
-                SEE THE GAME ↓
-              </a>
+                ⚔️ RUN A DREAM MATCHUP
+              </Link>
             </div>
           </div>
 

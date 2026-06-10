@@ -62,6 +62,7 @@ const DRAWER_GROUPS: { title: string; items: NavItem[] }[] = [
       { href: '/leagues', label: 'Leagues', icon: TrophyIcon },
       { href: '/cities', label: 'Cities', icon: BuildingOffice2Icon },
       { href: '/battlers', label: 'Roster', icon: UsersIcon },
+      { href: '/matchup', label: 'Dream Matchup', icon: FireIcon },
       { href: '/tournaments', label: 'Tournaments', icon: StarIcon },
       { href: '/media', label: 'Media', icon: NewspaperIcon },
       { href: '/badges', label: 'Badges', icon: ShieldCheckIcon },

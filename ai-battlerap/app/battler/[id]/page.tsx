@@ -24,6 +24,19 @@ interface CareerData {
     id: string;
     stageName: string;
     isPlayer: boolean;
+    isReal?: boolean;
+    bio?: string | null;
+    avatarUrl?: string | null;
+    region?: string | null;
+    hometown?: { name: string; state: string | null } | null;
+    accolades?: Array<{
+      rank: number | null;
+      title: string;
+      scope: string;
+      region: string | null;
+      year: number | null;
+      source: string | null;
+    }>;
     joinedAt: string;
     rating: number;
     rank: number | null;
@@ -132,16 +145,39 @@ export default function BattlerCareerPage({ params }: { params: Promise<{ id: st
       {/* Hero Section */}
       <div className="bg-gradient-to-br from-[#2d2f35] via-[#2d2f35] to-[#ff8c42]/20 border-b-2-2 border-[#3a3d44]">
         <div className="container mx-auto px-6 py-12">
-          <div className="flex items-start justify-between">
-            <div>
-              <h1 className="text-5xl font-display font-black uppercase tracking-tighter mb-2">{data.battler.stageName}</h1>
-              <div className="flex gap-4 text-zinc-400 mb-4">
-                <span className="text-[#ff8c42] font-display font-black uppercase tracking-wider">{data.battler.rating} Rating</span>
-                {data.battler.rank && <span className="font-display font-black uppercase tracking-wide">#{data.battler.rank} Ranked</span>}
-                {data.battler.tier && <span className="font-display font-black uppercase tracking-wide">{data.battler.tier} Tier</span>}
-              </div>
-              <div className="text-sm text-zinc-500 uppercase tracking-wide">
-                Joined {formatDistanceToNow(new Date(data.battler.joinedAt), { addSuffix: true })}
+          <div className="flex items-start justify-between gap-6 flex-wrap">
+            <div className="flex items-start gap-6">
+              {data.battler.avatarUrl && (
+                <img
+                  src={data.battler.avatarUrl}
+                  alt={data.battler.stageName}
+                  className="w-28 h-28 md:w-36 md:h-36 object-contain [image-rendering:pixelated] border-2 border-[#3a3d44] bg-[#18191c]"
+                />
+              )}
+              <div>
+                <div className="flex items-center gap-3 flex-wrap mb-2">
+                  <h1 className="text-5xl font-display font-black uppercase tracking-tighter">{data.battler.stageName}</h1>
+                  {data.battler.isReal && (
+                    <span className="px-3 py-1.5 bg-[#ff8c42] text-black font-mono text-xs font-bold uppercase tracking-widest shadow-[0_0_20px_-4px_rgba(255,140,66,0.8)]">
+                      ✓ VERIFIED BATTLER
+                    </span>
+                  )}
+                </div>
+                <div className="flex gap-4 text-zinc-400 mb-2 flex-wrap">
+                  <span className="text-[#ff8c42] font-display font-black uppercase tracking-wider">{data.battler.rating} Rating</span>
+                  {data.battler.rank && <span className="font-display font-black uppercase tracking-wide">#{data.battler.rank} Ranked</span>}
+                  {data.battler.tier && <span className="font-display font-black uppercase tracking-wide">{data.battler.tier} Tier</span>}
+                  {data.battler.hometown && (
+                    <span className="font-display font-black uppercase tracking-wide">
+                      📍 {data.battler.hometown.name}{data.battler.hometown.state ? `, ${data.battler.hometown.state}` : ''}
+                    </span>
+                  )}
+                </div>
+                <div className="text-sm text-zinc-500 uppercase tracking-wide">
+                  {data.battler.isReal
+                    ? 'Licensed likeness — real career, real legacy'
+                    : `Joined ${formatDistanceToNow(new Date(data.battler.joinedAt), { addSuffix: true })}`}
+                </div>
               </div>
             </div>
 
@@ -163,6 +199,46 @@ export default function BattlerCareerPage({ params }: { params: Promise<{ id: st
           </div>
         </div>
       </div>
+
+      {/* Bio + Accolades — the RapVerdict-killer section for verified battlers */}
+      {(data.battler.bio || (data.battler.accolades && data.battler.accolades.length > 0)) && (
+        <div className="container mx-auto px-6 py-8">
+          {data.battler.bio && (
+            <div className="bg-[#2d2f35] border-l-4 border-[#ff8c42] p-6 mb-6">
+              <p className="text-zinc-300 leading-relaxed italic">{data.battler.bio}</p>
+            </div>
+          )}
+          {data.battler.accolades && data.battler.accolades.length > 0 && (
+            <div>
+              <h2 className="text-2xl font-display font-black uppercase tracking-tighter text-[#ff8c42] mb-4">
+                🏆 ACCOLADES
+              </h2>
+              <div className="grid sm:grid-cols-2 gap-2">
+                {data.battler.accolades.map((a, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center gap-3 bg-[#2d2f35] border-2 border-[#3a3d44] px-4 py-3"
+                  >
+                    {a.rank ? (
+                      <span className="flex-shrink-0 w-10 h-10 flex items-center justify-center bg-[#ff8c42]/15 border border-[#ff8c42]/50 text-[#ff8c42] font-display font-black text-sm">
+                        {a.rank === 1 ? '1st' : a.rank === 2 ? '2nd' : a.rank === 3 ? '3rd' : `${a.rank}th`}
+                      </span>
+                    ) : (
+                      <span className="flex-shrink-0 w-10 h-10 flex items-center justify-center text-xl">🎖️</span>
+                    )}
+                    <div className="min-w-0">
+                      <p className="font-bold text-sm text-zinc-100 leading-snug">{a.title}</p>
+                      <p className="font-mono text-[10px] uppercase tracking-widest text-zinc-500">
+                        {[a.region, a.year, a.scope === 'real_world' ? 'REAL WORLD' : 'IN GAME'].filter(Boolean).join(' · ')}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Tab Navigation */}
       <div className="bg-[#2d2f35] border-b-2-2 border-[#3a3d44] sticky top-0 z-10">

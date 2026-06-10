@@ -626,7 +626,7 @@ async function loadBattlerData(supabase: any, battlerId: string, battleId: strin
 /**
  * Build prep profile from prep blocks
  */
-function buildPrepProfile(prepBlocks: PrepBlock[]): PrepProfile {
+export function buildPrepProfile(prepBlocks: PrepBlock[]): PrepProfile {
   const profile: PrepProfile = {
     researchDays: 0,
     writingDays: 0,
@@ -661,7 +661,7 @@ function buildPrepProfile(prepBlocks: PrepBlock[]): PrepProfile {
 /**
  * Apply prep modifiers to base attributes (with badge effects)
  */
-function applyPrepModifiers(
+export function applyPrepModifiers(
   attributes: BattlerAttributes,
   prep: PrepProfile,
   isNoShow: boolean,
@@ -1133,7 +1133,7 @@ async function simulateRound(
 /**
  * Simulate a single segment (with badge effects)
  */
-function simulateSegment(
+export function simulateSegment(
   battlerId: string,
   attrs: ModifiedAttributes,
   prep: PrepProfile,
