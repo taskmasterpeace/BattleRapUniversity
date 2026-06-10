@@ -1541,14 +1541,12 @@ async function saveBattleResults(
     console.error('Failed to insert battle segments:', segmentError);
   }
 
-  // Insert all rounds (remove 'won' property as it's not in the schema)
-  const roundsWithBattleId = rounds.map((r) => {
-    const { won, ...roundData } = r as any;
-    return {
-      ...roundData,
-      battle_id: battleId,
-    };
-  });
+  // Insert all rounds — 'won' is now a real column (migration 20260610150000),
+  // so per-round winners persist for recaps, H2H, grudges, and career history.
+  const roundsWithBattleId = rounds.map((r) => ({
+    ...(r as any),
+    battle_id: battleId,
+  }));
   const { error: roundsError } = await supabase.from('battle_rounds').insert(roundsWithBattleId);
   if (roundsError) {
     console.error('Failed to insert battle rounds:', roundsError);

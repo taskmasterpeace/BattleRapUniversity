@@ -21,6 +21,8 @@ const TYPE_LABELS: Record<string, string> = {
   career_update: 'Career Update',
   league_update: 'League Update',
   power_ranking: 'Power Rankings',
+  grudge_coverage: 'Grudge Coverage',
+  culture: 'Culture',
 };
 
 const TYPE_COLORS: Record<string, string> = {
@@ -29,6 +31,8 @@ const TYPE_COLORS: Record<string, string> = {
   career_update: 'bg-green-500/20 text-green-400 border-2 border-green-500/30',
   league_update: 'bg-purple-500/20 text-purple-400 border-2 border-purple-500/30',
   power_ranking: 'bg-yellow-500/20 text-yellow-400 border-2 border-yellow-500/30',
+  grudge_coverage: 'bg-orange-500/20 text-orange-400 border-2 border-orange-500/30',
+  culture: 'bg-cyan-500/20 text-cyan-400 border-2 border-cyan-500/30',
 };
 
 export default function MediaPage() {
@@ -135,6 +139,26 @@ export default function MediaPage() {
             }`}
           >
             League Updates
+          </button>
+          <button
+            onClick={() => setSelectedType('power_ranking')}
+            className={`px-6 py-3 font-display font-black uppercase tracking-wider transition-all border-2 ${
+              selectedType === 'power_ranking'
+                ? 'bg-yellow-500 text-black border-yellow-500'
+                : 'bg-transparent text-zinc-300 border-[#3a3d44] hover:border-yellow-500'
+            }`}
+          >
+            Power Rankings
+          </button>
+          <button
+            onClick={() => setSelectedType('culture')}
+            className={`px-6 py-3 font-display font-black uppercase tracking-wider transition-all border-2 ${
+              selectedType === 'culture'
+                ? 'bg-cyan-500 text-black border-cyan-500'
+                : 'bg-transparent text-zinc-300 border-[#3a3d44] hover:border-cyan-500'
+            }`}
+          >
+            Culture
           </button>
         </div>
 

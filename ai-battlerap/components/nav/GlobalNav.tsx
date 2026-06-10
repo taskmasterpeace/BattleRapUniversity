@@ -60,6 +60,8 @@ const DRAWER_GROUPS: { title: string; items: NavItem[] }[] = [
   {
     title: 'Scene',
     items: [
+      { href: '/watch', label: 'Watch', icon: FireIcon },
+      { href: '/leaderboard', label: 'Power Rankings', icon: TrophyIcon },
       { href: '/leagues', label: 'Leagues', icon: TrophyIcon },
       { href: '/cities', label: 'Cities', icon: BuildingOffice2Icon },
       { href: '/battlers', label: 'Roster', icon: UsersIcon },

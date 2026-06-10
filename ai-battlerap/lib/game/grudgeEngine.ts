@@ -15,7 +15,22 @@
  * - newsGenerator.ts (triggers grudge coverage)
  */
 
-import { createServerSupabaseClient } from '@/lib/db/server';
+import { createClient } from '@supabase/supabase-js';
+
+/**
+ * Grudge writes are SYSTEM operations (fired from the simulation engine for
+ * any pair of battlers — player, AI, or world cards). They must bypass
+ * user-scoped RLS: the cookie-based client used to throw
+ * "new row violates row-level security policy for table battler_relationships"
+ * which silently killed the entire recap/news pipeline after every battle.
+ */
+function createSystemSupabaseClient() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { autoRefreshToken: false, persistSession: false } }
+  );
+}
 
 // =====================================================
 // TYPES
@@ -114,7 +129,7 @@ const CLOSE_BATTLE_THRESHOLD = 0.8; // All rounds within 0.8 points
 export async function analyzeAndCreateGrudge(
   battleResult: BattleResultForGrudge
 ): Promise<GrudgeCreationResult> {
-  const supabase = await createServerSupabaseClient();
+  const supabase = createSystemSupabaseClient();
 
   // Detect triggers
   const triggers = detectGrudgeTriggers(battleResult);
@@ -415,7 +430,7 @@ async function addStorylineEvent(
     rematchDemandDelta?: number;
   }
 ) {
-  const supabase = await createServerSupabaseClient();
+  const supabase = createSystemSupabaseClient();
 
   await supabase.from('rivalry_storylines').insert({
     relationship_id: relationshipId,
@@ -452,7 +467,7 @@ function sortBattlerIds(id1: string, id2: string): [string, string] {
  * Intensity decays by 5 per week if no new events
  */
 export async function decayGrudgeIntensity(daysSinceLastModified: number = 7) {
-  const supabase = await createServerSupabaseClient();
+  const supabase = createSystemSupabaseClient();
 
   const decayAmount = Math.floor(daysSinceLastModified / 7) * 5; // 5 per week
 
@@ -469,7 +484,7 @@ export async function decayGrudgeIntensity(daysSinceLastModified: number = 7) {
  * Resolve grudge (mark as resolved, intensity → 0)
  */
 export async function resolveGrudge(relationshipId: string, reason: string) {
-  const supabase = await createServerSupabaseClient();
+  const supabase = createSystemSupabaseClient();
 
   await supabase
     .from('battler_relationships')
@@ -491,7 +506,7 @@ export async function resolveGrudge(relationshipId: string, reason: string) {
  * Set grudge to dormant (low tension but not resolved)
  */
 export async function setGrudgeDormant(relationshipId: string) {
-  const supabase = await createServerSupabaseClient();
+  const supabase = createSystemSupabaseClient();
 
   await supabase
     .from('battler_relationships')

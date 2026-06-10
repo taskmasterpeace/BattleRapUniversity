@@ -14,7 +14,20 @@
  * - rivalry_resolution: Grudge settled coverage
  */
 
-import { createServerSupabaseClient } from '@/lib/db/server';
+import { createClient } from '@supabase/supabase-js';
+
+/**
+ * Rivalry articles are SYSTEM writes fired from the simulation engine for any
+ * battle (player, PvP, or world cards). The cookie-based client hit RLS on
+ * news_articles and killed the recap pipeline — use the service role.
+ */
+function createSystemSupabaseClient() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { autoRefreshToken: false, persistSession: false } }
+  );
+}
 import {
   selectBloggerForStory,
   getBloggerCoverageContext,
@@ -77,7 +90,7 @@ export async function getRivalryContext(
   battlerAId: string,
   battlerBId: string
 ): Promise<RivalryContext> {
-  const supabase = await createServerSupabaseClient();
+  const supabase = createSystemSupabaseClient();
 
   // Sort IDs for query (battler_relationships uses ordered IDs)
   const [aId, bId] = battlerAId < battlerBId ? [battlerAId, battlerBId] : [battlerBId, battlerAId];
@@ -366,7 +379,7 @@ async function createRivalryArticle(
   articleBody: string,
   isGrudgeMatch: boolean
 ): Promise<string> {
-  const supabase = await createServerSupabaseClient();
+  const supabase = createSystemSupabaseClient();
 
   const slug = generateSlug(data.battlerAName, data.battlerBName);
 

@@ -152,6 +152,12 @@ export default function LandingPage() {
               >
                 ⚔️ RUN A DREAM MATCHUP
               </Link>
+              <Link
+                href="/leaderboard"
+                className="px-8 py-4 border-2 border-[#3a3d44] hover:border-[#ff8c42] text-zinc-300 font-display font-black uppercase tracking-wider text-lg transition-all"
+              >
+                🏆 POWER RANKINGS
+              </Link>
             </div>
           </div>
 

@@ -35,10 +35,14 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Protected routes require authentication
+  // Protected routes require authentication.
+  // Segment-aware matching: '/battle' must NOT capture '/battler/...' —
+  // battler profiles are public (shareable from leaderboard/matchup pages).
   const protectedPaths = ['/onboarding', '/dashboard', '/battle', '/media'];
-  const isProtectedPath = protectedPaths.some((path) =>
-    request.nextUrl.pathname.startsWith(path)
+  const isProtectedPath = protectedPaths.some(
+    (path) =>
+      request.nextUrl.pathname === path ||
+      request.nextUrl.pathname.startsWith(`${path}/`)
   );
 
   if (isProtectedPath && !user) {
