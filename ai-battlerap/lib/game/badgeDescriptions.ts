@@ -221,7 +221,7 @@ export const BADGE_DESCRIPTIONS: Record<string, BadgeDescription> = {
   'punchline_heavy': {
     name: 'Punchline Heavy',
     category: 'content',
-    description: 'Every bar is designed to land hard',
+    description: 'Awarded for landing a 9.0+ peak moment — win or lose, your haymakers connect',
     effects: [
       'Peak segments +15%',
       'Wordplay +20%',

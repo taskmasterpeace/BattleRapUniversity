@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect, useRef, use } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Avatar from '@/components/ui/Avatar';
 import GamingButton from '@/components/ui/GamingButton';
 import StatCard from '@/components/ui/StatCard';
 import ScoutingReport from '@/components/battle/ScoutingReport';
+import FightProjection from '@/components/battle/FightProjection';
 import { toast } from '@/components/ui/Toast';
 
 type PrepBlock = {
@@ -20,6 +21,12 @@ type PvpState = {
   mySide: 'challenger' | 'challenged';
   myLockedAt: string | null;
   opponentLockedAt: string | null;
+};
+
+type ProjectionContext = {
+  preparation: number;
+  resilience: number;
+  familyBond: number;
 };
 
 type Battle = {
@@ -54,13 +61,29 @@ export default function PrepPage({ params }: { params: Promise<{ id: string }> }
   const [totalPrepDays, setTotalPrepDays] = useState(0);
   const [lockPrepAt, setLockPrepAt] = useState('');
   const [loading, setLoading] = useState(true);
-  const [updating, setUpdating] = useState<number | null>(null);
   const [allDaysSelected, setAllDaysSelected] = useState(false);
-  // Bumped after every prep save so the scouting report refetches live
+  // Bumped after every confirmed research-day change so the scouting report
+  // refetches live (its tier is computed server-side from saved prep blocks)
   const [scoutRefresh, setScoutRefresh] = useState(0);
+  // Attributes context for the live fight projection
+  const [projectionCtx, setProjectionCtx] = useState<ProjectionContext>({
+    preparation: 5,
+    resilience: 5,
+    familyBond: 5,
+  });
   // PvP lock-in state (null for AI battles)
   const [pvp, setPvp] = useState<PvpState | null>(null);
   const [lockingIn, setLockingIn] = useState(false);
+
+  // --- Optimistic save machinery ----------------------------------------
+  // The UI updates instantly on selection; saves run in the background with
+  // latest-wins semantics per day. Only failures surface (toast + revert).
+  // savedFocusRef holds the last server-confirmed focus per day for reverts.
+  const savedFocusRef = useRef<Map<number, string>>(new Map());
+  // pendingRef holds the latest desired focus per day + whether a request is
+  // currently in flight for that day (so rapid re-selections coalesce into
+  // one trailing request instead of racing).
+  const pendingRef = useRef<Map<number, { desired: string; inFlight: boolean }>>(new Map());
 
   useEffect(() => {
     fetchPrepData();
@@ -86,6 +109,13 @@ export default function PrepPage({ params }: { params: Promise<{ id: string }> }
         setTotalPrepDays(data.totalPrepDays);
         setLockPrepAt(data.lockPrepAt);
         setPvp(data.pvp || null);
+        if (data.projectionContext) setProjectionCtx(data.projectionContext);
+        // Seed the revert map with server-confirmed selections
+        const saved = new Map<number, string>();
+        for (const block of data.prepBlocks as PrepBlock[]) {
+          if (block.focus) saved.set(block.day_index, block.focus);
+        }
+        savedFocusRef.current = saved;
       } else {
         toast(data.error || 'Failed to load prep data', 'error');
       }
@@ -96,27 +126,99 @@ export default function PrepPage({ params }: { params: Promise<{ id: string }> }
     setLoading(false);
   };
 
-  const handleFocusChange = async (dayIndex: number, focus: string) => {
-    setUpdating(dayIndex);
-    try {
-      const response = await fetch(`/api/battles/${id}/prep`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ day_index: dayIndex, focus }),
-      });
-
-      if (response.ok) {
-        await fetchPrepData();
-        setScoutRefresh((n) => n + 1);
-      } else {
-        const data = await response.json();
-        toast(data.error || 'Failed to update prep', 'error');
+  /** Apply a focus to local state immediately (the optimistic update). */
+  const applyLocalFocus = (dayIndex: number, focus: PrepBlock['focus']) => {
+    setPrepBlocks((prev) => {
+      const existing = prev.find((b) => b.day_index === dayIndex);
+      if (existing) {
+        return prev.map((b) => (b.day_index === dayIndex ? { ...b, focus } : b));
       }
-    } catch (error) {
-      console.error('Error updating prep:', error);
-      toast('Failed to update prep', 'error');
+      return [
+        ...prev,
+        { id: `local-${dayIndex}`, day_index: dayIndex, focus, auto_generated: false },
+      ];
+    });
+  };
+
+  /** Revert a day to its last server-confirmed focus (or unselected). */
+  const revertLocalFocus = (dayIndex: number) => {
+    const saved = savedFocusRef.current.get(dayIndex);
+    if (saved) {
+      applyLocalFocus(dayIndex, saved as PrepBlock['focus']);
+    } else {
+      setPrepBlocks((prev) => prev.filter((b) => b.day_index !== dayIndex));
     }
-    setUpdating(null);
+  };
+
+  /**
+   * Background save loop for one day. Latest-wins: if the player re-selects
+   * while a request is in flight, the trailing value is saved when it lands.
+   * Retries once on failure before reverting + surfacing a toast.
+   */
+  const flushDay = async (dayIndex: number) => {
+    const entry = pendingRef.current.get(dayIndex);
+    if (!entry || entry.inFlight) return;
+    entry.inFlight = true;
+    const focus = entry.desired;
+
+    let ok = false;
+    let serverError: string | null = null;
+    for (let attempt = 0; attempt < 2 && !ok; attempt++) {
+      try {
+        const response = await fetch(`/api/battles/${id}/prep`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ day_index: dayIndex, focus }),
+        });
+        if (response.ok) {
+          ok = true;
+        } else {
+          serverError = (await response.json().catch(() => null))?.error || null;
+          // Validation/lock errors won't succeed on retry — bail immediately
+          if (response.status === 400 || response.status === 403) break;
+        }
+      } catch {
+        // Network hiccup — loop retries once
+      }
+    }
+
+    entry.inFlight = false;
+
+    if (!ok) {
+      pendingRef.current.delete(dayIndex);
+      revertLocalFocus(dayIndex);
+      toast(serverError || `Day ${dayIndex} didn't save — reverted, try again`, 'error');
+      return;
+    }
+
+    if (entry.desired !== focus) {
+      // Player changed this day again mid-flight — save the newest value
+      void flushDay(dayIndex);
+      return;
+    }
+
+    pendingRef.current.delete(dayIndex);
+    const wasResearch = savedFocusRef.current.get(dayIndex) === 'research';
+    savedFocusRef.current.set(dayIndex, focus);
+    // Scouting tiers are computed server-side from saved research days, so
+    // only refetch when a confirmed save changes the research count.
+    if (focus === 'research' || wasResearch) {
+      setScoutRefresh((n) => n + 1);
+    }
+  };
+
+  const handleFocusChange = (dayIndex: number, focus: string) => {
+    if (!focus) return; // ignore re-selecting the placeholder
+    // 1. Instant UI update — no spinners, no refetch, no blink
+    applyLocalFocus(dayIndex, focus as PrepBlock['focus']);
+    // 2. Queue the background save (latest-wins per day)
+    const entry = pendingRef.current.get(dayIndex);
+    if (entry) {
+      entry.desired = focus;
+    } else {
+      pendingRef.current.set(dayIndex, { desired: focus, inFlight: false });
+    }
+    void flushDay(dayIndex);
   };
 
   const getFocusForDay = (dayIndex: number): string => {
@@ -314,6 +416,22 @@ export default function PrepPage({ params }: { params: Promise<{ id: string }> }
           </div>
         </div>
 
+        {/* Fight Projection — live, computed locally from real config constants */}
+        <FightProjection
+          counts={{
+            research: prepBlocks.filter((b) => b.focus === 'research').length,
+            writing: prepBlocks.filter((b) => b.focus === 'writing').length,
+            performance: prepBlocks.filter((b) => b.focus === 'performance').length,
+            life: prepBlocks.filter((b) => b.focus === 'life').length,
+            rest: prepBlocks.filter((b) => b.focus === 'rest').length,
+          }}
+          totalPrepDays={totalPrepDays}
+          roundLengthMinutes={battle.league.round_length_minutes}
+          preparation={projectionCtx.preparation}
+          resilience={projectionCtx.resilience}
+          familyBond={projectionCtx.familyBond}
+        />
+
         {/* Scouting Report — research days unlock opponent intel */}
         <ScoutingReport battleId={id} refreshKey={scoutRefresh} />
 
@@ -344,9 +462,6 @@ export default function PrepPage({ params }: { params: Promise<{ id: string }> }
                     <h4 className="font-display font-black text-sm uppercase tracking-wider text-zinc-400">
                       DAY {dayIndex}
                     </h4>
-                    {updating === dayIndex && (
-                      <span className="text-xs text-[#ff8c42] font-display font-display font-black uppercase animate-pulse">SAVING...</span>
-                    )}
                   </div>
 
                   {focusOption && (
@@ -359,7 +474,7 @@ export default function PrepPage({ params }: { params: Promise<{ id: string }> }
                   <select
                     value={currentFocus}
                     onChange={(e) => handleFocusChange(dayIndex, e.target.value)}
-                    disabled={isLocked || updating === dayIndex}
+                    disabled={isLocked}
                     className="w-full px-3 py-3 min-h-[44px] bg-[#18191c] border-2 border-[#3a3d44] text-zinc-100 text-sm font-display font-display font-black uppercase tracking-wide focus:border-[#ff8c42] focus:outline-none disabled:opacity-30 disabled:cursor-not-allowed transition"
                   >
                     <option value="">SELECT FOCUS...</option>

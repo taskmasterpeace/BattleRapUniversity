@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { BADGE_DESCRIPTIONS } from '@/lib/game/badgeDescriptions';
+import { getBadgeEffectText } from '@/lib/game/badgeEffectText';
 import BadgeTooltip from '@/components/ui/BadgeTooltip';
 
 type BadgeProgress = {
@@ -99,24 +100,31 @@ export default function BadgeShowcase({ styleTags, badgeProgress = [] }: Props) 
                 const icon = desc ? categoryIcons[desc.category] || '🏅' : '🏅';
                 const label = desc?.name || titleCase(tag);
 
+                const effectText = getBadgeEffectText(tag);
                 return (
                   <BadgeTooltip key={tag} badgeCode={tag}>
                     <div
-                      className={`inline-flex items-center gap-2 px-4 py-2 border-2 ${colors.bg} ${colors.border} ${colors.glow} transition-all hover:scale-105`}
+                      className={`inline-flex flex-col gap-1 px-4 py-2 border-2 ${colors.bg} ${colors.border} ${colors.glow} transition-all hover:scale-105 max-w-xs`}
                     >
-                      <span className="text-lg leading-none">{icon}</span>
-                      <span
-                        className={`font-display font-black uppercase tracking-wider text-sm ${colors.text}`}
-                      >
-                        {label}
-                      </span>
-                      {desc?.tier && (
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg leading-none">{icon}</span>
                         <span
-                          className={`text-[10px] font-display font-black uppercase tracking-wider ${colors.text} opacity-70`}
+                          className={`font-display font-black uppercase tracking-wider text-sm ${colors.text}`}
                         >
-                          {desc.tier}
+                          {label}
                         </span>
-                      )}
+                        {desc?.tier && (
+                          <span
+                            className={`text-[10px] font-display font-black uppercase tracking-wider ${colors.text} opacity-70`}
+                          >
+                            {desc.tier}
+                          </span>
+                        )}
+                      </div>
+                      {/* What this badge actually does — visible without hover */}
+                      <span className="text-[10px] text-zinc-400 leading-snug normal-case tracking-normal">
+                        {effectText}
+                      </span>
                     </div>
                   </BadgeTooltip>
                 );

@@ -31,8 +31,8 @@ export async function GET(
     .select(`
       *,
       league:leagues(*),
-      player_battler:battler_player_id(id, stage_name, tier, avatar_url, sprite_set),
-      ai_battler:battler_ai_id(id, stage_name, tier, avatar_url, sprite_set)
+      player_battler:battler_player_id(id, stage_name, tier, avatar_url, sprite_set, style_tags),
+      ai_battler:battler_ai_id(id, stage_name, tier, avatar_url, sprite_set, style_tags)
     `)
     .eq('id', id)
     .single();
@@ -118,6 +118,15 @@ export async function GET(
     .eq('battler_id', battle.battler_ai_id)
     .single();
 
+  // Get the recap article for this battle (for "The Internet" section)
+  const { data: recapArticle } = await supabase
+    .from('news_articles')
+    .select('slug, title, type, published_at')
+    .eq('battle_id', id)
+    .order('published_at', { ascending: true })
+    .limit(1)
+    .maybeSingle();
+
   // Check for pending life events triggered by this battle
   const { data: pendingEvents } = await supabase
     .from('battler_life_events')
@@ -141,6 +150,7 @@ export async function GET(
     judgeScores: judgeScores || [],
     playerAttributes: playerAttributes || null,
     opponentAttributes: opponentAttributes || null,
+    recapArticle: recapArticle || null,
     pendingEvents: pendingEvents || [],
   });
 }

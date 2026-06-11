@@ -40,7 +40,7 @@ export async function GET(
         avatar_url,
         region,
         created_at,
-        hometown:hometown_city_id (name, state),
+        hometown:hometown_city_id (id, name, state),
         battler_attributes (
           writing,
           performance,

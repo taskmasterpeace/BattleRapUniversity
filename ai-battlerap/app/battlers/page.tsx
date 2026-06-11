@@ -161,12 +161,18 @@ export default async function BattlersRosterPage({
                   className="group bg-[#18191c] border-2 border-[#3a3d44] hover:border-[#ff8c42] hover:-translate-y-[2px] hover:shadow-[0_10px_30px_-15px_rgba(255,140,66,0.6)] transition-all duration-200 overflow-hidden flex flex-col"
                 >
                   <Link href={`/battler/${b.id}`} className="block">
-                    {/* Avatar */}
-                    <div
-                      className="aspect-square bg-[#2d2f35] bg-cover bg-center transition-transform duration-300 group-hover:scale-[1.04]"
-                      style={b.avatar_url ? { backgroundImage: `url(${b.avatar_url})` } : undefined}
-                    >
-                      {!b.avatar_url && (
+                    {/* Avatar — object-contain so portraits are never cropped
+                        (hair/hats were getting cut off with bg-cover) and the
+                        sprite fills as much of the tile as possible. */}
+                    <div className="aspect-square bg-[#2d2f35] overflow-hidden">
+                      {b.avatar_url ? (
+                        <img
+                          src={b.avatar_url}
+                          alt={b.stage_name}
+                          loading="lazy"
+                          className="w-full h-full object-contain object-bottom [image-rendering:pixelated] transition-transform duration-300 group-hover:scale-[1.04]"
+                        />
+                      ) : (
                         <div className="w-full h-full flex items-center justify-center text-zinc-700 text-3xl">
                           ?
                         </div>

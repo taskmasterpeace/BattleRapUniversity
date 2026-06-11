@@ -239,9 +239,12 @@ export async function withdrawFromTournament(
  * Creates standard single-elimination bracket
  */
 export async function generateTournamentBrackets(
-  tournamentId: string
+  tournamentId: string,
+  client?: any
 ): Promise<{ success: boolean; error?: string; brackets?: TournamentBracket[] }> {
-  const supabase = await createServerSupabaseClient();
+  // Internal routes/cron must pass a service-role client — the cookie-based
+  // user client has no session there and RLS blocks the writes.
+  const supabase = client ?? (await createServerSupabaseClient());
 
   // Get tournament
   const { data: tournament } = await supabase
@@ -406,9 +409,11 @@ function generateStandardBracketMatchups(participantCount: number): {
 export async function scheduleRoundBattles(
   tournamentId: string,
   round: 'first_round' | 'quarterfinals' | 'semifinals' | 'finals',
-  daysOfPrep: number = 30
+  daysOfPrep: number = 30,
+  client?: any
 ): Promise<{ success: boolean; error?: string; battleIds?: string[] }> {
-  const supabase = await createServerSupabaseClient();
+  // Internal routes/cron must pass a service-role client (RLS on battles).
+  const supabase = client ?? (await createServerSupabaseClient());
 
   // Get tournament details
   const { data: tournament } = await supabase

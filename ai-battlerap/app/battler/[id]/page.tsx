@@ -30,7 +30,7 @@ interface CareerData {
     bio?: string | null;
     avatarUrl?: string | null;
     region?: string | null;
-    hometown?: { name: string; state: string | null } | null;
+    hometown?: { id?: string | null; name: string; state: string | null } | null;
     accolades?: Array<{
       rank: number | null;
       title: string;
@@ -170,9 +170,19 @@ export default function BattlerCareerPage({ params }: { params: Promise<{ id: st
                   {data.battler.rank && <span className="font-display font-black uppercase tracking-wide">#{data.battler.rank} Ranked</span>}
                   {data.battler.tier && <span className="font-display font-black uppercase tracking-wide">{data.battler.tier} Tier</span>}
                   {data.battler.hometown && (
-                    <span className="font-display font-black uppercase tracking-wide">
-                      📍 {data.battler.hometown.name}{data.battler.hometown.state ? `, ${data.battler.hometown.state}` : ''}
-                    </span>
+                    data.battler.hometown.id ? (
+                      <Link
+                        href={`/cities/${data.battler.hometown.id}`}
+                        className="font-display font-black uppercase tracking-wide text-zinc-300 hover:text-[#ff8c42] transition-colors border-b border-dashed border-zinc-600 hover:border-[#ff8c42]"
+                        title={`Visit the ${data.battler.hometown.name} scene`}
+                      >
+                        📍 {data.battler.hometown.name}{data.battler.hometown.state ? `, ${data.battler.hometown.state}` : ''}
+                      </Link>
+                    ) : (
+                      <span className="font-display font-black uppercase tracking-wide">
+                        📍 {data.battler.hometown.name}{data.battler.hometown.state ? `, ${data.battler.hometown.state}` : ''}
+                      </span>
+                    )
                   )}
                 </div>
                 <div className="text-sm text-zinc-500 uppercase tracking-wide">

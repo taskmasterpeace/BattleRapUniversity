@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { BADGE_DESCRIPTIONS } from '@/lib/game/badgeDescriptions';
+import { getBadgeEffectLines, getBadgeEffectText } from '@/lib/game/badgeEffectText';
 import { createServerSupabaseClient } from '@/lib/db/server';
 import BadgeCard from '@/components/badges/BadgeCard';
 
@@ -48,13 +49,22 @@ async function getBadges(): Promise<Badge[]> {
     return [];
   }
 
-  // Merge database data with descriptions
+  // Merge database data with descriptions. Every badge must show what it
+  // does: mechanical sim effects first, compendium flavor effects second,
+  // and a flavor-role line as the final fallback.
   return (badgeCosts || []).map(badge => {
     const description = BADGE_DESCRIPTIONS[badge.badge_code];
+    const mechanicLines = getBadgeEffectLines(badge.badge_code);
+    const flavorLines = description?.effects || [];
+    const effects = mechanicLines.length > 0
+      ? [...mechanicLines.slice(0, 4), ...flavorLines.filter(l => !mechanicLines.includes(l)).slice(0, 2)]
+      : flavorLines.length > 0
+        ? flavorLines
+        : [getBadgeEffectText(badge.badge_code)];
     return {
       ...badge,
       description: description?.description || 'A special achievement in your battle rap career.',
-      effects: description?.effects || []
+      effects,
     };
   });
 }

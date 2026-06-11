@@ -9,10 +9,11 @@ import { getPlayerBattler } from '@/lib/game/getPlayerBattler';
 export async function GET() {
   const supabase = await createServerSupabaseClient();
 
-  // Get player's battler
+  // Get player's battler. No battler isn't an error worth a console 404 on
+  // every page that mounts the widget — there are simply no events yet.
   const { battler } = await getPlayerBattler();
   if (!battler) {
-    return NextResponse.json({ error: 'No battler found' }, { status: 404 });
+    return NextResponse.json({ events: [] });
   }
 
   // Fetch pending life events with template details

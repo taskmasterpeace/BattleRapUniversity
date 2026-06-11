@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { BADGE_REGISTRY } from '@/lib/game/badges';
+import { getBadgeEffectLines, getBadgeEffectText } from '@/lib/game/badgeEffectText';
+import { BADGE_DESCRIPTIONS } from '@/lib/game/badgeDescriptions';
 
 type BadgeRarity = 'common' | 'rare' | 'epic' | 'legendary';
 
@@ -85,78 +86,19 @@ function formatBadgeName(badgeCode: string): string {
 }
 
 function getBadgeDescription(badgeCode: string): string {
-  const effects = BADGE_REGISTRY[badgeCode];
-  if (!effects) return 'A special achievement in your battle rap career.';
-
-  const descriptions: string[] = [];
-
-  // Positive effects
-  if (effects.lyricismMultiplier && effects.lyricismMultiplier > 1.1) {
-    descriptions.push(`+${Math.round((effects.lyricismMultiplier - 1) * 100)}% lyricism`);
-  }
-  if (effects.wordplayMultiplier && effects.wordplayMultiplier > 1.1) {
-    descriptions.push(`+${Math.round((effects.wordplayMultiplier - 1) * 100)}% wordplay`);
-  }
-  if (effects.stagePresenceMultiplier && effects.stagePresenceMultiplier > 1.1) {
-    descriptions.push(`+${Math.round((effects.stagePresenceMultiplier - 1) * 100)}% stage presence`);
-  }
-  if (effects.chokeReduction && effects.chokeReduction > 0.01) {
-    descriptions.push(`-${Math.round(effects.chokeReduction * 100)}% choke risk`);
-  }
-  if (effects.peakBonus && effects.peakBonus > 0.05) {
-    descriptions.push(`+${Math.round(effects.peakBonus * 100)}% peak moments`);
-  }
-
-  return descriptions.length > 0
-    ? `Grants ${descriptions.slice(0, 3).join(', ')}`
-    : 'Shapes your unique battle rap style and reputation.';
+  // Compendium flavor first (explains WHY you earned it), then effect text.
+  const desc = BADGE_DESCRIPTIONS[badgeCode];
+  if (desc?.description) return desc.description;
+  return getBadgeEffectText(badgeCode);
 }
 
 function getBadgeEffects(badgeCode: string): string[] {
-  const effects = BADGE_REGISTRY[badgeCode];
-  if (!effects) return [];
-
-  const effectsList: string[] = [];
-
-  // Prep efficiency
-  if (effects.writingPrepEfficiency && Math.abs(effects.writingPrepEfficiency - 1.0) > 0.1) {
-    const change = Math.round((effects.writingPrepEfficiency - 1) * 100);
-    effectsList.push(`${change > 0 ? '+' : ''}${change}% writing prep efficiency`);
-  }
-  if (effects.performancePrepEfficiency && Math.abs(effects.performancePrepEfficiency - 1.0) > 0.1) {
-    const change = Math.round((effects.performancePrepEfficiency - 1) * 100);
-    effectsList.push(`${change > 0 ? '+' : ''}${change}% performance prep efficiency`);
-  }
-
-  // Attribute multipliers
-  if (effects.lyricismMultiplier && Math.abs(effects.lyricismMultiplier - 1.0) > 0.1) {
-    const change = Math.round((effects.lyricismMultiplier - 1) * 100);
-    effectsList.push(`${change > 0 ? '+' : ''}${change}% lyricism multiplier`);
-  }
-  if (effects.wordplayMultiplier && Math.abs(effects.wordplayMultiplier - 1.0) > 0.1) {
-    const change = Math.round((effects.wordplayMultiplier - 1) * 100);
-    effectsList.push(`${change > 0 ? '+' : ''}${change}% wordplay multiplier`);
-  }
-  if (effects.creativityMultiplier && Math.abs(effects.creativityMultiplier - 1.0) > 0.1) {
-    const change = Math.round((effects.creativityMultiplier - 1) * 100);
-    effectsList.push(`${change > 0 ? '+' : ''}${change}% creativity multiplier`);
-  }
-
-  // Special mechanics
-  if (effects.chokeReduction && effects.chokeReduction > 0.01) {
-    effectsList.push(`-${Math.round(effects.chokeReduction * 100)}% choke probability`);
-  }
-  if (effects.chokeIncrease && effects.chokeIncrease > 0.01) {
-    effectsList.push(`+${Math.round(effects.chokeIncrease * 100)}% choke probability`);
-  }
-  if (effects.peakBonus && Math.abs(effects.peakBonus) > 0.05) {
-    effectsList.push(`${effects.peakBonus > 0 ? '+' : ''}${Math.round(effects.peakBonus * 100)}% peak segment bonus`);
-  }
-  if (effects.crowdReactionBonus && Math.abs(effects.crowdReactionBonus) > 3) {
-    effectsList.push(`${effects.crowdReactionBonus > 0 ? '+' : ''}${effects.crowdReactionBonus} crowd reaction`);
-  }
-
-  return effectsList.slice(0, 5);
+  // Resolves snake_case codes to their mechanical definition via the shared
+  // helper, so every unlock shows what the badge actually does.
+  const lines = getBadgeEffectLines(badgeCode);
+  if (lines.length > 0) return lines.slice(0, 5);
+  // Pure flavor badge — surface its role instead of an empty section
+  return [getBadgeEffectText(badgeCode)];
 }
 
 export default function BadgeUnlockModal({

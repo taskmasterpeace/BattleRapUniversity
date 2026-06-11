@@ -347,7 +347,7 @@ export default function BattleAnalysis({
   const suggestions = generateSuggestions();
 
   return (
-    <div className="bg-[#2d2f35] border-2 border-[#3a3d44] rounded-lg overflow-hidden">
+    <div className="bg-[#101114] border-2 border-[#3a3d44] overflow-hidden">
       {/* Header - Always Visible */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
@@ -383,131 +383,6 @@ export default function BattleAnalysis({
                   <p className="text-sm text-zinc-300">{point}</p>
                 </div>
               ))}
-            </div>
-          </div>
-
-          {/* 2. ATTRIBUTE COMPARISON */}
-          <div>
-            <h3 className="text-lg font-black uppercase tracking-wider text-zinc-300 mb-4">
-              Attribute Comparison
-            </h3>
-            <div className="space-y-4">
-              {/* Writing Attributes */}
-              <div>
-                <h4 className="text-xs uppercase tracking-wide text-zinc-500 font-bold mb-2">
-                  Writing ({(leagueWritingWeight * 100).toFixed(0)}% league weight)
-                </h4>
-                {attributeComparisons.filter(c => c.category === 'writing').map((comp, idx) => (
-                  <div key={idx} className="mb-3">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-xs uppercase tracking-wide text-zinc-400 font-bold">{comp.name}</span>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-bold text-zinc-300">{comp.playerValue.toFixed(1)}</span>
-                        <span className="text-xs text-zinc-500">vs</span>
-                        <span className="text-sm font-bold text-zinc-300">{comp.opponentValue.toFixed(1)}</span>
-                        <span className={`text-xs font-bold ml-2 ${
-                          comp.difference > 0 ? 'text-green-500' : comp.difference < 0 ? 'text-red-500' : 'text-zinc-500'
-                        }`}>
-                          {comp.difference > 0 ? '+' : ''}{comp.difference.toFixed(1)}
-                        </span>
-                      </div>
-                    </div>
-                    {/* Comparison Bar */}
-                    <div className="flex items-center gap-2">
-                      {/* Player Bar */}
-                      <div className="flex-1 h-2 bg-zinc-800 rounded-full overflow-hidden">
-                        <div
-                          className={`h-full ${comp.difference > 0 ? 'bg-green-500' : 'bg-zinc-600'}`}
-                          style={{ width: `${(comp.playerValue / 10) * 100}%` }}
-                        />
-                      </div>
-                      {/* Opponent Bar */}
-                      <div className="flex-1 h-2 bg-zinc-800 rounded-full overflow-hidden">
-                        <div
-                          className={`h-full ${comp.difference < 0 ? 'bg-red-500' : 'bg-zinc-600'}`}
-                          style={{ width: `${(comp.opponentValue / 10) * 100}%` }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Performance Attributes */}
-              <div>
-                <h4 className="text-xs uppercase tracking-wide text-zinc-500 font-bold mb-2">
-                  Performance ({(leaguePerformanceWeight * 100).toFixed(0)}% league weight)
-                </h4>
-                {attributeComparisons.filter(c => c.category === 'performance').map((comp, idx) => (
-                  <div key={idx} className="mb-3">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-xs uppercase tracking-wide text-zinc-400 font-bold">{comp.name}</span>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-bold text-zinc-300">{comp.playerValue.toFixed(1)}</span>
-                        <span className="text-xs text-zinc-500">vs</span>
-                        <span className="text-sm font-bold text-zinc-300">{comp.opponentValue.toFixed(1)}</span>
-                        <span className={`text-xs font-bold ml-2 ${
-                          comp.difference > 0 ? 'text-green-500' : comp.difference < 0 ? 'text-red-500' : 'text-zinc-500'
-                        }`}>
-                          {comp.difference > 0 ? '+' : ''}{comp.difference.toFixed(1)}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="flex-1 h-2 bg-zinc-800 rounded-full overflow-hidden">
-                        <div
-                          className={`h-full ${comp.difference > 0 ? 'bg-green-500' : 'bg-zinc-600'}`}
-                          style={{ width: `${(comp.playerValue / 10) * 100}%` }}
-                        />
-                      </div>
-                      <div className="flex-1 h-2 bg-zinc-800 rounded-full overflow-hidden">
-                        <div
-                          className={`h-full ${comp.difference < 0 ? 'bg-red-500' : 'bg-zinc-600'}`}
-                          style={{ width: `${(comp.opponentValue / 10) * 100}%` }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Personal/Resilience */}
-              <div>
-                <h4 className="text-xs uppercase tracking-wide text-zinc-500 font-bold mb-2">
-                  Resilience
-                </h4>
-                {attributeComparisons.filter(c => c.category === 'personal' && c.name === 'Resilience').map((comp, idx) => (
-                  <div key={idx} className="mb-3">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-xs uppercase tracking-wide text-zinc-400 font-bold">{comp.name}</span>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-bold text-zinc-300">{comp.playerValue.toFixed(1)}</span>
-                        <span className="text-xs text-zinc-500">vs</span>
-                        <span className="text-sm font-bold text-zinc-300">{comp.opponentValue.toFixed(1)}</span>
-                        <span className={`text-xs font-bold ml-2 ${
-                          comp.difference > 0 ? 'text-green-500' : comp.difference < 0 ? 'text-red-500' : 'text-zinc-500'
-                        }`}>
-                          {comp.difference > 0 ? '+' : ''}{comp.difference.toFixed(1)}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="flex-1 h-2 bg-zinc-800 rounded-full overflow-hidden">
-                        <div
-                          className={`h-full ${comp.difference > 0 ? 'bg-green-500' : 'bg-zinc-600'}`}
-                          style={{ width: `${(comp.playerValue / 10) * 100}%` }}
-                        />
-                      </div>
-                      <div className="flex-1 h-2 bg-zinc-800 rounded-full overflow-hidden">
-                        <div
-                          className={`h-full ${comp.difference < 0 ? 'bg-red-500' : 'bg-zinc-600'}`}
-                          style={{ width: `${(comp.opponentValue / 10) * 100}%` }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
             </div>
           </div>
 

@@ -67,6 +67,14 @@ export default async function CalendarPage({
 
   const supabase = await createServerSupabaseClient();
 
+  // The player's own battlers — their battles open the private battle view,
+  // everything else opens the public spectator view (/watch/[id]).
+  const { data: myBattlers } = await supabase
+    .from('battlers')
+    .select('id')
+    .eq('user_id', user.id);
+  const myBattlerIds = new Set(((myBattlers ?? []) as { id: string }[]).map((b) => b.id));
+
   const [{ data: battles }, { data: tournaments }] = await Promise.all([
     supabase
       .from('battles')
@@ -131,11 +139,15 @@ export default async function CalendarPage({
     const league = b.league_id ? leagueMap.get(b.league_id) : undefined;
     const matchup = p && o ? `${p} vs ${o}` : 'Battle';
     const tag = league ? `[${league.short_code}] ` : '';
+    // Own battles → private battle page. World/AI battles → public spectator view.
+    const isMine =
+      (b.battler_player_id && myBattlerIds.has(b.battler_player_id)) ||
+      (b.battler_ai_id && myBattlerIds.has(b.battler_ai_id));
     events.push({
       date: toDateKey(b.scheduled_at),
       kind: 'battle',
       title: `${tag}${matchup}`,
-      href: `/battle/${b.id}`,
+      href: isMine ? `/battle/${b.id}` : `/watch/${b.id}`,
       status: b.status,
     });
   }

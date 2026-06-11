@@ -14,30 +14,32 @@ export async function GET(
   const { id } = await params;
   const supabase = await createServerSupabaseClient();
 
-  // Get player's battler
-  const { data: battler } = await supabase
-    .from('battlers')
-    .select('id')
-    .eq('user_id', user.id)
-    .eq('is_ai', false)
-    .single();
+  // Battler lookup and battle lookup are independent — run them in parallel
+  // (this endpoint is on the prep page's critical path).
+  const [{ data: battler }, { data: battle }] = await Promise.all([
+    supabase
+      .from('battlers')
+      .select('id')
+      .eq('user_id', user.id)
+      .eq('is_ai', false)
+      .single(),
+    // Battle with league info (both battler joins so PvP can show the
+    // correct opponent to whichever side is looking)
+    supabase
+      .from('battles')
+      .select(`
+        *,
+        league:leagues(*),
+        ai_battler:battler_ai_id(id, stage_name, tier, avatar_url),
+        player_battler:battler_player_id(id, stage_name, tier, avatar_url)
+      `)
+      .eq('id', id)
+      .single(),
+  ]);
 
   if (!battler) {
     return NextResponse.json({ error: 'No battler found' }, { status: 404 });
   }
-
-  // Get battle with league info (both battler joins so PvP can show the
-  // correct opponent to whichever side is looking)
-  const { data: battle } = await supabase
-    .from('battles')
-    .select(`
-      *,
-      league:leagues(*),
-      ai_battler:battler_ai_id(id, stage_name, tier, avatar_url),
-      player_battler:battler_player_id(id, stage_name, tier, avatar_url)
-    `)
-    .eq('id', id)
-    .single();
 
   if (!battle) {
     return NextResponse.json({ error: 'Battle not found' }, { status: 404 });
@@ -51,13 +53,21 @@ export async function GET(
     return NextResponse.json({ error: 'Not your battle' }, { status: 403 });
   }
 
-  // Get existing prep blocks (only the caller's own side)
-  const { data: prepBlocks } = await supabase
-    .from('prep_blocks')
-    .select('*')
-    .eq('battle_id', id)
-    .eq('battler_id', battler.id)
-    .order('day_index');
+  // Prep blocks (only the caller's own side) + the caller's attributes for
+  // the live fight-projection panel — independent queries, run in parallel.
+  const [{ data: prepBlocks }, { data: attrs }] = await Promise.all([
+    supabase
+      .from('prep_blocks')
+      .select('*')
+      .eq('battle_id', id)
+      .eq('battler_id', battler.id)
+      .order('day_index'),
+    supabase
+      .from('battler_attributes')
+      .select('resilience, personal')
+      .eq('battler_id', battler.id)
+      .maybeSingle(),
+  ]);
 
   // Calculate total prep days
   const lockDate = new Date(battle.lock_prep_at);
@@ -71,11 +81,21 @@ export async function GET(
     responseBattle.ai_battler = player_battler;
   }
 
+  // Context for the client-side fight projection (real attributes feed the
+  // same formulas the simulation uses — see lib/game/prepProjection.ts).
+  const personal = (attrs?.personal as Record<string, number> | null) || null;
+  const projectionContext = {
+    preparation: personal?.preparation ?? 5,
+    resilience: attrs?.resilience ?? 5,
+    familyBond: personal?.family_bond ?? 5,
+  };
+
   return NextResponse.json({
     battle: responseBattle,
     prepBlocks: prepBlocks || [],
     totalPrepDays,
     lockPrepAt: battle.lock_prep_at,
+    projectionContext,
     pvp: battle.is_pvp
       ? {
           mySide: isChallenger ? 'challenger' : 'challenged',

@@ -374,7 +374,9 @@ export async function runWorldEventsTick(
         blogger: template.blogger,
         blogger_pen_name: byline.penName,
       },
-      published_at: new Date().toISOString(),
+      // Spread publish times randomly across the last 0-72h so a generation
+      // batch doesn't read as "everything posted 20 hours ago" in the media hub.
+      published_at: new Date(Date.now() - Math.random() * 72 * 60 * 60 * 1000).toISOString(),
     });
 
     if (error) {

@@ -88,7 +88,7 @@ export async function checkBadgeEarning(
   const variance = calculateVariance(scores);
 
   // Run checks
-  checkPerformanceBadges(result, currentBadges, rounds, avgScore, avgCrowd, maxPeak, anyChoke, variance);
+  checkPerformanceBadges(result, currentBadges, rounds, avgScore, avgCrowd, maxPeak, anyChoke, variance, wonBattle);
   await checkCareerBadges(result, currentBadges, ranking);
   await checkStreakBadges(result, currentBadges, ranking);
   checkAttributeBadges(result, currentBadges, attributes);
@@ -124,12 +124,18 @@ function checkPerformanceBadges(
   avgCrowd: number,
   maxPeak: number,
   anyChoke: boolean,
-  variance: number
+  variance: number,
+  wonBattle: boolean
 ): void {
-  // Punchline Heavy — peak ≥ 9.0
+  // Punchline Heavy — peak ≥ 9.0. INTENTIONALLY result-independent: a
+  // devastating haymaker counts even in a loss (a great punch in defeat is
+  // still a great punch). The copy makes that explicit so a 0-3 unlock
+  // doesn't read like a bug.
   if (maxPeak >= 9.0) {
     award(result, currentBadges, 'punchline_heavy',
-      `Peak score of ${maxPeak.toFixed(1)} — devastating haymaker`);
+      wonBattle
+        ? `Peak score of ${maxPeak.toFixed(1)} — devastating haymaker`
+        : `Peak score of ${maxPeak.toFixed(1)} — your haymakers land 9.0+ even in defeat`);
   }
 
   // Crowd Favorite — avg crowd ≥ 85

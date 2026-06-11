@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { BADGE_DESCRIPTIONS, type BadgeDescription } from '@/lib/game/badgeDescriptions';
+import { getBadgeEffectLines, getBadgeEffectText } from '@/lib/game/badgeEffectText';
 
 type Props = {
   badgeCode: string;
@@ -39,9 +40,10 @@ export default function BadgeTooltip({ badgeCode, children }: Props) {
   const [isHovered, setIsHovered] = useState(false);
 
   const badge = BADGE_DESCRIPTIONS[badgeCode];
+  const mechanicLines = getBadgeEffectLines(badgeCode);
 
   if (!badge) {
-    // Badge not in descriptions, show basic tooltip
+    // Badge not in the compendium — still show its mechanical effect or flavor role
     return (
       <div className="relative inline-block">
         <div
@@ -51,8 +53,19 @@ export default function BadgeTooltip({ badgeCode, children }: Props) {
           {children}
         </div>
         {isHovered && (
-          <div className="absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-[#2d2f35] border-2 border-[#3a3d44] rounded text-xs text-zinc-400 whitespace-nowrap">
-            {badgeCode.replace(/_/g, ' ').toUpperCase()}
+          <div className="absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-[#2d2f35] border-2 border-[#3a3d44] rounded text-xs w-56 pointer-events-none">
+            <p className="text-zinc-200 font-bold uppercase tracking-wide mb-1">
+              {badgeCode.replace(/_/g, ' ').toUpperCase()}
+            </p>
+            {mechanicLines.length > 0 ? (
+              <div className="space-y-1">
+                {mechanicLines.slice(0, 4).map((line, i) => (
+                  <p key={i} className="text-[#ff8c42]">▸ {line}</p>
+                ))}
+              </div>
+            ) : (
+              <p className="text-zinc-400">{getBadgeEffectText(badgeCode)}</p>
+            )}
           </div>
         )}
       </div>
@@ -94,16 +107,38 @@ export default function BadgeTooltip({ badgeCode, children }: Props) {
               )}
             </div>
 
-            {/* Effects */}
-            <div className="space-y-1.5 pt-3 border-t-2 border-[#3a3d44]/50">
-              <p className="text-xs text-zinc-500 uppercase tracking-wider font-bold mb-2">Effects:</p>
-              {badge.effects.map((effect, index) => (
-                <div key={index} className="flex items-start gap-2">
-                  <span className="text-green-500 text-xs mt-0.5">▸</span>
-                  <p className="text-xs text-zinc-300">{effect}</p>
-                </div>
-              ))}
-            </div>
+            {/* Mechanical effects — what the badge actually does in the sim */}
+            {mechanicLines.length > 0 && (
+              <div className="space-y-1.5 pt-3 border-t-2 border-[#3a3d44]/50">
+                <p className="text-xs text-zinc-500 uppercase tracking-wider font-bold mb-2">In-battle effects:</p>
+                {mechanicLines.slice(0, 5).map((line, index) => (
+                  <div key={index} className="flex items-start gap-2">
+                    <span className="text-[#ff8c42] text-xs mt-0.5">▸</span>
+                    <p className="text-xs text-[#ffb380] font-bold">{line}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Flavor effects from the compendium */}
+            {badge.effects.length > 0 && (
+              <div className="space-y-1.5 pt-3 border-t-2 border-[#3a3d44]/50">
+                <p className="text-xs text-zinc-500 uppercase tracking-wider font-bold mb-2">Effects:</p>
+                {badge.effects.map((effect, index) => (
+                  <div key={index} className="flex items-start gap-2">
+                    <span className="text-green-500 text-xs mt-0.5">▸</span>
+                    <p className="text-xs text-zinc-300">{effect}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Guarantee something concrete shows for every badge */}
+            {mechanicLines.length === 0 && badge.effects.length === 0 && (
+              <div className="pt-3 border-t-2 border-[#3a3d44]/50">
+                <p className="text-xs text-zinc-300">{getBadgeEffectText(badgeCode)}</p>
+              </div>
+            )}
 
             {/* Category */}
             <div className="mt-3 pt-3 border-t-2 border-[#3a3d44]/50">

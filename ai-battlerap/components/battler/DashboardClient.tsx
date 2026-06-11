@@ -194,6 +194,52 @@ export default function DashboardClient({
           inCity={!!currentCity}
         />
 
+        {/* YOUR ROSTER — manager framing: you run a stable, this battler is
+            slot #1. Locked slots sell the multi-battler future without new systems. */}
+        <div className="mb-4">
+          <div className="flex items-center gap-3 mb-2">
+            <h2 className="text-sm font-display font-black uppercase tracking-wider text-zinc-400">
+              👔 YOUR ROSTER
+            </h2>
+            <span className="text-[10px] uppercase tracking-widest text-zinc-600 font-bold">
+              1 / 3 SLOTS
+            </span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {/* Slot 1 — active battler */}
+            <div className="flex items-center gap-3 bg-[#2d2f35] border-2 border-[#ff8c42]/60 px-4 py-3 shadow-[0_0_16px_-8px_rgba(255,140,66,0.6)]">
+              <Avatar url={battler.avatar_url} size={40} showBorder={false} alt={battler.stage_name} />
+              <div className="min-w-0">
+                <div className="font-display font-black uppercase tracking-wider text-sm text-zinc-100 truncate">
+                  {battler.stage_name}
+                </div>
+                <div className="text-[10px] font-display font-black uppercase tracking-widest text-[#ff8c42]">
+                  ● ACTIVE
+                </div>
+              </div>
+            </div>
+            {/* Slots 2 & 3 — locked, coming soon */}
+            {[2, 3].map((slot) => (
+              <div
+                key={slot}
+                className="flex items-center gap-3 bg-[#18191c] border-2 border-dashed border-[#3a3d44] px-4 py-3 opacity-70"
+              >
+                <div className="w-10 h-10 flex items-center justify-center bg-[#2d2f35] border-2 border-[#3a3d44] text-lg">
+                  🔒
+                </div>
+                <div className="min-w-0">
+                  <div className="font-display font-black uppercase tracking-wider text-sm text-zinc-500">
+                    ROSTER SLOT {slot}
+                  </div>
+                  <div className="text-[10px] font-display font-black uppercase tracking-widest text-zinc-600">
+                    COMING SOON
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* Battler Profile Header */}
         <div className="mb-8 bg-[#2d2f35] border-2 border-[#3a3d44] p-8">
           <div className="flex flex-col md:flex-row items-center md:items-start gap-8 mb-6">

@@ -1,16 +1,16 @@
 'use client';
 
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect, use, type ReactNode } from 'react';
 import Link from 'next/link';
 import Avatar from '@/components/ui/Avatar';
-import StatCard from '@/components/ui/StatCard';
 import GamingButton from '@/components/ui/GamingButton';
-import CrowdReactionWindow from '@/components/battle/CrowdReactionWindow';
-import BattleViewsDisplay from '@/components/battle/BattleViewsDisplay';
 import PostBattleSummary from '@/components/battle/PostBattleSummary';
 import JudgeScorecard from '@/components/battle/JudgeScorecard';
 import BattleAnalysis from '@/components/battle/BattleAnalysis';
 import LiveBattleViewer from '@/components/battle/LiveBattleViewer';
+import CrowdReactionStrip from '@/components/battle/CrowdReactionStrip';
+import TaleOfTheTape from '@/components/battle/TaleOfTheTape';
+import TheInternet from '@/components/battle/TheInternet';
 import BadgeUnlockModal from '@/components/badges/BadgeUnlockModal';
 import { useBadgeQueue } from '@/lib/hooks/useBadgeQueue';
 import { getBadgeRarity } from '@/lib/game/badgeRarity';
@@ -45,6 +45,7 @@ type BattleViews = {
   from_scandal_boost: number;
   viral_multiplier: number;
   view_tier: 'low' | 'mid' | 'top' | 'goat';
+  created_at?: string;
 };
 
 type JudgeScore = {
@@ -111,6 +112,14 @@ type Battler = {
   tier: string;
   avatar_url?: string;
   sprite_set?: any;
+  style_tags?: string[];
+};
+
+type RecapArticle = {
+  slug: string;
+  title: string;
+  type: string;
+  published_at: string;
 };
 
 type Battle = {
@@ -136,6 +145,42 @@ type Battle = {
   ai_battler: Battler;
 };
 
+/** Simple collapsed-by-default section to keep the page short */
+function Expandable({
+  title,
+  subtitle,
+  children,
+  defaultOpen = false,
+}: {
+  title: string;
+  subtitle?: string;
+  children: ReactNode;
+  defaultOpen?: boolean;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className="bg-[#101114] border-2 border-[#3a3d44]">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full px-4 py-3 flex items-center justify-between hover:bg-[#18191c] transition-colors"
+      >
+        <div className="text-left">
+          <span className="text-base font-display font-black uppercase tracking-tighter text-[#ff8c42]">
+            {title}
+          </span>
+          {subtitle && (
+            <span className="ml-3 text-[10px] font-mono uppercase tracking-widest text-zinc-500">
+              {subtitle}
+            </span>
+          )}
+        </div>
+        <span className="text-lg text-[#ff8c42] font-display font-black">{open ? '−' : '+'}</span>
+      </button>
+      {open && <div className="border-t-2 border-[#3a3d44]">{children}</div>}
+    </div>
+  );
+}
+
 export default function BattleViewerPage({
   params,
 }: {
@@ -150,6 +195,7 @@ export default function BattleViewerPage({
   const [judgeScores, setJudgeScores] = useState<JudgeScore[]>([]);
   const [playerAttributes, setPlayerAttributes] = useState<BattlerAttributes | null>(null);
   const [opponentAttributes, setOpponentAttributes] = useState<BattlerAttributes | null>(null);
+  const [recapArticle, setRecapArticle] = useState<RecapArticle | null>(null);
   const [prepBlocks, setPrepBlocks] = useState<any[]>([]);
   const [pendingEvents, setPendingEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -158,6 +204,35 @@ export default function BattleViewerPage({
 
   const badgesEarned = progression?.badges_earned || [];
   const { currentBadge, dismiss } = useBadgeQueue(badgesEarned);
+
+  // The battler_attributes row stores resilience as a top-level column and may
+  // omit keys (e.g. flow) — normalize to the full shape the UI expects.
+  const normalizeAttributes = (raw: any): BattlerAttributes | null => {
+    if (!raw) return null;
+    const w = raw.writing || {};
+    const p = raw.performance || {};
+    const per = raw.personal || {};
+    return {
+      writing: {
+        lyricism: w.lyricism ?? 0,
+        wordplay: w.wordplay ?? 0,
+        creativity: w.creativity ?? 0,
+        flow: w.flow ?? 0,
+      },
+      performance: {
+        stage_presence: p.stage_presence ?? 0,
+        crowd_control: p.crowd_control ?? 0,
+        delivery: p.delivery ?? 0,
+      },
+      personal: {
+        resilience: per.resilience ?? raw.resilience ?? 0,
+        preparation: per.preparation ?? 0,
+        financial_stability: per.financial_stability ?? 0,
+        family_bond: per.family_bond ?? 0,
+        reputation: per.reputation ?? 0,
+      },
+    };
+  };
 
   useEffect(() => {
     fetchBattleData();
@@ -176,8 +251,9 @@ export default function BattleViewerPage({
         setBattleViews(data.battleViews);
         setProgression(data.progression || null);
         setJudgeScores(data.judgeScores || []);
-        setPlayerAttributes(data.playerAttributes || null);
-        setOpponentAttributes(data.opponentAttributes || null);
+        setPlayerAttributes(normalizeAttributes(data.playerAttributes));
+        setOpponentAttributes(normalizeAttributes(data.opponentAttributes));
+        setRecapArticle(data.recapArticle || null);
         setPrepBlocks(data.prepBlocks || []);
         setPendingEvents(data.pendingEvents || []);
       } else {
@@ -332,8 +408,96 @@ export default function BattleViewerPage({
   const playerAvatarUrl = getAvatarUrl(battle.player_battler);
   const aiAvatarUrl = getAvatarUrl(battle.ai_battler);
 
+  const playerWon = battle.winner_battler_id === battle.player_battler.id;
+
+  /** Compact mirrored stat row for the round breakdown */
+  const StatRow = ({
+    label,
+    player,
+    opponent,
+    max = 10,
+    suffix = '',
+  }: {
+    label: string;
+    player: number;
+    opponent: number;
+    max?: number;
+    suffix?: string;
+  }) => {
+    const playerLeads = player > opponent;
+    const oppLeads = opponent > player;
+    return (
+      <div className="grid grid-cols-[3.25rem_1fr_auto_1fr_3.25rem] items-center gap-2 py-1">
+        <span
+          className={`text-sm font-display font-black tabular-nums ${
+            playerLeads ? 'text-[#ff8c42]' : 'text-zinc-400'
+          }`}
+        >
+          {player.toFixed(suffix ? 0 : 2)}
+          {suffix}
+        </span>
+        <div className="h-2 bg-[#18191c] border border-[#3a3d44] flex justify-end">
+          <div
+            className={`h-full ${playerLeads ? 'bg-[#ff8c42]' : 'bg-zinc-600'}`}
+            style={{ width: `${Math.min(100, (player / max) * 100)}%` }}
+          />
+        </div>
+        <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 text-center min-w-[64px]">
+          {label}
+        </span>
+        <div className="h-2 bg-[#18191c] border border-[#3a3d44]">
+          <div
+            className={`h-full ${oppLeads ? 'bg-red-400' : 'bg-zinc-600'}`}
+            style={{ width: `${Math.min(100, (opponent / max) * 100)}%` }}
+          />
+        </div>
+        <span
+          className={`text-sm font-display font-black tabular-nums text-right ${
+            oppLeads ? 'text-red-400' : 'text-zinc-400'
+          }`}
+        >
+          {opponent.toFixed(suffix ? 0 : 2)}
+          {suffix}
+        </span>
+      </div>
+    );
+  };
+
+  /** Compact segment bar lane for one battler */
+  const SegmentLane = ({
+    name,
+    segs,
+    accent,
+  }: {
+    name: string;
+    segs: BattleSegment[];
+    accent: string;
+  }) => (
+    <div>
+      <div className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-1">{name}</div>
+      <div className="flex gap-1.5 items-end h-[72px]">
+        {segs.map((seg) => (
+          <div key={seg.id} className="flex-1 flex flex-col justify-end h-full">
+            <div
+              className={`flex items-end justify-center border ${
+                seg.event_flags.includes('choke')
+                  ? 'bg-red-500 border-red-400 text-white'
+                  : seg.event_flags.includes('haymaker')
+                  ? 'bg-amber-500 border-amber-400 text-black'
+                  : `${accent} text-white`
+              }`}
+              style={{ height: `${Math.max(22, Math.min(100, (seg.segment_score / 10) * 100))}%` }}
+            >
+              <span className="text-[10px] font-black">{seg.segment_score.toFixed(1)}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
   return (
-    <div className="min-h-screen bg-[#18191c] text-white">
+    <div className="min-h-screen bg-[#0a0a0a] text-white">
       {currentBadge && (
         <BadgeUnlockModal
           badgeCode={currentBadge}
@@ -354,16 +518,16 @@ export default function BattleViewerPage({
         />
       )}
 
-      <div className="max-w-7xl mx-auto px-6 py-8 space-y-8">
+      <div className="max-w-7xl mx-auto px-6 py-6 space-y-4">
         {/* Back Link + Watch Live */}
         <div className="flex items-center justify-between gap-4 flex-wrap">
-          <Link href="/dashboard" className="inline-block text-[#ff8c42] hover:text-[#ff9d5c] font-display font-display font-black uppercase tracking-wider text-sm transition-colors">
+          <Link href="/dashboard" className="inline-block text-[#ff8c42] hover:text-[#ff9d5c] font-display font-black uppercase tracking-wider text-sm transition-colors">
             ← BACK TO DASHBOARD
           </Link>
           {isCompleted && segments.length > 0 && (
             <button
               onClick={() => setLiveMode(true)}
-              className="px-6 py-3 bg-gradient-to-r from-red-600 to-[#ff8c42] text-white font-display font-black uppercase tracking-wider text-sm hover:from-red-500 hover:to-[#ff9d5c] transition-all shadow-[0_0_20px_rgba(255,140,66,0.4)] flex items-center gap-2"
+              className="px-5 py-2 bg-gradient-to-r from-red-600 to-[#ff8c42] text-white font-display font-black uppercase tracking-wider text-sm hover:from-red-500 hover:to-[#ff9d5c] transition-all shadow-[0_0_20px_rgba(255,140,66,0.4)] flex items-center gap-2"
             >
               <span className="inline-block w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
               ▶ WATCH LIVE
@@ -371,114 +535,97 @@ export default function BattleViewerPage({
           )}
         </div>
 
-        {/* VS MATCHUP HEADER */}
-        <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-8 relative overflow-hidden">
-          {/* Background effects */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#ff8c42]/5 via-transparent to-[#ff8c42]/5"></div>
-
+        {/* COMPACT VS HEADER */}
+        <div className="bg-[#101114] border-2 border-[#3a3d44] px-6 py-5 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-[#ff8c42]/5 via-transparent to-[#ff8c42]/5 pointer-events-none"></div>
           <div className="relative z-10">
-            {/* League and Title */}
-            <div className="text-center mb-8">
-              <h3 className="text-sm text-zinc-500 font-display font-display font-black uppercase tracking-widest mb-2">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">
                 {battle.league.name}
-              </h3>
-              <h1 className="text-5xl font-display font-black uppercase tracking-tighter text-[#ff8c42]">
-                BATTLE RESULTS
-              </h1>
+              </span>
+              <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">
+                {isCompleted ? 'FINAL' : 'UPCOMING'}
+              </span>
             </div>
 
-            {/* VS Matchup */}
-            <div className="grid grid-cols-3 gap-8 items-center">
-              {/* Player Side */}
-              <div className="text-center space-y-4">
-                <div className="flex justify-center">
-                  <Avatar
-                    url={playerAvatarUrl}
-                    size={160}
-                    className="shadow-[0_0_30px_rgba(255,140,66,0.3)]"
-                    alt={battle.player_battler.stage_name}
-                  />
-                </div>
-                <div>
-                  <h2 className="text-3xl font-display font-black uppercase tracking-tight mb-1">
+            <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4">
+              {/* Player */}
+              <div className="flex items-center gap-4 min-w-0">
+                <Avatar
+                  url={playerAvatarUrl}
+                  size={88}
+                  className="shadow-[0_0_20px_rgba(255,140,66,0.25)] shrink-0"
+                  alt={battle.player_battler.stage_name}
+                />
+                <div className="min-w-0">
+                  <h2 className="text-xl md:text-2xl font-display font-black uppercase tracking-tight truncate">
                     {battle.player_battler.stage_name}
                   </h2>
-                  <p className="text-xs text-zinc-500 uppercase tracking-wider">YOU</p>
+                  <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">YOU</p>
                 </div>
-                {isCompleted && (
-                  <div className="text-6xl font-display font-black text-[#ff8c42]">
-                    {playerRoundsWon}
-                  </div>
+              </div>
+
+              {/* Score / VS */}
+              <div className="text-center px-2">
+                {isCompleted ? (
+                  <>
+                    <div className="flex items-center gap-3 justify-center">
+                      <span className={`text-5xl font-display font-black ${playerWon ? 'text-[#ff8c42]' : 'text-zinc-500'}`}>
+                        {playerRoundsWon}
+                      </span>
+                      <span className="text-xl font-display font-black text-zinc-600">—</span>
+                      <span className={`text-5xl font-display font-black ${!playerWon ? 'text-[#ff8c42]' : 'text-zinc-500'}`}>
+                        {aiRoundsWon}
+                      </span>
+                    </div>
+                    <div className="mt-2">
+                      {playerWon ? (
+                        <span className="inline-block px-4 py-1 bg-green-500/20 text-green-400 border-2 border-green-500/50 font-display font-black text-sm uppercase tracking-wider">
+                          {battle.verdict === '3-0' ? 'BODYBAG 🔥' : 'VICTORY'}
+                        </span>
+                      ) : (
+                        <span className="inline-block px-4 py-1 bg-red-500/20 text-red-400 border-2 border-red-500/50 font-display font-black text-sm uppercase tracking-wider">
+                          {battle.verdict === '3-0' ? "BODY'D 💀" : 'DEFEAT'}
+                        </span>
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-4xl font-display font-black uppercase tracking-wider text-[#ff8c42]">VS</div>
                 )}
               </div>
 
-              {/* VS Divider */}
-              <div className="text-center">
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-24 h-24 rounded-full bg-[#ff8c42]/10 blur-xl"></div>
-                  </div>
-                  <div className="relative text-7xl font-display font-black uppercase tracking-wider text-[#ff8c42]">
-                    VS
-                  </div>
+              {/* Opponent */}
+              <Link
+                href={`/battler/${battle.ai_battler.id}`}
+                className="flex items-center gap-4 justify-end min-w-0 group"
+                title={`View ${battle.ai_battler.stage_name}'s career`}
+              >
+                <div className="min-w-0 text-right">
+                  <h2 className="text-xl md:text-2xl font-display font-black uppercase tracking-tight truncate group-hover:text-[#ff8c42] transition-colors">
+                    {battle.ai_battler.stage_name}
+                  </h2>
+                  <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">
+                    {battle.ai_battler.tier} TIER
+                  </p>
                 </div>
-                {isCompleted && (
-                  <div className="mt-6">
-                    {battle.winner_battler_id === battle.player_battler.id ? (
-                      <div className="px-6 py-3 bg-green-500/20 text-green-400 border-2 border-green-500/50 font-display font-black text-xl uppercase tracking-wider shadow-[0_0_20px_rgba(34,197,94,0.3)]">
-                        {battle.verdict === '3-0' ? 'BODYBAG 🔥' : 'VICTORY'}
-                      </div>
-                    ) : (
-                      <div className="px-6 py-3 bg-red-500/20 text-red-400 border-2 border-red-500/50 font-display font-black text-xl uppercase tracking-wider shadow-[0_0_20px_rgba(239,68,68,0.3)]">
-                        {battle.verdict === '3-0' ? "BODY'D 💀" : 'DEFEAT'}
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              {/* AI Side */}
-              <div className="text-center space-y-4">
-                <Link
-                  href={`/battler/${battle.ai_battler.id}`}
-                  className="block group"
-                  title={`View ${battle.ai_battler.stage_name}'s career`}
-                >
-                  <div className="flex justify-center">
-                    <Avatar
-                      url={aiAvatarUrl}
-                      size={160}
-                      className="shadow-[0_0_30px_rgba(100,100,100,0.3)] transition-transform duration-200 group-hover:scale-[1.04]"
-                      alt={battle.ai_battler.stage_name}
-                    />
-                  </div>
-                  <div className="mt-4">
-                    <h2 className="text-3xl font-display font-black uppercase tracking-tight mb-1 group-hover:text-[#ff8c42] transition-colors">
-                      {battle.ai_battler.stage_name}
-                    </h2>
-                    <p className="text-xs text-zinc-500 uppercase tracking-wider capitalize">
-                      {battle.ai_battler.tier} TIER
-                    </p>
-                  </div>
-                </Link>
-                {isCompleted && (
-                  <div className="text-6xl font-display font-black text-zinc-500">
-                    {aiRoundsWon}
-                  </div>
-                )}
-              </div>
+                <Avatar
+                  url={aiAvatarUrl}
+                  size={88}
+                  className="shadow-[0_0_20px_rgba(100,100,100,0.25)] shrink-0 transition-transform duration-200 group-hover:scale-[1.04]"
+                  alt={battle.ai_battler.stage_name}
+                />
+              </Link>
             </div>
 
-            {/* No Show Warning */}
+            {/* Warnings */}
             {battle.no_show_player && (
-              <div className="mt-8 p-4 bg-red-500/10 text-red-400 border-2 border-red-500/30 font-display font-display font-black uppercase tracking-wider text-sm text-center">
+              <div className="mt-4 px-3 py-2 bg-red-500/10 text-red-400 border-2 border-red-500/30 font-display font-black uppercase tracking-wider text-xs text-center">
                 ⚠ NO-SHOW PENALTY APPLIED - PREP NOT COMPLETED
               </div>
             )}
-
-            {/* Battle Not Simulated Yet */}
             {!isCompleted && (
-              <div className="mt-8 p-4 bg-yellow-500/10 text-yellow-400 border-2 border-yellow-500/30 font-display font-display font-black uppercase tracking-wider text-sm text-center">
+              <div className="mt-4 px-3 py-2 bg-yellow-500/10 text-yellow-400 border-2 border-yellow-500/30 font-display font-black uppercase tracking-wider text-xs text-center">
                 BATTLE SCHEDULED FOR {new Date(battle.scheduled_at).toLocaleString()}
               </div>
             )}
@@ -489,319 +636,259 @@ export default function BattleViewerPage({
           <>
             {/* Life Events Notification */}
             {pendingEvents.length > 0 && (
-              <div className="bg-[#ff8c42]/10 border-2 border-[#ff8c42]/50 p-6">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <h3 className="text-xl font-display font-black uppercase tracking-wider text-[#ff8c42]">
-                        LIFE EVENT TRIGGERED
-                      </h3>
-                      <span className="px-3 py-1 bg-[#ff8c42] text-black text-xs font-display font-black uppercase tracking-wider rounded-full">
-                        NEW
-                      </span>
-                    </div>
-                    <p className="text-sm text-zinc-300 mb-4">
-                      {pendingEvents.length === 1
-                        ? `This battle triggered a life event that requires your decision.`
-                        : `This battle triggered ${pendingEvents.length} life events that require your decisions.`
-                      }
-                    </p>
-                    <div className="space-y-2 mb-4">
-                      {pendingEvents.map((event) => (
-                        <div key={event.id} className="text-sm">
-                          <span className="font-bold text-zinc-100">{event.template.title}</span>
-                          <span className="text-zinc-500"> - {event.template.description.substring(0, 80)}...</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+              <div className="bg-[#ff8c42]/10 border-2 border-[#ff8c42]/50 px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <span className="text-sm font-display font-black uppercase tracking-wider text-[#ff8c42] mr-3">
+                    LIFE EVENT TRIGGERED
+                  </span>
+                  <span className="text-xs text-zinc-300">
+                    {pendingEvents.length === 1
+                      ? pendingEvents[0].template.title
+                      : `${pendingEvents.length} events need your decision`}
+                  </span>
                 </div>
-                <div className="flex gap-4">
+                <div className="flex gap-3 shrink-0">
                   {pendingEvents.length === 1 ? (
-                    <GamingButton href={`/life-events/${pendingEvents[0].id}`} variant="primary">
-                      MAKE DECISION NOW
+                    <GamingButton href={`/life-events/${pendingEvents[0].id}`} variant="primary" size="sm">
+                      MAKE DECISION
                     </GamingButton>
                   ) : (
-                    <GamingButton href="/dashboard" variant="primary">
+                    <GamingButton href="/dashboard" variant="primary" size="sm">
                       VIEW ALL EVENTS
                     </GamingButton>
                   )}
-                  <GamingButton href="/dashboard" variant="secondary">
-                    DECIDE LATER
-                  </GamingButton>
                 </div>
               </div>
             )}
 
-            {/* Post-Battle Summary */}
-            {progression && (
-              <PostBattleSummary
-                isVictory={battle.winner_battler_id === battle.player_battler.id}
-                ratingChange={progression.rating_change}
-                attributeChanges={convertAttributeChanges(progression.attribute_changes)}
-                badgesEarned={progression.badges_earned}
-                stressChange={progression.stress_change}
-                currentStress={progression.stress_after}
-                viewData={{
-                  total_views: progression.total_views,
-                  view_tier: progression.view_tier,
-                }}
-                fanGrowth={{
-                  fans_before: progression.fans_before,
-                  fans_after: progression.fans_after,
-                  fans_gained: progression.fans_gained,
-                  trending_change: progression.trending_change,
-                }}
-                levelUpData={
-                  progression.xp_earned && progression.level_before !== undefined && progression.level_after !== undefined
-                    ? {
-                        leveledUp: progression.level_after > progression.level_before,
-                        previousLevel: progression.level_before,
-                        newLevel: progression.level_after,
-                        skillPointsEarned: progression.skill_points_earned || 0,
-                        xpEarned: progression.xp_earned,
-                        xpBreakdown: progression.xp_breakdown as any,
-                      }
-                    : undefined
-                }
-              />
-            )}
+            {/* TWO-COLUMN DESKTOP LAYOUT: rounds left, analysis right */}
+            <div className="grid lg:grid-cols-5 gap-4 items-start">
+              {/* ── LEFT: ROUNDS ─────────────────────────────── */}
+              <div className="lg:col-span-3 space-y-4">
+                {/* Round selector */}
+                <div className="grid grid-cols-3 gap-2">
+                  {[1, 2, 3].map((roundNum) => {
+                    const playerData = getPlayerRoundData(roundNum);
+                    const aiData = getAIRoundData(roundNum);
+                    const won = playerData && aiData && playerData.average_score > aiData.average_score;
 
-            {/* BATTLE STATS - Using StatCard */}
-            {playerRound && aiRound && (
-              <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-8">
-                <h2 className="text-3xl font-display font-black uppercase tracking-tighter text-[#ff8c42] mb-6">
-                  ROUND {selectedRound} BREAKDOWN
-                </h2>
-
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                  <StatCard
-                    label="YOUR AVG"
-                    value={playerRound.average_score.toFixed(2)}
-                    icon="📊"
-                    variant={playerRound.average_score > aiRound.average_score ? 'highlight' : 'default'}
-                  />
-                  <StatCard
-                    label="YOUR PEAK"
-                    value={playerRound.peak_score.toFixed(2)}
-                    icon="⚡"
-                    subtext="HAYMAKER"
-                  />
-                  <StatCard
-                    label="OPP AVG"
-                    value={aiRound.average_score.toFixed(2)}
-                    icon="📊"
-                    variant={aiRound.average_score > playerRound.average_score ? 'highlight' : 'default'}
-                  />
-                  <StatCard
-                    label="OPP PEAK"
-                    value={aiRound.peak_score.toFixed(2)}
-                    icon="⚡"
-                    subtext="HAYMAKER"
-                  />
+                    return (
+                      <button
+                        key={roundNum}
+                        onClick={() => setSelectedRound(roundNum)}
+                        className={`py-2 px-3 border-2 font-display font-black uppercase tracking-wider text-sm transition-all ${
+                          selectedRound === roundNum
+                            ? 'bg-[#ff8c42] border-[#ff8c42] text-black shadow-[0_0_15px_rgba(255,140,66,0.4)]'
+                            : won
+                            ? 'bg-[#101114] border-green-500/50 text-green-400 hover:border-green-500'
+                            : 'bg-[#101114] border-red-500/50 text-red-400 hover:border-red-500'
+                        }`}
+                      >
+                        ROUND {roundNum}
+                        {won !== undefined && (
+                          <span className="ml-2 text-[10px] font-mono tracking-widest">
+                            {won ? '✓ W' : '✗ L'}
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <StatCard
-                    label="YOUR CROWD"
-                    value={`${playerRound.crowd_reaction}%`}
-                    icon="🔥"
-                    variant={playerRound.crowd_reaction > aiRound.crowd_reaction ? 'highlight' : 'default'}
-                  />
-                  <StatCard
-                    label="OPP CROWD"
-                    value={`${aiRound.crowd_reaction}%`}
-                    icon="🔥"
-                    variant={aiRound.crowd_reaction > playerRound.crowd_reaction ? 'highlight' : 'default'}
-                  />
-                </div>
-
-                {/* Choke indicators */}
-                <div className="grid grid-cols-2 gap-4 mt-4">
-                  {playerRound.choked && (
-                    <div className="p-3 bg-red-500/10 text-red-400 border-2 border-red-500/30 font-display font-bold text-sm uppercase tracking-wider text-center">
-                      ⚠ YOU CHOKED
+                {/* Round head-to-head */}
+                {playerRound && aiRound && (
+                  <div className="bg-[#101114] border-2 border-[#3a3d44] p-4">
+                    <div className="flex items-baseline justify-between mb-2">
+                      <h2 className="text-lg font-display font-black uppercase tracking-tighter text-[#ff8c42]">
+                        ROUND {selectedRound} BREAKDOWN
+                      </h2>
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">
+                        YOU ← → OPP
+                      </span>
                     </div>
-                  )}
-                  {aiRound.choked && (
-                    <div className="p-3 bg-green-500/10 text-green-400 border-2 border-green-500/30 font-display font-bold text-sm uppercase tracking-wider text-center">
-                      ✓ OPPONENT CHOKED
+                    <div className="divide-y divide-[#3a3d44]/40">
+                      <StatRow label="AVG" player={playerRound.average_score} opponent={aiRound.average_score} />
+                      <StatRow label="PEAK" player={playerRound.peak_score} opponent={aiRound.peak_score} max={15} />
+                      <StatRow
+                        label="CROWD"
+                        player={playerRound.crowd_reaction}
+                        opponent={aiRound.crowd_reaction}
+                        max={100}
+                        suffix="%"
+                      />
                     </div>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Round Selector */}
-            <div className="grid grid-cols-3 gap-4">
-              {[1, 2, 3].map((roundNum) => {
-                const playerData = getPlayerRoundData(roundNum);
-                const aiData = getAIRoundData(roundNum);
-                const won = playerData && aiData && playerData.average_score > aiData.average_score;
-
-                return (
-                  <button
-                    key={roundNum}
-                    onClick={() => setSelectedRound(roundNum)}
-                    className={`py-4 px-4 border-2 font-display font-black uppercase tracking-wider transition-all transform ${
-                      selectedRound === roundNum
-                        ? 'bg-[#ff8c42] border-[#ff8c42] text-black scale-105 shadow-[0_0_20px_rgba(255,140,66,0.5)]'
-                        : won
-                        ? 'bg-[#2d2f35] border-green-500/50 text-green-400 hover:border-green-500 hover:scale-102'
-                        : 'bg-[#2d2f35] border-red-500/50 text-red-400 hover:border-red-500 hover:scale-102'
-                    }`}
-                  >
-                    <div className="text-lg">ROUND {roundNum}</div>
-                    {won !== undefined && (
-                      <div className="text-xs mt-1 font-bold">
-                        {won ? '✓ WON' : '✗ LOST'}
+                    {(playerRound.choked || aiRound.choked) && (
+                      <div className="mt-2 flex gap-2">
+                        {playerRound.choked && (
+                          <span className="flex-1 px-2 py-1 bg-red-500/10 text-red-400 border-2 border-red-500/30 font-display font-bold text-xs uppercase tracking-wider text-center">
+                            ⚠ YOU CHOKED
+                          </span>
+                        )}
+                        {aiRound.choked && (
+                          <span className="flex-1 px-2 py-1 bg-green-500/10 text-green-400 border-2 border-green-500/30 font-display font-bold text-xs uppercase tracking-wider text-center">
+                            ✓ OPPONENT CHOKED
+                          </span>
+                        )}
                       </div>
                     )}
-                  </button>
-                );
-              })}
-            </div>
 
-            {/* Segment Timeline */}
-            <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-8">
-              <h3 className="text-2xl font-display font-black uppercase tracking-wider text-[#ff8c42] mb-8">
-                SEGMENT BREAKDOWN - ROUND {selectedRound}
-              </h3>
-              <div className="space-y-8">
-                {/* Player Timeline */}
-                <div>
-                  <div className="text-sm font-display font-display font-black uppercase tracking-wider mb-3 text-zinc-300">
-                    {battle.player_battler.stage_name}
-                  </div>
-                  <div className="flex gap-3">
-                    {playerSegments.map((seg) => (
-                      <div key={seg.id} className="flex-1">
-                        <div
-                          className={`rounded flex items-end justify-center p-2 border-2 transition-all ${
-                            seg.event_flags.includes('choke')
-                              ? 'bg-red-500 border-red-400 text-white shadow-[0_0_15px_rgba(239,68,68,0.5)]'
-                              : seg.event_flags.includes('haymaker')
-                              ? 'bg-amber-500 border-amber-400 text-black shadow-[0_0_15px_rgba(251,191,36,0.5)]'
-                              : 'bg-blue-500 border-blue-400 text-white'
-                          }`}
-                          style={{
-                            height: `${Math.max(40, (seg.segment_score / 10) * 120)}px`,
-                          }}
-                        >
-                          <div className="text-xs font-black">
-                            {seg.segment_score.toFixed(1)}
-                          </div>
-                        </div>
-                        <div className="text-xs text-center mt-2 text-zinc-500 font-display font-black uppercase tracking-wide">
-                          SEG {seg.segment_index}
-                        </div>
+                    {/* Segment timeline (compact) */}
+                    <div className="mt-4 pt-3 border-t-2 border-[#3a3d44]/60 space-y-3">
+                      <SegmentLane
+                        name={battle.player_battler.stage_name}
+                        segs={playerSegments}
+                        accent="bg-blue-500 border-blue-400"
+                      />
+                      <SegmentLane
+                        name={battle.ai_battler.stage_name}
+                        segs={aiSegments}
+                        accent="bg-zinc-700 border-zinc-600"
+                      />
+                      <div className="flex gap-4 justify-center text-[10px] font-mono uppercase tracking-widest text-zinc-500">
+                        <span className="flex items-center gap-1">
+                          <span className="inline-block w-3 h-3 bg-amber-500 border border-amber-400"></span> HAYMAKER
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <span className="inline-block w-3 h-3 bg-red-500 border border-red-400"></span> CHOKE
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <span className="inline-block w-3 h-3 bg-blue-500 border border-blue-400"></span> NORMAL
+                        </span>
                       </div>
-                    ))}
+                    </div>
                   </div>
-                </div>
+                )}
 
-                {/* AI Timeline */}
-                <div>
-                  <div className="text-sm font-display font-display font-black uppercase tracking-wider mb-3 text-zinc-300">
-                    {battle.ai_battler.stage_name}
-                  </div>
-                  <div className="flex gap-3">
-                    {aiSegments.map((seg) => (
-                      <div key={seg.id} className="flex-1">
-                        <div
-                          className={`rounded flex items-end justify-center p-2 border-2 transition-all ${
-                            seg.event_flags.includes('choke')
-                              ? 'bg-red-500 border-red-400 text-white shadow-[0_0_15px_rgba(239,68,68,0.5)]'
-                              : seg.event_flags.includes('haymaker')
-                              ? 'bg-amber-500 border-amber-400 text-black shadow-[0_0_15px_rgba(251,191,36,0.5)]'
-                              : 'bg-zinc-700 border-zinc-600 text-white'
-                          }`}
-                          style={{
-                            height: `${Math.max(40, (seg.segment_score / 10) * 120)}px`,
-                          }}
-                        >
-                          <div className="text-xs font-black">
-                            {seg.segment_score.toFixed(1)}
-                          </div>
-                        </div>
-                        <div className="text-xs text-center mt-2 text-zinc-500 font-display font-black uppercase tracking-wide">
-                          SEG {seg.segment_index}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                {/* Crowd reaction strip — 3 demographic lanes */}
+                {playerRound && aiRound && (
+                  <CrowdReactionStrip
+                    battleId={battle.id}
+                    roundIndex={selectedRound}
+                    playerName={battle.player_battler.stage_name}
+                    opponentName={battle.ai_battler.stage_name}
+                    playerId={battle.player_battler.id}
+                    opponentId={battle.ai_battler.id}
+                    playerRound={playerRound}
+                    opponentRound={aiRound}
+                    playerStyleTags={battle.player_battler.style_tags || []}
+                    opponentStyleTags={battle.ai_battler.style_tags || []}
+                    writingWeight={battle.league.writing_weight}
+                    performanceWeight={battle.league.performance_weight}
+                    raceDemographics={battle.league.crowd_demographics}
+                  />
+                )}
               </div>
 
-              <div className="mt-8 pt-8 border-t-2 border-[#3a3d44] text-sm">
-                <div className="flex gap-6 justify-center">
-                  <div className="flex items-center gap-2">
-                    <span className="inline-block w-6 h-6 bg-amber-500 border-2 border-amber-400 rounded"></span>
-                    <span className="text-zinc-400 uppercase tracking-wider font-display font-bold">HAYMAKER</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="inline-block w-6 h-6 bg-red-500 border-2 border-red-400 rounded"></span>
-                    <span className="text-zinc-400 uppercase tracking-wider font-display font-bold">CHOKE</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="inline-block w-6 h-6 bg-blue-500 border-2 border-blue-400 rounded"></span>
-                    <span className="text-zinc-400 uppercase tracking-wider font-display font-bold">NORMAL</span>
-                  </div>
-                </div>
+              {/* ── RIGHT: TAPE / INTERNET / EXPANDABLES ───────── */}
+              <div className="lg:col-span-2 space-y-4">
+                {playerAttributes && opponentAttributes && (
+                  <TaleOfTheTape
+                    playerName={battle.player_battler.stage_name}
+                    opponentName={battle.ai_battler.stage_name}
+                    playerAttributes={playerAttributes}
+                    opponentAttributes={opponentAttributes}
+                    writingWeight={battle.league.writing_weight}
+                    performanceWeight={battle.league.performance_weight}
+                  />
+                )}
+
+                <TheInternet
+                  battleId={battle.id}
+                  playerName={battle.player_battler.stage_name}
+                  opponentName={battle.ai_battler.stage_name}
+                  playerId={battle.player_battler.id}
+                  winnerId={battle.winner_battler_id ?? null}
+                  verdict={battle.verdict || (playerRoundsWon === 3 || aiRoundsWon === 3 ? '3-0' : '2-1')}
+                  rounds={rounds}
+                  segments={segments}
+                  recapArticle={recapArticle}
+                  views={battleViews}
+                />
+
+                {/* Progression behind an expandable to keep the page short */}
+                {progression && (
+                  <Expandable title="YOUR PROGRESSION" subtitle="RATING · XP · ATTRIBUTES">
+                    <PostBattleSummary
+                      isVictory={playerWon}
+                      ratingChange={progression.rating_change}
+                      attributeChanges={convertAttributeChanges(progression.attribute_changes)}
+                      badgesEarned={progression.badges_earned}
+                      stressChange={progression.stress_change}
+                      currentStress={progression.stress_after}
+                      viewData={{
+                        total_views: progression.total_views,
+                        view_tier: progression.view_tier,
+                      }}
+                      fanGrowth={{
+                        fans_before: progression.fans_before,
+                        fans_after: progression.fans_after,
+                        fans_gained: progression.fans_gained,
+                        trending_change: progression.trending_change,
+                      }}
+                      levelUpData={
+                        progression.xp_earned && progression.level_before !== undefined && progression.level_after !== undefined
+                          ? {
+                              leveledUp: progression.level_after > progression.level_before,
+                              previousLevel: progression.level_before,
+                              newLevel: progression.level_after,
+                              skillPointsEarned: progression.skill_points_earned || 0,
+                              xpEarned: progression.xp_earned,
+                              xpBreakdown: progression.xp_breakdown as any,
+                            }
+                          : undefined
+                      }
+                    />
+                  </Expandable>
+                )}
+
+                {/* Coach's analysis (self-collapsing) */}
+                {playerAttributes && opponentAttributes && (
+                  <BattleAnalysis
+                    playerName={battle.player_battler.stage_name}
+                    opponentName={battle.ai_battler.stage_name}
+                    playerWon={playerWon}
+                    verdict={battle.verdict || '2-1'}
+                    decisionType={battle.decision_type || 'edge'}
+                    playerAttributes={playerAttributes}
+                    opponentAttributes={opponentAttributes}
+                    keyMoments={segments
+                      .filter(s => s.event_flags.length > 0)
+                      .map(s => {
+                        const battlerName = s.battler_id === battle.player_battler.id ? battle.player_battler.stage_name : battle.ai_battler.stage_name;
+                        const event = s.event_flags[0];
+                        return {
+                          roundIndex: s.round_index,
+                          segmentIndex: s.segment_index,
+                          battlerName,
+                          type: event as 'haymaker' | 'choke' | 'stumble',
+                          score: s.segment_score,
+                          description: event === 'haymaker'
+                            ? 'Massive moment that shook the room'
+                            : event === 'choke'
+                            ? 'Catastrophic failure - forgot lines'
+                            : 'Minor stumble - slight hesitation',
+                        };
+                      })}
+                    playerPrep={calculatePlayerPrep()}
+                    leagueType={battle.league.name}
+                    leagueWritingWeight={battle.league.writing_weight}
+                    leaguePerformanceWeight={battle.league.performance_weight}
+                  />
+                )}
+
+                {/* Judge Scorecard (tournament battles only) */}
+                <JudgeScorecard
+                  judgeScores={judgeScores}
+                  playerBattlerId={battle.player_battler.id}
+                  opponentBattlerId={battle.ai_battler.id}
+                  playerName={battle.player_battler.stage_name}
+                  opponentName={battle.ai_battler.stage_name}
+                />
               </div>
             </div>
-
-            {/* Battle Analysis */}
-            {playerAttributes && opponentAttributes && (
-              <BattleAnalysis
-                playerName={battle.player_battler.stage_name}
-                opponentName={battle.ai_battler.stage_name}
-                playerWon={battle.winner_battler_id === battle.player_battler.id}
-                verdict={battle.verdict || '2-1'}
-                decisionType={battle.decision_type || 'edge'}
-                playerAttributes={playerAttributes}
-                opponentAttributes={opponentAttributes}
-                keyMoments={segments
-                  .filter(s => s.event_flags.length > 0)
-                  .map(s => {
-                    const battlerName = s.battler_id === battle.player_battler.id ? battle.player_battler.stage_name : battle.ai_battler.stage_name;
-                    const event = s.event_flags[0];
-                    return {
-                      roundIndex: s.round_index,
-                      segmentIndex: s.segment_index,
-                      battlerName,
-                      type: event as 'haymaker' | 'choke' | 'stumble',
-                      score: s.segment_score,
-                      description: event === 'haymaker'
-                        ? 'Massive moment that shook the room'
-                        : event === 'choke'
-                        ? 'Catastrophic failure - forgot lines'
-                        : 'Minor stumble - slight hesitation',
-                    };
-                  })}
-                playerPrep={calculatePlayerPrep()}
-                leagueType={battle.league.name}
-                leagueWritingWeight={battle.league.writing_weight}
-                leaguePerformanceWeight={battle.league.performance_weight}
-              />
-            )}
-
-            {/* Judge Scorecard */}
-            <JudgeScorecard
-              judgeScores={judgeScores}
-              playerBattlerId={battle.player_battler.id}
-              opponentBattlerId={battle.ai_battler.id}
-              playerName={battle.player_battler.stage_name}
-              opponentName={battle.ai_battler.stage_name}
-            />
-
-            {/* Battle Views Display */}
-            {battleViews && (
-              <BattleViewsDisplay views={battleViews} showBreakdown={true} />
-            )}
 
             {/* Action Buttons */}
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-2 gap-4">
               <GamingButton href="/dashboard" variant="secondary" size="lg">
                 ← BACK TO DASHBOARD
               </GamingButton>
