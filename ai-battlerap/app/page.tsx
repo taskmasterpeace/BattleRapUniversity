@@ -367,6 +367,37 @@ export default async function LandingPage() {
         </section>
       )}
 
+      {/* ── THE FILM ROOM — front and center, right after the pulse ── */}
+      <section className="py-16 md:py-24 relative">
+        <div className="max-w-6xl mx-auto px-4 md:px-6">
+          <div className="text-center mb-10">
+            <p className="font-mono text-xs uppercase tracking-[0.4em] text-[#ff8c42] mb-4">─── THE FILM ROOM ───</p>
+            <h2 className="font-bebas text-6xl md:text-8xl uppercase text-white leading-none">
+              HOW TO <span className="text-[#ff8c42]">PREP</span>
+            </h2>
+            <p className="text-zinc-400 mt-4 max-w-xl mx-auto">
+              Thirty-seven seconds on why prepared battlers eat and lazy ones
+              freeze. Watch the film, then live it.
+            </p>
+          </div>
+          <div className="relative border-2 border-[#ff8c42]/60 bg-[#101114] p-2 shadow-[0_0_80px_-20px_rgba(255,140,66,0.4)]">
+            <div className="absolute -top-3 left-6 px-3 py-0.5 bg-[#ff8c42] text-black font-mono text-[10px] font-bold uppercase tracking-widest z-10">
+              ▶ REQUIRED VIEWING — FRESHMAN ORIENTATION
+            </div>
+            <video
+              className="w-full aspect-video object-cover"
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="auto"
+            >
+              <source src="/landing/prep-film.mp4" type="video/mp4" />
+            </video>
+          </div>
+        </div>
+      </section>
+
       {/* ── THE LOOP ──────────────────────────────────────────────── */}
       <section id="the-loop" className="clip-diagonal-top bg-[#0e0f12] border-y border-[#3a3d44] py-20 md:py-28 relative">
         <div className="max-w-5xl mx-auto px-6">
@@ -381,37 +412,6 @@ export default async function LandingPage() {
             </p>
           </div>
           <GameLoopDemo />
-        </div>
-      </section>
-
-      {/* ── THE FILM ROOM (Remotion-rendered prep masterclass) ────── */}
-      <section className="py-20 md:py-28 relative">
-        <div className="max-w-5xl mx-auto px-6">
-          <div className="text-center mb-10">
-            <p className="font-mono text-xs uppercase tracking-[0.4em] text-[#ff8c42] mb-4">─── THE FILM ROOM ───</p>
-            <h2 className="font-bebas text-5xl md:text-7xl uppercase text-white leading-none">
-              HOW TO <span className="text-[#ff8c42]">PREP</span>
-            </h2>
-            <p className="text-zinc-400 mt-4 max-w-xl mx-auto">
-              Thirty-seven seconds on why prepared battlers eat and lazy ones
-              freeze. Watch the film, then live it.
-            </p>
-          </div>
-          <div className="relative border-2 border-[#3a3d44] hover:border-[#ff8c42] transition-colors bg-[#101114] p-2 shadow-[0_40px_80px_-40px_rgba(0,0,0,0.9)]">
-            <div className="absolute -top-3 left-6 px-3 py-0.5 bg-[#ff8c42] text-black font-mono text-[10px] font-bold uppercase tracking-widest z-10">
-              ▶ REQUIRED VIEWING — FRESHMAN ORIENTATION
-            </div>
-            <video
-              className="w-full aspect-video object-cover"
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="metadata"
-            >
-              <source src="/landing/prep-film.mp4" type="video/mp4" />
-            </video>
-          </div>
         </div>
       </section>
 
