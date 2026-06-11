@@ -188,3 +188,43 @@ html, body {
   }
   .animate-bar-fill { width: var(--bar-w, 80%); }
 }
+
+/* ───────────── Landing v2: cinematic kit ───────────── */
+
+/* Slow drift for skyline backdrops (ken burns) */
+@keyframes kenBurns {
+  0%   { transform: scale(1.05) translateX(0); }
+  50%  { transform: scale(1.12) translateX(-2%); }
+  100% { transform: scale(1.05) translateX(0); }
+}
+.animate-ken-burns { animation: kenBurns 28s ease-in-out infinite; }
+
+/* Blinking LIVE dot */
+@keyframes liveBlink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.25; }
+}
+.animate-live-blink { animation: liveBlink 1.4s ease-in-out infinite; }
+
+/* CRT scanlines — subtle texture over hero media */
+.scanlines {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.02) 0px,
+    rgba(255, 255, 255, 0.02) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  pointer-events: none;
+}
+
+/* Spotlight sweep behind hero battlers */
+@keyframes spotlightPulse {
+  0%, 100% { opacity: 0.5; transform: translateX(-50%) scale(1); }
+  50%      { opacity: 0.85; transform: translateX(-50%) scale(1.08); }
+}
+.animate-spotlight { animation: spotlightPulse 6s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-ken-burns, .animate-live-blink, .animate-spotlight { animation: none !important; }
+}

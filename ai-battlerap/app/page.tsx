@@ -1,8 +1,65 @@
-// Landing page — fight-night poster energy, real game UI, and a self-playing
-// demo of the career loop. Server component; the loop demo is the only client island.
+// Landing page — fight-night poster energy, real game UI, a self-playing demo
+// of the career loop, and a LIVE pulse from the actual world (real upcoming
+// cards, real headlines, real rankings). Server component; the loop demo is
+// the only client island.
 import Image from 'next/image';
 import Link from 'next/link';
+import { createClient } from '@supabase/supabase-js';
 import GameLoopDemo from '@/components/landing/GameLoopDemo';
+
+export const revalidate = 300; // the world moves hourly; refresh the pulse every 5 min
+
+type PulseBattle = {
+  id: string;
+  scheduled_at: string;
+  a: { stage_name: string; avatar_url: string | null; is_real: boolean } | null;
+  b: { stage_name: string; avatar_url: string | null; is_real: boolean } | null;
+  league: { name: string } | null;
+};
+
+async function getWorldPulse() {
+  try {
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      { auth: { autoRefreshToken: false, persistSession: false } }
+    );
+
+    const [{ data: upcoming }, { data: headlines }, { data: top }] = await Promise.all([
+      supabase
+        .from('battles')
+        .select(
+          'id, scheduled_at, a:battler_player_id(stage_name, avatar_url, is_real), b:battler_ai_id(stage_name, avatar_url, is_real), league:leagues(name)'
+        )
+        .eq('status', 'accepted')
+        .gt('scheduled_at', new Date().toISOString())
+        .order('scheduled_at', { ascending: true })
+        .limit(3),
+      supabase
+        .from('news_articles')
+        .select('slug, title')
+        .order('published_at', { ascending: false })
+        .limit(8),
+      supabase
+        .from('rankings')
+        .select('rating, battler:battler_id(id, stage_name, avatar_url, is_real)')
+        .order('rating', { ascending: false })
+        .limit(6),
+    ]);
+
+    return {
+      upcoming: ((upcoming as unknown as PulseBattle[]) ?? []).filter(
+        (x) => x.a && x.b && !x.a.stage_name.startsWith('Test_') && !x.b.stage_name.startsWith('Test_')
+      ),
+      headlines: (headlines ?? []).filter((h) => !/^test/i.test(h.title ?? '')),
+      top: ((top as any[]) ?? [])
+        .filter((t) => t.battler && !t.battler.stage_name.startsWith('Test_'))
+        .slice(0, 3),
+    };
+  } catch {
+    return { upcoming: [], headlines: [], top: [] };
+  }
+}
 
 const HERO_BATTLERS = [
   { src: '/sprites/characters/image_1764146494580/sprite_848.png', name: 'THE WRITER' },
@@ -91,29 +148,50 @@ const TICKER_ITEMS = [
   'MIC MASTERS ARENA', 'BLOCK BUSTER BATTLES', 'RESPECT THE CRAFT', 'STAY FOREVER',
 ];
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  const pulse = await getWorldPulse();
+  // Live ticker: real headlines when the world has them, league names as filler
+  const tickerItems =
+    pulse.headlines.length >= 4 ? pulse.headlines.map((h) => h.title) : TICKER_ITEMS;
+
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-zinc-100 overflow-x-hidden relative">
       {/* film grain over everything */}
       <div className="grain-overlay fixed inset-0 z-50" />
 
-      {/* ── TICKER TAPE ───────────────────────────────────────────── */}
-      <div className="border-b border-[#ff8c42]/30 bg-[#0e0f12] py-2 overflow-hidden">
-        <div className="marquee-track">
-          {[0, 1].map((dup) => (
-            <span key={dup} className="inline-flex">
-              {TICKER_ITEMS.map((t) => (
-                <span key={`${dup}-${t}`} className="font-mono text-[11px] uppercase tracking-[0.3em] text-[#ff8c42]/80 mx-6">
-                  ● {t}
-                </span>
-              ))}
-            </span>
-          ))}
+      {/* ── BREAKING TICKER (real headlines from the living world) ── */}
+      <div className="border-b border-[#ff8c42]/30 bg-[#0e0f12] py-2 overflow-hidden flex items-center">
+        <span className="flex-shrink-0 px-3 font-mono text-[10px] font-bold uppercase tracking-widest bg-[#ff8c42] text-black py-0.5 ml-3 mr-2 flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 rounded-full bg-black animate-live-blink" />
+          LIVE
+        </span>
+        <div className="overflow-hidden flex-1">
+          <div className="marquee-track marquee-track--slow">
+            {[0, 1].map((dup) => (
+              <span key={dup} className="inline-flex">
+                {tickerItems.map((t, i) => (
+                  <span key={`${dup}-${i}`} className="font-mono text-[11px] uppercase tracking-[0.2em] text-[#ff8c42]/90 mx-8">
+                    ● {t}
+                  </span>
+                ))}
+              </span>
+            ))}
+          </div>
         </div>
       </div>
 
       {/* ── HERO ──────────────────────────────────────────────────── */}
-      <section className="relative">
+      <section className="relative overflow-hidden">
+        {/* city skyline backdrop — the UniverCity at night */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div
+            className="absolute inset-0 bg-cover bg-bottom opacity-[0.22] animate-ken-burns [image-rendering:pixelated]"
+            style={{ backgroundImage: "url('/sprites/cities/midwest/chicago-night.png')" }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0a] via-[#0a0a0a]/70 to-[#0a0a0a]/30" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-[#0a0a0a]/80" />
+          <div className="scanlines absolute inset-0" />
+        </div>
         {/* glow */}
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-[#ff8c42]/10 blur-[120px] rounded-full pointer-events-none" />
 
@@ -161,8 +239,12 @@ export default function LandingPage() {
             </div>
           </div>
 
-          {/* right: pixel battlers */}
+          {/* right: pixel battlers under the spotlight */}
           <div className="relative flex justify-center items-end gap-0 h-[340px] md:h-[420px]">
+            {/* stage spotlight cone */}
+            <div className="animate-spotlight absolute bottom-0 left-1/2 w-[420px] md:w-[560px] h-[110%] pointer-events-none bg-[radial-gradient(ellipse_50%_70%_at_50%_100%,rgba(255,140,66,0.22),transparent_70%)]" />
+            {/* stage floor line */}
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[85%] h-px bg-gradient-to-r from-transparent via-[#ff8c42]/50 to-transparent" />
             {HERO_BATTLERS.map((b, i) => (
               <div
                 key={b.name}
@@ -191,6 +273,99 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
+      {/* ── LIVE FROM THE UNIVERCITY (real world data) ───────────── */}
+      {(pulse.upcoming.length > 0 || pulse.top.length > 0) && (
+        <section className="relative border-y-2 border-[#ff8c42]/30 bg-[#0e0f12] py-12 md:py-16">
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="flex items-center justify-center gap-3 mb-8">
+              <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-live-blink" />
+              <h2 className="font-bebas text-3xl md:text-5xl uppercase text-white">
+                LIVE FROM THE <span className="text-[#ff8c42]">UNIVERCITY</span>
+              </h2>
+              <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-live-blink" />
+            </div>
+            <p className="text-center font-mono text-[10px] uppercase tracking-[0.35em] text-zinc-500 -mt-4 mb-8">
+              THIS IS NOT A MOCKUP — THE WORLD IS RUNNING RIGHT NOW
+            </p>
+            <div className="grid lg:grid-cols-3 gap-5">
+              {/* Tonight's card */}
+              <div className="bg-[#101114] border-2 border-[#3a3d44] p-5">
+                <p className="font-mono text-[10px] uppercase tracking-widest text-[#ff8c42] mb-4">🎬 TONIGHT&apos;S CARD</p>
+                <div className="space-y-3">
+                  {pulse.upcoming.map((b) => (
+                    <Link key={b.id} href={`/watch/${b.id}`} className="flex items-center gap-2 group">
+                      <span className="relative w-9 h-9 flex-shrink-0 bg-[#18191c] border border-[#3a3d44]">
+                        {b.a?.avatar_url && (
+                          <Image src={b.a.avatar_url} alt="" fill sizes="36px" className="object-contain [image-rendering:pixelated]" />
+                        )}
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block text-xs font-bold uppercase tracking-tight text-zinc-200 group-hover:text-[#ff8c42] truncate transition-colors">
+                          {b.a?.stage_name} <span className="text-[#ff8c42]">vs</span> {b.b?.stage_name}
+                        </span>
+                        <span className="block font-mono text-[9px] uppercase tracking-widest text-zinc-600 truncate">
+                          {b.league?.name}
+                        </span>
+                      </span>
+                      <span className="relative w-9 h-9 flex-shrink-0 bg-[#18191c] border border-[#3a3d44]">
+                        {b.b?.avatar_url && (
+                          <Image src={b.b.avatar_url} alt="" fill sizes="36px" className="object-contain [image-rendering:pixelated]" />
+                        )}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+                <Link href="/watch" className="block mt-4 text-center font-mono text-[10px] uppercase tracking-widest text-[#ff8c42] hover:text-[#ff9d5c]">
+                  FULL CARD →
+                </Link>
+              </div>
+              {/* Top of the rankings */}
+              <div className="bg-[#101114] border-2 border-[#3a3d44] p-5">
+                <p className="font-mono text-[10px] uppercase tracking-widest text-[#ff8c42] mb-4">🏆 POWER RANKINGS</p>
+                <div className="space-y-3">
+                  {pulse.top.map((t: any, i: number) => (
+                    <Link key={t.battler.id} href={`/battler/${t.battler.id}`} className="flex items-center gap-3 group">
+                      <span className="font-bebas text-2xl text-[#ff8c42] w-7">#{i + 1}</span>
+                      <span className="relative w-9 h-9 flex-shrink-0 bg-[#18191c] border border-[#3a3d44]">
+                        {t.battler.avatar_url && (
+                          <Image src={t.battler.avatar_url} alt="" fill sizes="36px" className="object-contain [image-rendering:pixelated]" />
+                        )}
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block text-xs font-bold uppercase tracking-tight text-zinc-200 group-hover:text-[#ff8c42] truncate transition-colors">
+                          {t.battler.stage_name}
+                          {t.battler.is_real && <span className="ml-1.5 px-1 py-px bg-[#ff8c42] text-black font-mono text-[7px] font-bold tracking-widest align-middle">✓</span>}
+                        </span>
+                      </span>
+                      <span className="font-mono text-xs text-zinc-400">{t.rating}</span>
+                    </Link>
+                  ))}
+                </div>
+                <Link href="/leaderboard" className="block mt-4 text-center font-mono text-[10px] uppercase tracking-widest text-[#ff8c42] hover:text-[#ff9d5c]">
+                  FULL RANKINGS →
+                </Link>
+              </div>
+              {/* The press */}
+              <div className="bg-[#101114] border-2 border-[#3a3d44] p-5">
+                <p className="font-mono text-[10px] uppercase tracking-widest text-[#ff8c42] mb-4">📰 THE PRESS</p>
+                <div className="space-y-3">
+                  {pulse.headlines.slice(0, 3).map((h) => (
+                    <Link key={h.slug} href={`/media/${h.slug}`} className="block group">
+                      <span className="block text-xs font-bold uppercase tracking-tight leading-snug text-zinc-200 group-hover:text-[#ff8c42] transition-colors line-clamp-2">
+                        {h.title}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+                <Link href="/media" className="block mt-4 text-center font-mono text-[10px] uppercase tracking-widest text-[#ff8c42] hover:text-[#ff9d5c]">
+                  ALL COVERAGE →
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ── THE LOOP ──────────────────────────────────────────────── */}
       <section id="the-loop" className="clip-diagonal-top bg-[#0e0f12] border-y border-[#3a3d44] py-20 md:py-28 relative">
