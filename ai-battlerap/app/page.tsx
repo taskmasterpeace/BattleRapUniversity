@@ -3,6 +3,7 @@
 // cards, real headlines, real rankings). Server component; the loop demo is
 // the only client island.
 import Image from 'next/image';
+import Icon from '@/components/ui/Icon';
 import Link from 'next/link';
 import { createClient } from '@supabase/supabase-js';
 import GameLoopDemo from '@/components/landing/GameLoopDemo';
@@ -84,32 +85,32 @@ const LEAGUES = [
 
 const FEATURES = [
   {
-    icon: '😶',
+    icon: 'skull',
     title: 'THE CHOKE IS REAL',
     body: 'Low resilience and bad prep means you can freeze on stage with the whole room watching. Known Chokers blow 45% of their battles. Clutch performers? 3%. Build the nerve or get a reputation.',
   },
   {
-    icon: '🖊️',
+    icon: 'pen',
     title: 'PEN VS PERFORMANCE',
     body: 'A technical league judges 60% on the writing. A bar-room crowd wants delivery and presence. The same battler wins one room and gets washed in the other. Pick your circuits wisely.',
   },
   {
-    icon: '📰',
+    icon: 'news',
     title: 'THE PRESS NEVER SLEEPS',
     body: 'Eight AI bloggers with their own agendas cover every battle. Bodied somebody? Front page. Choked? Also front page. Your rivalries, your slumps, your comebacks — all on the record.',
   },
   {
-    icon: '🏅',
+    icon: 'medal',
     title: '97 BADGES TO EARN',
     body: 'Punchline Czar. Crowd Favorite. Giant Slayer. And the ones you don\'t want — Choker, Drama Starter, One-Dimensional. Your badge case tells the story of who you really are.',
   },
   {
-    icon: '👑',
+    icon: 'crown',
     title: 'TAKE THE THRONE',
     body: 'Every league has three thrones held by its top battlers. Call out a throne holder, win, and take their seat. Then defend it — because everybody under you is calling you out next.',
   },
   {
-    icon: '🌪️',
+    icon: 'flame',
     title: 'LIFE COMES AT YOU',
     body: 'Win streaks bring temptation. Losses bring doubt. Family, money, beef — life events hit between battles and your choices shape your attributes, your stress, and your story.',
   },
@@ -119,7 +120,7 @@ const SHOTS = [
   {
     src: '/landing/shot-battle.png',
     label: 'BATTLE RESULTS',
-    caption: 'A 3-0 bodybag — and the league already wants you back on a bigger card.',
+    caption: 'Round by round, segment by segment — the tape tells the whole story.',
     rotate: '-rotate-1',
   },
   {
@@ -130,8 +131,8 @@ const SHOTS = [
   },
   {
     src: '/landing/shot-league.png',
-    label: 'LEAGUE STANDINGS',
-    caption: 'Every league has its own judges, culture, and ladder to climb.',
+    label: 'THE LEAGUE LADDER',
+    caption: 'From underground rooms to the main stages — every league has its own purse and culture.',
     rotate: '-rotate-1',
   },
   {
@@ -222,19 +223,19 @@ export default async function LandingPage() {
                 href="/login"
                 className="px-8 py-4 bg-[#ff8c42] hover:bg-[#ff9d5c] text-black font-display font-black uppercase tracking-wider text-lg transition-all hover:-translate-y-[2px] hover:shadow-[0_12px_40px_-10px_rgba(255,140,66,0.8)]"
               >
-                🎤 ENTER THE CIRCUIT
+                <Icon name="mic" size={16} className="mr-2 -mt-0.5" />ENTER THE CIRCUIT
               </Link>
               <Link
                 href="/matchup"
                 className="px-8 py-4 border-2 border-[#3a3d44] hover:border-[#ff8c42] text-zinc-300 font-display font-black uppercase tracking-wider text-lg transition-all"
               >
-                ⚔️ RUN A DREAM MATCHUP
+                <Icon name="swords" size={16} className="mr-2 -mt-0.5" />RUN A DREAM MATCHUP
               </Link>
               <Link
                 href="/leaderboard"
                 className="px-8 py-4 border-2 border-[#3a3d44] hover:border-[#ff8c42] text-zinc-300 font-display font-black uppercase tracking-wider text-lg transition-all"
               >
-                🏆 POWER RANKINGS
+                <Icon name="trophy" size={16} className="mr-2 -mt-0.5" />POWER RANKINGS
               </Link>
             </div>
           </div>
@@ -291,7 +292,7 @@ export default async function LandingPage() {
             <div className="grid lg:grid-cols-3 gap-5">
               {/* Tonight's card */}
               <div className="bg-[#101114] border-2 border-[#3a3d44] p-5">
-                <p className="font-mono text-[10px] uppercase tracking-widest text-[#ff8c42] mb-4">🎬 TONIGHT&apos;S CARD</p>
+                <p className="font-mono text-[10px] uppercase tracking-widest text-[#ff8c42] mb-4">TONIGHT&apos;S CARD</p>
                 <div className="space-y-3">
                   {pulse.upcoming.map((b) => (
                     <Link key={b.id} href={`/watch/${b.id}`} className="flex items-center gap-2 group">
@@ -322,7 +323,7 @@ export default async function LandingPage() {
               </div>
               {/* Top of the rankings */}
               <div className="bg-[#101114] border-2 border-[#3a3d44] p-5">
-                <p className="font-mono text-[10px] uppercase tracking-widest text-[#ff8c42] mb-4">🏆 POWER RANKINGS</p>
+                <p className="font-mono text-[10px] uppercase tracking-widest text-[#ff8c42] mb-4">POWER RANKINGS</p>
                 <div className="space-y-3">
                   {pulse.top.map((t: any, i: number) => (
                     <Link key={t.battler.id} href={`/battler/${t.battler.id}`} className="flex items-center gap-3 group">
@@ -348,7 +349,7 @@ export default async function LandingPage() {
               </div>
               {/* The press */}
               <div className="bg-[#101114] border-2 border-[#3a3d44] p-5">
-                <p className="font-mono text-[10px] uppercase tracking-widest text-[#ff8c42] mb-4">📰 THE PRESS</p>
+                <p className="font-mono text-[10px] uppercase tracking-widest text-[#ff8c42] mb-4">THE PRESS</p>
                 <div className="space-y-3">
                   {pulse.headlines.slice(0, 3).map((h) => (
                     <Link key={h.slug} href={`/media/${h.slug}`} className="block group">
@@ -465,7 +466,7 @@ export default async function LandingPage() {
                 key={f.title}
                 className="bg-[#101114] border-2 border-[#3a3d44] p-6 hover:border-[#ff8c42] hover:-translate-y-1 hover:shadow-[0_16px_40px_-20px_rgba(255,140,66,0.5)] transition-all duration-200"
               >
-                <div className="text-4xl mb-4">{f.icon}</div>
+                <div className="mb-4 text-[#ff8c42]"><Icon name={f.icon as any} size={34} /></div>
                 <h3 className="font-display text-xl font-black uppercase tracking-tight text-zinc-100 mb-3">{f.title}</h3>
                 <p className="text-zinc-400 text-sm leading-relaxed">{f.body}</p>
               </div>
@@ -525,7 +526,7 @@ export default async function LandingPage() {
             href="/login"
             className="inline-block mt-10 px-12 py-5 bg-[#ff8c42] hover:bg-[#ff9d5c] text-black font-display font-black uppercase tracking-wider text-xl transition-all hover:-translate-y-[2px] hover:shadow-[0_16px_50px_-10px_rgba(255,140,66,0.9)] animate-pulse-orange"
           >
-            🎤 CREATE YOUR BATTLER
+            <Icon name="mic" size={18} className="mr-2 -mt-0.5" />CREATE YOUR BATTLER
           </Link>
           <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-zinc-600 mt-8">
             NO BARS REQUIRED — WE SIMULATE. YOU STRATEGIZE.

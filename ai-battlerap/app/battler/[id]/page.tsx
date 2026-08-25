@@ -1,6 +1,7 @@
 'use client';
 
 import { use, useState } from 'react';
+import Icon from '@/components/ui/Icon';
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
@@ -161,7 +162,7 @@ export default function BattlerCareerPage({ params }: { params: Promise<{ id: st
                   <h1 className="text-5xl font-display font-black uppercase tracking-tighter">{data.battler.stageName}</h1>
                   {data.battler.isReal && (
                     <span className="px-3 py-1.5 bg-[#ff8c42] text-black font-mono text-xs font-bold uppercase tracking-widest shadow-[0_0_20px_-4px_rgba(255,140,66,0.8)]">
-                      ✓ VERIFIED BATTLER
+                      VERIFIED BATTLER
                     </span>
                   )}
                 </div>
@@ -176,11 +177,11 @@ export default function BattlerCareerPage({ params }: { params: Promise<{ id: st
                         className="font-display font-black uppercase tracking-wide text-zinc-300 hover:text-[#ff8c42] transition-colors border-b border-dashed border-zinc-600 hover:border-[#ff8c42]"
                         title={`Visit the ${data.battler.hometown.name} scene`}
                       >
-                        📍 {data.battler.hometown.name}{data.battler.hometown.state ? `, ${data.battler.hometown.state}` : ''}
+                        <Icon name="pin" size={12} className="mr-1 -mt-0.5" />{data.battler.hometown.name}{data.battler.hometown.state ? `, ${data.battler.hometown.state}` : ''}
                       </Link>
                     ) : (
                       <span className="font-display font-black uppercase tracking-wide">
-                        📍 {data.battler.hometown.name}{data.battler.hometown.state ? `, ${data.battler.hometown.state}` : ''}
+                        <Icon name="pin" size={12} className="mr-1 -mt-0.5" />{data.battler.hometown.name}{data.battler.hometown.state ? `, ${data.battler.hometown.state}` : ''}
                       </span>
                     )
                   )}
@@ -196,10 +197,10 @@ export default function BattlerCareerPage({ params }: { params: Promise<{ id: st
                       opponentBattlerId={data.battler.id}
                       stageName={data.battler.stageName}
                       size="lg"
-                      label="⚔️ CHALLENGE THIS PLAYER"
+                      label="CHALLENGE THIS PLAYER"
                     />
                     <p className="text-[10px] text-zinc-500 uppercase tracking-widest mt-2">
-                      ⚔️ Challenge this player — async PvP, prep on your own time
+                      Challenge this player — async PvP, prep on your own time
                     </p>
                   </div>
                 )}
@@ -217,7 +218,7 @@ export default function BattlerCareerPage({ params }: { params: Promise<{ id: st
                 <div className="text-xs text-zinc-400 uppercase tracking-wider font-bold mt-1">Win Rate</div>
               </div>
               <div className="text-center bg-[#2d2f35] border-2 border-[#3a3d44] px-6 py-4">
-                <div className="text-3xl font-display font-black text-blue-500">{data.careerStats.avgCrowdReaction}%</div>
+                <div className="text-3xl font-display font-black text-[#ff8c42]">{data.careerStats.avgCrowdReaction}%</div>
                 <div className="text-xs text-zinc-400 uppercase tracking-wider font-bold mt-1">Avg Crowd</div>
               </div>
             </div>
@@ -236,7 +237,7 @@ export default function BattlerCareerPage({ params }: { params: Promise<{ id: st
           {data.battler.accolades && data.battler.accolades.length > 0 && (
             <div>
               <h2 className="text-2xl font-display font-black uppercase tracking-tighter text-[#ff8c42] mb-4">
-                🏆 ACCOLADES
+                ACCOLADES
               </h2>
               <div className="grid sm:grid-cols-2 gap-2">
                 {data.battler.accolades.map((a, i) => (
@@ -249,7 +250,7 @@ export default function BattlerCareerPage({ params }: { params: Promise<{ id: st
                         {a.rank === 1 ? '1st' : a.rank === 2 ? '2nd' : a.rank === 3 ? '3rd' : `${a.rank}th`}
                       </span>
                     ) : (
-                      <span className="flex-shrink-0 w-10 h-10 flex items-center justify-center text-xl">🎖️</span>
+                      <span className="flex-shrink-0 w-10 h-10 flex items-center justify-center text-[#ff8c42]"><Icon name="medal" size={22} /></span>
                     )}
                     <div className="min-w-0">
                       <p className="font-bold text-sm text-zinc-100 leading-snug">{a.title}</p>
@@ -318,7 +319,7 @@ function OverviewTab({ data }: { data: CareerData }) {
           <StatCard label="Total Battles" value={stats.totalBattles} />
           <StatCard label="Wins" value={stats.wins} color="text-green-500" />
           <StatCard label="Losses" value={stats.losses} color="text-red-500" />
-          <StatCard label="Win Rate" value={`${stats.winRate}%`} color="text-blue-500" />
+          <StatCard label="Win Rate" value={`${stats.winRate}%`} color="text-[#ff8c42]" />
           <StatCard label="Bodybags" value={stats.bodybags} color="text-[#ff8c42]" />
           <StatCard label="Avg Crowd" value={`${stats.avgCrowdReaction}%`} />
           <StatCard label="Round Win %" value={`${stats.roundWinRate}%`} />
