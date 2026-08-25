@@ -32,6 +32,7 @@ type BattleOffer = {
   league: {
     name: string;
     round_length_minutes: number;
+    base_payout?: number | null;
   };
   ai_battler: {
     id: string;
