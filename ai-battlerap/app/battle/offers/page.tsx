@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Avatar from '@/components/ui/Avatar';
 import StatCard from '@/components/ui/StatCard';
+import Icon from '@/components/ui/Icon';
 import GamingButton from '@/components/ui/GamingButton';
 import { toast } from '@/components/ui/Toast';
 
@@ -171,7 +172,7 @@ export default function BattleOffersPage() {
       <div className="max-w-7xl mx-auto px-6 py-8">
         {offers.length === 0 ? (
           <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-12 text-center">
-            <div className="text-6xl mb-6">🎤</div>
+            <Icon name="mic" size={48} className="text-zinc-600 mb-6" />
             <h2 className="text-2xl font-display font-black uppercase tracking-tighter mb-4 text-white">
               NO OFFERS AVAILABLE
             </h2>
@@ -203,7 +204,7 @@ export default function BattleOffersPage() {
                     <div className="mb-6 pb-6 border-b-2 border-[#ff8c42]/30">
                       <div className="flex items-center gap-4">
                         <div className="px-4 py-2 bg-[#ff8c42] text-black font-display font-black uppercase tracking-wider text-sm">
-                          👤 PLAYER CHALLENGE
+                          PLAYER CHALLENGE
                         </div>
                         <p className="text-zinc-400 font-display font-black uppercase tracking-wider text-xs">
                           A real player called you out — accept, prep, and lock in
@@ -221,7 +222,7 @@ export default function BattleOffersPage() {
                             ? 'bg-[#ff8c42] text-black animate-pulse'
                             : 'bg-red-500/20 text-red-400 border-2 border-red-500/30'
                         }`}>
-                          {isGrudgeMatch ? '🔥 GRUDGE MATCH' : '⚔️ RIVALRY'}
+                          {isGrudgeMatch ? 'GRUDGE MATCH' : 'RIVALRY'}
                         </div>
                         {offer.h2hRecord && (
                           <div className="text-zinc-400 font-display font-display font-black uppercase tracking-wider text-sm">
@@ -255,7 +256,7 @@ export default function BattleOffersPage() {
                           </div>
                           <div className="h-3 bg-[#18191c] border-2 border-[#3a3d44] overflow-hidden">
                             <div
-                              className="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all"
+                              className="h-full bg-gradient-to-r from-[#ff8c42] to-red-500 transition-all"
                               style={{ width: `${offer.grudge.rematchDemand}%` }}
                             />
                           </div>
@@ -340,22 +341,28 @@ export default function BattleOffersPage() {
                       </div>
 
                       {/* Stats Grid */}
-                      <div className="grid grid-cols-3 gap-3">
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <StatCard
+                          label="THE BAG"
+                          value={offer.league?.base_payout ? `$${Number(offer.league.base_payout).toLocaleString()}` : '$750'}
+                          icon={<Icon name="cash" size={18} />}
+                          subtext="WIN PAYS MORE"
+                          variant="highlight"
+                        />
                         <StatCard
                           label="RATING"
                           value={offer.opponentRanking.rating}
-                          icon="⭐"
-                          variant="highlight"
+                          icon={<Icon name="star" size={18} />}
                         />
                         <StatCard
                           label="WINS"
                           value={offer.opponentRanking.wins}
-                          icon="🏆"
+                          icon={<Icon name="trophy" size={18} />}
                         />
                         <StatCard
                           label="LOSSES"
                           value={offer.opponentRanking.losses}
-                          icon="💀"
+                          icon={<Icon name="skull" size={18} />}
                         />
                       </div>
 

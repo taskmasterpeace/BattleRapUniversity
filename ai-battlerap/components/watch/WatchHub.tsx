@@ -3,6 +3,7 @@
 // TONIGHT'S CARD hub — fight-card layout for the living world.
 // Upcoming VS cards + JUST HAPPENED verdict strip, league filter on top.
 import { useMemo, useState } from 'react';
+import Icon from '@/components/ui/Icon';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -131,7 +132,7 @@ export default function WatchHub({
           LIVE FROM THE UNIVERCITY
         </p>
         <h1 className="font-display text-3xl md:text-5xl font-black uppercase tracking-tighter leading-none">
-          🎬 TONIGHT&apos;S CARD
+          TONIGHT&apos;S CARD
         </h1>
         <p className="font-mono text-xs uppercase tracking-[0.3em] text-zinc-500 mt-3">
           — THE WORLD DON&apos;T STOP —

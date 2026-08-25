@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import Icon from '@/components/ui/Icon';
 import Link from 'next/link';
 import { formatCurrency } from '@/lib/game/paymentCalculator';
 import { useState } from 'react';
@@ -90,7 +91,7 @@ export default function TournamentsClient({
   const getStatusBadge = (status: string) => {
     const badges: Record<string, { color: string; label: string }> = {
       registration: { color: 'bg-green-500', label: 'REGISTRATION OPEN' },
-      seeding: { color: 'bg-blue-500', label: 'SEEDING' },
+      seeding: { color: 'bg-amber-500', label: 'SEEDING' },
       in_progress: { color: 'bg-[#ff8c42]', label: 'IN PROGRESS' },
       completed: { color: 'bg-zinc-600', label: 'COMPLETED' },
     };
@@ -133,7 +134,7 @@ export default function TournamentsClient({
         {myRegistrations.length > 0 && (
           <div className="mb-12">
             <h2 className="text-lg font-display font-black uppercase tracking-wider text-green-500 mb-6">
-              🏆 MY TOURNAMENTS ({myRegistrations.length})
+              MY TOURNAMENTS ({myRegistrations.length})
             </h2>
             <div className="grid grid-cols-1 gap-4">
               {myRegistrations.map((reg) => (
@@ -150,7 +151,7 @@ export default function TournamentsClient({
                     </div>
                     <Link
                       href={`/tournaments/${reg.tournaments.id}`}
-                      className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-display font-black uppercase text-sm transition"
+                      className="px-4 py-2 bg-[#ff8c42] hover:bg-[#ff9d5c] text-black font-display font-black uppercase text-sm transition"
                     >
                       VIEW BRACKET
                     </Link>
@@ -231,7 +232,7 @@ export default function TournamentsClient({
                     {registered ? (
                       <Link
                         href={`/tournaments/${tournament.id}`}
-                        className="block w-full py-3 bg-green-600 hover:bg-green-700 text-white text-center font-display font-black uppercase transition"
+                        className="block w-full py-3 bg-[#ff8c42] hover:bg-[#ff9d5c] text-black text-center font-display font-black uppercase transition"
                       >
                         VIEW BRACKET
                       </Link>
@@ -274,7 +275,7 @@ export default function TournamentsClient({
                     {getStatusBadge(tournament.status)}
                   </div>
                   <div className="flex items-center gap-3 mt-3">
-                    <span className="text-2xl">🏆</span>
+                    <Icon name="trophy" size={22} className="text-[#ff8c42]" />
                     <div>
                       <p className="text-xs text-zinc-500 uppercase">Champion</p>
                       <p className="text-sm font-bold text-yellow-400">

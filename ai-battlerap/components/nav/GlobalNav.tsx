@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Icon from '@/components/ui/Icon';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -133,7 +134,7 @@ export default function GlobalNav() {
             href="/dashboard"
             className="flex items-center gap-2 font-anton uppercase tracking-tighter hover:text-[#ff8c42] transition shrink-0"
           >
-            <span className="text-[#ff8c42] text-2xl">⚔</span>
+            <Icon name="mic" size={22} className="text-[#ff8c42]" />
             <span className="hidden sm:inline text-lg">Battle Rap U</span>
           </Link>
 
@@ -191,7 +192,7 @@ export default function GlobalNav() {
             {/* Drawer header */}
             <div className="sticky top-0 bg-[#18191c] border-b-2 border-[#3a3d44] px-6 py-4 flex items-center justify-between">
               <span className="font-anton uppercase tracking-tighter text-lg">
-                <span className="text-[#ff8c42]">⚔</span> Menu
+                <span className="inline-flex items-center gap-1"><Icon name="mic" size={14} className="text-[#ff8c42]" /> Menu</span>
               </span>
               <button
                 onClick={() => setDrawerOpen(false)}

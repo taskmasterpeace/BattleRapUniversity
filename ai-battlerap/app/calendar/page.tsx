@@ -37,7 +37,7 @@ const MONTH_NAMES = [
 
 const KIND_STYLE: Record<Event['kind'], string> = {
   battle: 'bg-[#ff8c42]/20 border-l-2 border-[#ff8c42] text-[#ffb380]',
-  'tournament-start': 'bg-purple-500/20 border-l-2 border-purple-400 text-purple-200',
+  'tournament-start': 'bg-amber-500/20 border-l-2 border-amber-400 text-amber-200',
   'tournament-reg-open': 'bg-green-500/20 border-l-2 border-green-400 text-green-200',
   'tournament-reg-close': 'bg-yellow-500/20 border-l-2 border-yellow-400 text-yellow-200',
 };
@@ -255,7 +255,7 @@ export default async function CalendarPage({
             <span className="w-3 h-3 bg-[#ff8c42] inline-block" /> Battle
           </span>
           <span className="inline-flex items-center gap-1">
-            <span className="w-3 h-3 bg-purple-400 inline-block" /> Tournament
+            <span className="w-3 h-3 bg-amber-400 inline-block" /> Tournament
           </span>
           <span className="inline-flex items-center gap-1">
             <span className="w-3 h-3 bg-green-400 inline-block" /> Reg opens

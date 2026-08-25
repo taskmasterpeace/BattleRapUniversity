@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import Icon from '@/components/ui/Icon';
 import Link from 'next/link';
 import { formatCurrency } from '@/lib/game/paymentCalculator';
 import StatCard from '@/components/ui/StatCard';
@@ -40,17 +41,17 @@ export default function FinancesClient({
   const getTransactionIcon = (type: string) => {
     switch (type) {
       case 'battle_win_bonus':
-        return '🏆';
+        return 'trophy';
       case 'battle_base_pay':
-        return '💰';
+        return 'cash';
       case 'tournament_prize':
-        return '🥇';
+        return 'medal';
       case 'life_event_gain':
-        return '📈';
+        return 'arrow-up';
       case 'life_event_loss':
-        return '📉';
+        return 'arrow-down';
       default:
-        return '💵';
+        return 'cash';
     }
   };
 
@@ -87,19 +88,19 @@ export default function FinancesClient({
           <StatCard
             label="CURRENT BALANCE"
             value={formatCurrency(balance)}
-            icon="💵"
+            icon={<Icon name="cash" size={18} />}
             subtext={balance >= 0 ? 'POSITIVE BALANCE' : 'NEGATIVE BALANCE'}
           />
           <StatCard
             label="LIFETIME EARNINGS"
             value={formatCurrency(lifetimeEarnings)}
-            icon="🏆"
+            icon={<Icon name="trophy" size={18} />}
             subtext="TOTAL CAREER EARNINGS"
           />
           <StatCard
             label="BATTLE EARNINGS"
             value={formatCurrency(winEarnings + lossEarnings)}
-            icon="🎤"
+            icon={<Icon name="mic" size={18} />}
             subtext="FROM BATTLES ONLY"
           />
         </div>
@@ -184,10 +185,10 @@ export default function FinancesClient({
             </div>
             <div className="bg-[#18191c] border-2 border-[#3a3d44] p-4">
               <div className="flex items-center gap-2 mb-2">
-                <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+                <div className="w-3 h-3 bg-zinc-500"></div>
                 <p className="text-xs uppercase tracking-wider text-zinc-500 font-display font-bold">BASE PAY</p>
               </div>
-              <p className="text-2xl font-display font-black text-blue-400">{formatCurrency(lossEarnings)}</p>
+              <p className="text-2xl font-display font-black text-zinc-300">{formatCurrency(lossEarnings)}</p>
               <p className="text-xs text-zinc-500 mt-1 font-display uppercase">
                 {totalEarnings > 0 ? `${Math.round(lossPercentage)}% of total` : 'Participation payouts'}
               </p>
@@ -253,13 +254,13 @@ export default function FinancesClient({
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-xs uppercase text-zinc-500 font-display font-bold">Earnings Growth</span>
-                <span className="text-lg font-display font-black text-blue-400">
+                <span className="text-lg font-display font-black text-zinc-300">
                   {lifetimeEarnings > 0 ? 'GROWING' : 'STARTING'}
                 </span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-xs uppercase text-zinc-500 font-display font-bold">Win Rate Impact</span>
-                <span className="text-lg font-display font-black text-purple-400">
+                <span className="text-lg font-display font-black text-amber-400">
                   {totalEarnings > 0 ? `${Math.round(winPercentage)}%` : 'N/A'}
                 </span>
               </div>
@@ -280,7 +281,7 @@ export default function FinancesClient({
 
           {transactions.length === 0 ? (
             <div className="text-center py-12">
-              <div className="text-4xl mb-4">💰</div>
+              <Icon name="cash" size={36} className="text-zinc-600 mb-4" />
               <p className="text-zinc-500 font-display font-display font-black uppercase">No transactions yet</p>
               <p className="text-xs text-zinc-600 mt-2 font-display uppercase">Complete battles to start earning</p>
             </div>
@@ -292,7 +293,7 @@ export default function FinancesClient({
                   className="flex justify-between items-start p-4 bg-[#18191c] border-2 border-[#3a3d44] hover:border-[#ff8c42]/50 transition"
                 >
                   <div className="flex gap-4 items-start flex-1">
-                    <div className="text-2xl mt-1">{getTransactionIcon(transaction.transaction_type)}</div>
+                    <div className="mt-1 text-[#ff8c42]"><Icon name={getTransactionIcon(transaction.transaction_type) as any} size={20} /></div>
                     <div className="flex-1">
                       <p className="font-display font-bold text-sm uppercase tracking-wide">
                         {transaction.description || transaction.transaction_type.replace(/_/g, ' ')}

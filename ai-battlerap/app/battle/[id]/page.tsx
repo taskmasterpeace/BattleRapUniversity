@@ -530,7 +530,7 @@ export default function BattleViewerPage({
               className="px-5 py-2 bg-gradient-to-r from-red-600 to-[#ff8c42] text-white font-display font-black uppercase tracking-wider text-sm hover:from-red-500 hover:to-[#ff9d5c] transition-all shadow-[0_0_20px_rgba(255,140,66,0.4)] flex items-center gap-2"
             >
               <span className="inline-block w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-              ▶ WATCH LIVE
+              ▶ WATCH THE TAPE
             </button>
           )}
         </div>
@@ -581,11 +581,11 @@ export default function BattleViewerPage({
                     <div className="mt-2">
                       {playerWon ? (
                         <span className="inline-block px-4 py-1 bg-green-500/20 text-green-400 border-2 border-green-500/50 font-display font-black text-sm uppercase tracking-wider">
-                          {battle.verdict === '3-0' ? 'BODYBAG 🔥' : 'VICTORY'}
+                          {battle.verdict === '3-0' ? 'BODYBAG' : 'VICTORY'}
                         </span>
                       ) : (
                         <span className="inline-block px-4 py-1 bg-red-500/20 text-red-400 border-2 border-red-500/50 font-display font-black text-sm uppercase tracking-wider">
-                          {battle.verdict === '3-0' ? "BODY'D 💀" : 'DEFEAT'}
+                          {battle.verdict === '3-0' ? "BODY'D" : 'DEFEAT'}
                         </span>
                       )}
                     </div>
@@ -737,7 +737,7 @@ export default function BattleViewerPage({
                       <SegmentLane
                         name={battle.player_battler.stage_name}
                         segs={playerSegments}
-                        accent="bg-blue-500 border-blue-400"
+                        accent="bg-[#ff8c42]/70 border-[#ff8c42]"
                       />
                       <SegmentLane
                         name={battle.ai_battler.stage_name}
@@ -752,7 +752,7 @@ export default function BattleViewerPage({
                           <span className="inline-block w-3 h-3 bg-red-500 border border-red-400"></span> CHOKE
                         </span>
                         <span className="flex items-center gap-1">
-                          <span className="inline-block w-3 h-3 bg-blue-500 border border-blue-400"></span> NORMAL
+                          <span className="inline-block w-3 h-3 bg-zinc-500 border border-zinc-400"></span> NORMAL
                         </span>
                       </div>
                     </div>

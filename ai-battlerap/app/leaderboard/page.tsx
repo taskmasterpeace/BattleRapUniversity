@@ -65,8 +65,8 @@ const unslug = (s: string) =>
 
 const TIER_COLOR: Record<string, string> = {
   low: 'text-zinc-400 border-zinc-600',
-  mid: 'text-blue-300 border-blue-500/50',
-  top: 'text-purple-300 border-purple-500/50',
+  mid: 'text-amber-300 border-amber-500/50',
+  top: 'text-[#ff8c42] border-[#ff8c42]/50',
   god: 'text-[#ff8c42] border-[#ff8c42]',
 };
 
@@ -117,7 +117,7 @@ function StreakChip({ streak, size = 'sm' }: { streak: number; size?: 'sm' | 'lg
       <span
         className={`${pad} inline-flex items-center gap-1 border border-[#ff8c42]/60 bg-[#ff8c42]/10 text-[#ff8c42] font-mono font-bold tracking-wider`}
       >
-        🔥W{streak}
+        W{streak}
       </span>
     );
   }
@@ -126,7 +126,7 @@ function StreakChip({ streak, size = 'sm' }: { streak: number; size?: 'sm' | 'lg
       <span
         className={`${pad} inline-flex items-center gap-1 border border-sky-500/50 bg-sky-500/10 text-sky-300 font-mono font-bold tracking-wider`}
       >
-        🧊L{Math.abs(streak)}
+        L{Math.abs(streak)}
       </span>
     );
   }
@@ -194,7 +194,7 @@ function Record({ wins, losses }: { wins: number; losses: number }) {
 // ── podium card ────────────────────────────────────────────────────────────
 function PodiumCard({ b, place }: { b: RankedBattler; place: 1 | 2 | 3 }) {
   const isFirst = place === 1;
-  const medal = place === 1 ? '🥇' : place === 2 ? '🥈' : '🥉';
+  const medal = place === 1 ? '#1' : place === 2 ? '#2' : '#3';
   const tierClass = TIER_COLOR[(b.tier || '').toLowerCase()] || 'text-zinc-400 border-zinc-600';
 
   return (
@@ -595,7 +595,7 @@ export default async function LeaderboardPage({
               href="/login"
               className="inline-block mt-8 px-8 sm:px-12 py-4 bg-[#ff8c42] hover:bg-[#ff9d5c] text-black font-display font-black uppercase tracking-wider text-base sm:text-xl transition-all hover:-translate-y-[2px] hover:shadow-[0_16px_50px_-10px_rgba(255,140,66,0.9)]"
             >
-              🎤 CREATE YOUR BATTLER
+              CREATE YOUR BATTLER
             </Link>
           </div>
         </section>

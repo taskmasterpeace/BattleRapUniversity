@@ -2,6 +2,7 @@
 // prep day per battle matching their specialty. Recruiting happens in
 // person, in the streets — visit a city and sign local talent.
 import Link from 'next/link';
+import Icon from '@/components/ui/Icon';
 import { redirect } from 'next/navigation';
 import { createServerSupabaseClient, getUser } from '@/lib/db/server';
 import DismissCrewButton from '@/components/crew/DismissCrewButton';
@@ -28,15 +29,15 @@ type CrewRow = {
 
 const TIER_COLOR: Record<string, string> = {
   low: 'text-zinc-400 border-zinc-600',
-  mid: 'text-blue-300 border-blue-500/50',
-  top: 'text-purple-300 border-purple-500/50',
+  mid: 'text-amber-300 border-amber-500/50',
+  top: 'text-[#ff8c42] border-[#ff8c42]/50',
   god: 'text-[#ff8c42] border-[#ff8c42]',
 };
 
 const SPECIALTY_ICON: Record<CrewSpecialty, string> = {
-  research: '🔍',
-  writing: '✍️',
-  performance: '🎤',
+  research: 'search',
+  writing: 'pen',
+  performance: 'mic',
 };
 
 export default async function CrewPage() {
@@ -127,7 +128,7 @@ export default async function CrewPage() {
                   <div className="flex items-center justify-between text-[10px] uppercase tracking-widest font-bold">
                     <span className={`px-2 py-0.5 border ${tierClass}`}>{m.tier || 'unranked'}</span>
                     <span className="font-mono text-zinc-500">
-                      {SPECIALTY_ICON[c.specialty]} {c.specialty}
+                      <Icon name={SPECIALTY_ICON[c.specialty] as any} size={12} className="mr-1 -mt-0.5" />{c.specialty}
                     </span>
                   </div>
 

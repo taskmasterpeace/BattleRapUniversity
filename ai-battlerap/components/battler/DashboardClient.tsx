@@ -5,6 +5,7 @@ import { createClient } from '@/lib/db/client';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import Avatar from '@/components/ui/Avatar';
+import Icon from '@/components/ui/Icon';
 import StatCard from '@/components/ui/StatCard';
 import GamingButton from '@/components/ui/GamingButton';
 import StressIndicator from './StressIndicator';
@@ -20,7 +21,6 @@ import { CharacterPortrait } from '../ui/CharacterPortrait';
 import FirstWeekGoals from './FirstWeekGoals';
 import BattlerBanner from './BattlerBanner';
 import ActiveBeefsWidget from '../relationships/ActiveBeefsWidget';
-import CareerStatsWidget from './CareerStatsWidget';
 import { getSlotStatus, MAX_BONUS_SLOTS_PER_DAY } from '@/lib/game/battleSlots';
 
 type Props = {
@@ -169,16 +169,16 @@ export default function DashboardClient({
         {/* Quick Nav */}
         <div className="mb-8 flex flex-col sm:flex-row gap-3">
           <GamingButton href="/guide" size="md" variant="secondary">
-            📖 GAMEPLAY GUIDE
+            <Icon name="book" size={14} className="mr-1.5" />GAMEPLAY GUIDE
           </GamingButton>
           <GamingButton href="/badges" size="md" variant="secondary">
-            🏅 BADGE COLLECTION
+            <Icon name="medal" size={14} className="mr-1.5" />BADGE COLLECTION
           </GamingButton>
           <GamingButton href="/finances" size="md" variant="secondary">
-            💰 FINANCES
+            <Icon name="cash" size={14} className="mr-1.5" />FINANCES
           </GamingButton>
           <GamingButton href="/tournaments" size="md" variant="secondary">
-            🏆 TOURNAMENTS
+            <Icon name="trophy" size={14} className="mr-1.5" />TOURNAMENTS
           </GamingButton>
         </div>
 
@@ -199,7 +199,7 @@ export default function DashboardClient({
         <div className="mb-4">
           <div className="flex items-center gap-3 mb-2">
             <h2 className="text-sm font-display font-black uppercase tracking-wider text-zinc-400">
-              👔 YOUR ROSTER
+              YOUR ROSTER
             </h2>
             <span className="text-[10px] uppercase tracking-widest text-zinc-600 font-bold">
               1 / 3 SLOTS
@@ -224,8 +224,8 @@ export default function DashboardClient({
                 key={slot}
                 className="flex items-center gap-3 bg-[#18191c] border-2 border-dashed border-[#3a3d44] px-4 py-3 opacity-70"
               >
-                <div className="w-10 h-10 flex items-center justify-center bg-[#2d2f35] border-2 border-[#3a3d44] text-lg">
-                  🔒
+                <div className="w-10 h-10 flex items-center justify-center bg-[#2d2f35] border-2 border-[#3a3d44] text-zinc-600">
+                  <Icon name="user" size={18} />
                 </div>
                 <div className="min-w-0">
                   <div className="font-display font-black uppercase tracking-wider text-sm text-zinc-500">
@@ -262,7 +262,7 @@ export default function DashboardClient({
                 </span>
                 {battler.region && (
                   <span className="px-4 py-2 bg-[#3a3d44] text-zinc-400 border-2 border-[#3a3d44] font-display font-display font-black uppercase tracking-wider text-sm">
-                    📍 {battler.region}
+                    {battler.region}
                   </span>
                 )}
                 {currentCity && (
@@ -271,7 +271,7 @@ export default function DashboardClient({
                     className="px-4 py-2 bg-[#ff8c42]/10 text-[#ff8c42] border-2 border-[#ff8c42]/40 hover:border-[#ff8c42] font-display font-black uppercase tracking-wider text-sm transition-colors"
                     title="Your current city — recruit and battle the local scene"
                   >
-                    ✈️ IN {currentCity.name}
+                    <Icon name="pin" size={12} className="mr-1" />IN {currentCity.name}
                   </Link>
                 )}
               </div>
@@ -282,12 +282,12 @@ export default function DashboardClient({
                   <span className="text-xs text-zinc-500 font-display font-display font-black uppercase tracking-wider">
                     {(() => {
                       const level = battler.level || 1;
-                      if (level <= 5) return '🌟 ROOKIE';
-                      if (level <= 10) return '⭐ UP-AND-COMER';
-                      if (level <= 15) return '✨ ESTABLISHED';
-                      if (level <= 20) return '💫 ELITE';
-                      if (level <= 25) return '🔥 LEGEND';
-                      return '👑 GOAT';
+                      if (level <= 5) return 'ROOKIE';
+                      if (level <= 10) return 'UP-AND-COMER';
+                      if (level <= 15) return 'ESTABLISHED';
+                      if (level <= 20) return 'ELITE';
+                      if (level <= 25) return 'LEGEND';
+                      return 'GOAT';
                     })()}
                   </span>
                   <span className="text-3xl font-display font-black text-[#ff8c42]">
@@ -339,7 +339,7 @@ export default function DashboardClient({
         {activeBattles && activeBattles.length > 0 && (
           <div className="mb-8">
             <h2 className="text-2xl font-display font-black uppercase tracking-tighter text-[#ff8c42] mb-4">
-              🔥 NEXT BATTLE
+              NEXT BATTLE
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {activeBattles.map((battle: any) => {
@@ -362,22 +362,22 @@ export default function DashboardClient({
                     <div className="flex flex-wrap gap-2 mb-3">
                       {isUrgent && (
                         <div className="inline-block px-3 py-1 bg-red-500 text-white font-display font-black uppercase text-xs tracking-wider">
-                          ⚠️ URGENT
+                          URGENT
                         </div>
                       )}
                       {noPrepAtAll && (
                         <div className="inline-block px-3 py-1 bg-yellow-500 text-zinc-900 font-display font-black uppercase text-xs tracking-wider animate-pulse">
-                          ❗ NEEDS PREP
+                          NEEDS PREP
                         </div>
                       )}
                       {!noPrepAtAll && needsPrep && (
-                        <div className="inline-block px-3 py-1 bg-blue-500/30 text-blue-300 border-2 border-blue-500/50 font-display font-black uppercase text-xs tracking-wider">
-                          📝 PREP IN PROGRESS
+                        <div className="inline-block px-3 py-1 bg-[#ff8c42]/20 text-[#ff8c42] border-2 border-[#ff8c42]/50 font-display font-black uppercase text-xs tracking-wider">
+                          PREP IN PROGRESS
                         </div>
                       )}
                       {!needsPrep && (
                         <div className="inline-block px-3 py-1 bg-green-500/30 text-green-300 border-2 border-green-500/50 font-display font-black uppercase text-xs tracking-wider">
-                          ✓ PREP COMPLETE
+                          PREP COMPLETE
                         </div>
                       )}
                     </div>
@@ -438,7 +438,7 @@ export default function DashboardClient({
                               ? 'bg-gradient-to-r from-green-500 to-green-400'
                               : prepPct === 0
                               ? 'bg-yellow-500'
-                              : 'bg-gradient-to-r from-blue-500 to-blue-400'
+                              : 'bg-gradient-to-r from-[#ff8c42] to-[#ffb366]'
                           }`}
                           style={{ width: `${Math.max(prepPct, prepPct === 0 ? 0 : 4)}%` }}
                         />
@@ -452,10 +452,10 @@ export default function DashboardClient({
                       className="w-full"
                     >
                       {noPrepAtAll
-                        ? '❗ SET YOUR PREP NOW'
+                        ? 'SET YOUR PREP NOW'
                         : needsPrep
-                        ? '📝 CONTINUE PREP'
-                        : '✏️ REVIEW PREP'}
+                        ? 'CONTINUE PREP'
+                        : 'REVIEW PREP'}
                     </GamingButton>
 
                     {nextBattle && battle.id === nextBattle.id && (
@@ -492,7 +492,7 @@ export default function DashboardClient({
                                         : 'Slot available'
                                     }
                                   >
-                                    🎤
+                                    <Icon name="mic" size={20} className={isUsed ? 'text-zinc-600' : 'text-[#ff8c42]'} />
                                     {isBonus && (
                                       <span className="absolute -top-1 -right-1.5 text-[9px] font-display font-black text-[#ff8c42] not-italic">
                                         +
@@ -532,14 +532,14 @@ export default function DashboardClient({
                           }`}
                         >
                           {simulating
-                            ? '🔥 ON STAGE…'
+                            ? 'ON STAGE…'
                             : slotsExhausted
-                            ? '🚫 NO SLOTS LEFT TODAY'
-                            : '🎤 BATTLE TIME — TAKE THE STAGE'}
+                            ? 'NO SLOTS LEFT TODAY'
+                            : 'BATTLE TIME — TAKE THE STAGE'}
                         </button>
                         {startError && (
                           <div className="mt-3 px-4 py-3 bg-red-500/10 border-2 border-red-500/50 text-red-400 text-sm font-display font-black uppercase tracking-wider text-center">
-                            ⛔ {startError}
+                            {startError}
                           </div>
                         )}
                       </>
@@ -554,13 +554,13 @@ export default function DashboardClient({
         {/* Career Stats Grid */}
         <div className="mb-8">
           <h2 className="text-2xl font-display font-black uppercase tracking-tighter text-[#ff8c42] mb-4">
-            📊 CAREER STATISTICS
+            CAREER STATISTICS
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <StatCard
               label="TOTAL BATTLES"
               value={(ranking?.wins || 0) + (ranking?.losses || 0)}
-              icon="⚔️"
+              icon={<Icon name="swords" size={20} />}
               subtext={`${ranking?.wins || 0}W - ${ranking?.losses || 0}L`}
             />
             <StatCard
@@ -570,7 +570,7 @@ export default function DashboardClient({
                   ? `${Math.round(((ranking?.wins || 0) / ((ranking?.wins || 0) + (ranking?.losses || 0))) * 100)}%`
                   : '0%'
               }
-              icon="🎯"
+              icon={<Icon name="target" size={20} />}
               variant="highlight"
             />
             <StatCard
@@ -582,13 +582,7 @@ export default function DashboardClient({
                   ? `L${Math.abs(ranking?.streak || 0)}`
                   : '0'
               }
-              icon={
-                (ranking?.streak || 0) > 0
-                  ? '🔥'
-                  : (ranking?.streak || 0) < 0
-                  ? '❄️'
-                  : '➖'
-              }
+              icon={<Icon name={(ranking?.streak || 0) > 0 ? 'flame' : (ranking?.streak || 0) < 0 ? 'snow' : 'chart'} size={20} />}
               subtext={
                 (ranking?.streak || 0) > 0
                   ? 'HOT STREAK'
@@ -600,7 +594,7 @@ export default function DashboardClient({
             <StatCard
               label="ELO RATING"
               value={ranking?.rating || 1000}
-              icon="⭐"
+              icon={<Icon name="star" size={20} />}
               subtext={`${battler.tier} TIER`}
             />
           </div>
@@ -628,19 +622,19 @@ export default function DashboardClient({
         {/* Settings Link */}
         <div className="mb-8 flex justify-end">
           <GamingButton href="/settings/profile" variant="secondary" size="sm">
-            ⚙️ SETTINGS
+            SETTINGS
           </GamingButton>
         </div>
 
         {/* Stats Grid - All Attributes */}
         <div className="mb-8">
           <h2 className="text-2xl font-display font-black uppercase tracking-tighter text-[#ff8c42] mb-4">
-            💪 BATTLER ATTRIBUTES
+            BATTLER ATTRIBUTES
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Writing */}
             <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-6">
-              <h3 className="text-sm font-display font-black uppercase tracking-wider text-zinc-400 mb-4">✍️ WRITING</h3>
+              <h3 className="text-sm font-display font-black uppercase tracking-wider text-zinc-400 mb-4">WRITING</h3>
               <div className="space-y-3">
                 <StatBar label="LYRICISM" value={attributes?.writing.lyricism} />
                 <StatBar label="WORDPLAY" value={attributes?.writing.wordplay} />
@@ -651,7 +645,7 @@ export default function DashboardClient({
 
             {/* Performance */}
             <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-6">
-              <h3 className="text-sm font-display font-black uppercase tracking-wider text-zinc-400 mb-4">🎭 PERFORMANCE</h3>
+              <h3 className="text-sm font-display font-black uppercase tracking-wider text-zinc-400 mb-4">PERFORMANCE</h3>
               <div className="space-y-3">
                 <StatBar label="STAGE PRESENCE" value={attributes?.performance.stage_presence} />
                 <StatBar label="CROWD CONTROL" value={attributes?.performance.crowd_control} />
@@ -661,7 +655,7 @@ export default function DashboardClient({
 
             {/* Personal */}
             <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-6">
-              <h3 className="text-sm font-display font-black uppercase tracking-wider text-zinc-400 mb-4">👤 PERSONAL</h3>
+              <h3 className="text-sm font-display font-black uppercase tracking-wider text-zinc-400 mb-4">PERSONAL</h3>
               <div className="space-y-3">
                 <StatBar label="RESILIENCE" value={attributes?.resilience} />
                 <StatBar label="REPUTATION" value={attributes?.personal.reputation} />
@@ -672,7 +666,7 @@ export default function DashboardClient({
 
             {/* Mental State */}
             <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-6">
-              <h3 className="text-sm font-display font-black uppercase tracking-wider text-zinc-400 mb-4">🧠 MENTAL STATE</h3>
+              <h3 className="text-sm font-display font-black uppercase tracking-wider text-zinc-400 mb-4">MENTAL STATE</h3>
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
                   <span className="text-zinc-400 font-display font-display font-black uppercase text-xs tracking-wide">PUBLIC KNOWLEDGE</span>
@@ -680,7 +674,7 @@ export default function DashboardClient({
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-zinc-400 font-display font-display font-black uppercase text-xs tracking-wide">PREPARATION</span>
-                  <span className="font-display font-black text-blue-500">{attributes?.preparation || 0}/10</span>
+                  <span className="font-display font-black text-[#ff8c42]">{attributes?.preparation || 0}/10</span>
                 </div>
                 <div className="pt-2 border-t-2 border-[#3a3d44]">
                   <StressIndicator
@@ -697,13 +691,6 @@ export default function DashboardClient({
 
         {/* Next Battle moved to top of dashboard */}
 
-        {/* Career Stats Widget — defensive against missing ranking rows */}
-        {ranking && (
-          <CareerStatsWidget
-            ranking={ranking}
-            totalBattles={(ranking.wins ?? 0) + (ranking.losses ?? 0)}
-          />
-        )}
 
         {/* Pending Life Events Widget */}
         <PendingLifeEventsWidget initialEvents={pendingEvents} />
@@ -716,7 +703,7 @@ export default function DashboardClient({
         {/* Battle Offers Section */}
         <div className="mb-8">
           <h2 className="text-2xl font-display font-black uppercase tracking-tighter text-[#ff8c42] mb-4">
-            📬 BATTLE OFFERS
+            BATTLE OFFERS
           </h2>
           <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-6">
             {offersCount > 0 ? (
@@ -730,19 +717,19 @@ export default function DashboardClient({
                   </p>
                 </div>
                 <GamingButton href="/battle/offers" variant="primary" size="lg" className="w-full">
-                  📋 VIEW ALL OFFERS
+                  VIEW ALL OFFERS
                 </GamingButton>
               </>
             ) : (
               <>
                 <div className="mb-6 text-center">
-                  <div className="text-6xl mb-2">📪</div>
+                  <Icon name="bell" size={40} className="text-zinc-600 mb-2" />
                   <p className="text-zinc-400 font-display font-display font-black uppercase tracking-wider">
                     NO OFFERS YET — PROMOTERS ARE WATCHING
                   </p>
                 </div>
                 <GamingButton href="/battle/offers" variant="secondary" size="lg" className="w-full">
-                  📋 CHECK OFFERS
+                  CHECK OFFERS
                 </GamingButton>
               </>
             )}
@@ -753,7 +740,7 @@ export default function DashboardClient({
         {recentBattles.length > 0 && (
           <div className="mb-8">
             <h2 className="text-2xl font-display font-black uppercase tracking-tighter text-[#ff8c42] mb-4">
-              🎬 RECENT BATTLES
+              RECENT BATTLES
             </h2>
             <div className="space-y-3">
               {recentBattles.map((battle: any) => {
@@ -776,15 +763,15 @@ export default function DashboardClient({
                           >
                             {isWinner
                               ? battle.verdict === '3-0'
-                                ? '🔥 BODYBAG (3-0)'
+                                ? 'BODYBAG (3-0)'
                                 : battle.verdict === '2-1'
-                                ? '✅ WIN (2-1)'
-                                : '✅ WIN'
+                                ? 'WIN (2-1)'
+                                : 'WIN'
                               : battle.verdict === '3-0'
-                              ? "💀 BODY'D (0-3)"
+                              ? "BODY'D (0-3)"
                               : battle.verdict === '2-1'
-                              ? '❌ LOSS (1-2)'
-                              : '❌ LOSS'}
+                              ? 'LOSS (1-2)'
+                              : 'LOSS'}
                           </span>
                           <span className="text-zinc-500 text-sm font-display font-display font-black uppercase tracking-wide">
                             {battle.league?.name}
@@ -813,7 +800,7 @@ export default function DashboardClient({
           <div className="mb-8">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-2xl font-display font-black uppercase tracking-tighter text-[#ff8c42]">
-                🏆 TOURNAMENT CAREER
+                TOURNAMENT CAREER
               </h2>
               <GamingButton href="/tournaments/history" variant="secondary" size="sm">
                 VIEW HISTORY →
@@ -825,18 +812,18 @@ export default function DashboardClient({
               <StatCard
                 label="CHAMPIONSHIPS"
                 value={tournamentData.stats.championships}
-                icon="🏆"
+                icon={<Icon name="trophy" size={20} />}
                 variant="highlight"
               />
               <StatCard
                 label="TOURNAMENTS"
                 value={tournamentData.stats.totalTournaments}
-                icon="🎯"
+                icon={<Icon name="target" size={20} />}
               />
               <StatCard
                 label="PRIZE MONEY"
                 value={`$${parseFloat(tournamentData.stats.totalPrizeEarned).toLocaleString()}`}
-                icon="💰"
+                icon={<Icon name="cash" size={20} />}
               />
             </div>
 
@@ -869,7 +856,7 @@ export default function DashboardClient({
                                 }
                               >
                                 {tournament.final_placement === 'winner'
-                                  ? '🏆 CHAMPION'
+                                  ? 'CHAMPION'
                                   : tournament.final_placement === 'runner_up'
                                   ? 'RUNNER-UP'
                                   : tournament.final_placement.toUpperCase()}
