@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Icon from '@/components/ui/Icon';
 
 type Props = {
   stageName: string;
@@ -82,7 +83,7 @@ export default function OnboardingSuccess({
       <div className="max-w-3xl w-full bg-[#2d2f35] border-2 border-[#ff8c42] p-8 md:p-12 animate-in zoom-in duration-500">
         {/* Success Header */}
         <div className="text-center mb-8">
-          <div className="text-6xl mb-4 animate-bounce">🎤</div>
+          <div className="mb-4 animate-bounce text-[#ff8c42] flex justify-center"><Icon name="mic" size={52} /></div>
           <h1 className="text-5xl font-black uppercase tracking-tighter mb-4 text-[#ff8c42]">
             WELCOME TO THE CIRCUIT
           </h1>

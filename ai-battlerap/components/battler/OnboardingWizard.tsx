@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Icon from '@/components/ui/Icon';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { createClient } from '@/lib/db/client';
@@ -455,7 +456,7 @@ export default function OnboardingWizard() {
                     disabled={avatarLoading}
                     className="px-3 py-1.5 border-2 border-[#3a3d44] text-zinc-300 text-xs font-display font-black uppercase tracking-wider hover:border-[#ff8c42] hover:text-[#ff8c42] transition disabled:opacity-40"
                   >
-                    🔀 SHUFFLE THE LINEUP
+                    SHUFFLE THE LINEUP
                   </button>
                 </div>
                 {avatarPool && (
@@ -584,10 +585,13 @@ export default function OnboardingWizard() {
                 <p className="text-sm text-zinc-500 uppercase tracking-wide">CHOOSE YOUR COMPETITION FORMAT</p>
               </div>
 
-              {/* 2-Column Grid matching mockup */}
-              <div className="grid grid-cols-2 gap-4">
+              {/* Your first booking happens in YOUR city — the backdrop is the
+                  scene the player just claimed, not a hardcoded NYC stock shot. */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {leagues.slice(0, 2).map((league) => {
-                  const visuals = getLeagueVisuals(league.name);
+                  const venue =
+                    selectedCityObj?.skyline_url ||
+                    getLeagueVisuals(league.name).venue;
                   return (
                     <div
                       key={league.id}
@@ -601,13 +605,13 @@ export default function OnboardingWizard() {
                       {/* Background - gradient fallback */}
                       <div className="absolute inset-0 bg-gradient-to-br from-zinc-800 via-zinc-900 to-black" />
 
-                      {/* Venue Image */}
+                      {/* Venue Image — the player's own city */}
                       <div className="absolute inset-0">
                         <Image
-                          src={visuals.venue}
-                          alt={`${league.name} venue`}
+                          src={venue}
+                          alt={`${league.name} in ${selectedCityObj?.name || 'your city'}`}
                           fill
-                          className="object-cover opacity-60"
+                          className="object-cover opacity-60 [image-rendering:pixelated]"
                           unoptimized
                           onError={(e) => {
                             // Hide broken image
@@ -621,14 +625,19 @@ export default function OnboardingWizard() {
 
                       {/* League Name & Description - Centered at bottom */}
                       <div className="absolute bottom-0 left-0 right-0 p-8 text-center">
-                        <h3 className="text-3xl font-black uppercase tracking-tight mb-3 text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
+                        <h3 className="text-3xl font-display font-black uppercase tracking-tight mb-2 text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
                           {league.name}
                         </h3>
-                        <p className="text-base text-zinc-200 font-bold drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+                        <p className="text-sm text-zinc-200 font-bold drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] mb-3">
                           {league.name === 'Small Room Circuit'
-                            ? 'Intimate battles.\nFocus on bars & performance.'
-                            : 'Grand stage.\nHigh stakes, media attention.'}
+                            ? 'Intimate rooms. Bars over spectacle.'
+                            : 'Grand stage. High stakes, media attention.'}
                         </p>
+                        {selectedCityObj && (
+                          <p className="inline-block px-3 py-1 bg-black/60 border border-[#ff8c42]/50 text-[#ff8c42] text-[10px] font-display font-black uppercase tracking-widest">
+                            BOOKING OUT OF {selectedCityObj.name}
+                          </p>
+                        )}
                       </div>
                     </div>
                   );
@@ -687,12 +696,12 @@ export default function OnboardingWizard() {
               <div className="grid grid-cols-3 gap-3">
                 {STYLE_TAGS.map((style) => {
                   const icons: Record<string, string> = {
-                    angles: '🎯',
-                    comedy: '😂',
-                    storytelling: '📖',
-                    gun_bars: '💥',
-                    wordplay: '💬',
-                    freestyle: '⚡',
+                    angles: 'target',
+                    comedy: 'heart',
+                    storytelling: 'book',
+                    gun_bars: 'flame',
+                    wordplay: 'pen',
+                    freestyle: 'bolt',
                   };
 
                   return (
@@ -710,7 +719,7 @@ export default function OnboardingWizard() {
                           : ''
                       }`}
                     >
-                      <span className="text-2xl">{icons[style.value]}</span>
+                      <Icon name={(icons[style.value] || 'star') as any} size={20} />
                       <span>{style.label}</span>
                     </button>
                   );
@@ -754,7 +763,7 @@ export default function OnboardingWizard() {
           {loading && (
             <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
               <div className="text-center">
-                <div className="text-5xl mb-4 animate-pulse">🎤</div>
+                <div className="mb-4 animate-pulse text-[#ff8c42] flex justify-center"><Icon name="mic" size={44} /></div>
                 <p className="text-xl font-black uppercase tracking-wider">CREATING YOUR BATTLER...</p>
               </div>
             </div>

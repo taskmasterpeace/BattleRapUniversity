@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import Icon from '@/components/ui/Icon';
 import Tooltip from '@/components/onboarding/Tooltip';
 
 export type AllocatedAttributes = {
@@ -108,7 +109,7 @@ export default function AttributeAllocationStep({
     attribute,
     color,
   }: {
-    icon: string;
+    icon: React.ReactNode;
     label: string;
     value: number;
     category: keyof AllocatedAttributes;
@@ -185,7 +186,7 @@ export default function AttributeAllocationStep({
             WRITING
           </h3>
           <AttributeBar
-            icon="✍️"
+            icon={<Icon name="pen" size={18} />}
             label="LYRICISM"
             value={attributes.writing.lyricism}
             category="writing"
@@ -193,7 +194,7 @@ export default function AttributeAllocationStep({
             color="bg-orange-500"
           />
           <AttributeBar
-            icon="💬"
+            icon={<Icon name="swords" size={18} />}
             label="WORDPLAY"
             value={attributes.writing.wordplay}
             category="writing"
@@ -201,7 +202,7 @@ export default function AttributeAllocationStep({
             color="bg-orange-500"
           />
           <AttributeBar
-            icon="💡"
+            icon={<Icon name="bolt" size={18} />}
             label="CREATIVITY"
             value={attributes.writing.creativity}
             category="writing"
@@ -209,7 +210,7 @@ export default function AttributeAllocationStep({
             color="bg-orange-500"
           />
           <AttributeBar
-            icon="🌊"
+            icon={<Icon name="chart" size={18} />}
             label="FLOW"
             value={attributes.writing.flow}
             category="writing"
@@ -220,32 +221,32 @@ export default function AttributeAllocationStep({
 
         {/* PERFORMANCE CARD */}
         <div className="bg-[#2d3748] border-2 border-[#374151] p-4">
-          <h3 className="text-sm font-black uppercase tracking-wider text-blue-400 mb-4">
+          <h3 className="text-sm font-black uppercase tracking-wider text-[#ff8c42] mb-4">
             PERFORMANCE
           </h3>
           <AttributeBar
-            icon="🎭"
+            icon={<Icon name="stage" size={18} />}
             label="STAGE PRESENCE"
             value={attributes.performance.stage_presence}
             category="performance"
             attribute="stage_presence"
-            color="bg-blue-500"
+            color="bg-[#ff8c42]"
           />
           <AttributeBar
-            icon="👥"
+            icon={<Icon name="users" size={18} />}
             label="CROWD CONTROL"
             value={attributes.performance.crowd_control}
             category="performance"
             attribute="crowd_control"
-            color="bg-blue-500"
+            color="bg-[#ff8c42]"
           />
           <AttributeBar
-            icon="🎤"
+            icon={<Icon name="mic" size={18} />}
             label="DELIVERY"
             value={attributes.performance.delivery}
             category="performance"
             attribute="delivery"
-            color="bg-blue-500"
+            color="bg-[#ff8c42]"
           />
         </div>
 
@@ -255,7 +256,7 @@ export default function AttributeAllocationStep({
             PERSONAL
           </h3>
           <AttributeBar
-            icon="💵"
+            icon={<Icon name="cash" size={18} />}
             label="FINANCIAL"
             value={attributes.personal.financial_stability}
             category="personal"
@@ -263,7 +264,7 @@ export default function AttributeAllocationStep({
             color="bg-green-500"
           />
           <AttributeBar
-            icon="👑"
+            icon={<Icon name="crown" size={18} />}
             label="REPUTATION"
             value={attributes.personal.reputation}
             category="personal"
@@ -271,7 +272,7 @@ export default function AttributeAllocationStep({
             color="bg-green-500"
           />
           <AttributeBar
-            icon="👨‍👩‍👧"
+            icon={<Icon name="heart" size={18} />}
             label="FAMILY"
             value={attributes.personal.family_bond}
             category="personal"
@@ -279,7 +280,7 @@ export default function AttributeAllocationStep({
             color="bg-green-500"
           />
           <AttributeBar
-            icon="🧠"
+            icon={<Icon name="brain" size={18} />}
             label="RESILIENCE"
             value={attributes.resilience}
             category="resilience"

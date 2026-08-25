@@ -92,6 +92,28 @@ export default function LoginPage() {
     setBusy(false);
   };
 
+  // Dev-only: spin up a unique throwaway account and land in onboarding —
+  // one click to playtest the new-player experience from zero.
+  const handleFreshLogin = async () => {
+    setBusy(true);
+    const supabase = createClient();
+    const stamp = `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
+    const freshEmail = `fresh-${stamp}@test.com`;
+    const freshPassword = `playtest-${stamp}-${Math.random().toString(36).slice(2, 10)}`;
+    const { error: signUpError } = await supabase.auth.signUp({
+      email: freshEmail,
+      password: freshPassword,
+    });
+    if (signUpError) {
+      setError(`Fresh account failed: ${signUpError.message}`);
+      setBusy(false);
+      return;
+    }
+    await supabase.auth.signInWithPassword({ email: freshEmail, password: freshPassword });
+    await routeAfterAuth();
+    setBusy(false);
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#0a0a0a] px-4">
       <div className="max-w-md w-full animate-fade-in-up">
@@ -176,7 +198,7 @@ export default function LoginPage() {
               disabled={busy}
               className="w-full py-4 bg-[#ff8c42] hover:bg-[#ff9d5c] text-black font-display font-black uppercase tracking-wider transition disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              {busy ? 'ONE SEC…' : mode === 'signup' ? '🎤 ENTER THE CIRCUIT' : 'SIGN IN'}
+              {busy ? 'ONE SEC…' : mode === 'signup' ? 'ENTER THE CIRCUIT' : 'SIGN IN'}
             </button>
           </form>
 
@@ -203,14 +225,24 @@ export default function LoginPage() {
           </button>
 
           {process.env.NODE_ENV === 'development' && (
-            <button
-              type="button"
-              onClick={handleDevLogin}
-              disabled={busy}
-              className="w-full mt-3 py-2 border-2 border-dashed border-zinc-700 text-zinc-500 text-xs font-bold uppercase tracking-wider hover:text-zinc-300 transition"
-            >
-              ⚡ Dev quick login
-            </button>
+            <div className="grid grid-cols-2 gap-2 mt-3">
+              <button
+                type="button"
+                onClick={handleDevLogin}
+                disabled={busy}
+                className="py-2 border-2 border-dashed border-zinc-700 text-zinc-500 text-xs font-bold uppercase tracking-wider hover:text-zinc-300 transition"
+              >
+                Dev quick login
+              </button>
+              <button
+                type="button"
+                onClick={handleFreshLogin}
+                disabled={busy}
+                className="py-2 border-2 border-dashed border-[#ff8c42]/40 text-[#ff8c42]/70 text-xs font-bold uppercase tracking-wider hover:text-[#ff8c42] transition"
+              >
+                Playtest as fresh account
+              </button>
+            </div>
           )}
         </div>
 

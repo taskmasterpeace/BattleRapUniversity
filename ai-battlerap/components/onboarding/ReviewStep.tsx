@@ -1,6 +1,7 @@
 'use client';
 
 import { getRegionalBadge } from '@/lib/game/regionalBadges';
+import Icon from '@/components/ui/Icon';
 
 type League = {
   id: string;
@@ -49,9 +50,9 @@ export default function ReviewStep({
   };
 
   const getTierColor = (value: number): string => {
-    if (value >= 10) return 'text-purple-400';
+    if (value >= 10) return 'text-[#ff8c42]';
     if (value >= 7) return 'text-orange-400';
-    if (value >= 4) return 'text-blue-400';
+    if (value >= 4) return 'text-amber-400';
     return 'text-zinc-500';
   };
 
@@ -406,15 +407,15 @@ export default function ReviewStep({
               key={badge}
               className="px-3 py-1 bg-green-500/10 border-2 border-green-500/30 text-green-400 text-xs font-display font-black uppercase tracking-wider"
             >
-              🏅 {badge}
+              <Icon name="medal" size={12} className="mr-1 -mt-0.5" />{badge}
             </span>
           ))}
         </div>
       </div>
 
       {/* Expected Stats */}
-      <div className="bg-blue-500/10 border-2 border-blue-500/30 p-6">
-        <h3 className="text-sm font-black uppercase text-blue-400 mb-4">EXPECTED STARTING STATS</h3>
+      <div className="bg-[#ff8c42]/5 border-2 border-[#ff8c42]/30 p-6">
+        <h3 className="text-sm font-display font-black uppercase text-[#ff8c42] mb-4">EXPECTED STARTING STATS</h3>
         <div className="grid grid-cols-2 gap-4 text-xs">
           <div>
             <span className="text-zinc-500">Starting Rating:</span>
