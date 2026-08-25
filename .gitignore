@@ -60,3 +60,5 @@ ai-battlerap/public/sprites/crowd.zip
 # dev server logs
 ai-battlerap/dev*.log
 *.log
+
+.playwright-mcp/
