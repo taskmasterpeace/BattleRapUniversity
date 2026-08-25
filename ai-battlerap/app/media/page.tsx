@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import GamingButton from '@/components/ui/GamingButton';
+import Avatar from '@/components/ui/Avatar';
 
 type NewsArticle = {
   id: string;
@@ -10,8 +10,8 @@ type NewsArticle = {
   title: string;
   type: string;
   published_at: string;
-  primary_battler?: { id: string; stage_name: string } | null;
-  secondary_battler?: { id: string; stage_name: string } | null;
+  primary_battler?: { id: string; stage_name: string; avatar_url?: string | null } | null;
+  secondary_battler?: { id: string; stage_name: string; avatar_url?: string | null } | null;
   league?: { id: string; name: string } | null;
 };
 
@@ -25,14 +25,15 @@ const TYPE_LABELS: Record<string, string> = {
   culture: 'Culture',
 };
 
+// Brand palette only — warm hues, red for smoke, green for careers, zinc default
 const TYPE_COLORS: Record<string, string> = {
-  battle_recap: 'bg-blue-500/20 text-blue-400 border-2 border-blue-500/30',
+  battle_recap: 'bg-[#ff8c42]/15 text-[#ff8c42] border-2 border-[#ff8c42]/40',
   scandal: 'bg-red-500/20 text-red-400 border-2 border-red-500/30',
   career_update: 'bg-green-500/20 text-green-400 border-2 border-green-500/30',
-  league_update: 'bg-purple-500/20 text-purple-400 border-2 border-purple-500/30',
+  league_update: 'bg-amber-500/20 text-amber-400 border-2 border-amber-500/30',
   power_ranking: 'bg-yellow-500/20 text-yellow-400 border-2 border-yellow-500/30',
-  grudge_coverage: 'bg-orange-500/20 text-orange-400 border-2 border-orange-500/30',
-  culture: 'bg-cyan-500/20 text-cyan-400 border-2 border-cyan-500/30',
+  grudge_coverage: 'bg-red-500/15 text-red-300 border-2 border-red-500/40',
+  culture: 'bg-zinc-500/20 text-zinc-300 border-2 border-zinc-500/30',
 };
 
 export default function MediaPage() {
@@ -104,8 +105,8 @@ export default function MediaPage() {
             onClick={() => setSelectedType('battle_recap')}
             className={`px-6 py-3 font-display font-black uppercase tracking-wider transition-all border-2 ${
               selectedType === 'battle_recap'
-                ? 'bg-blue-500 text-white border-blue-500'
-                : 'bg-transparent text-zinc-300 border-[#3a3d44] hover:border-blue-500'
+                ? 'bg-[#ff8c42] text-black border-[#ff8c42]'
+                : 'bg-transparent text-zinc-300 border-[#3a3d44] hover:border-[#ff8c42]'
             }`}
           >
             Battle Recaps
@@ -134,8 +135,8 @@ export default function MediaPage() {
             onClick={() => setSelectedType('league_update')}
             className={`px-6 py-3 font-display font-black uppercase tracking-wider transition-all border-2 ${
               selectedType === 'league_update'
-                ? 'bg-purple-500 text-white border-purple-500'
-                : 'bg-transparent text-zinc-300 border-[#3a3d44] hover:border-purple-500'
+                ? 'bg-amber-500 text-black border-amber-500'
+                : 'bg-transparent text-zinc-300 border-[#3a3d44] hover:border-amber-500'
             }`}
           >
             League Updates
@@ -154,8 +155,8 @@ export default function MediaPage() {
             onClick={() => setSelectedType('culture')}
             className={`px-6 py-3 font-display font-black uppercase tracking-wider transition-all border-2 ${
               selectedType === 'culture'
-                ? 'bg-cyan-500 text-black border-cyan-500'
-                : 'bg-transparent text-zinc-300 border-[#3a3d44] hover:border-cyan-500'
+                ? 'bg-zinc-400 text-black border-zinc-400'
+                : 'bg-transparent text-zinc-300 border-[#3a3d44] hover:border-zinc-400'
             }`}
           >
             Culture
@@ -184,7 +185,30 @@ export default function MediaPage() {
                 href={`/media/${article.slug}`}
                 className="block bg-[#2d2f35] border-2 border-[#3a3d44] hover:border-[#ff8c42] transition-all p-6 group"
               >
-                <div className="flex items-start justify-between">
+                <div className="flex items-start justify-between gap-5">
+                  {/* Faces — press without faces isn't press */}
+                  {(article.primary_battler || article.secondary_battler) && (
+                    <div className="hidden sm:flex flex-shrink-0 items-center">
+                      {article.primary_battler && (
+                        <div className="relative z-10">
+                          <Avatar
+                            url={article.primary_battler.avatar_url}
+                            size={72}
+                            alt={article.primary_battler.stage_name}
+                          />
+                        </div>
+                      )}
+                      {article.secondary_battler && (
+                        <div className="relative -ml-4 opacity-90">
+                          <Avatar
+                            url={article.secondary_battler.avatar_url}
+                            size={72}
+                            alt={article.secondary_battler.stage_name}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )}
                   <div className="flex-1">
                     {/* Type Badge */}
                     <span

@@ -214,7 +214,7 @@ function calculateCareerStats(battleHistory: any[]) {
 
   const avgCrowd = battleHistory.reduce((sum, b) => sum + b.myCrowdAvg, 0) / totalBattles;
 
-  const totalRounds = battleHistory.reduce((sum, b) => b.rounds.length, 0);
+  const totalRounds = battleHistory.reduce((sum, b) => sum + b.rounds.length, 0);
   const roundsWon = battleHistory.reduce((sum, b) => {
     return sum + b.rounds.filter((r: any) => r.won).length;
   }, 0);
@@ -229,7 +229,7 @@ function calculateCareerStats(battleHistory: any[]) {
     avgCrowdReaction: Math.round(avgCrowd),
     totalRounds,
     roundsWon,
-    roundWinRate: Math.round((roundsWon / totalRounds) * 100),
+    roundWinRate: totalRounds > 0 ? Math.round((roundsWon / totalRounds) * 100) : 0,
     bodybags,
     perfectRecords: bodybags,
     upsets: 0, // TODO: Calculate from battle metadata

@@ -36,8 +36,8 @@ export async function GET(request: Request) {
       title,
       type,
       published_at,
-      primary_battler:battlers!primary_battler_id(id, stage_name),
-      secondary_battler:battlers!secondary_battler_id(id, stage_name),
+      primary_battler:battlers!primary_battler_id(id, stage_name, avatar_url),
+      secondary_battler:battlers!secondary_battler_id(id, stage_name, avatar_url),
       league:leagues(id, name)
     `)
     .order('published_at', { ascending: false })

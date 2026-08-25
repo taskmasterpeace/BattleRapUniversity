@@ -131,7 +131,7 @@ export default function FinancesClient({
                 )}
                 {lossPercentage > 0 && (
                   <div
-                    className="bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center text-sm font-display font-black text-white transition-all hover:brightness-110"
+                    className="bg-gradient-to-br from-zinc-500 to-zinc-600 flex items-center justify-center text-sm font-display font-black text-white transition-all hover:brightness-110"
                     style={{ width: `${lossPercentage}%` }}
                     title={`Base Pay: ${Math.round(lossPercentage)}%`}
                   >
