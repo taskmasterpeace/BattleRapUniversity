@@ -9,6 +9,7 @@
  * lib/game/config.ts — nothing here is invented.
  */
 
+import Icon, { type IconName } from '@/components/ui/Icon';
 import {
   projectPrep,
   projectionReadline,
@@ -50,7 +51,7 @@ export default function FightProjection({
     <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-6 md:p-8 mb-6 md:mb-8">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-1">
         <h3 className="font-display font-black text-lg uppercase tracking-wider text-zinc-300">
-          ⚔️ FIGHT PROJECTION
+          FIGHT PROJECTION
         </h3>
         <span className="text-[10px] text-zinc-500 font-display font-black uppercase tracking-wider">
           {projection.totalDaysAssigned}/{totalPrepDays} DAYS ASSIGNED • LIVE
@@ -63,11 +64,11 @@ export default function FightProjection({
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
         {/* WRITING */}
         <ProjectionTile
-          icon="📝"
+          icon="pen"
           label="WRITING"
           value={fmtBoost(projection.writingBoost)}
           active={projection.writingBoost > 0}
-          activeClass="text-blue-400"
+          activeClass="text-[#ff8c42]"
           sub={
             counts.writing > 0
               ? `${counts.writing} DAY${counts.writing === 1 ? '' : 'S'} → LYRICISM • WORDPLAY • CREATIVITY`
@@ -77,11 +78,11 @@ export default function FightProjection({
 
         {/* PERFORMANCE */}
         <ProjectionTile
-          icon="🎤"
+          icon="mic"
           label="PERFORMANCE"
           value={fmtBoost(projection.performanceBoost)}
           active={projection.performanceBoost > 0}
-          activeClass="text-green-400"
+          activeClass="text-red-400"
           sub={
             counts.performance > 0
               ? `${counts.performance} DAY${counts.performance === 1 ? '' : 'S'} → PRESENCE • CROWD • DELIVERY`
@@ -91,7 +92,7 @@ export default function FightProjection({
 
         {/* RESEARCH / ANGLES */}
         <ProjectionTile
-          icon="🔬"
+          icon="search"
           label="ANGLE BONUS"
           value={
             projection.researchCreativityBoost > 0
@@ -99,7 +100,7 @@ export default function FightProjection({
               : '—'
           }
           active={counts.research > 0}
-          activeClass="text-purple-400"
+          activeClass="text-amber-400"
           sub={
             counts.research > 0
               ? `CREATIVITY +${projection.researchCreativityBoost.toFixed(2)} • LYRICISM +${projection.researchLyricismBoost.toFixed(2)}`
@@ -109,7 +110,7 @@ export default function FightProjection({
             projection.peakChanceUnlocked
               ? {
                   text: `HAYMAKER ${fmtPct(projection.peakChancePerSegment, 0)}/SEG — DOUBLED`,
-                  className: 'bg-purple-500/20 text-purple-300 border-purple-500/50',
+                  className: 'bg-amber-500/15 text-amber-300 border-amber-500/50',
                 }
               : {
                   text: `HAYMAKER ${fmtPct(projection.peakChancePerSegment, 1)}/SEG — HALVED, NO RESEARCH`,
@@ -120,7 +121,7 @@ export default function FightProjection({
 
         {/* CHOKE RISK */}
         <ProjectionTile
-          icon={chokeDelta < -0.0005 ? '🛡️' : '⚠️'}
+          icon={chokeDelta < -0.0005 ? 'shield' : 'warning'}
           label="CHOKE RISK"
           value={fmtPct(projection.chokePerBattle)}
           active
@@ -140,7 +141,7 @@ export default function FightProjection({
 
         {/* RESILIENCE (rest) */}
         <ProjectionTile
-          icon="😴"
+          icon="rest"
           label="RESILIENCE"
           value={fmtBoost(projection.resilienceBoost)}
           active={projection.resilienceBoost > 0}
@@ -154,11 +155,11 @@ export default function FightProjection({
 
         {/* LIFE */}
         <ProjectionTile
-          icon="🏠"
+          icon="home"
           label="LIFE"
           value={fmtBoost(projection.lifeBoost)}
           active={projection.lifeBoost > 0}
-          activeClass="text-yellow-400"
+          activeClass="text-green-400"
           sub={
             counts.life > 0
               ? `${counts.life} DAY${counts.life === 1 ? '' : 'S'} → FAMILY BOND • STABILITY`
@@ -168,11 +169,11 @@ export default function FightProjection({
 
         {/* SCOUTING INTEL */}
         <ProjectionTile
-          icon="🔍"
+          icon="eye"
           label="INTEL TIER"
           value={`${Math.min(3, counts.research)}/3`}
           active={counts.research > 0}
-          activeClass="text-purple-400"
+          activeClass="text-amber-400"
           sub={
             counts.research >= 3
               ? 'FULL WEAKNESS REPORT UNLOCKED'
@@ -182,7 +183,7 @@ export default function FightProjection({
 
         {/* PREP EFFICIENCY */}
         <ProjectionTile
-          icon="📐"
+          icon="chart"
           label="PREP POWER"
           value={`+${(preparation * 5).toFixed(0)}%`}
           active
@@ -214,7 +215,7 @@ function ProjectionTile({
   activeClass,
   pill,
 }: {
-  icon: string;
+  icon: IconName;
   label: string;
   value: string;
   sub: string;
@@ -229,7 +230,7 @@ function ProjectionTile({
       }`}
     >
       <p className="text-[10px] text-zinc-500 font-display font-black uppercase tracking-wider mb-1">
-        {icon} {label}
+        <Icon name={icon} size={12} className="mr-1 -mt-0.5" /> {label}
       </p>
       <p
         className={`text-2xl font-display font-black tabular-nums ${

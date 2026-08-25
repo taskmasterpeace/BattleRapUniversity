@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Avatar from '@/components/ui/Avatar';
 import GamingButton from '@/components/ui/GamingButton';
+import Icon from '@/components/ui/Icon';
 import StatCard from '@/components/ui/StatCard';
 import ScoutingReport from '@/components/battle/ScoutingReport';
 import FightProjection from '@/components/battle/FightProjection';
@@ -45,12 +46,13 @@ type Battle = {
   };
 };
 
+// Brand palette only — warm hues + neutrals. No purple, no stray blue.
 const FOCUS_OPTIONS = [
-  { value: 'research', label: 'RESEARCH', icon: '🔬', color: 'bg-purple-500/20 text-purple-400 border-purple-500/50', hoverColor: 'hover:border-purple-400', description: 'Angles + unlock scouting intel' },
-  { value: 'writing', label: 'WRITING', icon: '📝', color: 'bg-blue-500/20 text-blue-400 border-blue-500/50', hoverColor: 'hover:border-blue-400', description: 'Bars & wordplay' },
-  { value: 'performance', label: 'PERFORMANCE', icon: '🎤', color: 'bg-green-500/20 text-green-400 border-green-500/50', hoverColor: 'hover:border-green-400', description: 'Delivery & presence' },
-  { value: 'life', label: 'LIFE', icon: '🏠', color: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/50', hoverColor: 'hover:border-yellow-400', description: 'Handle personal' },
-  { value: 'rest', label: 'REST', icon: '😴', color: 'bg-zinc-700/50 text-zinc-400 border-zinc-600', hoverColor: 'hover:border-zinc-500', description: 'Recover & reset' },
+  { value: 'research', label: 'RESEARCH', icon: 'search' as const, color: 'bg-amber-500/15 text-amber-400 border-amber-500/60', chipBg: 'bg-amber-500/25 border-amber-400', description: 'Angles + unlock scouting intel' },
+  { value: 'writing', label: 'WRITING', icon: 'pen' as const, color: 'bg-[#ff8c42]/15 text-[#ff8c42] border-[#ff8c42]/60', chipBg: 'bg-[#ff8c42]/25 border-[#ff8c42]', description: 'Bars & wordplay' },
+  { value: 'performance', label: 'PERFORMANCE', icon: 'mic' as const, color: 'bg-red-500/15 text-red-400 border-red-500/60', chipBg: 'bg-red-500/25 border-red-400', description: 'Delivery & presence' },
+  { value: 'life', label: 'LIFE', icon: 'home' as const, color: 'bg-green-500/15 text-green-400 border-green-500/60', chipBg: 'bg-green-500/25 border-green-400', description: 'Handle personal' },
+  { value: 'rest', label: 'REST', icon: 'rest' as const, color: 'bg-zinc-700/50 text-zinc-400 border-zinc-500', chipBg: 'bg-zinc-600/40 border-zinc-400', description: 'Recover & reset' },
 ];
 
 export default function PrepPage({ params }: { params: Promise<{ id: string }> }) {
@@ -74,6 +76,8 @@ export default function PrepPage({ params }: { params: Promise<{ id: string }> }
   // PvP lock-in state (null for AI battles)
   const [pvp, setPvp] = useState<PvpState | null>(null);
   const [lockingIn, setLockingIn] = useState(false);
+  // The "brush": pick a focus once, then paint it across day chips.
+  const [brush, setBrush] = useState<PrepBlock['focus']>('writing');
 
   // --- Optimistic save machinery ----------------------------------------
   // The UI updates instantly on selection; saves run in the background with
@@ -226,6 +230,20 @@ export default function PrepPage({ params }: { params: Promise<{ id: string }> }
     return block?.focus || '';
   };
 
+  /** Fill every unset day with a balanced camp: writing-led, research for
+   * intel, performance reps, and a rest day to buffer the choke risk. */
+  const handleAutoFill = () => {
+    const balanced: PrepBlock['focus'][] = ['writing', 'research', 'performance', 'writing', 'rest'];
+    let filled = 0;
+    for (let day = 1; day <= totalPrepDays; day++) {
+      if (!getFocusForDay(day)) {
+        handleFocusChange(day, balanced[(day - 1) % balanced.length]);
+        filled++;
+      }
+    }
+    if (filled > 0) toast(`${filled} day${filled === 1 ? '' : 's'} planned — tune it or take the stage`, 'success');
+  };
+
   const handleLockIn = async () => {
     setLockingIn(true);
     try {
@@ -335,8 +353,8 @@ export default function PrepPage({ params }: { params: Promise<{ id: string }> }
           </div>
 
           {isLocked && (
-            <div className="mt-6 p-4 bg-red-500/10 text-red-500 border-2 border-red-500/50 font-display font-black uppercase tracking-wider text-sm">
-              ⚠️ PREP LOCKED • NO CHANGES ALLOWED
+            <div className="mt-6 p-4 bg-red-500/10 text-red-500 border-2 border-red-500/50 font-display font-black uppercase tracking-wider text-sm flex items-center gap-2">
+              <Icon name="warning" size={16} /> PREP LOCKED • NO CHANGES ALLOWED
             </div>
           )}
 
@@ -344,8 +362,8 @@ export default function PrepPage({ params }: { params: Promise<{ id: string }> }
           {!isLocked && (
             <div className="mt-6 p-4 bg-[#ff8c42]/10 border-2 border-[#ff8c42]/30 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
               <div>
-                <h4 className="text-sm font-display font-black uppercase tracking-wider text-[#ff8c42] mb-1">
-                  🎯 PRE-BATTLE PROMOTION
+                <h4 className="text-sm font-display font-black uppercase tracking-wider text-[#ff8c42] mb-1 flex items-center gap-2">
+                  <Icon name="target" size={16} /> PRE-BATTLE PROMOTION
                 </h4>
                 <p className="text-xs text-zinc-500 font-display font-display font-black uppercase tracking-wide">
                   Sway the crowd before the battle • Attack credibility • Build hype
@@ -362,8 +380,8 @@ export default function PrepPage({ params }: { params: Promise<{ id: string }> }
         {pvp && ['accepted', 'locked'].includes(battle.status) && (
           <div className="bg-[#2d2f35] border-2 border-[#ff8c42]/50 p-6 md:p-8 mb-6 md:mb-8">
             <div className="flex items-center gap-3 mb-2">
-              <span className="px-3 py-1 bg-[#ff8c42] text-black font-display font-black uppercase text-xs tracking-wider">
-                👤 PLAYER BATTLE
+              <span className="px-3 py-1 bg-[#ff8c42] text-black font-display font-black uppercase text-xs tracking-wider inline-flex items-center gap-1.5">
+                <Icon name="user" size={12} /> PLAYER BATTLE
               </span>
               <h3 className="font-display font-black text-lg uppercase tracking-wider text-zinc-300">
                 ASYNC CHALLENGE
@@ -382,12 +400,13 @@ export default function PrepPage({ params }: { params: Promise<{ id: string }> }
                   size="lg"
                   className="flex-shrink-0"
                 >
-                  {lockingIn ? 'LOCKING IN...' : '🔒 LOCK IN — READY TO BATTLE'}
+                  {lockingIn ? 'LOCKING IN...' : 'LOCK IN — READY TO BATTLE'}
                 </GamingButton>
               </div>
             ) : (
               <div className="p-4 bg-[#ff8c42]/10 border-2 border-[#ff8c42]/30 font-display font-black uppercase tracking-wider text-sm text-[#ff8c42]">
-                🔒 LOCKED IN — WAITING ON OPPONENT • SIMS AUTOMATICALLY{' '}
+                <Icon name="check" size={14} className="mr-1.5 -mt-0.5" />
+                LOCKED IN — WAITING ON OPPONENT • SIMS AUTOMATICALLY{' '}
                 {new Date(battle.scheduled_at).toLocaleString('en-US', {
                   month: 'short',
                   day: 'numeric',
@@ -400,21 +419,6 @@ export default function PrepPage({ params }: { params: Promise<{ id: string }> }
           </div>
         )}
 
-        {/* Focus Legend */}
-        <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-6 md:p-8 mb-6 md:mb-8">
-          <h3 className="font-display font-black text-lg uppercase tracking-wider text-zinc-400 mb-6">PREP FOCUS OPTIONS</h3>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-            {FOCUS_OPTIONS.map((option) => (
-              <div key={option.value} className="text-center">
-                <div className={`px-4 py-3 border-2 ${option.color} font-display font-black text-sm uppercase tracking-wider mb-2 transition flex items-center justify-center gap-2`}>
-                  <span className="text-xl">{option.icon}</span>
-                  <span>{option.label}</span>
-                </div>
-                <p className="text-xs text-zinc-600 uppercase tracking-wide">{option.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
 
         {/* Fight Projection — live, computed locally from real config constants */}
         <FightProjection
@@ -435,76 +439,101 @@ export default function PrepPage({ params }: { params: Promise<{ id: string }> }
         {/* Scouting Report — research days unlock opponent intel */}
         <ScoutingReport battleId={id} refreshKey={scoutRefresh} />
 
-        {/* Prep Calendar */}
+        {/* Prep Schedule — pick a focus, paint the days */}
         <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-6 md:p-8 mb-6 md:mb-8">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-2">
-            <h3 className="font-display font-black text-xl uppercase tracking-wider text-zinc-300">PREP SCHEDULE ({totalPrepDays} DAYS)</h3>
-            {!allDaysSelected && !isLocked && (
-              <span className="text-sm text-[#ff8c42] font-display font-black uppercase tracking-wider animate-pulse">
-                ⚠️ SELECT ALL DAYS TO CONTINUE
-              </span>
+            <h3 className="font-display font-black text-xl uppercase tracking-wider text-zinc-300">
+              TRAINING CAMP — {totalPrepDays} DAY{totalPrepDays === 1 ? '' : 'S'}
+            </h3>
+            {!isLocked && (
+              <div className="flex gap-2">
+                <button
+                  onClick={handleAutoFill}
+                  className="px-4 py-2 border-2 border-[#3a3d44] bg-[#18191c] text-zinc-300 hover:border-[#ff8c42] hover:text-[#ff8c42] font-display font-black text-xs uppercase tracking-wider transition"
+                >
+                  <Icon name="bolt" size={14} className="mr-1.5 -mt-0.5" />
+                  AUTO-FILL REMAINING
+                </button>
+              </div>
             )}
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {/* Focus palette — the brush */}
+          {!isLocked && (
+            <div className="mb-6">
+              <p className="text-xs text-zinc-500 font-display font-black uppercase tracking-wider mb-3">
+                1 · PICK A FOCUS
+              </p>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+                {FOCUS_OPTIONS.map((option) => (
+                  <button
+                    key={option.value}
+                    onClick={() => setBrush(option.value as PrepBlock['focus'])}
+                    className={`px-3 py-3 border-2 font-display font-black text-xs uppercase tracking-wider transition flex flex-col items-center gap-1.5 ${option.color} ${
+                      brush === option.value
+                        ? 'ring-2 ring-[#ff8c42] ring-offset-2 ring-offset-[#2d2f35]'
+                        : 'opacity-60 hover:opacity-100'
+                    }`}
+                  >
+                    <Icon name={option.icon} size={18} />
+                    <span>{option.label}</span>
+                    <span className="text-[10px] font-normal normal-case tracking-normal text-zinc-500">
+                      {option.description}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Day chips — the canvas */}
+          <p className="text-xs text-zinc-500 font-display font-black uppercase tracking-wider mb-3">
+            {isLocked ? 'THE CAMP YOU RAN' : '2 · PAINT YOUR DAYS'}
+          </p>
+          <div className="grid grid-cols-4 sm:grid-cols-7 gap-2 mb-2">
             {daysArray.map((dayIndex) => {
               const currentFocus = getFocusForDay(dayIndex);
               const focusOption = FOCUS_OPTIONS.find((o) => o.value === currentFocus);
 
               return (
-                <div
+                <button
                   key={dayIndex}
-                  className={`border-2 ${
-                    currentFocus ? 'border-[#ff8c42] bg-[#ff8c42]/5' : 'border-[#3a3d44] bg-[#18191c]'
-                  } p-4 transition-all hover:border-[#ff8c42]/50`}
+                  disabled={isLocked}
+                  onClick={() => handleFocusChange(dayIndex, brush)}
+                  title={focusOption ? `${focusOption.label} — click to set ${brush.toUpperCase()}` : `Set ${brush.toUpperCase()}`}
+                  className={`aspect-square border-2 flex flex-col items-center justify-center gap-1 transition disabled:cursor-not-allowed ${
+                    focusOption
+                      ? focusOption.chipBg
+                      : 'border-dashed border-[#3a3d44] bg-[#18191c] hover:border-[#ff8c42]/60'
+                  }`}
                 >
-                  <div className="flex items-center justify-between mb-3">
-                    <h4 className="font-display font-black text-sm uppercase tracking-wider text-zinc-400">
-                      DAY {dayIndex}
-                    </h4>
-                  </div>
-
-                  {focusOption && (
-                    <div className={`mb-3 px-3 py-2 border-2 ${focusOption.color} font-display font-black text-center`}>
-                      <span className="text-2xl block mb-1">{focusOption.icon}</span>
-                      <span className="text-xs uppercase">{focusOption.label}</span>
-                    </div>
+                  <span className="text-[10px] font-display font-black uppercase tracking-wider text-zinc-500">
+                    DAY {dayIndex}
+                  </span>
+                  {focusOption ? (
+                    <Icon name={focusOption.icon} size={20} className={focusOption.color.split(' ').find(c => c.startsWith('text-')) || 'text-zinc-300'} />
+                  ) : (
+                    <span className="text-zinc-600 text-lg leading-none">·</span>
                   )}
-
-                  <select
-                    value={currentFocus}
-                    onChange={(e) => handleFocusChange(dayIndex, e.target.value)}
-                    disabled={isLocked}
-                    className="w-full px-3 py-3 min-h-[44px] bg-[#18191c] border-2 border-[#3a3d44] text-zinc-100 text-sm font-display font-display font-black uppercase tracking-wide focus:border-[#ff8c42] focus:outline-none disabled:opacity-30 disabled:cursor-not-allowed transition"
-                  >
-                    <option value="">SELECT FOCUS...</option>
-                    {FOCUS_OPTIONS.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.icon} {option.label}
-                      </option>
-                    ))}
-                  </select>
-
-                  {focusOption && (
-                    <div className="mt-3 text-xs text-zinc-500 uppercase tracking-wide text-center">
-                      {focusOption.description}
-                    </div>
-                  )}
-                </div>
+                </button>
               );
             })}
           </div>
+          <p className="text-[11px] text-zinc-600 uppercase tracking-wider font-display font-bold mb-8">
+            {!isLocked && (allDaysSelected
+              ? 'Every day planned — full-camp bonus: +1 battle slot if you take the W'
+              : 'Unplanned days become REST when the battle runs')}
+          </p>
 
-          {/* Prep Summary */}
-          <div className="mt-8 pt-8 border-t-2 border-[#3a3d44]">
-            <h4 className="font-display font-black uppercase tracking-wider text-zinc-400 mb-6 text-lg">PREP DISTRIBUTION</h4>
+          {/* Prep Distribution */}
+          <div className="pt-6 border-t-2 border-[#3a3d44]">
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
               {FOCUS_OPTIONS.map((option) => {
                 const count = prepBlocks.filter((b) => b.focus === option.value).length;
                 return (
                   <StatCard
                     key={option.value}
-                    icon={option.icon}
+                    icon={<Icon name={option.icon} size={20} />}
                     label={option.label}
                     value={count}
                     subtext="DAYS"
@@ -521,23 +550,20 @@ export default function PrepPage({ params }: { params: Promise<{ id: string }> }
           <GamingButton href="/dashboard" variant="secondary" size="lg" className="flex-1">
             ← BACK TO DASHBOARD
           </GamingButton>
-          {allDaysSelected && !isLocked && (
+          {!pvp && ['accepted', 'locked'].includes(battle.status) && (
             <GamingButton
-              onClick={() => {
-                toast(`Prep saved! Your battle will simulate on ${new Date(battle.scheduled_at).toLocaleDateString()}.`, 'success');
-                router.push('/dashboard');
-              }}
+              href={`/battle/${battle.id}/control`}
               variant="primary"
               size="lg"
               className="flex-1"
             >
-              ✓ SAVE & RETURN
+              TAKE THE STAGE →
             </GamingButton>
           )}
         </div>
 
         <p className="text-center text-xs text-zinc-600 mt-6 font-display font-display font-black uppercase tracking-wider">
-          Changes auto-save • Battle simulates on {new Date(battle.scheduled_at).toLocaleDateString()}
+          Changes auto-save • Ready when you are — or the card runs {new Date(battle.scheduled_at).toLocaleDateString()}
         </p>
       </div>
     </div>

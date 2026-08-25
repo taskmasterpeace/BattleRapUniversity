@@ -1,0 +1,63 @@
+- generic:
+  - generic [active]:
+    - generic [ref=f25e3]:
+      - generic [ref=f25e4]:
+        - navigation [ref=f25e6]:
+          - button [disabled] [ref=f25e7]:
+            - img "previous" [ref=f25e8]
+          - generic [ref=f25e10]:
+            - generic [ref=f25e11]: 1/
+            - text: "1"
+          - button [disabled] [ref=f25e12]:
+            - img "next" [ref=f25e13]
+        - link "Next.js 16.2.9 (stale) Turbopack" [ref=f25e16] [cursor=pointer]:
+          - /url: https://nextjs.org/docs/messages/version-staleness
+          - generic "There is a newer version (16.3.3) available, upgrade recommended!" [ref=f25e19]: Next.js 16.2.9 (stale)
+          - generic [ref=f25e20]: Turbopack
+      - dialog "Build Error" [ref=f25e22]:
+        - generic [ref=f25e25]:
+          - generic [ref=f25e26]:
+            - generic [ref=f25e27]:
+              - generic [ref=f25e28]: Build Error
+              - generic [ref=f25e30]:
+                - button "Copy Error Info" [ref=f25e31] [cursor=pointer]
+                - button "No related documentation found" [disabled] [ref=f25e34]
+                - button "Attach Node.js inspector" [ref=f25e37] [cursor=pointer]
+            - generic [ref=f25e46]: Expected ',', got 'ident'
+          - generic [ref=f25e49]:
+            - generic [ref=f25e51]:
+              - generic [ref=f25e56]: ./ai-battlerap/components/battle/FightProjection.tsx (13:8)
+              - button "Open in editor" [ref=f25e57] [cursor=pointer]
+            - generic [ref=f25e62]:
+              - generic [ref=f25e63]: Expected ',', got 'ident'
+              - generic [ref=f25e64]: 11 |
+              - generic [ref=f25e65]: 12 |
+              - text: import
+              - generic [ref=f25e66]: "{"
+              - text: ">"
+              - generic [ref=f25e67]: 13 |
+              - text: import Icon
+              - generic [ref=f25e68]: ", {"
+              - text: type IconName
+              - generic [ref=f25e69]: "}"
+              - text: from '@/components/ui/Icon'
+              - generic [ref=f25e70]: ;
+              - generic [ref=f25e71]: "|"
+              - text: ^^^^
+              - generic [ref=f25e72]: 14 |
+              - generic [ref=f25e73]: projectPrep,
+              - generic [ref=f25e74]: 15 |
+              - generic [ref=f25e75]: projectionReadline,
+              - generic [ref=f25e76]: 16 |
+              - text: type PrepCounts
+              - generic [ref=f25e77]: ", Parsing ecmascript source code failed Import traces: Client Component Browser: ./ai-battlerap/components/battle/FightProjection.tsx [Client Component Browser] ./ai-battlerap/app/battle/[id]/prep/page.tsx [Client Component Browser] ./ai-battlerap/app/battle/[id]/prep/page.tsx [Server Component] Client Component SSR: ./ai-battlerap/components/battle/FightProjection.tsx [Client Component SSR] ./ai-battlerap/app/battle/[id]/prep/page.tsx [Client Component SSR] ./ai-battlerap/app/battle/[id]/prep/page.tsx [Server Component]"
+        - generic [ref=f25e78]: "1"
+        - generic [ref=f25e79]: "2"
+    - generic [ref=f25e84] [cursor=pointer]:
+      - button "Open Next.js Dev Tools" [ref=f25e85]
+      - button "Open issues overlay" [ref=f25e90]:
+        - generic [ref=f25e91]:
+          - generic [ref=f25e92]: "0"
+          - generic [ref=f25e93]: "1"
+        - generic [ref=f25e94]: Issue
+  - alert [ref=f25e95]

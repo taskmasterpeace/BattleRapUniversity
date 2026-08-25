@@ -1,4 +1,5 @@
-import { createServerSupabaseClient, getUser } from '@/lib/db/server';
+import { createClient } from '@supabase/supabase-js';
+import { getUser } from '@/lib/db/server';
 import { NextResponse } from 'next/server';
 import {
   validateContentSelection,
@@ -19,7 +20,13 @@ export async function POST(
 
   const { id: battleId, roundNum } = await params;
   const roundIndex = parseInt(roundNum, 10);
-  const supabase = await createServerSupabaseClient();
+  // Service role: this route writes the AI opponent's selection rows, which
+  // RLS scopes away from the player. Ownership is verified below.
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { autoRefreshToken: false, persistSession: false } }
+  );
 
   // Validate round number
   if (isNaN(roundIndex) || roundIndex < 1 || roundIndex > 3) {

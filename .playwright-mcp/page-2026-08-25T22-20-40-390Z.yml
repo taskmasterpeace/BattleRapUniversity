@@ -1,0 +1,210 @@
+- generic [ref=f29e1]:
+  - banner [ref=f29e2]:
+    - generic [ref=f29e3]:
+      - link "⚔ Battle Rap U" [ref=f29e4] [cursor=pointer]:
+        - /url: /dashboard
+        - generic [ref=f29e5]: ⚔
+        - generic [ref=f29e6]: Battle Rap U
+      - navigation [ref=f29e7]:
+        - link "Dashboard" [ref=f29e8] [cursor=pointer]:
+          - /url: /dashboard
+        - link "Battles" [ref=f29e11] [cursor=pointer]:
+          - /url: /battle/offers
+        - link "Calendar" [ref=f29e15] [cursor=pointer]:
+          - /url: /calendar
+        - link "Leagues" [ref=f29e18] [cursor=pointer]:
+          - /url: /leagues
+      - generic [ref=f29e21]:
+        - button "8" [ref=f29e41]
+        - button "Open menu" [ref=f29e26]:
+          - generic [ref=f29e29]: Menu
+  - button "Open Next.js Dev Tools" [ref=f29e37] [cursor=pointer]
+  - alert [ref=f29e232]
+  - generic [ref=f29e836]:
+    - generic [ref=f29e838]:
+      - link "← Back to Dashboard" [ref=f29e839] [cursor=pointer]:
+        - /url: /dashboard
+      - generic [ref=f29e840]:
+        - generic [ref=f29e841]:
+          - heading "ROUND 3 — CALL YOUR SHOT" [level=1] [ref=f29e842]
+          - paragraph [ref=f29e843]: vs Bag Chaser • Small Room Circuit
+        - generic [ref=f29e844]:
+          - generic [ref=f29e845]: Round Progress
+          - generic [ref=f29e846]: 3 / 3
+    - generic [ref=f29e847]:
+      - generic [ref=f29e848]:
+        - heading "OPPONENT ANALYSIS" [level=2] [ref=f29e849]
+        - generic [ref=f29e850]:
+          - generic [ref=f29e851]:
+            - generic [ref=f29e852]: Opponent
+            - generic [ref=f29e853]: Bag Chaser
+            - generic [ref=f29e854]: low Tier
+          - generic [ref=f29e855]:
+            - generic [ref=f29e856]: Style Badges
+            - generic [ref=f29e857]:
+              - generic [ref=f29e858]: wordplay
+              - generic [ref=f29e859]: punchlines
+        - generic [ref=f29e860]:
+          - generic [ref=f29e861]: Predicted Content (based on badges)
+          - generic [ref=f29e862]:
+            - generic [ref=f29e863]:
+              - generic [ref=f29e864]: Content
+              - generic [ref=f29e865]: wordplay, gun_bars, street_talk
+            - generic [ref=f29e866]:
+              - generic [ref=f29e867]: Delivery
+              - generic [ref=f29e868]: conversational, smooth_flow
+            - generic [ref=f29e869]:
+              - generic [ref=f29e870]: Performance
+              - generic [ref=f29e871]: theatrical, minimalist
+      - generic [ref=f29e872]:
+        - heading "SELECT YOUR CONTENT" [level=2] [ref=f29e873]
+        - generic [ref=f29e874]:
+          - generic [ref=f29e875]:
+            - generic [ref=f29e876]:
+              - heading "Content Types" [level=3] [ref=f29e877]
+              - generic [ref=f29e878]:
+                - paragraph [ref=f29e879]: Select 3-4 types
+                - generic [ref=f29e880]: 1/4
+            - generic [ref=f29e881]:
+              - button "Personals attack Direct personal attacks targeting opponent's life, family, secrets" [ref=f29e882]:
+                - generic [ref=f29e883]:
+                  - generic [ref=f29e884]: Personals
+                  - generic [ref=f29e885]: attack
+                - paragraph [ref=f29e886]: Direct personal attacks targeting opponent's life, family, secrets
+              - button "Wordplay technical Clever manipulation of words, double meanings, puns" [active] [ref=f29e887]:
+                - generic [ref=f29e888]:
+                  - generic [ref=f29e889]: Wordplay
+                  - generic [ref=f29e890]: technical
+                - paragraph [ref=f29e891]: Clever manipulation of words, double meanings, puns
+              - button "Schemes technical Extended metaphorical structures, multi-bar setups" [ref=f29e892]:
+                - generic [ref=f29e893]:
+                  - generic [ref=f29e894]: Schemes
+                  - generic [ref=f29e895]: technical
+                - paragraph [ref=f29e896]: Extended metaphorical structures, multi-bar setups
+              - button "Punchlines attack Hard-hitting memorable knockout lines" [ref=f29e897]:
+                - generic [ref=f29e898]:
+                  - generic [ref=f29e899]: Punchlines
+                  - generic [ref=f29e900]: attack
+                - paragraph [ref=f29e901]: Hard-hitting memorable knockout lines
+              - button "Comedy entertainment Humor-based attacks, jokes that undermine opponent" [ref=f29e902]:
+                - generic [ref=f29e903]:
+                  - generic [ref=f29e904]: Comedy
+                  - generic [ref=f29e905]: entertainment
+                - paragraph [ref=f29e906]: Humor-based attacks, jokes that undermine opponent
+              - button "Storytelling technical Narrative-driven content painting vivid pictures" [ref=f29e907]:
+                - generic [ref=f29e908]:
+                  - generic [ref=f29e909]: Storytelling
+                  - generic [ref=f29e910]: technical
+                - paragraph [ref=f29e911]: Narrative-driven content painting vivid pictures
+              - button "Gun Bars attack Violent imagery and street threats" [ref=f29e912]:
+                - generic [ref=f29e913]:
+                  - generic [ref=f29e914]: Gun Bars
+                  - generic [ref=f29e915]: attack
+                - paragraph [ref=f29e916]: Violent imagery and street threats
+              - button "Street Talk attack Authentic street culture references" [ref=f29e917]:
+                - generic [ref=f29e918]:
+                  - generic [ref=f29e919]: Street Talk
+                  - generic [ref=f29e920]: attack
+                - paragraph [ref=f29e921]: Authentic street culture references
+              - button "Freestyles adaptive Improvised on-the-spot content" [ref=f29e922]:
+                - generic [ref=f29e923]:
+                  - generic [ref=f29e924]: Freestyles
+                  - generic [ref=f29e925]: adaptive
+                - paragraph [ref=f29e926]: Improvised on-the-spot content
+              - button "Rebuttals adaptive Direct responses to opponent's material" [ref=f29e927]:
+                - generic [ref=f29e928]:
+                  - generic [ref=f29e929]: Rebuttals
+                  - generic [ref=f29e930]: adaptive
+                - paragraph [ref=f29e931]: Direct responses to opponent's material
+              - button "Pop Culture Refs entertainment Current events, movies, sports references" [ref=f29e932]:
+                - generic [ref=f29e933]:
+                  - generic [ref=f29e934]: Pop Culture Refs
+                  - generic [ref=f29e935]: entertainment
+                - paragraph [ref=f29e936]: Current events, movies, sports references
+              - button "Name Flips entertainment Creative alterations of opponent's name" [ref=f29e937]:
+                - generic [ref=f29e938]:
+                  - generic [ref=f29e939]: Name Flips
+                  - generic [ref=f29e940]: entertainment
+                - paragraph [ref=f29e941]: Creative alterations of opponent's name
+              - button "Shock Value attack Controversial or unexpected content" [ref=f29e942]:
+                - generic [ref=f29e943]:
+                  - generic [ref=f29e944]: Shock Value
+                  - generic [ref=f29e945]: attack
+                - paragraph [ref=f29e946]: Controversial or unexpected content
+              - button "Social Commentary technical Political/social issues woven into attacks" [ref=f29e947]:
+                - generic [ref=f29e948]:
+                  - generic [ref=f29e949]: Social Commentary
+                  - generic [ref=f29e950]: technical
+                - paragraph [ref=f29e951]: Political/social issues woven into attacks
+          - generic [ref=f29e952]:
+            - generic [ref=f29e953]:
+              - heading "Delivery Types" [level=3] [ref=f29e954]
+              - generic [ref=f29e955]:
+                - paragraph [ref=f29e956]: Select 1-2 types
+                - generic [ref=f29e957]: 0/2
+            - generic [ref=f29e958]:
+              - button "Aggressive Intense, confrontational, intimidating tone" [ref=f29e959]:
+                - generic [ref=f29e960]: Aggressive
+                - paragraph [ref=f29e961]: Intense, confrontational, intimidating tone
+              - button "Smooth Flow Fluid, effortless, melodic delivery" [ref=f29e962]:
+                - generic [ref=f29e963]: Smooth Flow
+                - paragraph [ref=f29e964]: Fluid, effortless, melodic delivery
+              - button "Speed Rapping Exceptionally fast-paced delivery" [ref=f29e965]:
+                - generic [ref=f29e966]: Speed Rapping
+                - paragraph [ref=f29e967]: Exceptionally fast-paced delivery
+              - button "Staccato Sharp, punctuated, choppy rhythm" [ref=f29e968]:
+                - generic [ref=f29e969]: Staccato
+                - paragraph [ref=f29e970]: Sharp, punctuated, choppy rhythm
+              - button "Passionate Emotional, intense conviction" [ref=f29e971]:
+                - generic [ref=f29e972]: Passionate
+                - paragraph [ref=f29e973]: Emotional, intense conviction
+              - button "Nonchalant Effortlessly cool, unbothered" [ref=f29e974]:
+                - generic [ref=f29e975]: Nonchalant
+                - paragraph [ref=f29e976]: Effortlessly cool, unbothered
+              - button "Conversational Casual, relatable tone" [ref=f29e977]:
+                - generic [ref=f29e978]: Conversational
+                - paragraph [ref=f29e979]: Casual, relatable tone
+          - generic [ref=f29e980]:
+            - generic [ref=f29e981]:
+              - heading "Performance Types" [level=3] [ref=f29e982]
+              - generic [ref=f29e983]:
+                - paragraph [ref=f29e984]: Select 1-2 types
+                - generic [ref=f29e985]: 0/2
+            - generic [ref=f29e986]:
+              - button "Stage Presence Commands attention, owns the space" [ref=f29e987]:
+                - generic [ref=f29e988]: Stage Presence
+                - paragraph [ref=f29e989]: Commands attention, owns the space
+              - button "Crowd Interaction Engages audience directly" [ref=f29e990]:
+                - generic [ref=f29e991]: Crowd Interaction
+                - paragraph [ref=f29e992]: Engages audience directly
+              - button "Theatrical Dramatic, exaggerated performance" [ref=f29e993]:
+                - generic [ref=f29e994]: Theatrical
+                - paragraph [ref=f29e995]: Dramatic, exaggerated performance
+              - button "Charismatic Charming, naturally engaging" [ref=f29e996]:
+                - generic [ref=f29e997]: Charismatic
+                - paragraph [ref=f29e998]: Charming, naturally engaging
+              - button "Dynamic Range Varies volume and intensity" [ref=f29e999]:
+                - generic [ref=f29e1000]: Dynamic Range
+                - paragraph [ref=f29e1001]: Varies volume and intensity
+              - button "Facial Expression Uses face to convey emotion/mockery" [ref=f29e1002]:
+                - generic [ref=f29e1003]: Facial Expression
+                - paragraph [ref=f29e1004]: Uses face to convey emotion/mockery
+              - button "Strategic Pauses Uses silence for emphasis" [ref=f29e1005]:
+                - generic [ref=f29e1006]: Strategic Pauses
+                - paragraph [ref=f29e1007]: Uses silence for emphasis
+              - button "Minimalist Controlled, subtle gestures" [ref=f29e1008]:
+                - generic [ref=f29e1009]: Minimalist
+                - paragraph [ref=f29e1010]: Controlled, subtle gestures
+      - generic [ref=f29e1012]:
+        - heading "Effectiveness Forecast" [level=3] [ref=f29e1013]
+        - generic [ref=f29e1014]:
+          - paragraph [ref=f29e1015]: Complete your selection to see effectiveness forecast
+          - paragraph [ref=f29e1016]: Select 3-4 content, 1-2 delivery, and 1-2 performance types
+      - generic [ref=f29e1017]:
+        - generic [ref=f29e1018]:
+          - generic [ref=f29e1019]: Ready to lock in your selection?
+          - generic [ref=f29e1020]: Complete your selection (3-4 content, 1-2 delivery, 1-2 performance)
+        - button "LOCK THE ROUND" [disabled] [ref=f29e1021]
+      - generic [ref=f29e1024]:
+        - generic [ref=f29e1025]: STRATEGIC TIP
+        - paragraph [ref=f29e1026]: Look for super effective matchups (2.0x multiplier) against your opponent's predicted content. Balance offense (attack content) with technique (technical content) and entertainment for maximum effectiveness.

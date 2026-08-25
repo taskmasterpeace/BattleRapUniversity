@@ -1,0 +1,68 @@
+- generic [active] [ref=f13e1]:
+  - banner [ref=f13e2]:
+    - generic [ref=f13e3]:
+      - link "⚔ Battle Rap U" [ref=f13e4] [cursor=pointer]:
+        - /url: /dashboard
+        - generic [ref=f13e5]: ⚔
+        - generic [ref=f13e6]: Battle Rap U
+      - navigation [ref=f13e7]:
+        - link "Dashboard" [ref=f13e8] [cursor=pointer]:
+          - /url: /dashboard
+        - link "Battles" [ref=f13e11] [cursor=pointer]:
+          - /url: /battle/offers
+        - link "Calendar" [ref=f13e15] [cursor=pointer]:
+          - /url: /calendar
+        - link "Leagues" [ref=f13e18] [cursor=pointer]:
+          - /url: /leagues
+      - generic [ref=f13e21]:
+        - button [ref=f13e23]
+        - button "Open menu" [ref=f13e26]:
+          - generic [ref=f13e29]: Menu
+  - generic [ref=f13e30]:
+    - generic [ref=f13e32]:
+      - generic [ref=f13e33]:
+        - link "← BACK" [ref=f13e34] [cursor=pointer]:
+          - /url: /dashboard
+        - heading "TOURNAMENTS" [level=1] [ref=f13e35]
+      - generic [ref=f13e36]:
+        - text: Flow Tester •
+        - generic [ref=f13e37]: low TIER
+    - generic [ref=f13e38]:
+      - generic [ref=f13e39]:
+        - heading "🏆 MY TOURNAMENTS (1)" [level=2] [ref=f13e40]
+        - generic [ref=f13e42]:
+          - generic [ref=f13e43]:
+            - generic [ref=f13e44]:
+              - heading "Small Room Circuit Championship" [level=3] [ref=f13e45]
+              - generic [ref=f13e46]:
+                - generic [ref=f13e47]: IN PROGRESS
+                - generic [ref=f13e48]: "Seed #6"
+            - link "VIEW BRACKET" [ref=f13e49] [cursor=pointer]:
+              - /url: /tournaments/c8d01140-007b-430d-9a3d-540ba222d1f3
+          - paragraph [ref=f13e50]: First ever 16-battler tournament for low and mid-tier battlers. Prove yourself on the big stage! Single elimination bracket. Winner takes 50% of $25,000 prize pool.
+      - generic [ref=f13e51]:
+        - heading "AVAILABLE TOURNAMENTS" [level=2] [ref=f13e52]
+        - generic [ref=f13e54]:
+          - generic [ref=f13e55]:
+            - heading "Small Room Circuit Championship" [level=3] [ref=f13e56]
+            - generic [ref=f13e57]:
+              - generic [ref=f13e58]: IN PROGRESS
+              - generic [ref=f13e59]: Small Room Circuit
+              - generic [ref=f13e60]: LOW/MID TIER
+            - paragraph [ref=f13e61]: First ever 16-battler tournament for low and mid-tier battlers. Prove yourself on the big stage! Single elimination bracket. Winner takes 50% of $25,000 prize pool.
+          - generic [ref=f13e62]:
+            - generic [ref=f13e63]:
+              - paragraph [ref=f13e64]: Prize Pool
+              - paragraph [ref=f13e65]: $25,000
+            - generic [ref=f13e66]:
+              - paragraph [ref=f13e67]: Participants
+              - paragraph [ref=f13e68]: 16 MAX
+            - generic [ref=f13e69]:
+              - paragraph [ref=f13e70]: Registration Closes
+              - paragraph [ref=f13e71]: 5/27/2026
+            - generic [ref=f13e72]:
+              - paragraph [ref=f13e73]: Starts
+              - paragraph [ref=f13e74]: 6/3/2026
+          - link "VIEW BRACKET" [ref=f13e75] [cursor=pointer]:
+            - /url: /tournaments/c8d01140-007b-430d-9a3d-540ba222d1f3
+  - button "Open Next.js Dev Tools" [ref=f13e81] [cursor=pointer]

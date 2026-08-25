@@ -1,0 +1,218 @@
+- generic [active] [ref=f21e1]:
+  - banner [ref=f21e2]:
+    - generic [ref=f21e3]:
+      - link "⚔ Battle Rap U" [ref=f21e4] [cursor=pointer]:
+        - /url: /dashboard
+        - generic [ref=f21e5]: ⚔
+        - generic [ref=f21e6]: Battle Rap U
+      - navigation [ref=f21e7]:
+        - link "Dashboard" [ref=f21e8] [cursor=pointer]:
+          - /url: /dashboard
+        - link "Battles" [ref=f21e11] [cursor=pointer]:
+          - /url: /battle/offers
+        - link "Calendar" [ref=f21e15] [cursor=pointer]:
+          - /url: /calendar
+        - link "Leagues" [ref=f21e18] [cursor=pointer]:
+          - /url: /leagues
+      - generic [ref=f21e21]:
+        - button "8" [ref=f21e41]
+        - button "Open menu" [ref=f21e26]:
+          - generic [ref=f21e29]: Menu
+  - generic [ref=f21e30]:
+    - generic [ref=f21e43]:
+      - link "← DASHBOARD" [ref=f21e44] [cursor=pointer]:
+        - /url: /dashboard
+      - heading "BATTLE PREP" [level=1] [ref=f21e45]
+    - generic [ref=f21e46]:
+      - generic [ref=f21e47]:
+        - generic [ref=f21e48]:
+          - img "Bag Chaser" [ref=f21e52]
+          - generic [ref=f21e53]:
+            - heading "VS Bag Chaser" [level=2] [ref=f21e54]
+            - generic [ref=f21e55]:
+              - generic [ref=f21e56]:
+                - generic [ref=f21e57]: LEAGUE
+                - text: Small Room Circuit
+              - generic [ref=f21e58]:
+                - generic [ref=f21e59]: FORMAT
+                - generic [ref=f21e60]: 2 MIN ROUNDS
+              - generic [ref=f21e61]:
+                - generic [ref=f21e62]: TIER
+                - text: low
+          - generic [ref=f21e63]:
+            - paragraph [ref=f21e64]: BATTLE IN
+            - paragraph [ref=f21e65]: "3"
+            - paragraph [ref=f21e66]: DAYS
+            - generic [ref=f21e67]:
+              - paragraph [ref=f21e68]: PREP LOCKS
+              - paragraph [ref=f21e69]: 8/27/2026
+        - generic [ref=f21e70]:
+          - generic [ref=f21e71]:
+            - heading "PRE-BATTLE PROMOTION" [level=4] [ref=f21e72]
+            - paragraph [ref=f21e77]: Sway the crowd before the battle • Attack credibility • Build hype
+          - link "PROMOTE →" [ref=f21e78] [cursor=pointer]:
+            - /url: /battle/2892856d-45dc-49cd-922e-d1abf3ff12e4/promotion
+      - generic [ref=f21e80]:
+        - generic [ref=f21e81]:
+          - heading "⚔️ FIGHT PROJECTION" [level=3] [ref=f21e82]
+          - generic [ref=f21e83]: 1/14 DAYS ASSIGNED • LIVE
+        - paragraph [ref=f21e84]: Base numbers from your attributes — badge effects stack on top
+        - generic [ref=f21e85]:
+          - generic [ref=f21e86]:
+            - paragraph [ref=f21e87]: 📝 WRITING
+            - paragraph [ref=f21e88]: "+0.31"
+            - paragraph [ref=f21e89]: 1 DAY → LYRICISM • WORDPLAY • CREATIVITY
+          - generic [ref=f21e90]:
+            - paragraph [ref=f21e91]: 🎤 PERFORMANCE
+            - paragraph [ref=f21e92]: —
+            - paragraph [ref=f21e93]: NO PERFORMANCE DAYS
+          - generic [ref=f21e94]:
+            - paragraph [ref=f21e95]: 🔬 ANGLE BONUS
+            - paragraph [ref=f21e96]: —
+            - paragraph [ref=f21e97]: NO RESEARCH DAYS
+            - generic [ref=f21e98]: HAYMAKER 7.5%/SEG — HALVED, NO RESEARCH
+          - generic [ref=f21e99]:
+            - paragraph [ref=f21e100]: 🛡️ CHOKE RISK
+            - paragraph [ref=f21e101]: 11.4%
+            - paragraph [ref=f21e102]: ▼ DOWN FROM 15.6% — WRITING + REST PAYING OFF
+          - generic [ref=f21e103]:
+            - paragraph [ref=f21e104]: 😴 RESILIENCE
+            - paragraph [ref=f21e105]: —
+            - paragraph [ref=f21e106]: NO REST DAYS
+          - generic [ref=f21e107]:
+            - paragraph [ref=f21e108]: 🏠 LIFE
+            - paragraph [ref=f21e109]: —
+            - paragraph [ref=f21e110]: NO LIFE DAYS
+          - generic [ref=f21e111]:
+            - paragraph [ref=f21e112]: 🔍 INTEL TIER
+            - paragraph [ref=f21e113]: 0/3
+            - paragraph [ref=f21e114]: NEXT RESEARCH DAY DIGS DEEPER
+          - generic [ref=f21e115]:
+            - paragraph [ref=f21e116]: 📐 PREP POWER
+            - paragraph [ref=f21e117]: +25%
+            - paragraph [ref=f21e118]: PREPARATION 5.0 MAKES EVERY DAY HIT HARDER
+        - generic [ref=f21e119]: 13 DAYS UNASSIGNED — EVERY EMPTY DAY IS A FREE WIN FOR YOUR OPPONENT
+      - generic [ref=f21e120]:
+        - generic [ref=f21e121]:
+          - heading "🔍 SCOUTING REPORT — Bag Chaser" [level=3] [ref=f21e122]:
+            - text: 🔍 SCOUTING REPORT
+            - generic [ref=f21e123]: — Bag Chaser
+          - generic [ref=f21e124]: INTEL LEVEL
+        - paragraph [ref=f21e130]: 🔬 0 RESEARCH DAYS BANKED • EACH RESEARCH DAY DIGS UP MORE
+        - generic [ref=f21e131]: Word on the street is Bag Chaser has tape out there. Spend a RESEARCH day to start digging.
+        - generic [ref=f21e132]:
+          - generic [ref=f21e133]:
+            - generic [ref=f21e134]:
+              - heading "🔒 TIER 1 — THE BASICS" [level=4] [ref=f21e135]
+              - generic [ref=f21e136]: 1 MORE RESEARCH DAY
+            - generic [ref=f21e137]:
+              - generic [ref=f21e138]: ▓▓▓▓▓▓▓▓▓▓▓▓ ▓▓▓▓▓▓ ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+              - generic [ref=f21e139]: ▓▓▓▓▓▓ ▓▓▓▓▓▓▓▓▓▓▓▓▓▓ ▓▓▓▓ ▓▓▓▓▓▓▓▓
+          - generic [ref=f21e140]:
+            - generic [ref=f21e141]:
+              - heading "🔒 TIER 2 — RECENT TAPE" [level=4] [ref=f21e142]
+              - generic [ref=f21e143]: 2 MORE RESEARCH DAYS
+            - generic [ref=f21e144]:
+              - generic [ref=f21e145]: ▓▓▓▓▓▓▓▓▓▓▓▓ ▓▓▓▓▓▓ ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+              - generic [ref=f21e146]: ▓▓▓▓▓▓ ▓▓▓▓▓▓▓▓▓▓▓▓▓▓ ▓▓▓▓ ▓▓▓▓▓▓▓▓
+          - generic [ref=f21e147]:
+            - generic [ref=f21e148]:
+              - heading "🔒 TIER 3 — WEAKNESS REPORT" [level=4] [ref=f21e149]
+              - generic [ref=f21e150]: 3 MORE RESEARCH DAYS
+            - generic [ref=f21e151]:
+              - generic [ref=f21e152]: ▓▓▓▓▓▓▓▓▓▓▓▓ ▓▓▓▓▓▓ ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+              - generic [ref=f21e153]: ▓▓▓▓▓▓ ▓▓▓▓▓▓▓▓▓▓▓▓▓▓ ▓▓▓▓ ▓▓▓▓▓▓▓▓
+      - generic [ref=f21e154]:
+        - generic [ref=f21e155]:
+          - heading "TRAINING CAMP — 14 DAYS" [level=3] [ref=f21e156]
+          - button "AUTO-FILL REMAINING" [ref=f21e158]
+        - generic [ref=f21e161]:
+          - paragraph [ref=f21e162]: 1 · PICK A FOCUS
+          - generic [ref=f21e163]:
+            - button "RESEARCH Angles + unlock scouting intel" [ref=f21e164]:
+              - generic [ref=f21e168]: RESEARCH
+              - generic [ref=f21e169]: Angles + unlock scouting intel
+            - button "WRITING Bars & wordplay" [ref=f21e170]:
+              - generic [ref=f21e173]: WRITING
+              - generic [ref=f21e174]: Bars & wordplay
+            - button "PERFORMANCE Delivery & presence" [ref=f21e175]:
+              - generic [ref=f21e179]: PERFORMANCE
+              - generic [ref=f21e180]: Delivery & presence
+            - button "LIFE Handle personal" [ref=f21e181]:
+              - generic [ref=f21e185]: LIFE
+              - generic [ref=f21e186]: Handle personal
+            - button "REST Recover & reset" [ref=f21e187]:
+              - generic [ref=f21e190]: REST
+              - generic [ref=f21e191]: Recover & reset
+        - paragraph [ref=f21e192]: 2 · PAINT YOUR DAYS
+        - generic [ref=f21e193]:
+          - button "DAY 1" [ref=f21e299]
+          - button "DAY 2 ·" [ref=f21e197]:
+            - generic [ref=f21e198]: DAY 2
+            - generic [ref=f21e199]: ·
+          - button "DAY 3 ·" [ref=f21e200]:
+            - generic [ref=f21e201]: DAY 3
+            - generic [ref=f21e202]: ·
+          - button "DAY 4 ·" [ref=f21e203]:
+            - generic [ref=f21e204]: DAY 4
+            - generic [ref=f21e205]: ·
+          - button "DAY 5 ·" [ref=f21e206]:
+            - generic [ref=f21e207]: DAY 5
+            - generic [ref=f21e208]: ·
+          - button "DAY 6 ·" [ref=f21e209]:
+            - generic [ref=f21e210]: DAY 6
+            - generic [ref=f21e211]: ·
+          - button "DAY 7 ·" [ref=f21e212]:
+            - generic [ref=f21e213]: DAY 7
+            - generic [ref=f21e214]: ·
+          - button "DAY 8 ·" [ref=f21e215]:
+            - generic [ref=f21e216]: DAY 8
+            - generic [ref=f21e217]: ·
+          - button "DAY 9 ·" [ref=f21e218]:
+            - generic [ref=f21e219]: DAY 9
+            - generic [ref=f21e220]: ·
+          - button "DAY 10 ·" [ref=f21e221]:
+            - generic [ref=f21e222]: DAY 10
+            - generic [ref=f21e223]: ·
+          - button "DAY 11 ·" [ref=f21e224]:
+            - generic [ref=f21e225]: DAY 11
+            - generic [ref=f21e226]: ·
+          - button "DAY 12 ·" [ref=f21e227]:
+            - generic [ref=f21e228]: DAY 12
+            - generic [ref=f21e229]: ·
+          - button "DAY 13 ·" [ref=f21e230]:
+            - generic [ref=f21e231]: DAY 13
+            - generic [ref=f21e232]: ·
+          - button "DAY 14 ·" [ref=f21e233]:
+            - generic [ref=f21e234]: DAY 14
+            - generic [ref=f21e235]: ·
+        - paragraph [ref=f21e236]: Unplanned days become REST when the battle runs
+        - generic [ref=f21e238]:
+          - generic [ref=f21e241]:
+            - generic [ref=f21e242]: RESEARCH
+            - generic [ref=f21e248]: "0"
+            - paragraph [ref=f21e249]: DAYS
+          - generic [ref=f21e252]:
+            - generic [ref=f21e253]: WRITING
+            - generic [ref=f21e258]: "1"
+            - paragraph [ref=f21e259]: DAYS
+          - generic [ref=f21e262]:
+            - generic [ref=f21e263]: PERFORMANCE
+            - generic [ref=f21e269]: "0"
+            - paragraph [ref=f21e270]: DAYS
+          - generic [ref=f21e273]:
+            - generic [ref=f21e274]: LIFE
+            - generic [ref=f21e280]: "0"
+            - paragraph [ref=f21e281]: DAYS
+          - generic [ref=f21e284]:
+            - generic [ref=f21e285]: REST
+            - generic [ref=f21e290]: "0"
+            - paragraph [ref=f21e291]: DAYS
+      - generic [ref=f21e292]:
+        - link "← BACK TO DASHBOARD" [ref=f21e293] [cursor=pointer]:
+          - /url: /dashboard
+        - link "TAKE THE STAGE →" [ref=f21e295] [cursor=pointer]:
+          - /url: /battle/2892856d-45dc-49cd-922e-d1abf3ff12e4/control
+      - paragraph [ref=f21e297]: Changes auto-save • Ready when you are — or the card runs 8/28/2026
+  - button "Open Next.js Dev Tools" [ref=f21e37] [cursor=pointer]
+  - alert [ref=f21e298]

@@ -81,10 +81,10 @@ export function EffectivenessForecast({
 
   if (!isSelectionValid) {
     return (
-      <div className="bg-[#2d2f35] border-2 border-[#3a3d44] rounded-lg p-6">
+      <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-6">
         <h3 className="text-lg font-bold text-white mb-4">Effectiveness Forecast</h3>
         <div className="text-center text-zinc-400 py-8">
-          <div className="text-4xl mb-2">📊</div>
+          
           <p>Complete your selection to see effectiveness forecast</p>
           <p className="text-sm mt-2">
             Select 3-4 content, 1-2 delivery, and 1-2 performance types
@@ -95,14 +95,14 @@ export function EffectivenessForecast({
   }
 
   return (
-    <div className="bg-[#2d2f35] border-2 border-[#3a3d44] rounded-lg p-6">
+    <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-6">
       <h3 className="text-lg font-bold text-white mb-4">Effectiveness Forecast</h3>
 
       {/* Multiplier Stats */}
       <div className="grid grid-cols-2 gap-4 mb-6">
         {/* Average Effectiveness */}
         <div
-          className={`p-4 rounded-lg border-2 ${getMultiplierBg(
+          className={`p-4 border-2 ${getMultiplierBg(
             forecast.averageEffectiveness
           )}`}
         >
@@ -115,7 +115,7 @@ export function EffectivenessForecast({
 
         {/* Crowd Preference */}
         <div
-          className={`p-4 rounded-lg border-2 ${getMultiplierBg(forecast.crowdPreference)}`}
+          className={`p-4 border-2 ${getMultiplierBg(forecast.crowdPreference)}`}
         >
           <div className="text-xs text-zinc-400 uppercase mb-1">Crowd Preference</div>
           <div className={`text-2xl font-bold ${getMultiplierColor(forecast.crowdPreference)}`}>
@@ -126,7 +126,7 @@ export function EffectivenessForecast({
 
         {/* Context Modifier */}
         <div
-          className={`p-4 rounded-lg border-2 ${getMultiplierBg(forecast.contextModifier)}`}
+          className={`p-4 border-2 ${getMultiplierBg(forecast.contextModifier)}`}
         >
           <div className="text-xs text-zinc-400 uppercase mb-1">Context Modifier</div>
           <div className={`text-2xl font-bold ${getMultiplierColor(forecast.contextModifier)}`}>
@@ -139,7 +139,7 @@ export function EffectivenessForecast({
 
         {/* Final Multiplier */}
         <div
-          className={`p-4 rounded-lg border-2 ${getMultiplierBg(
+          className={`p-4 border-2 ${getMultiplierBg(
             forecast.finalMultiplier
           )} col-span-1`}
         >
@@ -155,7 +155,7 @@ export function EffectivenessForecast({
       <div className="grid grid-cols-2 gap-4">
         {/* Strong Against */}
         {forecast.strongAgainst.length > 0 && (
-          <div className="bg-green-950/20 border-2 border-green-800/30 rounded-lg p-4">
+          <div className="bg-green-950/20 border-2 border-green-800/30 p-4">
             <div className="flex items-center gap-2 mb-2">
               <span className="text-lg">✓</span>
               <span className="text-sm font-semibold text-green-400">Strong Against</span>
@@ -177,7 +177,7 @@ export function EffectivenessForecast({
 
         {/* Weak Against */}
         {forecast.weakAgainst.length > 0 && (
-          <div className="bg-red-950/20 border-2 border-red-800/30 rounded-lg p-4">
+          <div className="bg-red-950/20 border-2 border-red-800/30 p-4">
             <div className="flex items-center gap-2 mb-2">
               <span className="text-lg">✗</span>
               <span className="text-sm font-semibold text-red-400">Weak Against</span>
@@ -199,7 +199,7 @@ export function EffectivenessForecast({
 
         {/* Neutral Message */}
         {forecast.strongAgainst.length === 0 && forecast.weakAgainst.length === 0 && (
-          <div className="col-span-2 bg-zinc-800 border-2 border-[#3a3d44] rounded-lg p-4 text-center">
+          <div className="col-span-2 bg-zinc-800 border-2 border-[#3a3d44] p-4 text-center">
             <span className="text-sm text-zinc-400">
               No strong advantages or disadvantages vs opponent's selection
             </span>

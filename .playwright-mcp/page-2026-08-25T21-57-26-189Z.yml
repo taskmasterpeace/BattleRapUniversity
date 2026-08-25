@@ -1,0 +1,876 @@
+- generic [active] [ref=f7e1]:
+  - banner [ref=f7e2]:
+    - generic [ref=f7e3]:
+      - link "⚔ Battle Rap U" [ref=f7e4] [cursor=pointer]:
+        - /url: /dashboard
+        - generic [ref=f7e5]: ⚔
+        - generic [ref=f7e6]: Battle Rap U
+      - navigation [ref=f7e7]:
+        - link "Dashboard" [ref=f7e8] [cursor=pointer]:
+          - /url: /dashboard
+        - link "Battles" [ref=f7e11] [cursor=pointer]:
+          - /url: /battle/offers
+        - link "Calendar" [ref=f7e15] [cursor=pointer]:
+          - /url: /calendar
+        - link "Leagues" [ref=f7e18] [cursor=pointer]:
+          - /url: /leagues
+      - generic [ref=f7e21]:
+        - button "8" [ref=f7e42]
+        - button "Open menu" [ref=f7e26]:
+          - generic [ref=f7e29]: Menu
+  - button "Open Next.js Dev Tools" [ref=f7e37] [cursor=pointer]
+  - alert [ref=f7e41]
+  - generic [ref=f7e158]:
+    - generic [ref=f7e160]:
+      - link "← DASHBOARD" [ref=f7e161] [cursor=pointer]:
+        - /url: /dashboard
+      - heading "BATTLE PREP" [level=1] [ref=f7e162]
+    - generic [ref=f7e163]:
+      - generic [ref=f7e164]:
+        - generic [ref=f7e165]:
+          - img "Bag Chaser" [ref=f7e169]
+          - generic [ref=f7e170]:
+            - heading "VS Bag Chaser" [level=2] [ref=f7e171]
+            - generic [ref=f7e172]:
+              - generic [ref=f7e173]:
+                - generic [ref=f7e174]: LEAGUE
+                - text: Small Room Circuit
+              - generic [ref=f7e175]:
+                - generic [ref=f7e176]: FORMAT
+                - generic [ref=f7e177]: 2 MIN ROUNDS
+              - generic [ref=f7e178]:
+                - generic [ref=f7e179]: TIER
+                - text: low
+          - generic [ref=f7e180]:
+            - paragraph [ref=f7e181]: BATTLE IN
+            - paragraph [ref=f7e182]: "3"
+            - paragraph [ref=f7e183]: DAYS
+            - generic [ref=f7e184]:
+              - paragraph [ref=f7e185]: PREP LOCKS
+              - paragraph [ref=f7e186]: 8/27/2026
+        - generic [ref=f7e187]:
+          - generic [ref=f7e188]:
+            - heading "🎯 PRE-BATTLE PROMOTION" [level=4] [ref=f7e189]
+            - paragraph [ref=f7e190]: Sway the crowd before the battle • Attack credibility • Build hype
+          - link "PROMOTE →" [ref=f7e191] [cursor=pointer]:
+            - /url: /battle/2892856d-45dc-49cd-922e-d1abf3ff12e4/promotion
+      - generic [ref=f7e193]:
+        - heading "PREP FOCUS OPTIONS" [level=3] [ref=f7e194]
+        - generic [ref=f7e195]:
+          - generic [ref=f7e196]:
+            - generic [ref=f7e197]:
+              - generic [ref=f7e198]: 🔬
+              - generic [ref=f7e199]: RESEARCH
+            - paragraph [ref=f7e200]: Angles + unlock scouting intel
+          - generic [ref=f7e201]:
+            - generic [ref=f7e202]:
+              - generic [ref=f7e203]: 📝
+              - generic [ref=f7e204]: WRITING
+            - paragraph [ref=f7e205]: Bars & wordplay
+          - generic [ref=f7e206]:
+            - generic [ref=f7e207]:
+              - generic [ref=f7e208]: 🎤
+              - generic [ref=f7e209]: PERFORMANCE
+            - paragraph [ref=f7e210]: Delivery & presence
+          - generic [ref=f7e211]:
+            - generic [ref=f7e212]:
+              - generic [ref=f7e213]: 🏠
+              - generic [ref=f7e214]: LIFE
+            - paragraph [ref=f7e215]: Handle personal
+          - generic [ref=f7e216]:
+            - generic [ref=f7e217]:
+              - generic [ref=f7e218]: 😴
+              - generic [ref=f7e219]: REST
+            - paragraph [ref=f7e220]: Recover & reset
+      - generic [ref=f7e221]:
+        - generic [ref=f7e222]:
+          - heading "⚔️ FIGHT PROJECTION" [level=3] [ref=f7e223]
+          - generic [ref=f7e224]: 0/79 DAYS ASSIGNED • LIVE
+        - paragraph [ref=f7e225]: Base numbers from your attributes — badge effects stack on top
+        - generic [ref=f7e226]:
+          - generic [ref=f7e227]:
+            - paragraph [ref=f7e228]: 📝 WRITING
+            - paragraph [ref=f7e229]: —
+            - paragraph [ref=f7e230]: NO WRITING DAYS
+          - generic [ref=f7e231]:
+            - paragraph [ref=f7e232]: 🎤 PERFORMANCE
+            - paragraph [ref=f7e233]: —
+            - paragraph [ref=f7e234]: NO PERFORMANCE DAYS
+          - generic [ref=f7e235]:
+            - paragraph [ref=f7e236]: 🔬 ANGLE BONUS
+            - paragraph [ref=f7e237]: —
+            - paragraph [ref=f7e238]: NO RESEARCH DAYS
+            - generic [ref=f7e239]: HAYMAKER 7.5%/SEG — HALVED, NO RESEARCH
+          - generic [ref=f7e240]:
+            - paragraph [ref=f7e241]: ⚠️ CHOKE RISK
+            - paragraph [ref=f7e242]: 15.6%
+            - paragraph [ref=f7e243]: BASELINE 15.6% — WRITING & REST DAYS LOWER THIS
+          - generic [ref=f7e244]:
+            - paragraph [ref=f7e245]: 😴 RESILIENCE
+            - paragraph [ref=f7e246]: —
+            - paragraph [ref=f7e247]: NO REST DAYS
+          - generic [ref=f7e248]:
+            - paragraph [ref=f7e249]: 🏠 LIFE
+            - paragraph [ref=f7e250]: —
+            - paragraph [ref=f7e251]: NO LIFE DAYS
+          - generic [ref=f7e252]:
+            - paragraph [ref=f7e253]: 🔍 INTEL TIER
+            - paragraph [ref=f7e254]: 0/3
+            - paragraph [ref=f7e255]: NEXT RESEARCH DAY DIGS DEEPER
+          - generic [ref=f7e256]:
+            - paragraph [ref=f7e257]: 📐 PREP POWER
+            - paragraph [ref=f7e258]: +25%
+            - paragraph [ref=f7e259]: PREPARATION 5.0 MAKES EVERY DAY HIT HARDER
+        - generic [ref=f7e260]: NO PREP BANKED — WALK IN COLD AND THE CHOKE RISK IS ALL YOURS
+      - generic [ref=f7e261]:
+        - generic [ref=f7e262]:
+          - heading "PREP SCHEDULE (79 DAYS)" [level=3] [ref=f7e263]
+          - generic [ref=f7e264]: ⚠️ SELECT ALL DAYS TO CONTINUE
+        - generic [ref=f7e265]:
+          - generic [ref=f7e266]:
+            - heading "DAY 1" [level=4] [ref=f7e268]
+            - combobox [ref=f7e269]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e270]:
+            - heading "DAY 2" [level=4] [ref=f7e272]
+            - combobox [ref=f7e273]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e274]:
+            - heading "DAY 3" [level=4] [ref=f7e276]
+            - combobox [ref=f7e277]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e278]:
+            - heading "DAY 4" [level=4] [ref=f7e280]
+            - combobox [ref=f7e281]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e282]:
+            - heading "DAY 5" [level=4] [ref=f7e284]
+            - combobox [ref=f7e285]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e286]:
+            - heading "DAY 6" [level=4] [ref=f7e288]
+            - combobox [ref=f7e289]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e290]:
+            - heading "DAY 7" [level=4] [ref=f7e292]
+            - combobox [ref=f7e293]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e294]:
+            - heading "DAY 8" [level=4] [ref=f7e296]
+            - combobox [ref=f7e297]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e298]:
+            - heading "DAY 9" [level=4] [ref=f7e300]
+            - combobox [ref=f7e301]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e302]:
+            - heading "DAY 10" [level=4] [ref=f7e304]
+            - combobox [ref=f7e305]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e306]:
+            - heading "DAY 11" [level=4] [ref=f7e308]
+            - combobox [ref=f7e309]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e310]:
+            - heading "DAY 12" [level=4] [ref=f7e312]
+            - combobox [ref=f7e313]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e314]:
+            - heading "DAY 13" [level=4] [ref=f7e316]
+            - combobox [ref=f7e317]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e318]:
+            - heading "DAY 14" [level=4] [ref=f7e320]
+            - combobox [ref=f7e321]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e322]:
+            - heading "DAY 15" [level=4] [ref=f7e324]
+            - combobox [ref=f7e325]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e326]:
+            - heading "DAY 16" [level=4] [ref=f7e328]
+            - combobox [ref=f7e329]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e330]:
+            - heading "DAY 17" [level=4] [ref=f7e332]
+            - combobox [ref=f7e333]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e334]:
+            - heading "DAY 18" [level=4] [ref=f7e336]
+            - combobox [ref=f7e337]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e338]:
+            - heading "DAY 19" [level=4] [ref=f7e340]
+            - combobox [ref=f7e341]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e342]:
+            - heading "DAY 20" [level=4] [ref=f7e344]
+            - combobox [ref=f7e345]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e346]:
+            - heading "DAY 21" [level=4] [ref=f7e348]
+            - combobox [ref=f7e349]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e350]:
+            - heading "DAY 22" [level=4] [ref=f7e352]
+            - combobox [ref=f7e353]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e354]:
+            - heading "DAY 23" [level=4] [ref=f7e356]
+            - combobox [ref=f7e357]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e358]:
+            - heading "DAY 24" [level=4] [ref=f7e360]
+            - combobox [ref=f7e361]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e362]:
+            - heading "DAY 25" [level=4] [ref=f7e364]
+            - combobox [ref=f7e365]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e366]:
+            - heading "DAY 26" [level=4] [ref=f7e368]
+            - combobox [ref=f7e369]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e370]:
+            - heading "DAY 27" [level=4] [ref=f7e372]
+            - combobox [ref=f7e373]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e374]:
+            - heading "DAY 28" [level=4] [ref=f7e376]
+            - combobox [ref=f7e377]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e378]:
+            - heading "DAY 29" [level=4] [ref=f7e380]
+            - combobox [ref=f7e381]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e382]:
+            - heading "DAY 30" [level=4] [ref=f7e384]
+            - combobox [ref=f7e385]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e386]:
+            - heading "DAY 31" [level=4] [ref=f7e388]
+            - combobox [ref=f7e389]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e390]:
+            - heading "DAY 32" [level=4] [ref=f7e392]
+            - combobox [ref=f7e393]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e394]:
+            - heading "DAY 33" [level=4] [ref=f7e396]
+            - combobox [ref=f7e397]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e398]:
+            - heading "DAY 34" [level=4] [ref=f7e400]
+            - combobox [ref=f7e401]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e402]:
+            - heading "DAY 35" [level=4] [ref=f7e404]
+            - combobox [ref=f7e405]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e406]:
+            - heading "DAY 36" [level=4] [ref=f7e408]
+            - combobox [ref=f7e409]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e410]:
+            - heading "DAY 37" [level=4] [ref=f7e412]
+            - combobox [ref=f7e413]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e414]:
+            - heading "DAY 38" [level=4] [ref=f7e416]
+            - combobox [ref=f7e417]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e418]:
+            - heading "DAY 39" [level=4] [ref=f7e420]
+            - combobox [ref=f7e421]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e422]:
+            - heading "DAY 40" [level=4] [ref=f7e424]
+            - combobox [ref=f7e425]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e426]:
+            - heading "DAY 41" [level=4] [ref=f7e428]
+            - combobox [ref=f7e429]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e430]:
+            - heading "DAY 42" [level=4] [ref=f7e432]
+            - combobox [ref=f7e433]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e434]:
+            - heading "DAY 43" [level=4] [ref=f7e436]
+            - combobox [ref=f7e437]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e438]:
+            - heading "DAY 44" [level=4] [ref=f7e440]
+            - combobox [ref=f7e441]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e442]:
+            - heading "DAY 45" [level=4] [ref=f7e444]
+            - combobox [ref=f7e445]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e446]:
+            - heading "DAY 46" [level=4] [ref=f7e448]
+            - combobox [ref=f7e449]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e450]:
+            - heading "DAY 47" [level=4] [ref=f7e452]
+            - combobox [ref=f7e453]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e454]:
+            - heading "DAY 48" [level=4] [ref=f7e456]
+            - combobox [ref=f7e457]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e458]:
+            - heading "DAY 49" [level=4] [ref=f7e460]
+            - combobox [ref=f7e461]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e462]:
+            - heading "DAY 50" [level=4] [ref=f7e464]
+            - combobox [ref=f7e465]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e466]:
+            - heading "DAY 51" [level=4] [ref=f7e468]
+            - combobox [ref=f7e469]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e470]:
+            - heading "DAY 52" [level=4] [ref=f7e472]
+            - combobox [ref=f7e473]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e474]:
+            - heading "DAY 53" [level=4] [ref=f7e476]
+            - combobox [ref=f7e477]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e478]:
+            - heading "DAY 54" [level=4] [ref=f7e480]
+            - combobox [ref=f7e481]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e482]:
+            - heading "DAY 55" [level=4] [ref=f7e484]
+            - combobox [ref=f7e485]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e486]:
+            - heading "DAY 56" [level=4] [ref=f7e488]
+            - combobox [ref=f7e489]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e490]:
+            - heading "DAY 57" [level=4] [ref=f7e492]
+            - combobox [ref=f7e493]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e494]:
+            - heading "DAY 58" [level=4] [ref=f7e496]
+            - combobox [ref=f7e497]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e498]:
+            - heading "DAY 59" [level=4] [ref=f7e500]
+            - combobox [ref=f7e501]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e502]:
+            - heading "DAY 60" [level=4] [ref=f7e504]
+            - combobox [ref=f7e505]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e506]:
+            - heading "DAY 61" [level=4] [ref=f7e508]
+            - combobox [ref=f7e509]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e510]:
+            - heading "DAY 62" [level=4] [ref=f7e512]
+            - combobox [ref=f7e513]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e514]:
+            - heading "DAY 63" [level=4] [ref=f7e516]
+            - combobox [ref=f7e517]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e518]:
+            - heading "DAY 64" [level=4] [ref=f7e520]
+            - combobox [ref=f7e521]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e522]:
+            - heading "DAY 65" [level=4] [ref=f7e524]
+            - combobox [ref=f7e525]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e526]:
+            - heading "DAY 66" [level=4] [ref=f7e528]
+            - combobox [ref=f7e529]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e530]:
+            - heading "DAY 67" [level=4] [ref=f7e532]
+            - combobox [ref=f7e533]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e534]:
+            - heading "DAY 68" [level=4] [ref=f7e536]
+            - combobox [ref=f7e537]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e538]:
+            - heading "DAY 69" [level=4] [ref=f7e540]
+            - combobox [ref=f7e541]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e542]:
+            - heading "DAY 70" [level=4] [ref=f7e544]
+            - combobox [ref=f7e545]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e546]:
+            - heading "DAY 71" [level=4] [ref=f7e548]
+            - combobox [ref=f7e549]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e550]:
+            - heading "DAY 72" [level=4] [ref=f7e552]
+            - combobox [ref=f7e553]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e554]:
+            - heading "DAY 73" [level=4] [ref=f7e556]
+            - combobox [ref=f7e557]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e558]:
+            - heading "DAY 74" [level=4] [ref=f7e560]
+            - combobox [ref=f7e561]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e562]:
+            - heading "DAY 75" [level=4] [ref=f7e564]
+            - combobox [ref=f7e565]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e566]:
+            - heading "DAY 76" [level=4] [ref=f7e568]
+            - combobox [ref=f7e569]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e570]:
+            - heading "DAY 77" [level=4] [ref=f7e572]
+            - combobox [ref=f7e573]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e574]:
+            - heading "DAY 78" [level=4] [ref=f7e576]
+            - combobox [ref=f7e577]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+          - generic [ref=f7e578]:
+            - heading "DAY 79" [level=4] [ref=f7e580]
+            - combobox [ref=f7e581]:
+              - option "SELECT FOCUS..." [selected]
+              - option "🔬 RESEARCH"
+              - option "📝 WRITING"
+              - option "🎤 PERFORMANCE"
+              - option "🏠 LIFE"
+              - option "😴 REST"
+        - generic [ref=f7e582]:
+          - heading "PREP DISTRIBUTION" [level=4] [ref=f7e583]
+          - generic [ref=f7e584]:
+            - generic [ref=f7e587]:
+              - generic [ref=f7e588]:
+                - generic [ref=f7e589]: 🔬
+                - generic [ref=f7e590]: RESEARCH
+              - generic [ref=f7e591]: "0"
+              - paragraph [ref=f7e592]: DAYS
+            - generic [ref=f7e595]:
+              - generic [ref=f7e596]:
+                - generic [ref=f7e597]: 📝
+                - generic [ref=f7e598]: WRITING
+              - generic [ref=f7e599]: "0"
+              - paragraph [ref=f7e600]: DAYS
+            - generic [ref=f7e603]:
+              - generic [ref=f7e604]:
+                - generic [ref=f7e605]: 🎤
+                - generic [ref=f7e606]: PERFORMANCE
+              - generic [ref=f7e607]: "0"
+              - paragraph [ref=f7e608]: DAYS
+            - generic [ref=f7e611]:
+              - generic [ref=f7e612]:
+                - generic [ref=f7e613]: 🏠
+                - generic [ref=f7e614]: LIFE
+              - generic [ref=f7e615]: "0"
+              - paragraph [ref=f7e616]: DAYS
+            - generic [ref=f7e619]:
+              - generic [ref=f7e620]:
+                - generic [ref=f7e621]: 😴
+                - generic [ref=f7e622]: REST
+              - generic [ref=f7e623]: "0"
+              - paragraph [ref=f7e624]: DAYS
+      - link "← BACK TO DASHBOARD" [ref=f7e626] [cursor=pointer]:
+        - /url: /dashboard
+      - paragraph [ref=f7e628]: Changes auto-save • Battle simulates on 8/28/2026

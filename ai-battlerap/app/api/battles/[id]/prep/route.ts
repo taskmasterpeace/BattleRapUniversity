@@ -69,10 +69,15 @@ export async function GET(
       .maybeSingle(),
   ]);
 
-  // Calculate total prep days
+  // Calculate total prep days. Anchored to created_at so the window never
+  // shifts under saved day_index values, hard-capped at 14 — prep is a scarce
+  // strategic resource, not a wall of dropdowns.
   const lockDate = new Date(battle.lock_prep_at);
   const createdDate = new Date(battle.created_at);
-  const totalPrepDays = Math.max(1, Math.ceil((lockDate.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24)));
+  const totalPrepDays = Math.min(
+    14,
+    Math.max(1, Math.ceil((lockDate.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24)))
+  );
 
   // Normalize: the UI renders the opponent from `ai_battler`. For the
   // challenged side of a PvP battle, the opponent is the challenger.
@@ -183,9 +188,12 @@ export async function POST(
     }
   }
 
-  // Validate day_index is within range
+  // Validate day_index is within range (same capped window as the GET above)
   const createdDate = new Date(battle.created_at);
-  const totalPrepDays = Math.max(1, Math.ceil((lockDate.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24)));
+  const totalPrepDays = Math.min(
+    14,
+    Math.max(1, Math.ceil((lockDate.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24)))
+  );
 
   if (day_index > totalPrepDays) {
     return NextResponse.json({ error: 'Invalid day_index' }, { status: 400 });

@@ -30,6 +30,26 @@ export async function GET() {
     return NextResponse.json({ error: 'No battler found' }, { status: 404 });
   }
 
+  // Sweep expired offers FIRST: an offer whose prep deadline already passed can
+  // never be accepted, and letting it linger both confuses the player and
+  // blocks replenishment (the stale rows count against the offer pool).
+  try {
+    const { createClient } = await import('@supabase/supabase-js');
+    const admin = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      { auth: { autoRefreshToken: false, persistSession: false } }
+    );
+    await admin
+      .from('battles')
+      .update({ status: 'cancelled' })
+      .eq('status', 'offered')
+      .or(`battler_player_id.eq.${battler.id},battler_ai_id.eq.${battler.id}`)
+      .lt('lock_prep_at', new Date().toISOString());
+  } catch (sweepError) {
+    console.error('Expired-offer sweep failed (non-fatal):', sweepError);
+  }
+
   // Get all offered battles with opponent details
   const { data: offersRaw } = await supabase
     .from('battles')

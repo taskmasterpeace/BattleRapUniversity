@@ -10,6 +10,7 @@
  */
 
 import { useEffect, useState } from 'react';
+import Icon from '@/components/ui/Icon';
 
 type RecentBattle = {
   id: string;
@@ -86,7 +87,7 @@ export default function ScoutingReport({ battleId, refreshKey = 0 }: Props) {
     return (
       <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-6 md:p-8 mb-6 md:mb-8">
         <h3 className="font-display font-black text-lg uppercase tracking-wider text-zinc-400">
-          🔍 SCOUTING REPORT
+          SCOUTING REPORT
         </h3>
         <p className="mt-4 text-xs text-zinc-600 font-display font-black uppercase tracking-wider animate-pulse">
           PULLING TAPE...
@@ -104,7 +105,7 @@ export default function ScoutingReport({ battleId, refreshKey = 0 }: Props) {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-2">
         <h3 className="font-display font-black text-lg uppercase tracking-wider text-zinc-300">
-          🔍 SCOUTING REPORT
+          SCOUTING REPORT
           {data.opponent && (
             <span className="text-zinc-500"> — {data.opponent.stage_name}</span>
           )}
@@ -120,7 +121,7 @@ export default function ScoutingReport({ battleId, refreshKey = 0 }: Props) {
                 key={lv}
                 className={`w-6 h-2 border ${
                   tier >= lv
-                    ? 'bg-purple-400 border-purple-400 shadow-[0_0_6px_rgba(192,132,252,0.6)]'
+                    ? 'bg-amber-400 border-amber-400 shadow-[0_0_6px_rgba(251,191,36,0.6)]'
                     : 'bg-[#18191c] border-[#3a3d44]'
                 }`}
               />
@@ -128,8 +129,8 @@ export default function ScoutingReport({ battleId, refreshKey = 0 }: Props) {
           </div>
         </div>
       </div>
-      <p className="text-xs text-purple-400/80 font-display font-black uppercase tracking-wider mb-6">
-        🔬 {data.researchDays} RESEARCH DAY{data.researchDays === 1 ? '' : 'S'} BANKED
+      <p className="text-xs text-amber-400/80 font-display font-black uppercase tracking-wider mb-6">
+        {data.researchDays} RESEARCH DAY{data.researchDays === 1 ? '' : 'S'} BANKED
         {tier < 3 && ' • EACH RESEARCH DAY DIGS UP MORE'}
       </p>
 
@@ -265,8 +266,8 @@ export default function ScoutingReport({ battleId, refreshKey = 0 }: Props) {
               </div>
 
               {data.tier3.profileLabel && (
-                <div className="px-3 py-2 bg-purple-500/10 border-2 border-purple-500/40 text-purple-300 text-sm font-display font-black uppercase tracking-wider text-center">
-                  📼 READ: {data.tier3.profileLabel}
+                <div className="px-3 py-2 bg-amber-500/10 border-2 border-amber-500/40 text-amber-300 text-sm font-display font-black uppercase tracking-wider text-center">
+                  READ: {data.tier3.profileLabel}
                 </div>
               )}
 
@@ -286,7 +287,7 @@ export default function ScoutingReport({ battleId, refreshKey = 0 }: Props) {
                             : 'bg-[#3a3d44]/60 text-zinc-300 border-[#3a3d44]'
                         }`}
                       >
-                        {badge.negative && '⚠️ '}
+                        {badge.negative && <Icon name="warning" size={11} className="mr-1 text-red-400" />}
                         {badge.name}
                       </span>
                     ))}
@@ -335,10 +336,10 @@ function TierSection({
       <div className="flex items-center justify-between mb-3">
         <h4
           className={`text-xs font-display font-black uppercase tracking-wider ${
-            unlocked ? 'text-purple-300' : 'text-zinc-600'
+            unlocked ? 'text-amber-300' : 'text-zinc-600'
           }`}
         >
-          {unlocked ? '📂' : '🔒'} {title}
+          {title}
         </h4>
         {!unlocked && (
           <span className="text-[10px] text-[#ff8c42] font-display font-black uppercase tracking-wider">

@@ -76,18 +76,22 @@ export default function RoundResultsPage() {
     if (roundNum < 3) {
       router.push(`/battle/${battleId}/round/${roundNum + 1}/select`);
     } else {
-      router.push(`/battle/${battleId}/final-results`);
+      // Battle is settled by the finalizer — straight to the full results page.
+      router.push(`/battle/${battleId}`);
     }
   };
 
   const determineWinner = (): 'player' | 'ai' | 'tie' => {
     if (!playerRound || !aiRound) return 'tie';
 
-    const playerScore = playerRound.average_score + playerRound.peak_score * 0.3;
-    const aiScore = aiRound.average_score + aiRound.peak_score * 0.3;
-
-    if (Math.abs(playerScore - aiScore) < 5) return 'tie';
-    return playerScore > aiScore ? 'player' : 'ai';
+    // The engine's verdict when persisted (finalizer sets `won` after R3);
+    // until then, rounds are judged on average score — same rule the
+    // finalizer applies. No invented tie thresholds.
+    if (typeof playerRound.won === 'boolean' && typeof aiRound.won === 'boolean') {
+      if (playerRound.won) return 'player';
+      if (aiRound.won) return 'ai';
+    }
+    return playerRound.average_score >= aiRound.average_score ? 'player' : 'ai';
   };
 
   if (loading) {
@@ -125,7 +129,7 @@ export default function RoundResultsPage() {
 
         <div className="max-w-4xl mx-auto px-4 py-16">
           <div className="bg-[#2d2f35] border-2 border-[#3a3d44] rounded-lg p-12 text-center">
-            <div className="text-6xl mb-4">⚔️</div>
+            
             <h2 className="text-2xl font-bold text-white mb-4">Ready to Battle?</h2>
             <p className="text-zinc-400 mb-8">
               Both battlers have locked in their content. Click below to simulate Round {roundNum}.

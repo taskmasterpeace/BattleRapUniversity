@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "ai-battlerap-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--prefix", "D:/git/battlerapuniversity/ai-battlerap"],
+      "port": 3000
+    }
+  ]
+}

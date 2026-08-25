@@ -1,0 +1,22 @@
+- generic [active] [ref=f28e1]:
+  - banner [ref=f28e2]:
+    - generic [ref=f28e3]:
+      - link "⚔ Battle Rap U" [ref=f28e4] [cursor=pointer]:
+        - /url: /dashboard
+        - generic [ref=f28e5]: ⚔
+        - generic [ref=f28e6]: Battle Rap U
+      - navigation [ref=f28e7]:
+        - link "Dashboard" [ref=f28e8] [cursor=pointer]:
+          - /url: /dashboard
+        - link "Battles" [ref=f28e11] [cursor=pointer]:
+          - /url: /battle/offers
+        - link "Calendar" [ref=f28e15] [cursor=pointer]:
+          - /url: /calendar
+        - link "Leagues" [ref=f28e18] [cursor=pointer]:
+          - /url: /leagues
+      - generic [ref=f28e21]:
+        - button [ref=f28e23]
+        - button "Open menu" [ref=f28e26]:
+          - generic [ref=f28e29]: Menu
+  - generic [ref=f28e30]: Loading round data...
+  - button "Open Next.js Dev Tools" [ref=f28e37] [cursor=pointer]

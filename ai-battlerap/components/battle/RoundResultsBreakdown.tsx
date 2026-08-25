@@ -135,8 +135,8 @@ export function RoundResultsBreakdown({
                     <div
                       className={`h-full flex items-center justify-end pr-2 text-xs font-semibold transition-all ${
                         playerSeg.segment_score > (aiSeg?.segment_score || 0)
-                          ? 'bg-green-600'
-                          : 'bg-blue-600'
+                          ? 'bg-[#ff8c42]'
+                          : 'bg-[#ff8c42]/40'
                       }`}
                       style={{ width: `${playerWidth}%` }}
                     >
@@ -155,8 +155,8 @@ export function RoundResultsBreakdown({
                       <div
                         className={`h-full flex items-center justify-end pr-2 text-xs font-semibold transition-all ${
                           aiSeg.segment_score > playerSeg.segment_score
-                            ? 'bg-red-600'
-                            : 'bg-orange-600'
+                            ? 'bg-zinc-400'
+                            : 'bg-zinc-600'
                         }`}
                         style={{ width: `${aiWidth}%` }}
                       >
@@ -181,7 +181,7 @@ export function RoundResultsBreakdown({
           <div className="space-y-3">
             <div className="flex justify-between items-center">
               <span className="text-sm text-zinc-400">Average Score</span>
-              <span className="text-xl font-bold text-blue-400">
+              <span className="text-xl font-bold text-[#ff8c42]">
                 {playerRound.average_score.toFixed(1)}
               </span>
             </div>
@@ -193,7 +193,7 @@ export function RoundResultsBreakdown({
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-zinc-400">Consistency</span>
-              <span className="text-xl font-bold text-purple-400">
+              <span className="text-xl font-bold text-amber-400">
                 {playerRound.consistency_score.toFixed(1)}
               </span>
             </div>
@@ -217,7 +217,7 @@ export function RoundResultsBreakdown({
           <div className="space-y-3">
             <div className="flex justify-between items-center">
               <span className="text-sm text-zinc-400">Average Score</span>
-              <span className="text-xl font-bold text-blue-400">
+              <span className="text-xl font-bold text-[#ff8c42]">
                 {aiRound.average_score.toFixed(1)}
               </span>
             </div>
@@ -229,7 +229,7 @@ export function RoundResultsBreakdown({
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-zinc-400">Consistency</span>
-              <span className="text-xl font-bold text-purple-400">
+              <span className="text-xl font-bold text-amber-400">
                 {aiRound.consistency_score.toFixed(1)}
               </span>
             </div>

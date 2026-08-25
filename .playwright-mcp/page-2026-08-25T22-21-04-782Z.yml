@@ -1,0 +1,162 @@
+- generic [active] [ref=f29e1]:
+  - banner [ref=f29e2]:
+    - generic [ref=f29e3]:
+      - link "⚔ Battle Rap U" [ref=f29e4] [cursor=pointer]:
+        - /url: /dashboard
+        - generic [ref=f29e5]: ⚔
+        - generic [ref=f29e6]: Battle Rap U
+      - navigation [ref=f29e7]:
+        - link "Dashboard" [ref=f29e8] [cursor=pointer]:
+          - /url: /dashboard
+        - link "Battles" [ref=f29e11] [cursor=pointer]:
+          - /url: /battle/offers
+        - link "Calendar" [ref=f29e15] [cursor=pointer]:
+          - /url: /calendar
+        - link "Leagues" [ref=f29e18] [cursor=pointer]:
+          - /url: /leagues
+      - generic [ref=f29e21]:
+        - button "8" [ref=f29e41]
+        - button "Open menu" [ref=f29e26]:
+          - generic [ref=f29e29]: Menu
+  - button "Open Next.js Dev Tools" [ref=f29e37] [cursor=pointer]
+  - alert [ref=f29e232]
+  - generic [ref=f29e1059]:
+    - generic [ref=f29e1071]:
+      - link "← Back to Dashboard" [ref=f29e1072] [cursor=pointer]:
+        - /url: /dashboard
+      - generic [ref=f29e1073]:
+        - generic [ref=f29e1074]:
+          - heading "Round 3 Results" [level=1] [ref=f29e1075]
+          - paragraph [ref=f29e1076]: vs Bag Chaser • Small Room Circuit
+        - generic [ref=f29e1077]:
+          - generic [ref=f29e1078]: Round Progress
+          - generic [ref=f29e1079]: 3 / 3
+    - generic [ref=f29e1080]:
+      - generic [ref=f29e1081]:
+        - generic [ref=f29e1082]:
+          - generic [ref=f29e1083]: TIE ROUND
+          - generic [ref=f29e1084]: Neither battler could secure the round
+        - generic [ref=f29e1085]:
+          - heading "Segment-by-Segment Breakdown" [level=3] [ref=f29e1086]
+          - generic [ref=f29e1087]:
+            - generic [ref=f29e1088]:
+              - generic [ref=f29e1089]:
+                - generic [ref=f29e1090]: Segment 1
+                - generic [ref=f29e1091]: 3.5 vs 3.4
+              - generic [ref=f29e1092]: Flow Tester
+              - generic [ref=f29e1096]: Bag Chaser
+            - generic [ref=f29e1100]:
+              - generic [ref=f29e1101]:
+                - generic [ref=f29e1102]: Segment 2
+                - generic [ref=f29e1103]: 3.5 vs 3.4
+              - generic [ref=f29e1104]: Flow Tester
+              - generic [ref=f29e1108]: Bag Chaser
+            - generic [ref=f29e1112]:
+              - generic [ref=f29e1113]:
+                - generic [ref=f29e1114]: Segment 3
+                - generic [ref=f29e1115]: 3.5 vs 3.4
+              - generic [ref=f29e1116]: Flow Tester
+              - generic [ref=f29e1120]: Bag Chaser
+            - generic [ref=f29e1124]:
+              - generic [ref=f29e1125]:
+                - generic [ref=f29e1126]: Segment 4
+                - generic [ref=f29e1127]: 5.2 vs 3.4
+              - generic [ref=f29e1128]: Flow Tester
+              - generic [ref=f29e1132]: Bag Chaser
+        - generic [ref=f29e1136]:
+          - generic [ref=f29e1137]:
+            - heading "Flow Tester" [level=3] [ref=f29e1138]
+            - generic [ref=f29e1139]:
+              - generic [ref=f29e1140]:
+                - generic [ref=f29e1141]: Average Score
+                - generic [ref=f29e1142]: "3.9"
+              - generic [ref=f29e1143]:
+                - generic [ref=f29e1144]: Peak Score
+                - generic [ref=f29e1145]: "5.2"
+              - generic [ref=f29e1146]:
+                - generic [ref=f29e1147]: Consistency
+                - generic [ref=f29e1148]: "9.2"
+              - generic [ref=f29e1149]:
+                - generic [ref=f29e1150]: Crowd Reaction
+                - generic [ref=f29e1151]: "24"
+          - generic [ref=f29e1152]:
+            - heading "Bag Chaser" [level=3] [ref=f29e1153]
+            - generic [ref=f29e1154]:
+              - generic [ref=f29e1155]:
+                - generic [ref=f29e1156]: Average Score
+                - generic [ref=f29e1157]: "3.4"
+              - generic [ref=f29e1158]:
+                - generic [ref=f29e1159]: Peak Score
+                - generic [ref=f29e1160]: "3.4"
+              - generic [ref=f29e1161]:
+                - generic [ref=f29e1162]: Consistency
+                - generic [ref=f29e1163]: "10.0"
+              - generic [ref=f29e1164]:
+                - generic [ref=f29e1165]: Crowd Reaction
+                - generic [ref=f29e1166]: "24"
+        - generic [ref=f29e1167]:
+          - generic [ref=f29e1168]:
+            - heading "Your Content Effectiveness" [level=3] [ref=f29e1169]
+            - generic [ref=f29e1170]:
+              - generic [ref=f29e1171]:
+                - generic [ref=f29e1172]: Content Types
+                - generic [ref=f29e1173]:
+                  - generic [ref=f29e1174]: Wordplay
+                  - generic [ref=f29e1175]: Schemes
+                  - generic [ref=f29e1176]: Storytelling
+              - generic [ref=f29e1177]:
+                - generic [ref=f29e1178]: Delivery Types
+                - generic [ref=f29e1179]: Passionate
+              - generic [ref=f29e1181]:
+                - generic [ref=f29e1182]: Performance Types
+                - generic [ref=f29e1183]: Charismatic
+              - generic [ref=f29e1185]:
+                - generic [ref=f29e1186]:
+                  - generic [ref=f29e1187]: Effectiveness
+                  - generic [ref=f29e1188]: 1.01x
+                - generic [ref=f29e1189]:
+                  - generic [ref=f29e1190]: Crowd Preference
+                  - generic [ref=f29e1191]: 1.07x
+                - generic [ref=f29e1192]:
+                  - generic [ref=f29e1193]: Context Modifier
+                  - generic [ref=f29e1194]: 1.07x
+                - generic [ref=f29e1195]:
+                  - generic [ref=f29e1196]: Final Multiplier
+                  - generic [ref=f29e1197]: 1.16x
+          - generic [ref=f29e1198]:
+            - heading "Opponent's Content Effectiveness" [level=3] [ref=f29e1199]
+            - generic [ref=f29e1200]:
+              - generic [ref=f29e1201]:
+                - generic [ref=f29e1202]: Content Types
+                - generic [ref=f29e1203]:
+                  - generic [ref=f29e1204]: Wordplay
+                  - generic [ref=f29e1205]: Gun Bars
+                  - generic [ref=f29e1206]: Street Talk
+              - generic [ref=f29e1207]:
+                - generic [ref=f29e1208]: Delivery Types
+                - generic [ref=f29e1209]:
+                  - generic [ref=f29e1210]: Conversational
+                  - generic [ref=f29e1211]: Smooth Flow
+              - generic [ref=f29e1212]:
+                - generic [ref=f29e1213]: Performance Types
+                - generic [ref=f29e1214]:
+                  - generic [ref=f29e1215]: Theatrical
+                  - generic [ref=f29e1216]: Minimalist
+              - generic [ref=f29e1217]:
+                - generic [ref=f29e1218]:
+                  - generic [ref=f29e1219]: Effectiveness
+                  - generic [ref=f29e1220]: 1.01x
+                - generic [ref=f29e1221]:
+                  - generic [ref=f29e1222]: Crowd Preference
+                  - generic [ref=f29e1223]: 1.05x
+                - generic [ref=f29e1224]:
+                  - generic [ref=f29e1225]: Context Modifier
+                  - generic [ref=f29e1226]: 1.05x
+                - generic [ref=f29e1227]:
+                  - generic [ref=f29e1228]: Final Multiplier
+                  - generic [ref=f29e1229]: 1.12x
+      - generic [ref=f29e1230]:
+        - generic [ref=f29e1232]:
+          - generic [ref=f29e1233]: Battle Complete!
+          - generic [ref=f29e1234]: View the final results and winner
+        - button "View Final Results →" [ref=f29e1235]

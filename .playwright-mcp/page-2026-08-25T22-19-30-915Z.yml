@@ -1,0 +1,33 @@
+- generic [active] [ref=f29e1]:
+  - banner [ref=f29e2]:
+    - generic [ref=f29e3]:
+      - link "⚔ Battle Rap U" [ref=f29e4] [cursor=pointer]:
+        - /url: /dashboard
+        - generic [ref=f29e5]: ⚔
+        - generic [ref=f29e6]: Battle Rap U
+      - navigation [ref=f29e7]:
+        - link "Dashboard" [ref=f29e8] [cursor=pointer]:
+          - /url: /dashboard
+        - link "Battles" [ref=f29e11] [cursor=pointer]:
+          - /url: /battle/offers
+        - link "Calendar" [ref=f29e15] [cursor=pointer]:
+          - /url: /calendar
+        - link "Leagues" [ref=f29e18] [cursor=pointer]:
+          - /url: /leagues
+      - generic [ref=f29e21]:
+        - button "8" [ref=f29e41]
+        - button "Open menu" [ref=f29e26]:
+          - generic [ref=f29e29]: Menu
+  - button "Open Next.js Dev Tools" [ref=f29e37] [cursor=pointer]
+  - alert [ref=f29e232]
+  - generic [ref=f29e259]:
+    - generic [ref=f29e261]:
+      - link "← Back to Dashboard" [ref=f29e262] [cursor=pointer]:
+        - /url: /dashboard
+      - heading "Round 1 Results" [level=1] [ref=f29e263]
+      - paragraph [ref=f29e264]: vs Bag Chaser • Small Room Circuit
+    - generic [ref=f29e266]:
+      - generic [ref=f29e267]: ⚔️
+      - heading "Ready to Battle?" [level=2] [ref=f29e268]
+      - paragraph [ref=f29e269]: Both battlers have locked in their content. Click below to simulate Round 1.
+      - button "Simulate Round 1" [ref=f29e270]

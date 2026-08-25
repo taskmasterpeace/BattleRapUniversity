@@ -67,9 +67,9 @@ export default function RoundSelectPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          content_types: selection.contentTypes,
-          delivery_types: selection.deliveryTypes,
-          performance_types: selection.performanceTypes,
+          contentTypes: selection.contentTypes,
+          deliveryTypes: selection.deliveryTypes,
+          performanceTypes: selection.performanceTypes,
         }),
       });
 
@@ -122,7 +122,7 @@ export default function RoundSelectPage() {
           </Link>
           <div className="flex items-center justify-between mt-2">
             <div>
-              <h1 className="text-2xl font-bold text-white">Round {roundNum} Content Selection</h1>
+              <h1 className="text-3xl md:text-4xl font-display font-black uppercase tracking-tighter text-white">ROUND {roundNum} — CALL YOUR SHOT</h1>
               <p className="text-zinc-400 text-sm mt-1">
                 vs {battle.ai_battler?.stage_name} • {battle.league?.name}
               </p>
@@ -137,8 +137,8 @@ export default function RoundSelectPage() {
 
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Opponent Info */}
-        <div className="bg-[#2d2f35] border-2 border-[#3a3d44] rounded-lg p-6 mb-6">
-          <h2 className="text-lg font-bold text-white mb-4">Opponent Analysis</h2>
+        <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-6 mb-6">
+          <h2 className="text-lg font-display font-black uppercase tracking-wider text-white mb-4">OPPONENT ANALYSIS</h2>
           <div className="grid grid-cols-2 gap-6">
             <div>
               <div className="text-sm text-zinc-400 mb-2">Opponent</div>
@@ -198,7 +198,7 @@ export default function RoundSelectPage() {
 
         {/* Selection Interface */}
         <div className="mb-6">
-          <h2 className="text-xl font-bold text-white mb-4">Select Your Content</h2>
+          <h2 className="text-xl font-display font-black uppercase tracking-wider text-white mb-4">SELECT YOUR CONTENT</h2>
           <RoundContentSelector
             onSelectionChange={setSelection}
             initialSelection={selection}
@@ -218,15 +218,15 @@ export default function RoundSelectPage() {
         )}
 
         {/* Confirm Button */}
-        <div className="flex items-center justify-between bg-[#2d2f35] border-2 border-[#3a3d44] rounded-lg p-6">
+        <div className="flex items-center justify-between bg-[#2d2f35] border-2 border-[#3a3d44] p-6">
           <div>
             <div className="text-white font-bold mb-1">Ready to lock in your selection?</div>
             <div className="text-sm text-zinc-400">
               {isSelectionValid ? (
-                <span className="text-green-500">✓ Selection is valid</span>
+                <span className="text-green-500">SELECTION VALID — LOCK IT</span>
               ) : (
                 <span className="text-[#ff8c42]">
-                  ✗ Complete your selection (3-4 content, 1-2 delivery, 1-2 performance)
+                  Complete your selection (3-4 content, 1-2 delivery, 1-2 performance)
                 </span>
               )}
             </div>
@@ -234,18 +234,18 @@ export default function RoundSelectPage() {
           <button
             onClick={handleConfirmSelection}
             disabled={!isSelectionValid || submitting}
-            className="px-8 py-3 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            className="px-8 py-3 bg-[#ff8c42] hover:bg-[#ff9d5c] text-black font-display font-black uppercase tracking-wider disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
-            {submitting ? 'Confirming...' : 'Confirm Selection'}
+            {submitting ? 'LOCKING...' : 'LOCK THE ROUND'}
           </button>
         </div>
 
         {/* Strategy Tip */}
-        <div className="mt-4 bg-blue-950/20 border-2 border-blue-800/30 rounded-lg p-4">
+        <div className="mt-4 bg-[#2d2f35] border-2 border-[#3a3d44] p-4">
           <div className="flex items-start gap-3">
-            <div className="text-2xl">💡</div>
+            
             <div>
-              <div className="text-sm font-semibold text-blue-400 mb-1">Strategic Tip</div>
+              <div className="text-sm font-display font-black uppercase tracking-wider text-[#ff8c42] mb-1">STRATEGIC TIP</div>
               <p className="text-xs text-zinc-400">
                 Look for super effective matchups (2.0x multiplier) against your opponent's
                 predicted content. Balance offense (attack content) with technique (technical

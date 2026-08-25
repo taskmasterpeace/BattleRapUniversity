@@ -1700,8 +1700,10 @@ async function saveBattleResults(
 
 /**
  * Calculate new ELO ratings
+ * Exported so the interactive (round-by-round) battle finalizer applies the
+ * exact same rating math as the full auto simulation.
  */
-function calculateELO(
+export function calculateELO(
   playerRating: number,
   aiRating: number,
   playerWon: boolean

@@ -4,8 +4,16 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { Battle, BattleWithDetails, ScoringContext, PrepBlock } from '@/lib/models';
+import { BattleWithDetails, ScoringContext, PrepBlock } from '@/lib/models';
 import { toast } from '@/components/ui/Toast';
+import Avatar from '@/components/ui/Avatar';
+import Icon from '@/components/ui/Icon';
+
+const CONTEXTS: { value: ScoringContext; label: string; description: string }[] = [
+  { value: 'in_building', label: 'IN BUILDING', description: 'Small venue, intimate crowd' },
+  { value: 'ppv', label: 'PPV EVENT', description: 'Large event, balanced crowd' },
+  { value: 'on_cam', label: 'ON CAM', description: 'Recorded for a global online audience' },
+];
 
 export default function BattleControlPage() {
   const router = useRouter();
@@ -15,7 +23,7 @@ export default function BattleControlPage() {
   const [battle, setBattle] = useState<BattleWithDetails | null>(null);
   const [prepBlocks, setPrepBlocks] = useState<PrepBlock[]>([]);
   const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
+  const [submitting, setSubmitting] = useState<'locked_in' | 'auto' | null>(null);
   const [selectedContext, setSelectedContext] = useState<ScoringContext>('ppv');
 
   useEffect(() => {
@@ -42,45 +50,37 @@ export default function BattleControlPage() {
   };
 
   const handleLockIn = async (mode: 'locked_in' | 'auto') => {
-    if (!battle) return;
+    if (!battle || submitting) return;
 
-    setSubmitting(true);
+    setSubmitting(mode);
     try {
       const response = await fetch(`/api/battles/${battleId}/lock-in`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          mode,
+          lockedIn: mode === 'locked_in',
           context: selectedContext,
         }),
       });
 
+      const data = await response.json();
+
       if (response.ok) {
         if (mode === 'locked_in') {
-          // Redirect to round 1 content selection
           router.push(`/battle/${battleId}/round/1/select`);
         } else {
-          // Auto mode - wait for simulation, then redirect to results
-          const simulateRes = await fetch(`/api/battles/${battleId}/simulate`, {
-            method: 'POST',
-          });
-
-          if (simulateRes.ok) {
-            router.push(`/battle/${battleId}/results`);
-          } else {
-            toast('Failed to simulate battle', 'error');
-            setSubmitting(false);
-          }
+          // Auto mode simulates inside the lock-in call — straight to results.
+          router.push(`/battle/${battleId}`);
         }
-      } else {
-        const data = await response.json();
-        toast(data.error || 'Failed to lock in mode', 'error');
-        setSubmitting(false);
+        return;
       }
+
+      toast(data.error || 'Failed to lock in mode', 'error');
+      setSubmitting(null);
     } catch (error) {
       console.error('Error locking in mode:', error);
       toast('Failed to lock in mode', 'error');
-      setSubmitting(false);
+      setSubmitting(null);
     }
   };
 
@@ -92,11 +92,12 @@ export default function BattleControlPage() {
     },
     {} as Record<string, number>
   );
+  const totalPrepDays = prepBlocks.length;
 
   if (loading) {
     return (
       <div className="min-h-screen bg-[#18191c] flex items-center justify-center">
-        <div className="text-zinc-400">Loading battle...</div>
+        <div className="text-zinc-400 font-display font-black uppercase tracking-wider">Loading battle...</div>
       </div>
     );
   }
@@ -104,204 +105,154 @@ export default function BattleControlPage() {
   if (!battle) {
     return (
       <div className="min-h-screen bg-[#18191c] flex items-center justify-center">
-        <div className="text-zinc-400">Battle not found</div>
+        <div className="text-zinc-400 font-display font-black uppercase tracking-wider">Battle not found</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#18191c]">
+    <div className="min-h-screen bg-[#18191c] text-zinc-100">
       {/* Header */}
       <div className="bg-[#2d2f35] border-b-2 border-[#3a3d44]">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <Link href="/dashboard" className="text-[#ff8c42] hover:text-[#ff9d5c] text-sm">
-            ← Back to Dashboard
+        <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-6">
+          <Link
+            href={`/battle/${battleId}/prep`}
+            className="text-[#ff8c42] hover:text-[#ff9d5c] text-sm font-display font-black uppercase tracking-wider"
+          >
+            ← BACK TO PREP
           </Link>
-          <h1 className="text-2xl font-bold mt-2 text-white">Battle Control</h1>
-          <p className="text-zinc-400 text-sm mt-1">
-            vs {battle.ai_battler?.stage_name} • {battle.league?.name}
+          <h1 className="text-3xl md:text-5xl font-display font-black uppercase tracking-tighter mt-3">
+            BATTLE NIGHT
+          </h1>
+          <p className="text-zinc-400 text-sm mt-1 font-display font-bold uppercase tracking-wider">
+            VS {battle.ai_battler?.stage_name} • {battle.league?.name}
           </p>
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-4 py-8">
-        {/* Battle Info Card */}
-        <div className="bg-[#2d2f35] border-2 border-[#3a3d44] rounded-lg p-6 mb-6">
-          <h2 className="text-xl font-bold text-white mb-4">Battle Information</h2>
-          <div className="grid grid-cols-2 gap-4 text-sm">
-            <div>
-              <span className="text-zinc-400">Opponent:</span>
-              <span className="text-white ml-2 font-semibold">
-                {battle.ai_battler?.stage_name}
-              </span>
+      <div className="max-w-5xl mx-auto px-4 md:px-6 py-8">
+        {/* Matchup strip */}
+        <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-6 mb-6 flex flex-col sm:flex-row items-start sm:items-center gap-6">
+          <Avatar url={battle.ai_battler?.avatar_url} size={96} alt={battle.ai_battler?.stage_name || 'Opponent'} />
+          <div className="flex-1">
+            <h2 className="text-2xl font-display font-black uppercase tracking-tight mb-2">
+              VS {battle.ai_battler?.stage_name}
+            </h2>
+            <div className="flex flex-wrap gap-x-6 gap-y-1 text-xs font-display font-bold uppercase tracking-wider text-zinc-400">
+              <span><span className="text-zinc-600">LEAGUE</span> · {battle.league?.name}</span>
+              <span><span className="text-zinc-600">FORMAT</span> · {battle.league?.round_length_minutes}-MIN ROUNDS</span>
             </div>
-            <div>
-              <span className="text-zinc-400">League:</span>
-              <span className="text-white ml-2">{battle.league?.name}</span>
-            </div>
-            <div>
-              <span className="text-zinc-400">Scheduled:</span>
-              <span className="text-white ml-2">
-                {new Date(battle.scheduled_at).toLocaleString()}
-              </span>
-            </div>
-            <div>
-              <span className="text-zinc-400">Format:</span>
-              <span className="text-white ml-2">
-                {battle.league?.round_length_minutes}-minute rounds
-              </span>
+          </div>
+          {/* Camp readout */}
+          <div className="bg-[#18191c] border-2 border-[#3a3d44] px-5 py-4">
+            <p className="text-[10px] text-zinc-500 font-display font-black uppercase tracking-wider mb-2">
+              CAMP YOU'RE WALKING IN WITH
+            </p>
+            <div className="flex gap-4">
+              {(['research', 'writing', 'performance', 'life', 'rest'] as const).map((focus) => (
+                <div key={focus} className="text-center">
+                  <div className={`text-xl font-display font-black ${prepSummary[focus] ? 'text-[#ff8c42]' : 'text-zinc-600'}`}>
+                    {prepSummary[focus] || 0}
+                  </div>
+                  <div className="text-[9px] text-zinc-500 font-display font-bold uppercase tracking-wider">{focus}</div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
 
-        {/* Prep Summary */}
-        <div className="bg-[#2d2f35] border-2 border-[#3a3d44] rounded-lg p-6 mb-8">
-          <h2 className="text-xl font-bold text-white mb-4">Prep Summary</h2>
-          <div className="grid grid-cols-5 gap-4">
-            {['research', 'writing', 'performance', 'life', 'rest'].map((focus) => (
-              <div key={focus} className="text-center">
-                <div className="text-2xl font-bold text-[#ff8c42]">
-                  {prepSummary[focus] || 0}
-                </div>
-                <div className="text-xs text-zinc-400 capitalize">{focus}</div>
-              </div>
-            ))}
+        {totalPrepDays === 0 && (
+          <div className="mb-6 p-4 bg-red-500/10 border-2 border-red-500/50 text-red-400 font-display font-black uppercase tracking-wider text-sm flex items-center gap-2">
+            <Icon name="warning" size={16} />
+            NO PREP BANKED — YOU'RE WALKING IN COLD. THE CHOKE RISK IS ALL YOURS.
           </div>
-        </div>
+        )}
 
         {/* Context Selection */}
-        <div className="bg-[#2d2f35] border-2 border-[#3a3d44] rounded-lg p-6 mb-8">
-          <h2 className="text-xl font-bold text-white mb-4">Battle Context</h2>
-          <p className="text-sm text-zinc-400 mb-4">
-            Choose the battle environment. This affects crowd reactions and scoring modifiers.
+        <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-6 mb-8">
+          <h2 className="text-lg font-display font-black uppercase tracking-wider mb-1">PICK THE ROOM</h2>
+          <p className="text-xs text-zinc-500 font-display font-bold uppercase tracking-wide mb-4">
+            The environment shapes crowd reactions and scoring
           </p>
-          <div className="grid grid-cols-3 gap-4">
-            {[
-              {
-                value: 'in_building' as ScoringContext,
-                label: 'In Building',
-                description: 'Small venue, intimate crowd',
-              },
-              {
-                value: 'ppv' as ScoringContext,
-                label: 'PPV Event',
-                description: 'Large event, balanced crowd',
-              },
-              {
-                value: 'on_cam' as ScoringContext,
-                label: 'On Cam',
-                description: 'Recorded for online, global audience',
-              },
-            ].map((context) => (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {CONTEXTS.map((context) => (
               <button
                 key={context.value}
                 onClick={() => setSelectedContext(context.value)}
-                className={`p-4 rounded-lg border-2 transition-all ${
+                className={`p-4 border-2 text-left transition-all ${
                   selectedContext === context.value
-                    ? 'border-orange-500 bg-orange-950/30'
-                    : 'border-[#3a3d44] bg-zinc-800 hover:border-zinc-600'
+                    ? 'border-[#ff8c42] bg-[#ff8c42]/10'
+                    : 'border-[#3a3d44] bg-[#18191c] hover:border-[#ff8c42]/50'
                 }`}
               >
-                <div className="font-semibold text-white mb-1">{context.label}</div>
-                <div className="text-xs text-zinc-400">{context.description}</div>
+                <div className="font-display font-black uppercase tracking-wider text-sm mb-1">
+                  {context.label}
+                </div>
+                <div className="text-xs text-zinc-500 font-display font-bold uppercase tracking-wide">{context.description}</div>
               </button>
             ))}
           </div>
         </div>
 
         {/* Mode Selection */}
-        <div>
-          <h2 className="text-2xl font-bold text-white mb-4 text-center">
-            Choose Your Battle Mode
-          </h2>
-          <div className="grid grid-cols-2 gap-6">
-            {/* Locked In Mode */}
-            <div className="bg-gradient-to-br from-orange-950/40 to-zinc-900 border-2 border-orange-600 rounded-lg p-8 flex flex-col">
-              <div className="text-center mb-6">
-                <div className="text-4xl mb-4">🎯</div>
-                <h3 className="text-2xl font-bold text-white mb-2">Locked In</h3>
-                <p className="text-sm text-zinc-300">
-                  Strategic gameplay - manually select content for each round
-                </p>
-              </div>
-
-              <div className="bg-[#18191c]/50 rounded-lg p-4 mb-6 flex-1">
-                <div className="text-xs font-semibold text-orange-400 mb-2 uppercase">
-                  Pros
-                </div>
-                <ul className="text-sm text-zinc-300 space-y-1 list-disc list-inside mb-4">
-                  <li>Counter opponent's strategy</li>
-                  <li>Optimize content effectiveness</li>
-                  <li>Real-time tactical decisions</li>
-                  <li>Maximum engagement</li>
-                </ul>
-                <div className="text-xs font-semibold text-red-400 mb-2 uppercase">
-                  Cons
-                </div>
-                <ul className="text-sm text-zinc-300 space-y-1 list-disc list-inside">
-                  <li>Requires round-by-round input</li>
-                  <li>More time investment</li>
-                </ul>
-              </div>
-
-              <button
-                onClick={() => handleLockIn('locked_in')}
-                disabled={submitting}
-                className="w-full py-3 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-              >
-                {submitting ? 'Processing...' : 'Go Locked In'}
-              </button>
+        <h2 className="text-2xl font-display font-black uppercase tracking-tighter mb-4 text-center">
+          HOW DO YOU WANT IT?
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Locked In Mode */}
+          <div className="bg-[#2d2f35] border-2 border-[#ff8c42] p-8 flex flex-col">
+            <div className="text-center mb-6">
+              <Icon name="target" size={36} className="text-[#ff8c42] mb-3" />
+              <h3 className="text-2xl font-display font-black uppercase tracking-tight mb-2">LOCKED IN</h3>
+              <p className="text-sm text-zinc-400 font-display font-bold uppercase tracking-wide">
+                Call every round yourself — content, delivery, adjustments
+              </p>
             </div>
 
-            {/* Auto Mode */}
-            <div className="bg-gradient-to-br from-blue-950/40 to-zinc-900 border-2 border-blue-600 rounded-lg p-8 flex flex-col">
-              <div className="text-center mb-6">
-                <div className="text-4xl mb-4">⚡</div>
-                <h3 className="text-2xl font-bold text-white mb-2">Auto</h3>
-                <p className="text-sm text-zinc-300">
-                  Quick results - AI auto-selects content based on your prep
-                </p>
-              </div>
+            <ul className="text-xs text-zinc-400 font-display font-bold uppercase tracking-wide space-y-2 mb-6 flex-1">
+              <li className="flex gap-2"><Icon name="check" size={14} className="text-[#ff8c42]" /> Counter your opponent round by round</li>
+              <li className="flex gap-2"><Icon name="check" size={14} className="text-[#ff8c42]" /> See crowd verdicts between rounds</li>
+              <li className="flex gap-2"><Icon name="check" size={14} className="text-[#ff8c42]" /> Maximum control, maximum stakes</li>
+            </ul>
 
-              <div className="bg-[#18191c]/50 rounded-lg p-4 mb-6 flex-1">
-                <div className="text-xs font-semibold text-green-400 mb-2 uppercase">
-                  Pros
-                </div>
-                <ul className="text-sm text-zinc-300 space-y-1 list-disc list-inside mb-4">
-                  <li>Instant results</li>
-                  <li>AI optimizes based on badges</li>
-                  <li>No manual selection needed</li>
-                  <li>Quick gameplay loop</li>
-                </ul>
-                <div className="text-xs font-semibold text-red-400 mb-2 uppercase">
-                  Cons
-                </div>
-                <ul className="text-sm text-zinc-300 space-y-1 list-disc list-inside">
-                  <li>Less strategic control</li>
-                  <li>Miss tactical opportunities</li>
-                </ul>
-              </div>
+            <button
+              onClick={() => handleLockIn('locked_in')}
+              disabled={!!submitting}
+              className="w-full py-3 bg-[#ff8c42] hover:bg-[#ff9d5c] text-black font-display font-black uppercase tracking-wider disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            >
+              {submitting === 'locked_in' ? 'TAKING THE STAGE...' : 'GO LOCKED IN'}
+            </button>
+          </div>
 
-              <button
-                onClick={() => handleLockIn('auto')}
-                disabled={submitting}
-                className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-              >
-                {submitting ? 'Processing...' : 'Go Auto'}
-              </button>
+          {/* Auto Mode */}
+          <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-8 flex flex-col">
+            <div className="text-center mb-6">
+              <Icon name="bolt" size={36} className="text-zinc-300 mb-3" />
+              <h3 className="text-2xl font-display font-black uppercase tracking-tight mb-2">AUTO</h3>
+              <p className="text-sm text-zinc-400 font-display font-bold uppercase tracking-wide">
+                Trust the camp — your prep and badges call the shots
+              </p>
             </div>
+
+            <ul className="text-xs text-zinc-400 font-display font-bold uppercase tracking-wide space-y-2 mb-6 flex-1">
+              <li className="flex gap-2"><Icon name="check" size={14} className="text-zinc-300" /> Instant full-battle results</li>
+              <li className="flex gap-2"><Icon name="check" size={14} className="text-zinc-300" /> Selections optimized from your style</li>
+              <li className="flex gap-2"><Icon name="check" size={14} className="text-zinc-300" /> Same payouts, press, and progression</li>
+            </ul>
+
+            <button
+              onClick={() => handleLockIn('auto')}
+              disabled={!!submitting}
+              className="w-full py-3 bg-[#18191c] border-2 border-[#3a3d44] hover:border-zinc-500 text-zinc-200 font-display font-black uppercase tracking-wider disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            >
+              {submitting === 'auto' ? 'RUNNING THE BATTLE...' : 'GO AUTO'}
+            </button>
           </div>
         </div>
 
-        {/* Info Box */}
-        <div className="mt-8 bg-[#2d2f35] border-2 border-[#3a3d44] rounded-lg p-4">
-          <p className="text-sm text-zinc-400 text-center">
-            Your prep work is complete. Now it's time to execute your strategy.
-            <br />
-            <span className="text-orange-400">Locked In</span> mode lets you adapt round-by-round, while{' '}
-            <span className="text-blue-400">Auto</span> mode gives instant results based on your attributes.
-          </p>
-        </div>
+        <p className="mt-8 text-xs text-zinc-500 font-display font-bold uppercase tracking-wider text-center">
+          Either way the battle counts — rating, purse, press, and progression all ride on tonight.
+        </p>
       </div>
     </div>
   );

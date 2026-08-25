@@ -85,7 +85,7 @@ export function RoundContentSelector({
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Content Types Column */}
-      <div className="bg-[#2d2f35] border-2 border-[#3a3d44] rounded-lg p-6">
+      <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-6">
         <div className="mb-4">
           <h3 className="text-lg font-bold text-white mb-1">Content Types</h3>
           <div className="flex items-center justify-between">
@@ -110,7 +110,7 @@ export function RoundContentSelector({
                 key={type.id}
                 onClick={() => toggleContent(type.id)}
                 disabled={isDisabled}
-                className={`w-full p-3 rounded-lg border-2 transition-all text-left ${
+                className={`w-full p-3 border-2 transition-all text-left ${
                   isSelected
                     ? 'border-[#ff8c42] bg-orange-950/30'
                     : isDisabled
@@ -126,9 +126,9 @@ export function RoundContentSelector({
                       type.category === 'attack'
                         ? 'bg-red-900/30 text-red-400'
                         : type.category === 'technical'
-                        ? 'bg-blue-900/30 text-blue-400'
+                        ? 'bg-amber-900/30 text-amber-400'
                         : type.category === 'entertainment'
-                        ? 'bg-purple-900/30 text-purple-400'
+                        ? 'bg-green-900/30 text-green-400'
                         : 'bg-green-900/30 text-green-400'
                     }`}
                   >
@@ -143,7 +143,7 @@ export function RoundContentSelector({
       </div>
 
       {/* Delivery Types Column */}
-      <div className="bg-[#2d2f35] border-2 border-[#3a3d44] rounded-lg p-6">
+      <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-6">
         <div className="mb-4">
           <h3 className="text-lg font-bold text-white mb-1">Delivery Types</h3>
           <div className="flex items-center justify-between">
@@ -168,7 +168,7 @@ export function RoundContentSelector({
                 key={type.id}
                 onClick={() => toggleDelivery(type.id)}
                 disabled={isDisabled}
-                className={`w-full p-3 rounded-lg border-2 transition-all text-left ${
+                className={`w-full p-3 border-2 transition-all text-left ${
                   isSelected
                     ? 'border-[#ff8c42] bg-orange-950/30'
                     : isDisabled
@@ -186,7 +186,7 @@ export function RoundContentSelector({
       </div>
 
       {/* Performance Types Column */}
-      <div className="bg-[#2d2f35] border-2 border-[#3a3d44] rounded-lg p-6">
+      <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-6">
         <div className="mb-4">
           <h3 className="text-lg font-bold text-white mb-1">Performance Types</h3>
           <div className="flex items-center justify-between">
@@ -211,7 +211,7 @@ export function RoundContentSelector({
                 key={type.id}
                 onClick={() => togglePerformance(type.id)}
                 disabled={isDisabled}
-                className={`w-full p-3 rounded-lg border-2 transition-all text-left ${
+                className={`w-full p-3 border-2 transition-all text-left ${
                   isSelected
                     ? 'border-[#ff8c42] bg-orange-950/30'
                     : isDisabled

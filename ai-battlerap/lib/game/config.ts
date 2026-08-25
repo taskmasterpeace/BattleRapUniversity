@@ -497,6 +497,10 @@ export function validateChokeConfig(): {
 } {
   const config = SIMULATION_CONFIG;
 
+  // NOTE: all probabilities here are PER SEGMENT (a battle has 8-12 segments).
+  // Battle-level targets these map to (validated via truFoeValidation.ts):
+  // ~7% avg battler choke rate per battle, ~45% Known Choker, ~3% Clutch.
+
   // Typical high-prep battler (resilience 7, 5 prep days)
   const typicalHighPrep = Math.max(
     config.CHOKE_MINIMUM,
@@ -506,17 +510,19 @@ export function validateChokeConfig(): {
   // Typical no-prep battler (resilience 5, 0 prep days)
   const typicalNoPrep = config.CHOKE_BASE_PROBABILITY;
 
-  // Worst case (resilience 3, 0 prep, Choker badge +0.05)
+  // Worst case (resilience 3, 0 prep, Known Choker badge +0.07)
   const worstCase = Math.min(
     config.CHOKE_MAXIMUM,
-    config.CHOKE_BASE_PROBABILITY + 0.05  // Choker badge
+    config.CHOKE_BASE_PROBABILITY + 0.07  // Known Choker badge (badges.ts chokeIncrease)
   );
 
-  // Validation: Should be in 2-15% range for typical cases
+  // Per-segment sanity windows: floor keeps chokes possible for prepared
+  // battlers, ceiling keeps a clean battler under ~2%/segment, badge-stacked
+  // worst case may not exceed the hard cap.
   const passesValidation =
-    typicalHighPrep >= 0.02 && typicalHighPrep <= 0.15 &&
-    typicalNoPrep >= 0.05 && typicalNoPrep <= 0.15 &&
-    worstCase >= 0.10 && worstCase <= 0.25;
+    typicalHighPrep >= 0.004 && typicalHighPrep <= 0.02 &&
+    typicalNoPrep >= 0.007 && typicalNoPrep <= 0.02 &&
+    worstCase >= 0.05 && worstCase <= config.CHOKE_MAXIMUM;
 
   return {
     typicalHighPrep,

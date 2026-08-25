@@ -1,0 +1,101 @@
+- generic [active] [ref=f15e1]:
+  - banner [ref=f15e2]:
+    - generic [ref=f15e3]:
+      - link "⚔ Battle Rap U" [ref=f15e4] [cursor=pointer]:
+        - /url: /dashboard
+        - generic [ref=f15e5]: ⚔
+        - generic [ref=f15e6]: Battle Rap U
+      - navigation [ref=f15e7]:
+        - link "Dashboard" [ref=f15e8] [cursor=pointer]:
+          - /url: /dashboard
+        - link "Battles" [ref=f15e11] [cursor=pointer]:
+          - /url: /battle/offers
+        - link "Calendar" [ref=f15e15] [cursor=pointer]:
+          - /url: /calendar
+        - link "Leagues" [ref=f15e18] [cursor=pointer]:
+          - /url: /leagues
+      - generic [ref=f15e21]:
+        - button [ref=f15e23]
+        - button "Open menu" [ref=f15e26]:
+          - generic [ref=f15e29]: Menu
+  - generic [ref=f15e30]:
+    - generic [ref=f15e32]:
+      - generic [ref=f15e33]:
+        - heading "CALENDAR" [level=1] [ref=f15e34]
+        - paragraph [ref=f15e35]: August 2026 — 23 events
+      - generic [ref=f15e36]:
+        - link "← Jul" [ref=f15e37] [cursor=pointer]:
+          - /url: /calendar?year=2026&month=7
+        - link "Today" [ref=f15e38] [cursor=pointer]:
+          - /url: /calendar
+        - link "Sep →" [ref=f15e39] [cursor=pointer]:
+          - /url: /calendar?year=2026&month=9
+    - generic [ref=f15e40]:
+      - generic [ref=f15e41]:
+        - generic [ref=f15e42]: Battle
+        - generic [ref=f15e44]: Tournament
+        - generic [ref=f15e46]: Reg opens
+        - generic [ref=f15e48]: Reg closes
+      - generic [ref=f15e50]:
+        - generic [ref=f15e51]: Sun
+        - generic [ref=f15e52]: Mon
+        - generic [ref=f15e53]: Tue
+        - generic [ref=f15e54]: Wed
+        - generic [ref=f15e55]: Thu
+        - generic [ref=f15e56]: Fri
+        - generic [ref=f15e57]: Sat
+      - generic [ref=f15e58]:
+        - generic [ref=f15e59]: "26"
+        - generic [ref=f15e61]: "27"
+        - generic [ref=f15e63]: "28"
+        - generic [ref=f15e65]: "29"
+        - generic [ref=f15e67]: "30"
+        - generic [ref=f15e69]: "31"
+        - generic [ref=f15e71]: "1"
+        - generic [ref=f15e73]: "2"
+        - generic [ref=f15e75]: "3"
+        - generic [ref=f15e77]: "4"
+        - generic [ref=f15e79]: "5"
+        - generic [ref=f15e81]: "6"
+        - generic [ref=f15e83]: "7"
+        - generic [ref=f15e85]: "8"
+        - generic [ref=f15e87]: "9"
+        - generic [ref=f15e89]: "10"
+        - generic [ref=f15e91]: "11"
+        - generic [ref=f15e93]: "12"
+        - generic [ref=f15e95]: "13"
+        - generic [ref=f15e97]: "14"
+        - generic [ref=f15e99]: "15"
+        - generic [ref=f15e101]: "16"
+        - generic [ref=f15e103]: "17"
+        - generic [ref=f15e105]: "18"
+        - generic [ref=f15e107]: "19"
+        - generic [ref=f15e109]: "20"
+        - generic [ref=f15e111]: "21"
+        - generic [ref=f15e113]: "22"
+        - generic [ref=f15e115]: "23"
+        - generic [ref=f15e117]: "24"
+        - generic [ref=f15e119]: "25"
+        - generic [ref=f15e121]: "26"
+        - generic [ref=f15e123]: "27"
+        - generic [ref=f15e125]:
+          - generic [ref=f15e126]: "28"
+          - generic [ref=f15e127]:
+            - link "[GBA] Pvp Challenger 20335 vs Wild Card Will" [ref=f15e128] [cursor=pointer]:
+              - /url: /watch/59ba8b63-7924-40c4-bb20-4794c2f200d6
+            - link "[GBA] FRICTION TEST vs Technical Tony" [ref=f15e129] [cursor=pointer]:
+              - /url: /watch/943b0af0-bc66-449c-b3a7-c0bfb32d882b
+            - link "[SRC] Flow Tester vs Bag Chaser" [ref=f15e130] [cursor=pointer]:
+              - /url: /battle/2892856d-45dc-49cd-922e-d1abf3ff12e4
+            - link "[GBA] FACE CLAIM ONE vs The Comedian" [ref=f15e131] [cursor=pointer]:
+              - /url: /watch/beca3131-1fc1-4069-b116-23cc0aa7035b
+            - generic [ref=f15e132]: +19 more
+        - generic [ref=f15e133]: "29"
+        - generic [ref=f15e135]: "30"
+        - generic [ref=f15e137]: "31"
+        - generic [ref=f15e139]: "1"
+        - generic [ref=f15e141]: "2"
+        - generic [ref=f15e143]: "3"
+        - generic [ref=f15e145]: "4"
+        - generic [ref=f15e147]: "5"
+  - button "Open Next.js Dev Tools" [ref=f15e154] [cursor=pointer]

@@ -1,10 +1,10 @@
-import { createServerSupabaseClient, getUser } from '@/lib/db/server';
+import { createClient } from '@supabase/supabase-js';
+import { getUser } from '@/lib/db/server';
 import { NextResponse } from 'next/server';
 import type { ScoringContext } from '@/lib/models';
 
-// Import the simulation module to access simulateRound
-// We'll need to call the internal simulateRound logic
 import { simulateSingleRound } from '@/lib/game/singleRoundSimulation';
+import { finalizeInteractiveBattle } from '@/lib/game/finalizeInteractiveBattle';
 
 export async function POST(
   request: Request,
@@ -17,7 +17,13 @@ export async function POST(
 
   const { id: battleId, roundNum } = await params;
   const roundIndex = parseInt(roundNum, 10);
-  const supabase = await createServerSupabaseClient();
+  // Service role: the round simulation writes rounds/segments for BOTH
+  // battlers. Ownership is verified below.
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { autoRefreshToken: false, persistSession: false } }
+  );
 
   // Validate round number
   if (isNaN(roundIndex) || roundIndex < 1 || roundIndex > 3) {
@@ -101,57 +107,20 @@ export async function POST(
       })
       .eq('id', battleId);
 
-    // If Round 3 is complete, transition to awaiting next round or complete battle
+    // If Round 3 is complete, settle the battle with the full career pipeline:
+    // per-round winners, verdict, payouts, ELO, press, progression, offers —
+    // identical consequences to an auto-simulated battle.
     if (roundIndex === 3) {
-      // Calculate overall winner
-      const { data: allRounds } = await supabase
-        .from('battle_rounds')
-        .select('*')
-        .eq('battle_id', battleId)
-        .order('round_index');
+      const finalResult = await finalizeInteractiveBattle(supabase, battleId);
 
-      if (allRounds) {
-        // Count rounds won by each battler
-        const playerRoundsWon = allRounds.filter((r) => {
-          const opponentRound = allRounds.find(
-            (opp) => opp.round_index === r.round_index && opp.battler_id !== r.battler_id
-          );
-          return (
-            r.battler_id === battle.battler_player_id &&
-            opponentRound &&
-            r.average_score > opponentRound.average_score
-          );
-        }).length;
-
-        const aiRoundsWon = allRounds.filter((r) => {
-          const opponentRound = allRounds.find(
-            (opp) => opp.round_index === r.round_index && opp.battler_id !== r.battler_id
-          );
-          return (
-            r.battler_id === battle.battler_ai_id &&
-            opponentRound &&
-            r.average_score > opponentRound.average_score
-          );
-        }).length;
-
-        const winnerId = playerRoundsWon > aiRoundsWon ? battle.battler_player_id : battle.battler_ai_id;
-
-        // Update battle as completed with winner
-        await supabase
-          .from('battles')
-          .update({
-            status: 'completed',
-            winner_battler_id: winnerId,
-          })
-          .eq('id', battleId);
-
-        return NextResponse.json({
-          round: result.playerRound,
-          segments: result.playerSegments,
-          winner: winnerId === battle.battler_player_id ? 'player' : 'ai',
-          message: `Round ${roundIndex} simulated. Battle complete!`,
-        });
-      }
+      return NextResponse.json({
+        round: result.playerRound,
+        segments: result.playerSegments,
+        winner: finalResult.winnerId === battle.battler_player_id ? 'player' : 'ai',
+        verdict: finalResult.verdict,
+        decisionType: finalResult.decisionType,
+        message: `Round ${roundIndex} simulated. Battle complete!`,
+      });
     } else {
       // Transition to next round's content selection
       const nextRoundIndex = roundIndex + 1;

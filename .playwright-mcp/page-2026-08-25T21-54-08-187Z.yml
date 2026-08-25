@@ -1,0 +1,302 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]: LIVE
+      - generic [ref=e7]:
+        - generic [ref=e8]:
+          - generic [ref=e9]: ● Beef Escalates as Midwest Menace Takes 3-0 Victory Over Flow Tester
+          - generic [ref=e10]: ● Inside Technical Tony's Writing Process — A Rare Look at How the Rounds Get Built
+          - generic [ref=e11]: ● Quietly, Tsunami Wave Is Assembling a Breakout Year — The Data Doesn't Whisper
+          - generic [ref=e12]: ● Tru Foe Is Knocking on the Next Tier's Door — The Numbers Make the Case
+          - generic [ref=e13]: ● What Actually Separates God Tier From Everyone Else — The Legacy Lou Case Study
+          - generic [ref=e14]: ● Connecticut Grind Edges Philly Prospect in Heated Grudge Match (3-0)
+          - generic [ref=e15]: ● Block Veteran Edges Pavement Poet in Heated Grudge Match (3-0)
+          - generic [ref=e16]: "● Rivalry Intensifies: Scheme Genius Defeats Punchline Professor 3-0"
+        - generic [ref=e17]:
+          - generic [ref=e18]: ● Beef Escalates as Midwest Menace Takes 3-0 Victory Over Flow Tester
+          - generic [ref=e19]: ● Inside Technical Tony's Writing Process — A Rare Look at How the Rounds Get Built
+          - generic [ref=e20]: ● Quietly, Tsunami Wave Is Assembling a Breakout Year — The Data Doesn't Whisper
+          - generic [ref=e21]: ● Tru Foe Is Knocking on the Next Tier's Door — The Numbers Make the Case
+          - generic [ref=e22]: ● What Actually Separates God Tier From Everyone Else — The Legacy Lou Case Study
+          - generic [ref=e23]: ● Connecticut Grind Edges Philly Prospect in Heated Grudge Match (3-0)
+          - generic [ref=e24]: ● Block Veteran Edges Pavement Poet in Heated Grudge Match (3-0)
+          - generic [ref=e25]: "● Rivalry Intensifies: Scheme Genius Defeats Punchline Professor 3-0"
+    - generic [ref=e27]:
+      - generic [ref=e28]:
+        - generic [ref=e29]: ◆ FREE PUBLIC BETA — OPEN NOW ◆
+        - heading "TALK IS CHEAP." [level=1] [ref=e30]:
+          - generic [ref=e31]: TALK
+          - generic [ref=e32]: IS
+          - generic [ref=e33]: CHEAP.
+        - paragraph [ref=e35]: BATTLE RAP UNIVERSITY
+        - paragraph [ref=e36]: The battle rap career sim. Build a battler, prep like your rep depends on it, take the stage — and let the culture decide what you are.
+        - generic [ref=e37]:
+          - link "🎤 ENTER THE CIRCUIT" [ref=e38] [cursor=pointer]:
+            - /url: /login
+          - link "⚔️ RUN A DREAM MATCHUP" [ref=e39] [cursor=pointer]:
+            - /url: /matchup
+          - link "🏆 POWER RANKINGS" [ref=e40] [cursor=pointer]:
+            - /url: /leaderboard
+      - generic [ref=e41]:
+        - generic [ref=e43]:
+          - img "THE WRITER" [ref=e45]
+          - paragraph [ref=e46]: THE WRITER
+        - generic [ref=e47]:
+          - img "THE PERFORMER" [ref=e49]
+          - paragraph [ref=e50]: THE PERFORMER
+        - generic [ref=e51]:
+          - img "THE PROBLEM" [ref=e53]
+          - paragraph [ref=e54]: THE PROBLEM
+        - generic [ref=e55]: BARS UP
+    - generic [ref=e57]:
+      - heading "LIVE FROM THE UNIVERCITY" [level=2] [ref=e60]
+      - paragraph [ref=e62]: THIS IS NOT A MOCKUP — THE WORLD IS RUNNING RIGHT NOW
+      - generic [ref=e63]:
+        - generic [ref=e64]:
+          - paragraph [ref=e65]: 🎬 TONIGHT'S CARD
+          - link "FULL CARD →" [ref=e66] [cursor=pointer]:
+            - /url: /watch
+        - generic [ref=e67]:
+          - paragraph [ref=e68]: 🏆 POWER RANKINGS
+          - generic [ref=e69]:
+            - link "#1 The Architect 1900" [ref=e70] [cursor=pointer]:
+              - /url: /battler/5d5fbeaf-c5ba-434e-af4d-32768e2aa488
+              - generic [ref=e71]: "#1"
+              - generic [ref=e73]: The Architect
+              - generic [ref=e75]: "1900"
+            - link "#2 Throne Talker 1900" [ref=e76] [cursor=pointer]:
+              - /url: /battler/f2fe551e-3eea-4df2-a4a9-3dd36c9d8cb2
+              - generic [ref=e77]: "#2"
+              - generic [ref=e79]: Throne Talker
+              - generic [ref=e81]: "1900"
+            - link "#3 Tsunami Wave 1867" [ref=e82] [cursor=pointer]:
+              - /url: /battler/25387f00-1686-4d47-84d1-caae8e8aac89
+              - generic [ref=e83]: "#3"
+              - generic [ref=e85]: Tsunami Wave
+              - generic [ref=e87]: "1867"
+          - link "FULL RANKINGS →" [ref=e88] [cursor=pointer]:
+            - /url: /leaderboard
+        - generic [ref=e89]:
+          - paragraph [ref=e90]: 📰 THE PRESS
+          - generic [ref=e91]:
+            - link "Beef Escalates as Midwest Menace Takes 3-0 Victory Over Flow Tester" [ref=e92] [cursor=pointer]:
+              - /url: /media/flow-tester-vs-midwest-menace-1781201840013
+            - link "Inside Technical Tony's Writing Process — A Rare Look at How the Rounds Get Built" [ref=e94] [cursor=pointer]:
+              - /url: /media/inside-technical-tonys-writing-process-a-rare-look-at-how-the-rounds-get-built-v5vits
+            - link "Quietly, Tsunami Wave Is Assembling a Breakout Year — The Data Doesn't Whisper" [ref=e96] [cursor=pointer]:
+              - /url: /media/quietly-tsunami-wave-is-assembling-a-breakout-year-the-data-doesnt-whisper-p67c75
+          - link "ALL COVERAGE →" [ref=e98] [cursor=pointer]:
+            - /url: /media
+    - generic [ref=e100]:
+      - generic [ref=e101]:
+        - paragraph [ref=e102]: ─── THE FILM ROOM ───
+        - heading "HOW TO PREP" [level=2] [ref=e103]
+        - paragraph [ref=e104]: Thirty-seven seconds on why prepared battlers eat and lazy ones freeze. Watch the film, then live it.
+      - generic [ref=e105]: ▶ REQUIRED VIEWING — FRESHMAN ORIENTATION
+    - generic [ref=e109]:
+      - generic [ref=e110]:
+        - paragraph [ref=e111]: ─── THIS IS THE LIFE ───
+        - heading "ONE WEEK IN THE CIRCUIT" [level=2] [ref=e112]
+        - paragraph [ref=e113]: Get the callout. Spend your week wisely. Take the stage. Read what they wrote about you. Then do it all again — that's the loop, and it never stops.
+      - generic [ref=e114]:
+        - generic [ref=e115]:
+          - generic [ref=e116]:
+            - button "THE CALLOUT" [ref=e117]
+            - generic [ref=e118]: →
+          - generic [ref=e119]:
+            - button "PREP WEEK" [ref=e120]
+            - generic [ref=e121]: →
+          - generic [ref=e122]:
+            - button "BATTLE NIGHT" [ref=e123]
+            - generic [ref=e124]: →
+          - button "THE PRESS" [ref=e126]
+          - generic [ref=e127]: ↻
+        - generic [ref=e128]:
+          - generic [ref=e129]: LIVE DEMO — REAL GAME MECHANICS
+          - generic [ref=e360]:
+            - paragraph [ref=e361]: 📝 EVERY DAY IS A CHOICE
+            - generic [ref=e362]:
+              - generic [ref=e364]:
+                - paragraph [ref=e365]: MON
+                - paragraph [ref=e366]: 🔍
+                - paragraph [ref=e367]: RESEARCH
+              - generic [ref=e369]:
+                - paragraph [ref=e370]: TUE
+                - paragraph [ref=e371]: ✍️
+                - paragraph [ref=e372]: WRITE
+              - generic [ref=e374]:
+                - paragraph [ref=e375]: WED
+                - paragraph [ref=e376]: ✍️
+                - paragraph [ref=e377]: WRITE
+              - generic [ref=e379]:
+                - paragraph [ref=e380]: THU
+                - paragraph [ref=e381]: 🎤
+                - paragraph [ref=e382]: PERFORM
+              - generic [ref=e384]:
+                - paragraph [ref=e385]: FRI
+                - paragraph [ref=e386]: ✍️
+                - paragraph [ref=e387]: WRITE
+              - generic [ref=e389]:
+                - paragraph [ref=e390]: SAT
+                - paragraph [ref=e391]: 🎤
+                - paragraph [ref=e392]: PERFORM
+              - generic [ref=e394]:
+                - paragraph [ref=e395]: SUN
+                - paragraph [ref=e396]: 😴
+                - paragraph [ref=e397]: REST
+            - generic [ref=e398]:
+              - generic [ref=e399]:
+                - paragraph [ref=e400]: +WORDPLAY
+                - paragraph [ref=e401]: writing days
+              - generic [ref=e402]:
+                - paragraph [ref=e403]: +ANGLES
+                - paragraph [ref=e404]: research days
+              - generic [ref=e405]:
+                - paragraph [ref=e406]: −CHOKE RISK
+                - paragraph [ref=e407]: rest days
+    - generic [ref=e178]:
+      - generic [ref=e179]:
+        - paragraph [ref=e180]: ─── NO MOCKUPS ───
+        - heading "ACTUAL GAME FOOTAGE" [level=2] [ref=e181]
+      - generic [ref=e182]:
+        - figure [ref=e183]:
+          - generic [ref=e184]:
+            - img "BATTLE RESULTS" [ref=e186]
+            - generic [ref=e187]:
+              - generic [ref=e188]: BATTLE RESULTS
+              - generic [ref=e189]: A 3-0 bodybag — and the league already wants you back on a bigger card.
+        - figure [ref=e190]:
+          - generic [ref=e191]:
+            - img "YOUR CAREER HQ" [ref=e193]
+            - generic [ref=e194]:
+              - generic [ref=e195]: YOUR CAREER HQ
+              - generic [ref=e196]: Rating, record, streaks, XP, badges — your whole legacy on one screen.
+        - figure [ref=e197]:
+          - generic [ref=e198]:
+            - img "LEAGUE STANDINGS" [ref=e200]
+            - generic [ref=e201]:
+              - generic [ref=e202]: LEAGUE STANDINGS
+              - generic [ref=e203]: Every league has its own judges, culture, and ladder to climb.
+        - figure [ref=e204]:
+          - generic [ref=e205]:
+            - img "BADGE COLLECTION" [ref=e207]
+            - generic [ref=e208]:
+              - generic [ref=e209]: BADGE COLLECTION
+              - generic [ref=e210]: 97 ways to make a name. A few ways to ruin one.
+    - generic [ref=e212]:
+      - generic [ref=e213]:
+        - paragraph [ref=e214]: ─── BUILT BY FANS, FOR FANS ───
+        - heading "THE CULTURE IS IN THE CODE" [level=2] [ref=e215]
+      - generic [ref=e216]:
+        - generic [ref=e217]:
+          - generic [ref=e218]: 😶
+          - heading "THE CHOKE IS REAL" [level=3] [ref=e219]
+          - paragraph [ref=e220]: Low resilience and bad prep means you can freeze on stage with the whole room watching. Known Chokers blow 45% of their battles. Clutch performers? 3%. Build the nerve or get a reputation.
+        - generic [ref=e221]:
+          - generic [ref=e222]: 🖊️
+          - heading "PEN VS PERFORMANCE" [level=3] [ref=e223]
+          - paragraph [ref=e224]: A technical league judges 60% on the writing. A bar-room crowd wants delivery and presence. The same battler wins one room and gets washed in the other. Pick your circuits wisely.
+        - generic [ref=e225]:
+          - generic [ref=e226]: 📰
+          - heading "THE PRESS NEVER SLEEPS" [level=3] [ref=e227]
+          - paragraph [ref=e228]: Eight AI bloggers with their own agendas cover every battle. Bodied somebody? Front page. Choked? Also front page. Your rivalries, your slumps, your comebacks — all on the record.
+        - generic [ref=e229]:
+          - generic [ref=e230]: 🏅
+          - heading "97 BADGES TO EARN" [level=3] [ref=e231]
+          - paragraph [ref=e232]: Punchline Czar. Crowd Favorite. Giant Slayer. And the ones you don't want — Choker, Drama Starter, One-Dimensional. Your badge case tells the story of who you really are.
+        - generic [ref=e233]:
+          - generic [ref=e234]: 👑
+          - heading "TAKE THE THRONE" [level=3] [ref=e235]
+          - paragraph [ref=e236]: Every league has three thrones held by its top battlers. Call out a throne holder, win, and take their seat. Then defend it — because everybody under you is calling you out next.
+        - generic [ref=e237]:
+          - generic [ref=e238]: 🌪️
+          - heading "LIFE COMES AT YOU" [level=3] [ref=e239]
+          - paragraph [ref=e240]: Win streaks bring temptation. Losses bring doubt. Family, money, beef — life events hit between battles and your choices shape your attributes, your stress, and your story.
+    - generic [ref=e241]:
+      - paragraph [ref=e242]: 19 LEAGUES · 10 CITIES · UNDERGROUND TO MAIN STAGE
+      - heading "WHERE WILL YOU MAKE YOUR NAME?" [level=2] [ref=e243]
+      - generic [ref=e244]:
+        - generic [ref=e245]:
+          - generic [ref=e246]:
+            - img "Royal Wordsmiths" [ref=e248]
+            - generic [ref=e249]: Royal Wordsmiths
+          - generic [ref=e250]:
+            - img "Stay Forever" [ref=e252]
+            - generic [ref=e253]: Stay Forever
+          - generic [ref=e254]:
+            - img "Respect The Craft" [ref=e256]
+            - generic [ref=e257]: Respect The Craft
+          - generic [ref=e258]:
+            - img "Spitfire Arena" [ref=e260]
+            - generic [ref=e261]: Spitfire Arena
+          - generic [ref=e262]:
+            - img "Crown City Battle League" [ref=e264]
+            - generic [ref=e265]: Crown City Battle League
+          - generic [ref=e266]:
+            - img "Block Buster Battles" [ref=e268]
+            - generic [ref=e269]: Block Buster Battles
+          - generic [ref=e270]:
+            - img "Urban Warfare League" [ref=e272]
+            - generic [ref=e273]: Urban Warfare League
+          - generic [ref=e274]:
+            - img "Barz Supreme League" [ref=e276]
+            - generic [ref=e277]: Barz Supreme League
+          - generic [ref=e278]:
+            - img "Flow Syndicate" [ref=e280]
+            - generic [ref=e281]: Flow Syndicate
+          - generic [ref=e282]:
+            - img "Main Stage Arena" [ref=e284]
+            - generic [ref=e285]: Main Stage Arena
+          - generic [ref=e286]:
+            - img "Small Room Circuit" [ref=e288]
+            - generic [ref=e289]: Small Room Circuit
+          - generic [ref=e290]:
+            - img "Mic Masters Arena" [ref=e292]
+            - generic [ref=e293]: Mic Masters Arena
+        - generic [ref=e294]:
+          - generic [ref=e295]:
+            - img "Royal Wordsmiths" [ref=e297]
+            - generic [ref=e298]: Royal Wordsmiths
+          - generic [ref=e299]:
+            - img "Stay Forever" [ref=e301]
+            - generic [ref=e302]: Stay Forever
+          - generic [ref=e303]:
+            - img "Respect The Craft" [ref=e305]
+            - generic [ref=e306]: Respect The Craft
+          - generic [ref=e307]:
+            - img "Spitfire Arena" [ref=e309]
+            - generic [ref=e310]: Spitfire Arena
+          - generic [ref=e311]:
+            - img "Crown City Battle League" [ref=e313]
+            - generic [ref=e314]: Crown City Battle League
+          - generic [ref=e315]:
+            - img "Block Buster Battles" [ref=e317]
+            - generic [ref=e318]: Block Buster Battles
+          - generic [ref=e319]:
+            - img "Urban Warfare League" [ref=e321]
+            - generic [ref=e322]: Urban Warfare League
+          - generic [ref=e323]:
+            - img "Barz Supreme League" [ref=e325]
+            - generic [ref=e326]: Barz Supreme League
+          - generic [ref=e327]:
+            - img "Flow Syndicate" [ref=e329]
+            - generic [ref=e330]: Flow Syndicate
+          - generic [ref=e331]:
+            - img "Main Stage Arena" [ref=e333]
+            - generic [ref=e334]: Main Stage Arena
+          - generic [ref=e335]:
+            - img "Small Room Circuit" [ref=e337]
+            - generic [ref=e338]: Small Room Circuit
+          - generic [ref=e339]:
+            - img "Mic Masters Arena" [ref=e341]
+            - generic [ref=e342]: Mic Masters Arena
+    - generic [ref=e343]:
+      - generic: BARS UP
+      - generic [ref=e344]:
+        - heading "THE CIRCUIT IS OPEN." [level=2] [ref=e345]: THE CIRCUITIS OPEN.
+        - paragraph [ref=e346]: Free public beta. Create your battler in two minutes. Your first callout is already waiting.
+        - link "🎤 CREATE YOUR BATTLER" [ref=e347] [cursor=pointer]:
+          - /url: /login
+        - paragraph [ref=e348]: NO BARS REQUIRED — WE SIMULATE. YOU STRATEGIZE.
+  - button "Open Next.js Dev Tools" [ref=e354] [cursor=pointer]
+  - alert [ref=e358]

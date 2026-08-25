@@ -3,7 +3,7 @@
 type Props = {
   label: string;
   value: string | number;
-  icon?: string;
+  icon?: React.ReactNode;
   subtext?: string;
   variant?: 'default' | 'highlight';
 };
@@ -32,7 +32,7 @@ export default function StatCard({ label, value, icon, subtext, variant = 'defau
 
       <div className="relative z-10">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-2 min-w-0">
-          {icon && <span className="text-xl sm:text-2xl">{icon}</span>}
+          {icon && <span className="text-[#ff8c42] flex items-center">{icon}</span>}
           <span className="text-xs text-zinc-500 font-bebas uppercase tracking-wide sm:tracking-widest">{label}</span>
         </div>
         <div className="text-3xl sm:text-4xl font-anton text-[#ff8c42] mb-1 leading-none">{value}</div>

@@ -57,11 +57,15 @@ function generateAIPrep(battlerId: string, battleId: string, prepDays: number) {
 }
 
 function prepDayCount(battle: BattleRow): number {
+  // Capped at 14 to match the prep API window — prep is a scarce resource.
   const lockDate = new Date(battle.lock_prep_at);
   const createdDate = new Date(battle.created_at);
-  return Math.max(
-    1,
-    Math.ceil((lockDate.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24))
+  return Math.min(
+    14,
+    Math.max(
+      1,
+      Math.ceil((lockDate.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24))
+    )
   );
 }
 
@@ -213,6 +217,27 @@ export async function runBattleSimulation(
   // Run simulation
   await simulateBattle(battle.id, supabase);
 
+  const offersGenerated = await applyPostBattleCareerEffects(
+    battle,
+    supabase,
+    playerFullyPrepped
+  );
+
+  return { noShow: noShowFlag, offersGenerated };
+}
+
+/**
+ * Everything a completed battle does to a CAREER: attribute/badge/XP
+ * progression, bonus battle slots, crew loyalty, post-battle life events,
+ * stress, and fresh offers. Shared by the auto pipeline above and the
+ * interactive round-by-round finalizer (finalizeInteractiveBattle.ts) so both
+ * battle modes leave identical career footprints.
+ */
+export async function applyPostBattleCareerEffects(
+  battle: BattleRow,
+  supabase: any,
+  playerFullyPrepped: boolean
+): Promise<number> {
   // Apply progression (attributes, badges, XP)
   const { applyAttributeProgression } = await import('@/lib/game/progression');
   await applyAttributeProgression(battle.id, supabase);
@@ -372,5 +397,5 @@ export async function runBattleSimulation(
     );
   }
 
-  return { noShow: noShowFlag, offersGenerated };
+  return offersGenerated;
 }
