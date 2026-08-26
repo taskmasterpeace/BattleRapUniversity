@@ -1,0 +1,362 @@
+[
+  {
+    "asset_key": "tpl.BAD_LOSS.header",
+    "kind": "background",
+    "file_path": "public/sprites/events/templates/BAD_LOSS-header.png",
+    "source": "generated",
+    "style_ref": "raw images/life/image_1765436470688.png",
+    "dimensions": "640x256",
+    "focal": "50% 50%"
+  },
+  {
+    "asset_key": "tpl.BAD_LOSS.thumb",
+    "kind": "background",
+    "file_path": "public/sprites/events/templates/BAD_LOSS-thumb.png",
+    "source": "generated",
+    "style_ref": "raw images/life/image_1765436470688.png",
+    "dimensions": "256x256",
+    "focal": "50% 50%"
+  },
+  {
+    "asset_key": "tpl.BODYBAG_HYPE.header",
+    "kind": "background",
+    "file_path": "public/sprites/events/templates/BODYBAG_HYPE-header.png",
+    "source": "generated",
+    "style_ref": "raw images/life/image_1765436470688.png",
+    "dimensions": "640x256",
+    "focal": "50% 50%"
+  },
+  {
+    "asset_key": "tpl.BODYBAG_HYPE.thumb",
+    "kind": "background",
+    "file_path": "public/sprites/events/templates/BODYBAG_HYPE-thumb.png",
+    "source": "generated",
+    "style_ref": "raw images/life/image_1765436470688.png",
+    "dimensions": "256x256",
+    "focal": "50% 50%"
+  },
+  {
+    "asset_key": "cat.career.critical",
+    "kind": "background",
+    "file_path": "public/sprites/events/career-header-critical.png",
+    "source": "generated",
+    "style_ref": "raw images/life/image_1765436470688.png",
+    "dimensions": "640x256",
+    "focal": "50% 50%"
+  },
+  {
+    "asset_key": "cat.career.header",
+    "kind": "background",
+    "file_path": "public/sprites/events/career-header.png",
+    "source": "generated",
+    "style_ref": "raw images/life/image_1765436470688.png",
+    "dimensions": "640x256",
+    "focal": "50% 50%"
+  },
+  {
+    "asset_key": "cat.career.thumb",
+    "kind": "background",
+    "file_path": "public/sprites/events/career-thumb.png",
+    "source": "generated",
+    "style_ref": "raw images/life/image_1765436470688.png",
+    "dimensions": "256x256",
+    "focal": "50% 50%"
+  },
+  {
+    "asset_key": "tpl.CAREER_CRISIS.header",
+    "kind": "background",
+    "file_path": "public/sprites/events/templates/CAREER_CRISIS-header.png",
+    "source": "generated",
+    "style_ref": "raw images/life/image_1765436470688.png",
+    "dimensions": "640x256",
+    "focal": "50% 50%"
+  },
+  {
+    "asset_key": "tpl.CAREER_CRISIS.thumb",
+    "kind": "background",
+    "file_path": "public/sprites/events/templates/CAREER_CRISIS-thumb.png",
+    "source": "generated",
+    "style_ref": "raw images/life/image_1765436470688.png",
+    "dimensions": "256x256",
+    "focal": "50% 50%"
+  },
+  {
+    "asset_key": "tpl.CHOKE_EVENT.header",
+    "kind": "background",
+    "file_path": "public/sprites/events/templates/CHOKE_EVENT-header.png",
+    "source": "generated",
+    "style_ref": "raw images/life/image_1765436470688.png",
+    "dimensions": "640x256",
+    "focal": "50% 50%"
+  },
+  {
+    "asset_key": "tpl.CHOKE_EVENT.thumb",
+    "kind": "background",
+    "file_path": "public/sprites/events/templates/CHOKE_EVENT-thumb.png",
+    "source": "generated",
+    "style_ref": "raw images/life/image_1765436470688.png",
+    "dimensions": "256x256",
+    "focal": "50% 50%"
+  },
+  {
+    "asset_key": "tpl.CHOKE_IN_BIG_BATTLE.header",
+    "kind": "background",
+    "file_path": "public/sprites/events/templates/CHOKE_IN_BIG_BATTLE-header.png",
+    "source": "generated",
+    "style_ref": "raw images/life/image_1765436470688.png",
+    "dimensions": "640x256",
+    "focal": "50% 50%"
+  },
+  {
+    "asset_key": "tpl.CHOKE_IN_BIG_BATTLE.thumb",
+    "kind": "background",
+    "file_path": "public/sprites/events/templates/CHOKE_IN_BIG_BATTLE-thumb.png",
+    "source": "generated",
+    "style_ref": "raw images/life/image_1765436470688.png",
+    "dimensions": "256x256",
+    "focal": "50% 50%"
+  },
+  {
+    "asset_key": "tpl.CLOSE_VICTORY.header",
+    "kind": "background",
+    "file_path": "public/sprites/events/templates/CLOSE_VICTORY-header.png",
+    "source": "generated",
+    "style_ref": "raw images/life/image_1765436470688.png",
+    "dimensions": "640x256",
+    "focal": "50% 50%"
+  },
+  {
+    "asset_key": "tpl.CLOSE_VICTORY.thumb",
+    "kind": "background",
+    "file_path": "public/sprites/events/templates/CLOSE_VICTORY-thumb.png",
+    "source": "generated",
+    "style_ref": "raw images/life/image_1765436470688.png",
+    "dimensions": "256x256",
+    "focal": "50% 50%"
+  },
+  {
+    "asset_key": "tpl.DOMINANT_VICTORY.header",
+    "kind": "background",
+    "file_path": "public/sprites/events/templates/DOMINANT_VICTORY-header.png",
+    "source": "generated",
+    "style_ref": "raw images/life/image_1765436470688.png",
+    "dimensions": "640x256",
+    "focal": "45% 50%"
+  },
+  {
+    "asset_key": "tpl.DOMINANT_VICTORY.thumb",
+    "kind": "background",
+    "file_path": "public/sprites/events/templates/DOMINANT_VICTORY-thumb.png",
+    "source": "generated",
+    "style_ref": "raw images/life/image_1765436470688.png",
+    "dimensions": "256x256",
+    "focal": "50% 50%"
+  },
+  {
+    "asset_key": "tpl.FAMILY_WEDDING.header",
+    "kind": "background",
+    "file_path": "public/sprites/events/templates/FAMILY_WEDDING-header.png",
+    "source": "generated",
+    "style_ref": "raw images/life/image_1765436470688.png",
+    "dimensions": "640x256",
+    "focal": "50% 50%"
+  },
+  {
+    "asset_key": "tpl.FAMILY_WEDDING.thumb",
+    "kind": "background",
+    "file_path": "public/sprites/events/templates/FAMILY_WEDDING-thumb.png",
+    "source": "generated",
+    "style_ref": "raw images/life/image_1765436470688.png",
+    "dimensions": "256x256",
+    "focal": "50% 50%"
+  },
+  {
+    "asset_key": "cat.financial.critical",
+    "kind": "background",
+    "file_path": "public/sprites/events/financial-header-critical.png",
+    "source": "generated",
+    "style_ref": "raw images/life/image_1765436470688.png",
+    "dimensions": "640x256",
+    "focal": "50% 50%"
+  },
+  {
+    "asset_key": "cat.financial.header",
+    "kind": "background",
+    "file_path": "public/sprites/events/financial-header.png",
+    "source": "generated",
+    "style_ref": "raw images/life/image_1765436470688.png",
+    "dimensions": "640x256",
+    "focal": "50% 50%"
+  },
+  {
+    "asset_key": "cat.financial.thumb",
+    "kind": "background",
+    "file_path": "public/sprites/events/financial-thumb.png",
+    "source": "generated",
+    "style_ref": "raw images/life/image_1765436470688.png",
+    "dimensions": "256x256",
+    "focal": "50% 50%"
+  },
+  {
+    "asset_key": "tpl.FINANCIAL_CRISIS.header",
+    "kind": "background",
+    "file_path": "public/sprites/events/templates/FINANCIAL_CRISIS-header.png",
+    "source": "generated",
+    "style_ref": "raw images/life/image_1765436470688.png",
+    "dimensions": "640x256",
+    "focal": "50% 50%"
+  },
+  {
+    "asset_key": "tpl.FINANCIAL_CRISIS.thumb",
+    "kind": "background",
+    "file_path": "public/sprites/events/templates/FINANCIAL_CRISIS-thumb.png",
+    "source": "generated",
+    "style_ref": "raw images/life/image_1765436470688.png",
+    "dimensions": "256x256",
+    "focal": "50% 50%"
+  },
+  {
+    "asset_key": "tpl.MEDIA_INTERVIEW.header",
+    "kind": "background",
+    "file_path": "public/sprites/events/templates/MEDIA_INTERVIEW-header.png",
+    "source": "generated",
+    "style_ref": "raw images/life/image_1765436470688.png",
+    "dimensions": "640x256",
+    "focal": "50% 50%"
+  },
+  {
+    "asset_key": "tpl.MEDIA_INTERVIEW.thumb",
+    "kind": "background",
+    "file_path": "public/sprites/events/templates/MEDIA_INTERVIEW-thumb.png",
+    "source": "generated",
+    "style_ref": "raw images/life/image_1765436470688.png",
+    "dimensions": "256x256",
+    "focal": "50% 50%"
+  },
+  {
+    "asset_key": "tpl.NARROW_LOSS.header",
+    "kind": "background",
+    "file_path": "public/sprites/events/templates/NARROW_LOSS-header.png",
+    "source": "generated",
+    "style_ref": "raw images/life/image_1765436470688.png",
+    "dimensions": "640x256",
+    "focal": "40% 50%"
+  },
+  {
+    "asset_key": "tpl.NARROW_LOSS.thumb",
+    "kind": "background",
+    "file_path": "public/sprites/events/templates/NARROW_LOSS-thumb.png",
+    "source": "generated",
+    "style_ref": "raw images/life/image_1765436470688.png",
+    "dimensions": "256x256",
+    "focal": "50% 50%"
+  },
+  {
+    "asset_key": "cat.personal.critical",
+    "kind": "background",
+    "file_path": "public/sprites/events/personal-header-critical.png",
+    "source": "generated",
+    "style_ref": "raw images/life/image_1765436470688.png",
+    "dimensions": "640x256",
+    "focal": "50% 50%"
+  },
+  {
+    "asset_key": "cat.personal.header",
+    "kind": "background",
+    "file_path": "public/sprites/events/personal-header.png",
+    "source": "generated",
+    "style_ref": "raw images/life/image_1765436470688.png",
+    "dimensions": "640x256",
+    "focal": "50% 50%"
+  },
+  {
+    "asset_key": "cat.personal.thumb",
+    "kind": "background",
+    "file_path": "public/sprites/events/personal-thumb.png",
+    "source": "generated",
+    "style_ref": "raw images/life/image_1765436470688.png",
+    "dimensions": "256x256",
+    "focal": "50% 50%"
+  },
+  {
+    "asset_key": "cat.quiet",
+    "kind": "background",
+    "file_path": "public/sprites/events/quiet.png",
+    "source": "generated",
+    "style_ref": "raw images/life/image_1765436470688.png",
+    "dimensions": "512x512",
+    "focal": "50% 50%"
+  },
+  {
+    "asset_key": "cat.relationship.critical",
+    "kind": "background",
+    "file_path": "public/sprites/events/relationship-header-critical.png",
+    "source": "generated",
+    "style_ref": "raw images/life/image_1765436470688.png",
+    "dimensions": "640x256",
+    "focal": "50% 50%"
+  },
+  {
+    "asset_key": "cat.relationship.header",
+    "kind": "background",
+    "file_path": "public/sprites/events/relationship-header.png",
+    "source": "generated",
+    "style_ref": "raw images/life/image_1765436470688.png",
+    "dimensions": "640x256",
+    "focal": "50% 50%"
+  },
+  {
+    "asset_key": "cat.relationship.thumb",
+    "kind": "background",
+    "file_path": "public/sprites/events/relationship-thumb.png",
+    "source": "generated",
+    "style_ref": "raw images/life/image_1765436470688.png",
+    "dimensions": "256x256",
+    "focal": "50% 50%"
+  },
+  {
+    "asset_key": "tpl.RIVAL_CALLOUT.header",
+    "kind": "background",
+    "file_path": "public/sprites/events/templates/RIVAL_CALLOUT-header.png",
+    "source": "generated",
+    "style_ref": "raw images/life/image_1765436470688.png",
+    "dimensions": "640x256",
+    "focal": "45% 50%"
+  },
+  {
+    "asset_key": "tpl.RIVAL_CALLOUT.thumb",
+    "kind": "background",
+    "file_path": "public/sprites/events/templates/RIVAL_CALLOUT-thumb.png",
+    "source": "generated",
+    "style_ref": "raw images/life/image_1765436470688.png",
+    "dimensions": "256x256",
+    "focal": "50% 50%"
+  },
+  {
+    "asset_key": "cat.scandal.critical",
+    "kind": "background",
+    "file_path": "public/sprites/events/scandal-header-critical.png",
+    "source": "generated",
+    "style_ref": "raw images/life/image_1765436470688.png",
+    "dimensions": "640x256",
+    "focal": "50% 50%"
+  },
+  {
+    "asset_key": "cat.scandal.header",
+    "kind": "background",
+    "file_path": "public/sprites/events/scandal-header.png",
+    "source": "generated",
+    "style_ref": "raw images/life/image_1765436470688.png",
+    "dimensions": "640x256",
+    "focal": "50% 50%"
+  },
+  {
+    "asset_key": "cat.scandal.thumb",
+    "kind": "background",
+    "file_path": "public/sprites/events/scandal-thumb.png",
+    "source": "generated",
+    "style_ref": "raw images/life/image_1765436470688.png",
+    "dimensions": "256x256",
+    "focal": "50% 50%"
+  }
+]
