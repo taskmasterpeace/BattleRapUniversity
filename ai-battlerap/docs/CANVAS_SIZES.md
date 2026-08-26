@@ -15,7 +15,20 @@ All new art **must** be generated at these exact dimensions. All existing art mu
 | Crowd reaction tiles | **256×256** | 1:1 | YES | `crowd/image_1764197014144.png` |
 | City / venue backgrounds | **640×360** | 16:9 | NO | `venue/image_1764378969538.png` |
 | Stage backdrops (battle stage) | **1280×720** | 16:9 | NO | `venue/image_1764378969538.png` |
-| Life event scenes | **640×360** | 16:9 | NO (situational) | `life/image_1765436470688.png` |
+
+## EVENT_ART (life events v2 — per `docs/design/LIFE_EVENTS_UI.md` §1.2)
+
+Supersedes the old "Life event scenes 640×360" row. Two crops per subject:
+
+| Asset type | Pixel size | Aspect | Notes |
+|---|---|---|---|
+| Event header (pop-up / decision-screen banner) | **640×256** (displayed at 1280×512) | 2.5:1 | **Safe zone: center 60%** — mobile crops via the registry `focal` column, so composition must survive a ~375×160 center-weighted crop. NO readable text ever (art can never smuggle bars). Style ref: `life/image_1765436470688.png` |
+| Event thumb (inbox/list + interstitial chip) | **512×512** | 1:1 | Center-crop of the header's focal subject or its own composition. Same style ref |
+| Event header, critical variant | **640×256** (displayed at 1280×512) | 2.5:1 | Same scene, harder grade (darker, red-shifted rim light, one destabilizing detail) |
+
+**Generation cap (verified 2026-08-26):** PixelLab `/generate-image-v2` rejects width > **792px** (HTTP 422). Headers therefore GENERATE at 640×256 and DISPLAY at 2× via CSS `image-rendering: pixelated` — lossless for pixel art, smaller files, chunkier (better) pixels. Never upscale with smoothing.
+
+**Cost law:** PixelLab `/generate-image-v2` with style reference = **$0 marginal on subscription** (well under the 1¢/image budget). Batch/offline only — the game never generates at runtime. Full asset bill + per-template launch set (12 templates × thumb+header) in `LIFE_EVENTS_UI.md` §1.2.1.
 
 ## Rules
 
