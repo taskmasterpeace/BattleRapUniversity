@@ -41,11 +41,13 @@ export default function AttributeAllocationStep({
   initialAttributes,
   suggestedLeague
 }: Props) {
+  // Balanced starting build that sums to exactly TOTAL_POINTS (25) — the player
+  // begins valid and tunes from there, never staring at a negative counter.
   const [attributes, setAttributes] = useState<AllocatedAttributes>(
     initialAttributes || {
-      writing: { lyricism: 3, wordplay: 3, creativity: 3, flow: 3 },
-      performance: { stage_presence: 3, crowd_control: 3, delivery: 3 },
-      personal: { financial_stability: 1, reputation: 2, family_bond: 2 },
+      writing: { lyricism: 3, wordplay: 3, creativity: 3, flow: 2 },
+      performance: { stage_presence: 3, crowd_control: 3, delivery: 2 },
+      personal: { financial_stability: 1, reputation: 2, family_bond: 1 },
       resilience: 2,
     }
   );
@@ -116,47 +118,39 @@ export default function AttributeAllocationStep({
     attribute: string;
     color: string;
   }) => (
-    <div className="flex items-center gap-3 mb-3">
-      {/* Icon */}
-      <span className="text-xl w-6">{icon}</span>
-
-      {/* Label */}
-      <div className="w-32">
-        <span className="text-xs text-zinc-300 uppercase tracking-wider font-bold">
+    <div className="mb-3">
+      <div className="flex items-center gap-2 mb-1.5">
+        <span className="flex items-center justify-center text-[#ff8c42] flex-shrink-0">{icon}</span>
+        <span className="text-[11px] text-zinc-300 uppercase tracking-wider font-bold leading-tight flex-1 min-w-0">
           {label}
         </span>
+        <span className="text-lg font-display font-black text-[#ff8c42] tabular-nums w-5 text-right">
+          {value}
+        </span>
       </div>
-
-      {/* Bar container */}
-      <div className="flex-1 flex items-center gap-2">
-        <span className="text-[10px] text-orange-500 font-bold uppercase">LOW</span>
-        <div className="flex-1 h-5 bg-[#1e293b] border-2 border-[#374151] relative">
-          {/* Filled portion */}
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => updateAttribute(category, attribute, -1)}
+          disabled={value <= MIN_PER_ATTRIBUTE}
+          className="w-7 h-7 bg-[#18191c] border-2 border-[#3a3d44] hover:border-[#ff8c42] text-zinc-300 font-bold text-sm disabled:opacity-30 disabled:cursor-not-allowed transition flex-shrink-0"
+        >
+          −
+        </button>
+        {/* Fill bar between the steppers */}
+        <div className="flex-1 h-3 bg-[#18191c] border-2 border-[#3a3d44] relative overflow-hidden">
           <div
             className={`h-full ${color} transition-all`}
-            style={{ width: `${(value / MAX_PER_ATTRIBUTE) * 100}%` }}
+            style={{ width: `${((value - MIN_PER_ATTRIBUTE) / (MAX_PER_ATTRIBUTE - MIN_PER_ATTRIBUTE)) * 100}%` }}
           />
-          {/* MID marker */}
-          <div className="absolute left-1/2 top-0 bottom-0 w-[2px] bg-zinc-600" />
         </div>
-        <span className="text-[10px] text-orange-500 font-bold uppercase">MID</span>
+        <button
+          onClick={() => updateAttribute(category, attribute, 1)}
+          disabled={value >= MAX_PER_ATTRIBUTE || pointsRemaining <= 0}
+          className="w-7 h-7 bg-[#18191c] border-2 border-[#3a3d44] hover:border-[#ff8c42] text-zinc-300 font-bold text-sm disabled:opacity-30 disabled:cursor-not-allowed transition flex-shrink-0"
+        >
+          +
+        </button>
       </div>
-
-      {/* Controls */}
-      <button
-        onClick={() => updateAttribute(category, attribute, -1)}
-        disabled={value <= MIN_PER_ATTRIBUTE}
-        className="w-8 h-8 bg-[#1e293b] border-2 border-[#374151] hover:border-orange-500 text-zinc-300 font-bold disabled:opacity-30 disabled:cursor-not-allowed transition"
-      >
-        −
-      </button>
-      <button
-        onClick={() => updateAttribute(category, attribute, 1)}
-        disabled={value >= MAX_PER_ATTRIBUTE || pointsRemaining <= 0}
-        className="w-8 h-8 bg-[#1e293b] border-2 border-[#374151] hover:border-orange-500 text-zinc-300 font-bold disabled:opacity-30 disabled:cursor-not-allowed transition"
-      >
-        +
-      </button>
     </div>
   );
 
@@ -172,7 +166,9 @@ export default function AttributeAllocationStep({
         </div>
         <div className="text-right">
           <p className="text-xs text-zinc-500 uppercase tracking-wide mb-1">POINTS REMAINING</p>
-          <p className={`text-4xl font-black ${pointsRemaining === 0 ? 'text-green-500' : 'text-orange-500'}`}>
+          <p className={`text-4xl font-display font-black ${
+            pointsRemaining === 0 ? 'text-green-500' : pointsRemaining < 0 ? 'text-red-500' : 'text-[#ff8c42]'
+          }`}>
             {pointsRemaining}
           </p>
         </div>
@@ -181,8 +177,8 @@ export default function AttributeAllocationStep({
       {/* Three-column grid matching mockup */}
       <div className="grid grid-cols-3 gap-4">
         {/* WRITING CARD */}
-        <div className="bg-[#2d3748] border-2 border-[#374151] p-4">
-          <h3 className="text-sm font-black uppercase tracking-wider text-orange-500 mb-4">
+        <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-4">
+          <h3 className="text-sm font-black uppercase tracking-wider text-[#ff8c42] mb-4">
             WRITING
           </h3>
           <AttributeBar
@@ -220,7 +216,7 @@ export default function AttributeAllocationStep({
         </div>
 
         {/* PERFORMANCE CARD */}
-        <div className="bg-[#2d3748] border-2 border-[#374151] p-4">
+        <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-4">
           <h3 className="text-sm font-black uppercase tracking-wider text-[#ff8c42] mb-4">
             PERFORMANCE
           </h3>
@@ -251,8 +247,8 @@ export default function AttributeAllocationStep({
         </div>
 
         {/* PERSONAL CARD */}
-        <div className="bg-[#2d3748] border-2 border-[#374151] p-4">
-          <h3 className="text-sm font-black uppercase tracking-wider text-green-400 mb-4">
+        <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-4">
+          <h3 className="text-sm font-black uppercase tracking-wider text-[#ff8c42] mb-4">
             PERSONAL
           </h3>
           <AttributeBar
@@ -261,7 +257,7 @@ export default function AttributeAllocationStep({
             value={attributes.personal.financial_stability}
             category="personal"
             attribute="financial_stability"
-            color="bg-green-500"
+            color="bg-[#ff8c42]"
           />
           <AttributeBar
             icon={<Icon name="crown" size={18} />}
@@ -269,7 +265,7 @@ export default function AttributeAllocationStep({
             value={attributes.personal.reputation}
             category="personal"
             attribute="reputation"
-            color="bg-green-500"
+            color="bg-[#ff8c42]"
           />
           <AttributeBar
             icon={<Icon name="heart" size={18} />}
@@ -277,7 +273,7 @@ export default function AttributeAllocationStep({
             value={attributes.personal.family_bond}
             category="personal"
             attribute="family_bond"
-            color="bg-green-500"
+            color="bg-[#ff8c42]"
           />
           <AttributeBar
             icon={<Icon name="brain" size={18} />}
@@ -285,7 +281,7 @@ export default function AttributeAllocationStep({
             value={attributes.resilience}
             category="resilience"
             attribute="resilience"
-            color="bg-green-500"
+            color="bg-[#ff8c42]"
           />
         </div>
       </div>
@@ -301,9 +297,13 @@ export default function AttributeAllocationStep({
         <button
           onClick={() => onNext(attributes)}
           disabled={pointsRemaining !== 0}
-          className="flex-1 py-4 bg-orange-500 hover:bg-orange-600 text-black font-black uppercase tracking-wider transition disabled:opacity-30 disabled:cursor-not-allowed shadow-[0_0_15px_rgba(249,115,66,0.4)]"
+          className="flex-1 py-4 bg-[#ff8c42] hover:bg-[#ff9d5c] text-black font-display font-black uppercase tracking-wider transition disabled:opacity-30 disabled:cursor-not-allowed shadow-[0_0_15px_rgba(255,140,66,0.4)]"
         >
-          {pointsRemaining === 0 ? 'NEXT →' : `USE ${pointsRemaining} MORE POINTS`}
+          {pointsRemaining === 0
+            ? 'NEXT →'
+            : pointsRemaining > 0
+            ? `SPEND ${pointsRemaining} MORE POINT${pointsRemaining === 1 ? '' : 'S'}`
+            : `REMOVE ${Math.abs(pointsRemaining)} POINT${Math.abs(pointsRemaining) === 1 ? '' : 'S'}`}
         </button>
       </div>
     </div>
