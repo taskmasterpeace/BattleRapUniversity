@@ -266,15 +266,17 @@ export default function WirePage() {
                         </span>
                       </div>
 
-                      <p className="text-sm text-zinc-200 leading-snug">{post.body}</p>
+                      <p className="text-sm text-zinc-200 leading-snug break-words">{post.body}</p>
 
-                      <div className="flex items-center justify-between mt-2">
-                        <div className="flex items-center gap-4 text-[10px] font-mono text-zinc-500">
-                          <span title="Props">👊 {fmt(post.props)}</span>
-                          <span title="Boosts">📡 {fmt(post.boosts)}</span>
-                          <span title="Replies">💬 {fmt(post.replies)}</span>
+                      <div className="flex items-center justify-between gap-2 mt-2 min-w-0">
+                        <div className="flex items-center gap-3 text-[10px] font-mono text-zinc-500 min-w-0">
+                          <span title="Props" className="shrink-0">👊 {fmt(post.props)}</span>
+                          <span title="Boosts" className="shrink-0">📡 {fmt(post.boosts)}</span>
+                          <span title="Replies" className="shrink-0">💬 {fmt(post.replies)}</span>
                           {post.crowd_tag && (
-                            <span className="text-[#ff8c42]/80">{post.crowd_tag}</span>
+                            <span className="text-[#ff8c42]/80 truncate max-w-[9rem] sm:max-w-[14rem]">
+                              {post.crowd_tag}
+                            </span>
                           )}
                         </div>
                         {post.battle_id && (

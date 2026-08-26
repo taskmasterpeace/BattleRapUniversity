@@ -21,6 +21,7 @@ import { CharacterPortrait } from '../ui/CharacterPortrait';
 import FirstWeekGoals from './FirstWeekGoals';
 import BattlerBanner from './BattlerBanner';
 import ActiveBeefsWidget from '../relationships/ActiveBeefsWidget';
+import WirePanel from '../wire/WirePanel';
 import { getSlotStatus, MAX_BONUS_SLOTS_PER_DAY } from '@/lib/game/battleSlots';
 
 type Props = {
@@ -897,6 +898,9 @@ export default function DashboardClient({
             )}
           </div>
         )}
+
+        {/* The Wire — the scene talking */}
+        <WirePanel />
 
         {/* Recent Headlines */}
         {recentNews.length > 0 && (

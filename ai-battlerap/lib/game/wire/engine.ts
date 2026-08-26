@@ -101,6 +101,8 @@ export async function emitWirePostsForBattle(
         .eq('battle_id', battleId),
     ]);
     if (!battlers || battlers.length < 2 || !rounds || rounds.length === 0) return;
+    // Test fixtures never make the timeline.
+    if (battlers.some((b) => /^test_/i.test(b.stage_name))) return;
 
     const nameOf = (id: string) => battlers.find((b) => b.id === id)?.stage_name ?? 'Unknown';
     const winnerId: string = battle.winner_battler_id;
