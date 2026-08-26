@@ -1587,6 +1587,15 @@ async function saveBattleResults(
     console.error('Failed to create recap/news for battle', battleId, err);
   }
 
+  // The Wire reacts: fans, bloggers, the league, and the winner fan the
+  // result out into the in-world social feed (deterministic, idempotent).
+  try {
+    const { emitWirePostsForBattle } = await import('@/lib/game/wire/engine');
+    await emitWirePostsForBattle(battleId, supabase);
+  } catch (err) {
+    console.error('Failed to emit Wire posts for battle', battleId, err);
+  }
+
   // Trigger life events based on battle outcome
   try {
     const { triggerLifeEventsForBattle } = await import('@/lib/game/lifeEvents');
