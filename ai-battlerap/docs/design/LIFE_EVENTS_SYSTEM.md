@@ -41,7 +41,7 @@ Base surface everywhere: `bg-zinc-950` page, `bg-zinc-900` card, `border-zinc-80
 | `money` | **THE BAG** | A rubber-banded fold of bills, one band snapped | `emerald-500`, `emerald-500/20` | Cash-counting realism: envelopes, back offices, a day-job break room. Money is physical and always slightly short. |
 | `streets` | **THE BLOCK** | A streetlight cone on wet pavement | `red-500`, `red-500/20` | Night exteriors, corners, parking lots after the venue empties. Tension in the framing — someone's always at the edge of the shot. |
 | `industry` | **THE OFFICE** | A contract page with a signature line and a pen laid across it | `orange-500` (the house accent — the league IS the game) | League back rooms, folding tables with paperwork, a card lineup poster half-taped to a wall. Fluorescent, transactional. |
-| `health` | **THE VESSEL** | A steaming mug beside a mic on a stand | `teal-400`, `teal-500/20` | Quiet and clinical-warm: a dim bedroom, a clinic waiting row, a mirror. The only domain that's allowed stillness. |
+| `health` | **THE VESSEL** | A steaming mug beside a stack of rhyme books | `teal-400`, `teal-500/20` | Quiet and clinical-warm: a dim bedroom, a clinic waiting row, a mirror. The only domain that's allowed stillness. |
 | `media` | **THE FEED** | A phone screen mid-scroll with a play button glowing | `zinc-300` "screen glow" (see sign-off box) | Screens-in-the-dark: phone glow on a face, a podcast desk with two mics, comment sections rendered as pixel text walls. |
 
 > **⚠ OPEN ITEM — OWNER SIGN-OFF REQUIRED (accent trims).**

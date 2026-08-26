@@ -98,7 +98,7 @@ public/sprites/events/
 ```
 
 Art direction per category (scene subjects, not symbols — this is what kills the "collar shot" problem):
-- **career** — a stage-side hallway: flyers on the wall, a mic case, venue door light spilling in.
+- **career** — a stage-side hallway: flyers on the wall, a camera rig case (every battle is filmed), venue door light spilling in.
 - **financial** — a fanned booking envelope on a folding table, contract pages, a chain half out of a box.
 - **scandal** — phone screens lighting a dark room, blog headline glow, pointing silhouettes.
 - **personal** — the lab: desk lamp, notebook stack, energy-drink cans, dawn out the window.
@@ -112,7 +112,7 @@ Category fallback alone means the third scandal of a career shows the exact same
 
 | Priority | Template code | Scene brief (distinct from its category fallback) |
 |---|---|---|
-| 1 | `CHOKE_EVENT` | mic on the floor, spotlight still on, crowd silhouettes turned away |
+| 1 | `CHOKE_EVENT` | battler frozen alone in the hot spotlight, head bowed, hand to his face, crowd silhouettes turned away — NO microphone (league battle rap is acapella; nobody holds a mic but the host) |
 | 2 | `CLOSE_VICTORY` | split crowd — half hands up, half arms crossed, judges' table lit |
 | 3 | `NARROW_LOSS` | backstage mirror, towel over shoulders, scorecard on the counter |
 | 4 | `DOMINANT_VICTORY` | crowd surge toward the stage, phones up, opponent walking off frame |
@@ -205,7 +205,7 @@ Header sub-line replaces the current plain count: `“{n} DECISIONS WAITING · N
 **Honesty rule (was a bug in rev 2.0):** the previous draft said "YOUR CAREER IS ON PAUSE UNTIL YOU ANSWER" — a lie: the backend has no gate, no expiry, and battles keep flowing whether events are answered or not. Copy must never claim mechanics that don't exist. The pressure language we're allowed: ownership ("nobody makes these calls but you"), age ("WAITING {n} DAYS", §2.2), and severity (DECIDE NOW section name). If a real career-pause gate is ever built, it ships with its own spec; until then any copy implying a gate is a review-blocking defect.
 
 ### 2.4 Empty state
-Replace the 🧘 emoji with art: a dedicated `quiet.png` (512×512, same pipeline — the lab at night, mic on the stand, empty chair) rendered at `w-32 h-32 mx-auto opacity-80`.
+Replace the 🧘 emoji with art: a dedicated `quiet.png` (512×512, same pipeline — the lab at night, open rhyme book on the desk, empty chair) rendered at `w-32 h-32 mx-auto opacity-80`.
 - Headline (keep): `ALL QUIET OUTSIDE THE BOOTH`
 - Body (keep): `No pending life events — battles, win streaks, and chokes can trigger new ones.`
 - Two CTAs side by side: `SEE RESOLVED EVENTS` (ghost, existing style) + `BACK TO DASHBOARD` (ghost). Shell unchanged: `bg-[#2d2f35] border-2 border-[#3a3d44] p-10 md:p-16 text-center`.
