@@ -159,7 +159,7 @@ export default function PromotionClient({
     // Reputation bonus (higher rep = more effective promotion)
     const repBonus = ((playerAttributes?.personal?.reputation || 5) - 5) * 2;
 
-    return Math.min(95, Math.max(15, baseProbability + repBonus));
+    return Math.round(Math.min(95, Math.max(15, baseProbability + repBonus)));
   };
 
   // Calculate expected crowd gain (factoring in success prob and recency)

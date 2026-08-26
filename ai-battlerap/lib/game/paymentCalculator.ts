@@ -37,28 +37,28 @@ const LEAGUE_MULTIPLIERS = {
 } as const;
 
 /**
- * Win bonus multiplier
+ * Battle rap law: the winner does NOT get paid more.
  *
- * Winners get 30% bonus on top of base payout
+ * Pay is a negotiated flat booking fee — you get your bag win or lose.
+ * Winning pays off in rating, reputation, and bigger FUTURE bookings,
+ * never the current purse. (`wonBattle` stays on PaymentFactors for API
+ * compatibility but has no effect on money.)
  */
-const WIN_BONUS_MULTIPLIER = 1.3;
 
 /**
  * Calculate battle payout for a battler
  *
  * Formula:
  * basePayout = BASE_PAYOUTS[tier]
- * leaguePayout = basePayout × LEAGUE_MULTIPLIERS[leagueType]
- * finalPayout = wonBattle ? leaguePayout × WIN_BONUS_MULTIPLIER : leaguePayout
+ * finalPayout = basePayout × LEAGUE_MULTIPLIERS[leagueType]
  *
  * Examples:
- * - Low tier, Small Room, Loss: $750
- * - Low tier, Small Room, Win: $750 × 1.3 = $975
- * - Mid tier, Main Stage, Win: $3,000 × 1.5 × 1.3 = $5,850
- * - God tier, Main Stage, Win: $70,000 × 1.5 × 1.3 = $136,500
+ * - Low tier, Small Room (win or lose): $750
+ * - Mid tier, Main Stage (win or lose): $3,000 × 1.5 = $4,500
+ * - God tier, Main Stage (win or lose): $70,000 × 1.5 = $105,000
  */
 export function calculateBattlePayout(factors: PaymentFactors): number {
-  const { tier, leagueType, wonBattle, isTournament } = factors;
+  const { tier, leagueType, isTournament } = factors;
 
   // Tournament payouts handled separately (prize pools)
   if (isTournament) {
@@ -68,16 +68,9 @@ export function calculateBattlePayout(factors: PaymentFactors): number {
   // Get base payout for tier
   const basePayout = BASE_PAYOUTS[tier];
 
-  // Apply league multiplier
+  // Apply league multiplier — that's the whole formula. Flat rate, win or lose.
   const leagueMultiplier = LEAGUE_MULTIPLIERS[leagueType] || 1.0;
-  let finalPayout = basePayout * leagueMultiplier;
-
-  // Apply win bonus
-  if (wonBattle) {
-    finalPayout *= WIN_BONUS_MULTIPLIER;
-  }
-
-  return Math.round(finalPayout);
+  return Math.round(basePayout * leagueMultiplier);
 }
 
 /**
@@ -86,25 +79,23 @@ export function calculateBattlePayout(factors: PaymentFactors): number {
  * Returns itemized breakdown showing how payout was calculated
  */
 export function getPayoutBreakdown(factors: PaymentFactors) {
-  const { tier, leagueType, wonBattle } = factors;
+  const { tier, leagueType } = factors;
 
   const basePayout = BASE_PAYOUTS[tier];
   const leagueMultiplier = LEAGUE_MULTIPLIERS[leagueType] || 1.0;
   const leaguePayout = basePayout * leagueMultiplier;
-  const winBonus = wonBattle ? leaguePayout * (WIN_BONUS_MULTIPLIER - 1) : 0;
   const finalPayout = calculateBattlePayout(factors);
 
   return {
     base: basePayout,
     leagueBonus: leaguePayout - basePayout,
-    winBonus,
+    winBonus: 0, // flat rate — the winner doesn't get paid more
     total: finalPayout,
     breakdown: [
       { label: `${tier.toUpperCase()} Tier Base`, amount: basePayout },
       ...(leagueMultiplier > 1
         ? [{ label: 'Main Stage Bonus (+50%)', amount: leaguePayout - basePayout }]
         : []),
-      ...(wonBattle ? [{ label: 'Win Bonus (+30%)', amount: winBonus }] : []),
     ],
   };
 }

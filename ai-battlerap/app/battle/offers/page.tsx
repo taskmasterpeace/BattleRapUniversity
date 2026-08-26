@@ -347,7 +347,7 @@ export default function BattleOffersPage() {
                           label="THE BAG"
                           value={offer.league?.base_payout ? `$${Number(offer.league.base_payout).toLocaleString()}` : '$750'}
                           icon={<Icon name="cash" size={18} />}
-                          subtext="WIN PAYS MORE"
+                          subtext="FLAT · WIN OR LOSE"
                           variant="highlight"
                         />
                         <StatCard

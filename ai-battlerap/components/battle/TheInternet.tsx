@@ -78,8 +78,16 @@ function buildTakes(props: Props): FanTake[] {
 
   const candidates: string[] = [];
 
-  // Haymaker takes (real segments)
-  const haymakers = segments.filter((s) => s.event_flags.includes('haymaker'));
+  // Haymaker takes (real segments) — only when the moment actually LANDED.
+  // A haymaker flag on a round the crowd sat on (cold reaction) reads as a
+  // contradiction ("he's HIM" on a 0-3 body), so require the room to agree.
+  const haymakers = segments.filter((s) => {
+    if (!s.event_flags.includes('haymaker')) return false;
+    const round = rounds.find(
+      (r) => r.round_index === s.round_index && r.battler_id === s.battler_id
+    );
+    return !!round && (round.crowd_reaction >= 55 || round.peak_score >= 8.5);
+  });
   for (const h of haymakers.slice(0, 2)) {
     candidates.push(`round ${h.round_index} from ${nameOf(h.battler_id)} was DISGUSTING 🔥🔥`);
     candidates.push(`that haymaker in round ${h.round_index} had the whole room on their feet, ${nameOf(h.battler_id)} is HIM`);
@@ -123,7 +131,7 @@ function buildTakes(props: Props): FanTake[] {
     takes.push({
       handle: HANDLES[(seed + i * 13) % HANDLES.length],
       text: candidates[idx],
-      heat: 12 + ((seed >> (i + 2)) % 988), // fake like-count, deterministic
+      heat: 12 + (((seed >>> (i + 2)) >>> 0) % 988), // fake like-count, deterministic (unsigned — no negative hearts)
     });
   }
   return takes;
@@ -138,7 +146,7 @@ function formatViews(num: number): string {
 const TIER_TONE: Record<string, string> = {
   low: 'text-zinc-400 border-zinc-600',
   mid: 'text-blue-400 border-blue-500/40',
-  top: 'text-purple-400 border-purple-500/40',
+  top: 'text-orange-400 border-orange-500/40',
   goat: 'text-amber-400 border-amber-500/40',
 };
 
