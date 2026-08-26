@@ -1,4 +1,5 @@
 'use client';
+import Icon from '@/components/ui/Icon';
 
 type Props = {
   battler: {
@@ -24,7 +25,7 @@ export default function EarningsWidget({ battler, leaguePayout }: Props) {
   return (
     <div className="mb-8">
       <h2 className="text-2xl font-display font-black uppercase tracking-tighter text-[#ff8c42] mb-4">
-        💰 EARNINGS
+        <Icon name="cash" size={20} className="mr-2 -mt-1 inline-block" />EARNINGS
       </h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -71,7 +72,7 @@ export default function EarningsWidget({ battler, leaguePayout }: Props) {
             ${fmt(debt)}
           </div>
           <div className="text-xs text-zinc-500 mt-2 uppercase tracking-wide">
-            {debt > 0 ? '⚠ Owed to creditors' : 'Clean books'}
+            {debt > 0 ? 'Owed to creditors' : 'Clean books'}
           </div>
         </div>
 

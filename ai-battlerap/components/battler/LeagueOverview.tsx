@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Icon from '@/components/ui/Icon';
 
 type Props = {
   league: any;
@@ -54,7 +55,7 @@ export default function LeagueOverview({ league, rating }: Props) {
     <div className="mb-8">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-2xl font-display font-black uppercase tracking-tighter text-[#ff8c42]">
-          🏟️ YOUR LEAGUE
+          <Icon name="stage" size={18} className="mr-2 -mt-1 inline-block" />YOUR LEAGUE
         </h2>
         <Link
           href="/leagues"

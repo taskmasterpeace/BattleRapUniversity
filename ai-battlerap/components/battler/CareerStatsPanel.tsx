@@ -6,6 +6,7 @@
  */
 
 import { useMemo } from 'react';
+import Icon from '@/components/ui/Icon';
 
 type Props = {
   ranking: {
@@ -60,7 +61,7 @@ export default function CareerStatsPanel({ ranking, attributes }: Props) {
       {/* Header */}
       <div className="bg-[#18191c] border-b-2 border-[#3a3d44] px-6 py-4">
         <h3 className="text-xs uppercase tracking-wider text-zinc-500 font-bold">
-          📊 CAREER STATISTICS
+          <Icon name="chart" size={18} className="mr-2 -mt-1 inline-block" />CAREER STATISTICS
         </h3>
       </div>
 
@@ -113,7 +114,7 @@ export default function CareerStatsPanel({ ranking, attributes }: Props) {
               <div>
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-sm text-zinc-400 uppercase tracking-wide">
-                    ✍️ Writing
+                    Writing
                   </span>
                   <span className="font-bold text-[#ff8c42]">
                     {attributeAverages.writing.toFixed(1)}/10
@@ -137,7 +138,7 @@ export default function CareerStatsPanel({ ranking, attributes }: Props) {
               <div>
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-sm text-zinc-400 uppercase tracking-wide">
-                    🎭 Performance
+                    Performance
                   </span>
                   <span className="font-bold text-[#ff8c42]">
                     {attributeAverages.performance.toFixed(1)}/10
@@ -160,7 +161,7 @@ export default function CareerStatsPanel({ ranking, attributes }: Props) {
               <div>
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-sm text-zinc-400 uppercase tracking-wide">
-                    🛡️ Resilience
+                    Resilience
                   </span>
                   <span className="font-bold text-[#ff8c42]">
                     {attributeAverages.resilience.toFixed(1)}/10

@@ -177,6 +177,26 @@ export default async function DashboardPage() {
     .sort((a, b) => b.pct - a.pct)
     .slice(0, 3);
 
+  // Real badge sprite art for the equipped badges + the in-reach ones, so the
+  // dashboard shows the actual pixel badges (like a 2K badge card) instead of
+  // generic icons. Small lookup table; codes not in badge_costs fall back.
+  const badgeCodesNeeded = Array.from(
+    new Set([...(battler.style_tags || []), ...badgeProgress.map((b) => b.code)])
+  );
+  const badgeIcons: Record<string, { url: string | null; tier: string | null }> = {};
+  if (badgeCodesNeeded.length > 0) {
+    const { data: badgeArt } = await supabase
+      .from('badge_costs')
+      .select('badge_code, icon_url, tier')
+      .in('badge_code', badgeCodesNeeded);
+    for (const row of badgeArt || []) {
+      badgeIcons[(row as any).badge_code] = {
+        url: (row as any).icon_url ?? null,
+        tier: (row as any).tier ?? null,
+      };
+    }
+  }
+
   // For each active battle, count prep blocks the player has set (and compute totalPrepDays)
   // Used to show "PREP: 3/7 DAYS" on the Next Battle card and surface "NEEDS PREP" CTA
   const activeBattleIds = (activeBattles || []).map((b: any) => b.id);
@@ -229,6 +249,7 @@ export default async function DashboardPage() {
       careerRounds={careerRounds || []}
       prepStatusByBattle={prepStatusByBattle}
       badgeProgress={badgeProgress}
+      badgeIcons={badgeIcons}
       currentCity={currentCity}
     />
   );

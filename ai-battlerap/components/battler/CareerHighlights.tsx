@@ -1,4 +1,5 @@
 'use client';
+import Icon from '@/components/ui/Icon';
 
 type RoundSummary = {
   peak_score: number;
@@ -56,13 +57,13 @@ export default function CareerHighlights({ rounds, ranking }: Props) {
   return (
     <div className="mb-8">
       <h2 className="text-2xl font-display font-black uppercase tracking-tighter text-[#ff8c42] mb-4">
-        ⚡ CAREER HIGHLIGHTS
+        <Icon name="chart" size={20} className="mr-2 -mt-1 inline-block" />CAREER HIGHLIGHTS
       </h2>
 
       <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-6">
         {!hasData ? (
           <div className="text-center py-6">
-            <div className="text-5xl mb-3 opacity-40">⚡</div>
+            <div className="flex justify-center mb-3 text-zinc-600"><Icon name="chart" size={40} /></div>
             <p className="text-zinc-400 font-display font-black uppercase tracking-wider text-sm mb-2">
               NO BATTLES COMPLETED YET
             </p>

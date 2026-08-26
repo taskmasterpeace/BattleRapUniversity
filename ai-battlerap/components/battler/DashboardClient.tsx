@@ -49,6 +49,7 @@ type Props = {
   }>;
   prepStatusByBattle?: Record<string, { setDays: number; totalDays: number }>;
   badgeProgress?: Array<{ code: string; label: string; pct: number; detail: string }>;
+  badgeIcons?: Record<string, { url: string | null; tier: string | null }>;
   currentCity?: { id: string; name: string } | null;
 };
 
@@ -73,6 +74,7 @@ export default function DashboardClient({
   careerRounds = [],
   prepStatusByBattle = {},
   badgeProgress = [],
+  badgeIcons = {},
   currentCity = null,
 }: Props) {
   const nextBattle = activeBattles && activeBattles.length > 0 ? activeBattles[0] : null;
@@ -601,7 +603,7 @@ export default function DashboardClient({
         </div>
 
         {/* Badges Showcase */}
-        <BadgeShowcase styleTags={battler.style_tags} badgeProgress={badgeProgress} />
+        <BadgeShowcase styleTags={battler.style_tags} badgeProgress={badgeProgress} badgeIcons={badgeIcons} />
 
         {/* Career Highlights */}
         <CareerHighlights rounds={careerRounds} ranking={ranking} />

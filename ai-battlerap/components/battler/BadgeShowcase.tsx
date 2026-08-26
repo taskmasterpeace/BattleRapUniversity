@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { BADGE_DESCRIPTIONS } from '@/lib/game/badgeDescriptions';
 import { getBadgeEffectText } from '@/lib/game/badgeEffectText';
 import BadgeTooltip from '@/components/ui/BadgeTooltip';
+import Icon, { type IconName } from '@/components/ui/Icon';
 
 type BadgeProgress = {
   code: string;
@@ -12,9 +13,12 @@ type BadgeProgress = {
   detail: string;
 };
 
+type BadgeIcon = { url: string | null; tier: string | null };
+
 type Props = {
   styleTags: string[] | null | undefined;
   badgeProgress?: BadgeProgress[];
+  badgeIcons?: Record<string, BadgeIcon>;
 };
 
 const tierColors = {
@@ -38,26 +42,26 @@ const tierColors = {
   },
 } as const;
 
-const categoryIcons: Record<string, string> = {
-  writing: '✍️',
-  performance: '🎭',
-  content: '💡',
-  delivery: '🎤',
-  reputation_positive: '⭐',
-  reputation_negative: '⚠️',
+const categoryIcons: Record<string, IconName> = {
+  writing: 'pen',
+  performance: 'stage',
+  content: 'bolt',
+  delivery: 'mic',
+  reputation_positive: 'star',
+  reputation_negative: 'warning',
 };
 
 const titleCase = (s: string) =>
   s.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 
-export default function BadgeShowcase({ styleTags, badgeProgress = [] }: Props) {
+export default function BadgeShowcase({ styleTags, badgeProgress = [], badgeIcons = {} }: Props) {
   const tags = styleTags || [];
 
   return (
     <div className="mb-8">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl font-display font-black uppercase tracking-tighter text-[#ff8c42]">
-          🏅 BADGES & SPECIALTIES
+        <h2 className="text-2xl font-display font-black uppercase tracking-tighter text-[#ff8c42] flex items-center gap-2">
+          <Icon name="medal" size={22} /> BADGES & SPECIALTIES
         </h2>
         <Link
           href="/badges"
@@ -70,7 +74,7 @@ export default function BadgeShowcase({ styleTags, badgeProgress = [] }: Props) 
       <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-6">
         {tags.length === 0 ? (
           <div className="text-center py-6">
-            <div className="text-5xl mb-3 opacity-40">🏅</div>
+            <div className="flex justify-center mb-3 text-zinc-600"><Icon name="medal" size={44} /></div>
             <p className="text-zinc-400 font-display font-black uppercase tracking-wider text-sm mb-2">
               NO BADGES YET
             </p>
@@ -97,33 +101,42 @@ export default function BadgeShowcase({ styleTags, badgeProgress = [] }: Props) 
                 const desc = BADGE_DESCRIPTIONS[tag];
                 const tier = (desc?.tier || 'bronze') as keyof typeof tierColors;
                 const colors = tierColors[tier];
-                const icon = desc ? categoryIcons[desc.category] || '🏅' : '🏅';
+                const iconName = desc ? categoryIcons[desc.category] || 'medal' : 'medal';
                 const label = desc?.name || titleCase(tag);
+                const spriteUrl = badgeIcons[tag]?.url || null;
 
                 const effectText = getBadgeEffectText(tag);
                 return (
                   <BadgeTooltip key={tag} badgeCode={tag}>
                     <div
-                      className={`inline-flex flex-col gap-1 px-4 py-2 border-2 ${colors.bg} ${colors.border} ${colors.glow} transition-all hover:scale-105 max-w-xs`}
+                      className={`inline-flex items-center gap-3 px-4 py-3 border-2 ${colors.bg} ${colors.border} ${colors.glow} transition-all hover:scale-105 max-w-xs`}
                     >
-                      <div className="flex items-center gap-2">
-                        <span className="text-lg leading-none">{icon}</span>
-                        <span
-                          className={`font-display font-black uppercase tracking-wider text-sm ${colors.text}`}
-                        >
-                          {label}
+                      {/* The real pixel badge sprite — the 2K-style medal */}
+                      {spriteUrl ? (
+                        <img
+                          src={spriteUrl}
+                          alt={label}
+                          className="w-12 h-12 object-contain [image-rendering:pixelated] flex-shrink-0"
+                        />
+                      ) : (
+                        <span className={`flex-shrink-0 ${colors.text}`}>
+                          <Icon name={iconName} size={22} />
                         </span>
-                        {desc?.tier && (
-                          <span
-                            className={`text-[10px] font-display font-black uppercase tracking-wider ${colors.text} opacity-70`}
-                          >
-                            {desc.tier}
+                      )}
+                      <span className="flex flex-col gap-0.5 min-w-0">
+                        <span className="flex items-center gap-2">
+                          <span className={`font-display font-black uppercase tracking-wider text-sm ${colors.text}`}>
+                            {label}
                           </span>
-                        )}
-                      </div>
-                      {/* What this badge actually does — visible without hover */}
-                      <span className="text-[10px] text-zinc-400 leading-snug normal-case tracking-normal">
-                        {effectText}
+                          {desc?.tier && (
+                            <span className={`text-[9px] font-display font-black uppercase tracking-widest ${colors.text} opacity-70`}>
+                              {desc.tier}
+                            </span>
+                          )}
+                        </span>
+                        <span className="text-[10px] text-zinc-400 leading-snug normal-case tracking-normal">
+                          {effectText}
+                        </span>
                       </span>
                     </div>
                   </BadgeTooltip>
@@ -136,21 +149,26 @@ export default function BadgeShowcase({ styleTags, badgeProgress = [] }: Props) 
         {/* Badges In Reach — concrete progress toward 3 nearest badges */}
         {badgeProgress.length > 0 && (
           <div className="mt-6 pt-6 border-t-2 border-[#3a3d44]">
-            <p className="text-xs font-display font-black uppercase tracking-wider text-zinc-400 mb-4">
-              🎯 BADGES IN REACH
+            <p className="text-xs font-display font-black uppercase tracking-wider text-zinc-400 mb-4 flex items-center gap-2">
+              <Icon name="target" size={14} className="text-[#ff8c42]" /> BADGES IN REACH
             </p>
             <div className="space-y-3">
               {badgeProgress.slice(0, 3).map((bp) => {
                 const desc = BADGE_DESCRIPTIONS[bp.code];
                 const tier = (desc?.tier || 'bronze') as keyof typeof tierColors;
                 const colors = tierColors[tier];
-                const icon = desc ? categoryIcons[desc.category] || '🏅' : '🏅';
+                const iconName = desc ? categoryIcons[desc.category] || 'medal' : 'medal';
+                const spriteUrl = badgeIcons[bp.code]?.url || null;
                 return (
                   <BadgeTooltip key={bp.code} badgeCode={bp.code}>
                     <div className="bg-[#18191c] border-2 border-[#3a3d44] p-3 hover:border-[#ff8c42]/40 transition-colors">
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
-                          <span className="text-base">{icon}</span>
+                          {spriteUrl ? (
+                            <img src={spriteUrl} alt="" className="w-8 h-8 object-contain [image-rendering:pixelated] opacity-80" />
+                          ) : (
+                            <span className={colors.text}><Icon name={iconName} size={16} /></span>
+                          )}
                           <span className={`font-display font-black uppercase text-sm tracking-wider ${colors.text}`}>
                             {bp.label}
                           </span>
