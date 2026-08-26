@@ -29,8 +29,10 @@ type League = {
   base_payout?: number | null;
 };
 
-// Prestige → the culture's ladder rung
-function leagueTier(prestige: number | null | undefined): string {
+// Prestige → the culture's ladder rung. Online/virtual leagues (no city) are
+// the true bottom: text and app battling before you ever touch a stage.
+function leagueTier(prestige: number | null | undefined, cityId?: string | null): string {
+  if (!cityId) return 'ONLINE';
   const p = prestige ?? 0;
   if (p >= 8) return 'PREMIER';
   if (p >= 5) return 'REGIONAL';
@@ -340,10 +342,18 @@ export default function OnboardingWizard() {
   // stage). Fall back to the two lowest-prestige leagues anywhere if the city
   // has no scene yet, so the step is never empty.
   const cityLeagues = useMemo(() => {
+    // Online/virtual leagues (no city) are the universal entry rung — every
+    // battler can start online before hitting a physical stage.
+    const online = leagues
+      .filter((l) => !l.city_id)
+      .sort((a, b) => (a.prestige_level ?? 0) - (b.prestige_level ?? 0));
     const local = leagues
       .filter((l) => selectedHomeCity && l.city_id === selectedHomeCity)
       .sort((a, b) => (a.prestige_level ?? 0) - (b.prestige_level ?? 0));
-    if (local.length > 0) return local.slice(0, 3);
+    // Online first (start humble), then the city's rooms. Cap so the grid
+    // stays clean: 1 online + the city's leagues, up to 3 total.
+    const combined = [...online.slice(0, 1), ...local];
+    if (combined.length > 0) return combined.slice(0, 3);
     return [...leagues]
       .sort((a, b) => (a.prestige_level ?? 0) - (b.prestige_level ?? 0))
       .slice(0, 2);
@@ -632,8 +642,11 @@ export default function OnboardingWizard() {
                   actually run in the scene you claimed, easiest rung first. */}
               <div className={`grid grid-cols-1 ${cityLeagues.length >= 3 ? 'sm:grid-cols-3' : 'sm:grid-cols-2'} gap-4`}>
                 {cityLeagues.map((league) => {
-                  const venue = selectedCityObj?.skyline_url || getLeagueVisuals(league.name).venue;
-                  const tier = leagueTier(league.prestige_level);
+                  const isOnline = !league.city_id;
+                  const venue = isOnline
+                    ? getLeagueVisuals(league.name).venue
+                    : selectedCityObj?.skyline_url || getLeagueVisuals(league.name).venue;
+                  const tier = leagueTier(league.prestige_level, league.city_id);
                   const isSelected = selectedLeague === league.id;
                   return (
                     <div
@@ -665,6 +678,8 @@ export default function OnboardingWizard() {
                         <span className={`px-2 py-0.5 text-[10px] font-display font-black uppercase tracking-widest border ${
                           tier === 'PREMIER'
                             ? 'bg-[#ff8c42] text-black border-[#ff8c42]'
+                            : tier === 'ONLINE'
+                            ? 'bg-black/60 text-zinc-300 border-zinc-400/60'
                             : 'bg-black/60 text-[#ff8c42] border-[#ff8c42]/50'
                         }`}>
                           {tier}
@@ -682,7 +697,11 @@ export default function OnboardingWizard() {
                           {league.description || `${league.round_length_minutes}-minute rounds.`}
                         </p>
                         <div className="flex items-center justify-center gap-2">
-                          {selectedCityObj && (
+                          {isOnline ? (
+                            <span className="inline-block px-2 py-1 bg-black/60 border border-zinc-400/50 text-zinc-300 text-[9px] font-display font-black uppercase tracking-widest">
+                              WORLDWIDE
+                            </span>
+                          ) : selectedCityObj && (
                             <span className="inline-block px-2 py-1 bg-black/60 border border-[#ff8c42]/50 text-[#ff8c42] text-[9px] font-display font-black uppercase tracking-widest">
                               {selectedCityObj.name}
                             </span>

@@ -54,14 +54,72 @@ const categoryIcons: Record<string, IconName> = {
 const titleCase = (s: string) =>
   s.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 
+// Danger palette for negative reputation badges — flaws read RED, never like
+// a specialty you'd want.
+const flawColors = {
+  bg: 'bg-red-950/30',
+  border: 'border-red-600/50',
+  text: 'text-red-400',
+  glow: 'shadow-[0_0_15px_rgba(220,38,38,0.2)]',
+} as const;
+
+function isFlaw(tag: string): boolean {
+  return BADGE_DESCRIPTIONS[tag]?.category === 'reputation_negative';
+}
+
 export default function BadgeShowcase({ styleTags, badgeProgress = [], badgeIcons = {} }: Props) {
   const tags = styleTags || [];
+  const strengths = tags.filter((t) => !isFlaw(t));
+  const flaws = tags.filter(isFlaw);
+
+  // One tile — used for both strengths (tier colors) and flaws (red danger).
+  const renderTile = (tag: string, flaw: boolean) => {
+    const desc = BADGE_DESCRIPTIONS[tag];
+    const tier = (desc?.tier || 'bronze') as keyof typeof tierColors;
+    const colors = flaw ? flawColors : tierColors[tier];
+    const iconName = flaw ? 'warning' : desc ? categoryIcons[desc.category] || 'medal' : 'medal';
+    const label = desc?.name || titleCase(tag);
+    const spriteUrl = badgeIcons[tag]?.url || null;
+    const effectText = getBadgeEffectText(tag);
+    return (
+      <BadgeTooltip key={tag} badgeCode={tag}>
+        <div className={`inline-flex items-center gap-3 px-4 py-3 border-2 ${colors.bg} ${colors.border} ${colors.glow} transition-all hover:scale-105 max-w-xs`}>
+          {spriteUrl ? (
+            <img
+              src={spriteUrl}
+              alt={label}
+              className={`w-12 h-12 object-contain [image-rendering:pixelated] flex-shrink-0 ${flaw ? 'grayscale' : ''}`}
+            />
+          ) : (
+            <span className={`flex-shrink-0 ${colors.text}`}>
+              <Icon name={iconName as any} size={22} />
+            </span>
+          )}
+          <span className="flex flex-col gap-0.5 min-w-0">
+            <span className="flex items-center gap-2">
+              <span className={`font-display font-black uppercase tracking-wider text-sm ${colors.text}`}>
+                {label}
+              </span>
+              {desc?.tier && !flaw && (
+                <span className={`text-[9px] font-display font-black uppercase tracking-widest ${colors.text} opacity-70`}>
+                  {desc.tier}
+                </span>
+              )}
+            </span>
+            <span className="text-[10px] text-zinc-400 leading-snug normal-case tracking-normal">
+              {effectText}
+            </span>
+          </span>
+        </div>
+      </BadgeTooltip>
+    );
+  };
 
   return (
     <div className="mb-8">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-2xl font-display font-black uppercase tracking-tighter text-[#ff8c42] flex items-center gap-2">
-          <Icon name="medal" size={22} /> BADGES & SPECIALTIES
+          <Icon name="medal" size={22} /> BADGES & REPUTATION
         </h2>
         <Link
           href="/badges"
@@ -84,65 +142,40 @@ export default function BadgeShowcase({ styleTags, badgeProgress = [], badgeIcon
           </div>
         ) : (
           <>
-            <div className="flex items-center gap-3 mb-4 pb-4 border-b-2 border-[#3a3d44]">
-              <span className="text-xs font-display font-black uppercase tracking-wider text-zinc-400">
-                EQUIPPED
-              </span>
-              <span className="text-2xl font-display font-black text-[#ff8c42]">
-                {tags.length}
-              </span>
-              <span className="text-xs text-zinc-500 uppercase tracking-wide">
-                {tags.length === 1 ? 'badge active' : 'badges active'}
-              </span>
-            </div>
+            {/* STRENGTHS — the skills + positive reputation */}
+            {strengths.length > 0 && (
+              <div className="mb-4">
+                <div className="flex items-center gap-3 mb-4 pb-3 border-b-2 border-[#3a3d44]">
+                  <Icon name="star" size={14} className="text-[#ff8c42]" />
+                  <span className="text-xs font-display font-black uppercase tracking-wider text-zinc-300">
+                    STRENGTHS
+                  </span>
+                  <span className="text-lg font-display font-black text-[#ff8c42]">{strengths.length}</span>
+                </div>
+                <div className="flex flex-wrap gap-3">
+                  {strengths.map((tag) => renderTile(tag, false))}
+                </div>
+              </div>
+            )}
 
-            <div className="flex flex-wrap gap-3">
-              {tags.map((tag) => {
-                const desc = BADGE_DESCRIPTIONS[tag];
-                const tier = (desc?.tier || 'bronze') as keyof typeof tierColors;
-                const colors = tierColors[tier];
-                const iconName = desc ? categoryIcons[desc.category] || 'medal' : 'medal';
-                const label = desc?.name || titleCase(tag);
-                const spriteUrl = badgeIcons[tag]?.url || null;
-
-                const effectText = getBadgeEffectText(tag);
-                return (
-                  <BadgeTooltip key={tag} badgeCode={tag}>
-                    <div
-                      className={`inline-flex items-center gap-3 px-4 py-3 border-2 ${colors.bg} ${colors.border} ${colors.glow} transition-all hover:scale-105 max-w-xs`}
-                    >
-                      {/* The real pixel badge sprite — the 2K-style medal */}
-                      {spriteUrl ? (
-                        <img
-                          src={spriteUrl}
-                          alt={label}
-                          className="w-12 h-12 object-contain [image-rendering:pixelated] flex-shrink-0"
-                        />
-                      ) : (
-                        <span className={`flex-shrink-0 ${colors.text}`}>
-                          <Icon name={iconName} size={22} />
-                        </span>
-                      )}
-                      <span className="flex flex-col gap-0.5 min-w-0">
-                        <span className="flex items-center gap-2">
-                          <span className={`font-display font-black uppercase tracking-wider text-sm ${colors.text}`}>
-                            {label}
-                          </span>
-                          {desc?.tier && (
-                            <span className={`text-[9px] font-display font-black uppercase tracking-widest ${colors.text} opacity-70`}>
-                              {desc.tier}
-                            </span>
-                          )}
-                        </span>
-                        <span className="text-[10px] text-zinc-400 leading-snug normal-case tracking-normal">
-                          {effectText}
-                        </span>
-                      </span>
-                    </div>
-                  </BadgeTooltip>
-                );
-              })}
-            </div>
+            {/* FLAWS / KNOCKS — the reputation problems that follow a battler */}
+            {flaws.length > 0 && (
+              <div className={strengths.length > 0 ? 'mt-6 pt-6 border-t-2 border-[#3a3d44]' : ''}>
+                <div className="flex items-center gap-3 mb-4 pb-3 border-b-2 border-red-900/40">
+                  <Icon name="warning" size={14} className="text-red-400" />
+                  <span className="text-xs font-display font-black uppercase tracking-wider text-red-400">
+                    FLAWS &amp; KNOCKS
+                  </span>
+                  <span className="text-lg font-display font-black text-red-400">{flaws.length}</span>
+                  <span className="text-[10px] text-zinc-500 uppercase tracking-wide font-bold">
+                    the culture remembers
+                  </span>
+                </div>
+                <div className="flex flex-wrap gap-3">
+                  {flaws.map((tag) => renderTile(tag, true))}
+                </div>
+              </div>
+            )}
           </>
         )}
 

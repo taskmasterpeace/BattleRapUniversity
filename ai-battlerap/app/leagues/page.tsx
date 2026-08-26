@@ -16,9 +16,11 @@ type League = {
   prestige_level: number | null;
   base_payout: number | null;
   logo_url: string | null;
+  city_id: string | null;
 };
 
-// The ladder: where a league sits in the culture's hierarchy
+// The ladder: where a league sits in the culture's hierarchy. Physical leagues
+// are grouped by prestige; virtual (no city) leagues are the online rung below.
 const TIERS = [
   { min: 8, label: 'THE MAIN STAGES', sub: 'National and premier — where legacies are cemented' },
   { min: 5, label: 'THE REGIONAL CIRCUIT', sub: 'Real rooms, real stakes — the proving grounds' },
@@ -34,7 +36,7 @@ export default async function LeaguesIndexPage() {
   const { data: leagues, error } = await supabase
     .from('leagues')
     .select(
-      'id, name, short_code, round_length_minutes, base_crowd_factor, writing_weight, performance_weight, booking_pace_days, description, prestige_level, base_payout, logo_url'
+      'id, name, short_code, round_length_minutes, base_crowd_factor, writing_weight, performance_weight, booking_pace_days, description, prestige_level, base_payout, logo_url, city_id'
     )
     .order('prestige_level', { ascending: false })
     .order('name');
@@ -44,14 +46,24 @@ export default async function LeaguesIndexPage() {
   }
 
   const list: League[] = leagues ?? [];
-  const grouped = TIERS.map((tier, i) => ({
-    ...tier,
-    leagues: list.filter((l) => {
-      const p = l.prestige_level ?? 0;
-      const upper = i === 0 ? Infinity : TIERS[i - 1].min;
-      return p >= tier.min && p < upper;
-    }),
-  })).filter((g) => g.leagues.length > 0);
+  const physical = list.filter((l) => l.city_id);
+  const online = list.filter((l) => !l.city_id);
+  const grouped = [
+    ...TIERS.map((tier, i) => ({
+      ...tier,
+      leagues: physical.filter((l) => {
+        const p = l.prestige_level ?? 0;
+        const upper = i === 0 ? Infinity : TIERS[i - 1].min;
+        return p >= tier.min && p < upper;
+      }),
+    })),
+    {
+      min: -1,
+      label: 'ONLINE / THE FORUMS',
+      sub: 'Text and app battles — where every unknown starts',
+      leagues: online,
+    },
+  ].filter((g) => g.leagues.length > 0);
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-zinc-100 animate-fade-in-up">

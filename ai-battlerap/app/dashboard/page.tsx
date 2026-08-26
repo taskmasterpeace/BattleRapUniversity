@@ -168,8 +168,8 @@ export default async function DashboardPage() {
     {
       code: 'main_stage_specialist',
       label: 'MAIN STAGE SPEC',
-      pct: Math.min(100, Math.round(((ranking?.streak || 0) / 5) * 100)),
-      detail: `${ranking?.streak || 0} / 5 win streak`,
+      pct: Math.max(0, Math.min(100, Math.round(((ranking?.streak || 0) / 5) * 100))),
+      detail: `${Math.max(0, ranking?.streak || 0)} / 5 win streak`,
     },
   ];
   const badgeProgress = candidates
