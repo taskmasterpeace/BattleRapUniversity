@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Icon from '@/components/ui/Icon';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -24,7 +24,19 @@ type League = {
   performance_weight: number;
   logo_url?: string | null;
   base_crowd_factor: number;
+  city_id?: string | null;
+  prestige_level?: number | null;
+  base_payout?: number | null;
 };
+
+// Prestige → the culture's ladder rung
+function leagueTier(prestige: number | null | undefined): string {
+  const p = prestige ?? 0;
+  if (p >= 8) return 'PREMIER';
+  if (p >= 5) return 'REGIONAL';
+  if (p >= 3) return 'UP-AND-COMING';
+  return 'UNDERGROUND';
+}
 
 type City = {
   id: string;
@@ -323,6 +335,31 @@ export default function OnboardingWizard() {
   const selectedLeagueObj = leagues.find((l) => l.id === selectedLeague);
   const selectedCityObj = cities.find((c) => c.id === selectedHomeCity);
 
+  // Your first league is a LOCAL one. Offer the leagues based in the player's
+  // chosen city, easiest rung first (start in the small rooms, not the premier
+  // stage). Fall back to the two lowest-prestige leagues anywhere if the city
+  // has no scene yet, so the step is never empty.
+  const cityLeagues = useMemo(() => {
+    const local = leagues
+      .filter((l) => selectedHomeCity && l.city_id === selectedHomeCity)
+      .sort((a, b) => (a.prestige_level ?? 0) - (b.prestige_level ?? 0));
+    if (local.length > 0) return local.slice(0, 3);
+    return [...leagues]
+      .sort((a, b) => (a.prestige_level ?? 0) - (b.prestige_level ?? 0))
+      .slice(0, 2);
+  }, [leagues, selectedHomeCity]);
+
+  // Auto-select the most accessible local league when arriving at the step, so
+  // the player is never staring at an un-continuable screen — but never
+  // override a choice they already made among the current options.
+  useEffect(() => {
+    if (step !== 3 || cityLeagues.length === 0) return;
+    if (!cityLeagues.some((l) => l.id === selectedLeague)) {
+      setSelectedLeague(cityLeagues[0].id);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step, cityLeagues]);
+
   // The face grid always includes the player's current pick, even after a
   // shuffle swaps the sample underneath them.
   const faceGrid = avatarPool
@@ -581,31 +618,34 @@ export default function OnboardingWizard() {
           {step === 3 && (
             <div className="space-y-6">
               <div>
-                <h2 className="text-2xl font-black uppercase tracking-tight mb-2">LEAGUE SELECTION</h2>
-                <p className="text-sm text-zinc-500 uppercase tracking-wide">CHOOSE YOUR COMPETITION FORMAT</p>
+                <h2 className="text-2xl font-display font-black uppercase tracking-tight mb-1">
+                  YOUR HOME LEAGUE
+                </h2>
+                <p className="text-sm text-zinc-500 uppercase tracking-wide">
+                  {selectedCityObj
+                    ? `The rooms running in ${selectedCityObj.name} — start where they know your name`
+                    : 'Choose your competition format'}
+                </p>
               </div>
 
-              {/* Your first booking happens in YOUR city — the backdrop is the
-                  scene the player just claimed, not a hardcoded NYC stock shot. */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {leagues.slice(0, 2).map((league) => {
-                  const venue =
-                    selectedCityObj?.skyline_url ||
-                    getLeagueVisuals(league.name).venue;
+              {/* Your first booking happens in YOUR city — the leagues that
+                  actually run in the scene you claimed, easiest rung first. */}
+              <div className={`grid grid-cols-1 ${cityLeagues.length >= 3 ? 'sm:grid-cols-3' : 'sm:grid-cols-2'} gap-4`}>
+                {cityLeagues.map((league) => {
+                  const venue = selectedCityObj?.skyline_url || getLeagueVisuals(league.name).venue;
+                  const tier = leagueTier(league.prestige_level);
+                  const isSelected = selectedLeague === league.id;
                   return (
                     <div
                       key={league.id}
                       onClick={() => setSelectedLeague(league.id)}
                       className={`relative overflow-hidden cursor-pointer transition group min-h-[300px] ${
-                        selectedLeague === league.id
+                        isSelected
                           ? 'border-[#ff8c42] border-[3px] shadow-[0_0_20px_rgba(255,140,66,0.5)]'
                           : 'border-[#3a3d44] border-2 hover:border-zinc-600'
                       }`}
                     >
-                      {/* Background - gradient fallback */}
                       <div className="absolute inset-0 bg-gradient-to-br from-zinc-800 via-zinc-900 to-black" />
-
-                      {/* Venue Image — the player's own city */}
                       <div className="absolute inset-0">
                         <Image
                           src={venue}
@@ -614,30 +654,45 @@ export default function OnboardingWizard() {
                           className="object-cover opacity-60 [image-rendering:pixelated]"
                           unoptimized
                           onError={(e) => {
-                            // Hide broken image
                             e.currentTarget.style.display = 'none';
                           }}
                         />
                       </div>
-
-                      {/* Dark overlay */}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
 
-                      {/* League Name & Description - Centered at bottom */}
-                      <div className="absolute bottom-0 left-0 right-0 p-8 text-center">
-                        <h3 className="text-3xl font-display font-black uppercase tracking-tight mb-2 text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
+                      {/* Tier badge — top corner */}
+                      <div className="absolute top-3 left-3 flex items-center gap-2">
+                        <span className={`px-2 py-0.5 text-[10px] font-display font-black uppercase tracking-widest border ${
+                          tier === 'PREMIER'
+                            ? 'bg-[#ff8c42] text-black border-[#ff8c42]'
+                            : 'bg-black/60 text-[#ff8c42] border-[#ff8c42]/50'
+                        }`}>
+                          {tier}
+                        </span>
+                        <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-300 drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
+                          {league.short_code}
+                        </span>
+                      </div>
+
+                      <div className="absolute bottom-0 left-0 right-0 p-6 text-center">
+                        <h3 className="text-2xl font-display font-black uppercase tracking-tight mb-2 text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
                           {league.name}
                         </h3>
-                        <p className="text-sm text-zinc-200 font-bold drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] mb-3">
-                          {league.name === 'Small Room Circuit'
-                            ? 'Intimate rooms. Bars over spectacle.'
-                            : 'Grand stage. High stakes, media attention.'}
+                        <p className="text-xs text-zinc-200 font-bold leading-snug drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] mb-3 line-clamp-2">
+                          {league.description || `${league.round_length_minutes}-minute rounds.`}
                         </p>
-                        {selectedCityObj && (
-                          <p className="inline-block px-3 py-1 bg-black/60 border border-[#ff8c42]/50 text-[#ff8c42] text-[10px] font-display font-black uppercase tracking-widest">
-                            BOOKING OUT OF {selectedCityObj.name}
-                          </p>
-                        )}
+                        <div className="flex items-center justify-center gap-2">
+                          {selectedCityObj && (
+                            <span className="inline-block px-2 py-1 bg-black/60 border border-[#ff8c42]/50 text-[#ff8c42] text-[9px] font-display font-black uppercase tracking-widest">
+                              {selectedCityObj.name}
+                            </span>
+                          )}
+                          {league.base_payout ? (
+                            <span className="inline-block px-2 py-1 bg-black/60 border border-green-500/50 text-green-400 text-[9px] font-display font-black uppercase tracking-widest">
+                              ${Number(league.base_payout).toLocaleString()} PURSE
+                            </span>
+                          ) : null}
+                        </div>
                       </div>
                     </div>
                   );
