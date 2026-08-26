@@ -120,7 +120,7 @@ Category fallback alone means the third scandal of a career shows the exact same
 | 6 | `RIVAL_CALLOUT` | phone held up mid-video, name-drop caption visible as shapes (no readable bars) |
 | 7 | `MEDIA_INTERVIEW` | podcast table, two mics, ring light, host mid-lean |
 | 8 | `FINANCIAL_CRISIS` | stacked envelopes, calculator, booking-fee page face down |
-| 9 | `CHOKE_IN_BIG_BATTLE` | premier-stage rig from behind the curtain, dropped cue cards |
+| 9 | `CHOKE_IN_BIG_BATTLE` | premier-stage lighting rig from behind the curtain, battler silhouette frozen at the curtain's edge, massive crowd beyond — no cue cards, no paper (battlers perform from memory) |
 | 10 | `CAREER_CRISIS` | empty venue after teardown, one work light, folded chairs |
 | 11 | `FAMILY_WEDDING` | dressed-up hallway moment, garment bag, phone buzzing with the booking |
 | 12 | `BAD_LOSS` | rain outside a venue's back door, flyer with the player's name half-torn |
@@ -300,6 +300,25 @@ FINANCIAL STABILITY                    4 → 6 ▲+2
 - `public_knowledge` (0–100 scale) uses the same component with `max=100`, rendered as a continuous bar (no segments, `meterFill` animation §5.7) and `%` suffix.
 
 Effects that are NOT persistent 1–10 attributes render as **chips** (`EffectChip`), not meters: `+1 WRITING PREP · NEXT BATTLE`, `−1 PREP · NEXT BATTLE`. Chip: `px-2 py-1 bg-[#18191c] border border-[#3a3d44] text-[11px] font-mono uppercase`, green/red text by sign, with a `NEXT BATTLE` suffix in `text-zinc-500` so temporary vs permanent is legible at a glance.
+
+**Effect symbols (owner directive 2026-08-26 — chips carry icons, not just words).** Every EffectChip leads with an 11px inline Lucide-style SVG (stroke-width 2.5) so stakes read at a glance on the choice buttons and aftermath cards. The vocabulary — one icon per effect family, never per key:
+
+| Icon | Effect family |
+|---|---|
+| flame | hype / public heat |
+| shield | resilience |
+| star | reputation |
+| warning triangle | risk / danger flag on a choice |
+| crescent moon | quiet / rest / recovery |
+| dollar sign | cash, fees, financial stability |
+| heart | family bond / relationships |
+| eye | public knowledge / "the world saw it" |
+| pen nib | writing attributes & writing prep |
+| lightning bolt | performance attributes & performance prep |
+| lock (dashed border chip) | gated choice — always shows the unmet requirement (`REQUIRES BADGE: …`, `REQUIRES REGGIE ≥ +3`) |
+| circled $ (gold tint) | `[GOLD]` rare-opportunity flag |
+
+Choice buttons themselves get the heavier treatment shipped in the 2026-08-26 mockup: 26×26 filled letter key (accent bg, black letter; amber for `[GOLD]`; muted for locked), `border-left-width: 4px` in the flag color, raised `#1c1e23` ground, hover = accent border + 2px translate. Locked choices keep dashed borders + lock chip and are never hidden (§2 gating law).
 
 ### 3.6 Hidden layer — echo risk stays hidden
 Per the two-layer consequence rule (research §P2): the visible layer is the mechanical deltas above; the **echo layer never renders**. Implementation: render ONLY keys in the `VISIBLE_EFFECT_KEYS` whitelist (§5.2). `controversy_risk`, any `echo*` key, chain/follow-up data, and any future unknown key are silently skipped — never listed, never hinted, no "???" placeholder (a placeholder converts a story into a slot machine tell). The only sanctioned whisper is the static confirm-line copy: *"…and what comes next."*
