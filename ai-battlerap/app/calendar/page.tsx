@@ -28,6 +28,7 @@ type Event = {
   title: string;
   href: string;
   status?: string;
+  mine?: boolean; // one of the player's own battles — surfaced amid the world schedule
 };
 
 const MONTH_NAMES = [
@@ -146,9 +147,10 @@ export default async function CalendarPage({
     events.push({
       date: toDateKey(b.scheduled_at),
       kind: 'battle',
-      title: `${tag}${matchup}`,
+      title: `${isMine ? '★ ' : ''}${tag}${matchup}`,
       href: isMine ? `/battle/${b.id}` : `/watch/${b.id}`,
       status: b.status,
+      mine: !!isMine,
     });
   }
   const inMonth = (iso: string | null) => {
@@ -276,7 +278,10 @@ export default async function CalendarPage({
         <div className="grid grid-cols-7 gap-1">
           {cells.map((cell, i) => {
             const key = cell.date.toISOString().slice(0, 10);
-            const dayEvents = eventsByDay.get(key) ?? [];
+            // Player's own battles first, so a busy day never buries them under "+more".
+            const dayEvents = (eventsByDay.get(key) ?? [])
+              .slice()
+              .sort((a, b) => Number(b.mine) - Number(a.mine));
             const isToday = key === todayKey;
             return (
               <div
@@ -294,7 +299,11 @@ export default async function CalendarPage({
                       key={idx}
                       href={e.href}
                       title={e.title}
-                      className={`block text-[10px] px-1.5 py-1 leading-tight line-clamp-2 hover:bg-[#2d2f35] hover:translate-x-[1px] transition-all duration-150 ${KIND_STYLE[e.kind]}`}
+                      className={`block text-[10px] px-1.5 py-1 leading-tight line-clamp-2 hover:translate-x-[1px] transition-all duration-150 ${
+                        e.mine
+                          ? 'bg-[#ff8c42] border-l-2 border-[#ff8c42] text-black font-black hover:bg-[#ff9d5c]'
+                          : `${KIND_STYLE[e.kind]} hover:bg-[#2d2f35]`
+                      }`}
                     >
                       {e.title}
                     </Link>
