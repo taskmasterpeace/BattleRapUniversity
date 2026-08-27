@@ -217,5 +217,21 @@ export async function finalizeInteractiveBattle(
     console.error('Post-battle career effects failed (interactive):', careerError);
   }
 
+  // 7. Tournament bracket — mirror the auto engine. Without this, a tournament
+  // battle played through the interactive round-by-round flow left its bracket
+  // row 'scheduled' with no winner: the bracket never showed who won, the player's
+  // elimination wasn't recorded, and the tournament couldn't advance.
+  if (isTournamentBattle && battle.tournament_id) {
+    try {
+      const { updateBracketWithBattleResult } = await import('./tournamentManager');
+      const result = await updateBracketWithBattleResult(battleId, winnerId);
+      if (!result.success) {
+        console.error('Failed to update tournament bracket (interactive):', result.error);
+      }
+    } catch (err) {
+      console.error('Failed to update tournament bracket for interactive battle', battleId, err);
+    }
+  }
+
   return { winnerId, verdict, decisionType };
 }
