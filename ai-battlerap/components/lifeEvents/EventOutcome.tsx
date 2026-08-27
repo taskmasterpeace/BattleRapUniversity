@@ -42,10 +42,11 @@ const EVENT_CATEGORIES = {
   },
   relationship: {
     icon: '❤️',
-    color: 'purple',
-    bgClass: 'bg-purple-500/10',
-    borderClass: 'border-purple-500/30',
-    textClass: 'text-purple-500'
+    // Rose, not purple — house law #1 (matches lib/content/eventCategories.ts).
+    color: 'rose',
+    bgClass: 'bg-rose-400/10',
+    borderClass: 'border-rose-400/40',
+    textClass: 'text-rose-400'
   }
 };
 

@@ -12,7 +12,7 @@ const ATTRIBUTE_TIERS: Record<AttributeTier, { min: number; max: number; color: 
   Low: { min: 1, max: 3, color: 'text-red-500', bg: 'bg-red-500/20' },
   Mid: { min: 4, max: 6, color: 'text-yellow-500', bg: 'bg-yellow-500/20' },
   Top: { min: 7, max: 9, color: 'text-green-500', bg: 'bg-green-500/20' },
-  God: { min: 10, max: 10, color: 'text-purple-500', bg: 'bg-purple-500/20' }
+  God: { min: 10, max: 10, color: 'text-[#ff8c42]', bg: 'bg-[#ff8c42]/20' }
 };
 
 function getTier(value: number): AttributeTier {
@@ -102,7 +102,7 @@ export default function ImpactPreview({ currentAttributes, effects, choiceLabel 
               className={`p-4 border-2 ${
                 warning
                   ? tierChanged
-                    ? 'bg-purple-500/10 border-purple-500/30'
+                    ? 'bg-amber-500/10 border-amber-500/30'
                     : isNegative
                     ? 'bg-red-500/10 border-red-500/30'
                     : 'bg-green-500/10 border-green-500/30'
@@ -115,7 +115,7 @@ export default function ImpactPreview({ currentAttributes, effects, choiceLabel 
                     {formatAttributeName(key)}
                   </p>
                   {tierChanged && (
-                    <p className="text-xs text-purple-400 mt-1">
+                    <p className="text-xs text-amber-400 mt-1">
                       Tier Change: {currentTier} → {projectedTier}
                     </p>
                   )}
@@ -185,7 +185,7 @@ export default function ImpactPreview({ currentAttributes, effects, choiceLabel 
                 </span>
                 {warning && (
                   <span className={`text-xs font-bold ${
-                    projected <= 3 ? 'text-red-400' : 'text-purple-400'
+                    projected <= 3 ? 'text-red-400' : 'text-[#ff8c42]'
                   }`}>
                     {projected <= 3 ? '⚠ CRITICAL LOW' : '⭐ GOD TIER REACHED'}
                   </span>

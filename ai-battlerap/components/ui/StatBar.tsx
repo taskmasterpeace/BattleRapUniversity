@@ -6,7 +6,7 @@ export interface StatBarProps extends HTMLAttributes<HTMLDivElement> {
   value: number; // 1-10 scale
   maxValue?: number;
   showValue?: boolean;
-  color?: 'orange' | 'blue' | 'green' | 'purple' | 'red';
+  color?: 'orange' | 'blue' | 'green' | 'rose' | 'red';
 }
 
 export function StatBar({
@@ -24,7 +24,7 @@ export function StatBar({
     orange: 'bg-[#ff8c42]',
     blue: 'bg-blue-500',
     green: 'bg-emerald-500',
-    purple: 'bg-purple-500',
+    rose: 'bg-rose-400',
     red: 'bg-red-500',
   };
 

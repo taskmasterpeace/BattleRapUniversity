@@ -44,7 +44,7 @@ const EVENT_CATEGORIES = {
   personal: { icon: '🏠', color: 'text-blue-500', bg: 'bg-blue-500/10', border: 'border-blue-500/30' },
   scandal: { icon: '📰', color: 'text-red-500', bg: 'bg-red-500/10', border: 'border-red-500/30' },
   financial: { icon: '💰', color: 'text-green-500', bg: 'bg-green-500/10', border: 'border-green-500/30' },
-  relationship: { icon: '❤️', color: 'text-purple-500', bg: 'bg-purple-500/10', border: 'border-purple-500/30' }
+  relationship: { icon: '❤️', color: 'text-rose-400', bg: 'bg-rose-400/10', border: 'border-rose-400/40' }
 };
 
 export default function LifeEventHistoryClient({ events, battler }: Props) {
