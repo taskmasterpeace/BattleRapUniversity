@@ -79,3 +79,7 @@ export async function POST(request: Request) {
     ...totals,
   });
 }
+
+// Vercel Cron issues GET — keep the scene alive on a schedule (publishes held
+// stories whose sit timer elapsed, decays the rest) even between battles.
+export const GET = POST;

@@ -50,12 +50,17 @@ function scoreLead(
   acc: Account,
   lead: Lead,
   history: Map<string, number>, // key `${display_name}|${battlerId}` -> total_articles
+  load: number,                 // stories this blogger is already holding
   jitter: number
 ): number {
   const affinity = beatAffinity(acc.handle, acc.voice_profile, lead.subcategory);
   if (affinity <= 0) return 0;
 
   let score = affinity * (0.55 + (acc.influence / 100) * 0.45);
+
+  // A blogger already buried in stories is less hungry for another — spreads
+  // coverage across the desk instead of one blog scooping everything.
+  score -= Math.min(0.4, load * 0.12);
 
   // Continuity: a blogger who's covered this battler wants the follow-up.
   const prior = history.get(`${acc.display_name}|${lead.subject_battler_id}`) ?? 0;
@@ -128,9 +133,11 @@ export async function runNewsroomTick(
     .select('lead_id, account_id, status')
     .in('status', ['holding']);
   const heldBy = new Map<string, Set<string>>(); // lead_id -> set(account_id)
+  const loadByAccount = new Map<string, number>(); // account_id -> stories held
   for (const h of holdings ?? []) {
     if (!heldBy.has((h as any).lead_id)) heldBy.set((h as any).lead_id, new Set());
     heldBy.get((h as any).lead_id)!.add((h as any).account_id);
+    loadByAccount.set((h as any).account_id, (loadByAccount.get((h as any).account_id) ?? 0) + 1);
   }
 
   // ---- 1. Claim (on FRESH heat — a lead is hottest the moment it breaks) ----
@@ -144,7 +151,10 @@ export async function runNewsroomTick(
     // Score every eligible blogger.
     const ranked = accounts
       .filter((a) => !already.has(a.id))
-      .map((a) => ({ a: a as Account, s: scoreLead(a as Account, lead, history, (Math.random() - 0.5) * 0.16) }))
+      .map((a) => ({
+        a: a as Account,
+        s: scoreLead(a as Account, lead, history, loadByAccount.get(a.id) ?? 0, (Math.random() - 0.5) * 0.16),
+      }))
       .filter((x) => x.s >= (already.size === 0 ? MIN_INTEREST : SECOND_CLAIM_MIN))
       .sort((x, y) => y.s - x.s);
 
@@ -162,6 +172,7 @@ export async function runNewsroomTick(
       if (!error) {
         res.claimed++;
         already.add(winner.id);
+        loadByAccount.set(winner.id, (loadByAccount.get(winner.id) ?? 0) + 1);
         await supabase
           .from('story_leads')
           .update({ status: 'claimed', claim_count: already.size, updated_at: new Date().toISOString() })

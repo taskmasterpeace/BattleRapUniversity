@@ -389,9 +389,12 @@ export default function WirePage() {
 
             {/* THE NEWSROOM — stories the blogs have landed and are sitting on. */}
             <div className="bg-[#101114] border-2 border-[#3a3d44] p-3 mt-4 lg:sticky lg:top-[calc(1rem+180px)]">
-              <h2 className="text-sm font-display font-black uppercase tracking-tighter text-[#ff8c42] mb-1">
-                📰 THE NEWSROOM
-              </h2>
+              <Link href="/newsroom" className="group flex items-center justify-between mb-1">
+                <h2 className="text-sm font-display font-black uppercase tracking-tighter text-[#ff8c42] group-hover:text-[#ff9d5c] transition">
+                  📰 THE NEWSROOM
+                </h2>
+                <span className="text-[9px] font-mono text-zinc-600 group-hover:text-[#ff8c42] transition">THE DESK →</span>
+              </Link>
               <p className="text-[9px] font-mono uppercase tracking-widest text-zinc-600 mb-2.5">
                 WHAT THE BLOGS ARE SITTING ON
               </p>

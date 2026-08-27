@@ -54,10 +54,11 @@ async function insertLead(
     .limit(1)
     .maybeSingle();
   if (live) {
-    // A fresh instance of the same story reheats the one already developing.
+    // A fresh instance of the same story nudges the one already developing —
+    // gently, and capped, so a recurring rivalry doesn't rocket to "breaking".
     await supabase
       .from('story_leads')
-      .update({ heat: Math.min(100, Math.round((live as any).heat + lead.heat * 0.4)), updated_at: new Date().toISOString() })
+      .update({ heat: Math.min(88, Math.round((live as any).heat + lead.heat * 0.2)), updated_at: new Date().toISOString() })
       .eq('id', (live as any).id);
     return null;
   }

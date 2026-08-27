@@ -7,6 +7,10 @@
     {
       "path": "/api/internal/generate-battle-offers",
       "schedule": "30 6 * * *"
+    },
+    {
+      "path": "/api/internal/run-newsroom",
+      "schedule": "0 */6 * * *"
     }
   ]
 }
