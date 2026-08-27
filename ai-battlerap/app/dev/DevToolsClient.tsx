@@ -195,14 +195,14 @@ NODE_ENV=development`}
               <button
                 onClick={() => advanceTime(0.5)}
                 disabled={loading}
-                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
+                className="px-4 py-2 bg-zinc-700 hover:bg-zinc-600 rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
               >
                 +12 Hours
               </button>
               <button
                 onClick={() => advanceTime(14)}
                 disabled={loading}
-                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
+                className="px-4 py-2 bg-zinc-700 hover:bg-zinc-600 rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
               >
                 +2 Weeks
               </button>

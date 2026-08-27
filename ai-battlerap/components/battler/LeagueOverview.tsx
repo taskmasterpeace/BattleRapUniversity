@@ -17,10 +17,11 @@ const prestigeLabel = (level: number | null | undefined) => {
 };
 
 const prestigeColor = (level: number | null | undefined) => {
+  // Prestige climb, no purple/blue: zinc -> emerald -> amber -> brand flame.
   if (!level || level <= 3) return 'text-zinc-300 border-zinc-500/50 bg-zinc-700/30';
-  if (level <= 5) return 'text-blue-400 border-blue-500/50 bg-blue-700/20';
-  if (level <= 7) return 'text-purple-400 border-purple-500/50 bg-purple-700/20';
-  return 'text-yellow-300 border-yellow-500/60 bg-yellow-700/20';
+  if (level <= 5) return 'text-emerald-400 border-emerald-500/50 bg-emerald-700/20';
+  if (level <= 7) return 'text-amber-400 border-amber-500/50 bg-amber-700/20';
+  return 'text-[#ff8c42] border-[#ff8c42]/60 bg-[#ff8c42]/20';
 };
 
 const StatBar = ({ label, value, max = 1 }: { label: string; value: number; max?: number }) => {

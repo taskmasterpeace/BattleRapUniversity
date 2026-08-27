@@ -108,7 +108,7 @@ export default function NotificationDropdown({ battlerId }: NotificationDropdown
       case 'life_event':
         return 'border-yellow-500/30 bg-yellow-500/10';
       case 'badge_earned':
-        return 'border-purple-500/30 bg-purple-500/10';
+        return 'border-rose-400/30 bg-rose-400/10';
       case 'level_up':
         return 'border-amber-500/30 bg-amber-500/10';
       case 'tournament_update':

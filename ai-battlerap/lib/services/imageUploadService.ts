@@ -249,7 +249,7 @@ export function getTierColor(tier: string): string {
     case 'god':
       return 'bg-orange-500';
     case 'top':
-      return 'bg-purple-500';
+      return 'bg-amber-500';
     case 'mid':
       return 'bg-blue-500';
     case 'low':

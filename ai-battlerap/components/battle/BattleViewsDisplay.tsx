@@ -26,21 +26,21 @@ const VIEW_TIER_CONFIG = {
   },
   mid: {
     label: 'MID',
-    bgColor: 'bg-blue-500/20',
-    borderColor: 'border-blue-500/40',
-    textColor: 'text-blue-400',
+    bgColor: 'bg-emerald-500/20',
+    borderColor: 'border-emerald-500/40',
+    textColor: 'text-emerald-400',
   },
   top: {
     label: 'TOP',
-    bgColor: 'bg-purple-500/20',
-    borderColor: 'border-purple-500/40',
-    textColor: 'text-purple-400',
-  },
-  goat: {
-    label: 'GOAT',
     bgColor: 'bg-amber-500/20',
     borderColor: 'border-amber-500/40',
     textColor: 'text-amber-400',
+  },
+  goat: {
+    label: 'GOAT',
+    bgColor: 'bg-[#ff8c42]/20',
+    borderColor: 'border-[#ff8c42]/40',
+    textColor: 'text-[#ff8c42]',
   },
 };
 

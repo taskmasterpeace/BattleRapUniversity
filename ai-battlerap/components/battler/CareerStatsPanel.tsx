@@ -146,7 +146,7 @@ export default function CareerStatsPanel({ ranking, attributes }: Props) {
                 </div>
                 <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-500"
+                    className="h-full bg-gradient-to-r from-red-500 to-orange-500 transition-all duration-500"
                     style={{ width: `${(attributeAverages.performance / 10) * 100}%` }}
                   />
                 </div>

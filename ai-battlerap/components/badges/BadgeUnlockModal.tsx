@@ -46,9 +46,9 @@ const RARITY_CONFIG: Record<BadgeRarity, {
     particleColor: '#3b82f6',
   },
   epic: {
-    color: 'text-purple-400',
-    gradient: 'from-purple-500 to-purple-600',
-    glow: 'shadow-[0_0_40px_rgba(168,85,247,0.7)]',
+    color: 'text-rose-400',
+    gradient: 'from-rose-500 to-rose-600',
+    glow: 'shadow-[0_0_40px_rgba(244,63,94,0.7)]',
     label: 'EPIC',
     particleColor: '#a855f7',
   },

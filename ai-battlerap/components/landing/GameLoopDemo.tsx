@@ -77,7 +77,7 @@ const PREP_WEEK = [
 ];
 
 const FOCUS_COLORS: Record<string, string> = {
-  RESEARCH: 'border-purple-500/60 text-purple-300',
+  RESEARCH: 'border-amber-500/60 text-amber-300',
   WRITE: 'border-blue-500/60 text-blue-300',
   PERFORM: 'border-green-500/60 text-green-300',
   REST: 'border-zinc-500/60 text-zinc-400',
@@ -191,7 +191,7 @@ export default function GameLoopDemo() {
                   <p className="text-[10px] uppercase tracking-widest text-zinc-600">writing days</p>
                 </div>
                 <div>
-                  <p className="font-display text-2xl font-black text-purple-400">+ANGLES</p>
+                  <p className="font-display text-2xl font-black text-amber-400">+ANGLES</p>
                   <p className="text-[10px] uppercase tracking-widest text-zinc-600">research days</p>
                 </div>
                 <div>

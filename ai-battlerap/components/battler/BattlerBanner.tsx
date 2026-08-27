@@ -28,9 +28,9 @@ export default function BattlerBanner({
   const getGradient = (tier?: string) => {
     switch (tier) {
       case 'god':
-        return 'bg-gradient-to-r from-orange-600 via-red-600 to-purple-600';
+        return 'bg-gradient-to-r from-amber-400 via-orange-500 to-red-600';
       case 'top':
-        return 'bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600';
+        return 'bg-gradient-to-r from-orange-500 via-[#ff8c42] to-amber-400';
       case 'mid':
         return 'bg-gradient-to-r from-blue-600 via-cyan-600 to-teal-600';
       case 'low':

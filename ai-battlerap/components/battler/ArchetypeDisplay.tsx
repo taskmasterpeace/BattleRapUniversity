@@ -15,9 +15,9 @@ const archetypeColors: Record<string, { bg: string; border: string; text: string
     icon: '📝'
   },
   'Freestyler': {
-    bg: 'bg-purple-500/10',
-    border: 'border-purple-500/30',
-    text: 'text-purple-400',
+    bg: 'bg-amber-500/10',
+    border: 'border-amber-500/30',
+    text: 'text-amber-400',
     icon: '⚡'
   },
   'Performance Beast': {

@@ -45,7 +45,7 @@ const LEVEL_TIERS = [
   { minLevel: 1, maxLevel: 5, name: 'Rookie', color: 'zinc' },
   { minLevel: 6, maxLevel: 10, name: 'Up-and-Comer', color: 'blue' },
   { minLevel: 11, maxLevel: 15, name: 'Established', color: 'green' },
-  { minLevel: 16, maxLevel: 20, name: 'Elite', color: 'purple' },
+  { minLevel: 16, maxLevel: 20, name: 'Elite', color: 'amber' },
   { minLevel: 21, maxLevel: 25, name: 'Legend', color: 'orange' },
   { minLevel: 26, maxLevel: 30, name: 'GOAT', color: 'red' },
 ] as const;

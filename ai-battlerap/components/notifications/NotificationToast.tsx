@@ -35,7 +35,7 @@ export default function NotificationToast() {
       case 'life_event':
         return 'border-yellow-500 bg-yellow-500/20 text-yellow-100';
       case 'badge_earned':
-        return 'border-purple-500 bg-purple-500/20 text-purple-100';
+        return 'border-rose-400 bg-rose-400/20 text-rose-100';
       case 'level_up':
         return 'border-amber-500 bg-amber-500/20 text-amber-100';
       case 'tournament_update':

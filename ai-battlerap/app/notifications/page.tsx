@@ -107,7 +107,7 @@ export default function NotificationsPage() {
       battle_offer: 'border-orange-500/30 bg-[#ff8c42]/10',
       battle_complete: 'border-green-500/30 bg-green-500/10',
       life_event: 'border-yellow-500/30 bg-yellow-500/10',
-      badge_earned: 'border-purple-500/30 bg-purple-500/10',
+      badge_earned: 'border-rose-400/30 bg-rose-400/10',
       level_up: 'border-amber-500/30 bg-amber-500/10',
       tournament_update: 'border-blue-500/30 bg-blue-500/10',
       system_message: 'border-[#3a3d44] bg-zinc-800/50',
