@@ -289,7 +289,7 @@ export default function LiveBattleViewer({
             {/* Player */}
             <div className="text-center">
               <div className="relative inline-block">
-                <Avatar url={playerAvatarUrl} size={180} className={`mx-auto ${portraitFx(!!activeIsPlayer && !ended, activeMood)}`} alt={player.stage_name} />
+                <Avatar url={playerAvatarUrl} size={180} className={`mx-auto ${ended ? (playerWon ? 'ring-4 ring-[#ff8c42] shadow-[0_0_44px_rgba(255,140,66,0.65)] scale-110 transition-all duration-500' : 'opacity-40 grayscale scale-95 transition-all duration-500') : portraitFx(!!activeIsPlayer, activeMood)}`} alt={player.stage_name} />
                 {activeIsPlayer && !ended && activeMood && (
                   <span className={`absolute -bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap px-2.5 py-0.5 text-[10px] font-display font-black uppercase tracking-wider ${MIC_BADGE[activeMood].tone}`}>
                     {MIC_BADGE[activeMood].label}
@@ -314,7 +314,7 @@ export default function LiveBattleViewer({
             {/* AI */}
             <div className="text-center">
               <div className="relative inline-block">
-                <Avatar url={aiAvatarUrl} size={180} className={`mx-auto ${portraitFx(!activeIsPlayer && !!currentSegment && !ended, activeMood)}`} alt={ai.stage_name} />
+                <Avatar url={aiAvatarUrl} size={180} className={`mx-auto ${ended ? (!playerWon && winnerId ? 'ring-4 ring-red-500 shadow-[0_0_44px_rgba(239,68,68,0.6)] scale-110 transition-all duration-500' : 'opacity-40 grayscale scale-95 transition-all duration-500') : portraitFx(!activeIsPlayer && !!currentSegment, activeMood)}`} alt={ai.stage_name} />
                 {!activeIsPlayer && currentSegment && !ended && activeMood && (
                   <span className={`absolute -bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap px-2.5 py-0.5 text-[10px] font-display font-black uppercase tracking-wider ${MIC_BADGE[activeMood].tone}`}>
                     {MIC_BADGE[activeMood].label}
@@ -458,26 +458,45 @@ export default function LiveBattleViewer({
             })}
           </div>
 
-          {/* End-of-battle reveal */}
-          {ended && (
-            <div className="text-center py-10 border-4 border-[#ff8c42] bg-[#ff8c42]/10">
-              <div className="text-sm text-zinc-400 uppercase tracking-widest mb-3">Final Decision</div>
-              <div
-                className={`text-7xl font-display font-black uppercase tracking-tighter mb-4 ${
-                  playerWon ? 'text-[#ff8c42]' : 'text-red-500'
-                }`}
-              >
-                {winnerId
-                  ? playerWon
-                    ? `${player.stage_name} WINS!`
-                    : `${ai.stage_name} WINS`
-                  : 'BATTLE CONCLUDED'}
+          {/* End-of-battle reveal — round scoreline + the culture's verdict */}
+          {ended && (() => {
+            // Battles are decided round-by-round (best 2 of 3), not on point totals.
+            let pw = 0, aw = 0;
+            for (let r = 1; r <= totalRounds; r++) {
+              const p = roundScores[r]?.player ?? 0;
+              const a = roundScores[r]?.ai ?? 0;
+              if (p > a) pw++; else if (a > p) aw++;
+            }
+            const winnerRounds = playerWon ? pw : aw;
+            const loserRounds = playerWon ? aw : pw;
+            const scoreline = `${winnerRounds}-${loserRounds}`;
+            const winnerName = playerWon ? player.stage_name : ai.stage_name;
+            const loserName = playerWon ? ai.stage_name : player.stage_name;
+            const total = playerScore + aiScore;
+            const margin = total > 0 ? Math.abs(playerScore - aiScore) / total : 0; // 0..1
+            // Verdict vocabulary (research-battle-dynamics §2).
+            let verdict: string, sub: string;
+            if (loserRounds === 0 && margin > 0.28) { verdict = 'BODY BAG'; sub = `${winnerName} left nothing on the table.`; }
+            else if (loserRounds === 0) { verdict = 'CLEAN SWEEP'; sub = `${winnerName} took every round.`; }
+            else if (margin < 0.08) { verdict = 'RAZOR THIN'; sub = `They'll be running this one back. ${winnerName} edged it.`; }
+            else { verdict = 'THE DECISION'; sub = `${winnerName} took it, but ${loserName} had moments.`; }
+            const accent = playerWon ? 'text-[#ff8c42]' : 'text-red-500';
+            const border = playerWon ? 'border-[#ff8c42]' : 'border-red-500';
+            const bg = playerWon ? 'bg-[#ff8c42]/10' : 'bg-red-500/10';
+            return (
+            <div className={`text-center py-10 border-4 ${border} ${bg}`}>
+              <div className="text-[11px] text-zinc-500 uppercase tracking-[0.3em] mb-1">The Streets Decided</div>
+              {/* Scoreline is the headline — how battles are actually scored. */}
+              <div className={`font-display font-black tabular-nums leading-none ${accent}`} style={{ fontSize: 'clamp(64px, 12vw, 130px)' }}>
+                {scoreline}
               </div>
-              <div className="text-zinc-400 text-sm uppercase tracking-widest">
-                Final: <span className="text-[#ff8c42] font-black">{playerScore.toFixed(1)}</span>
-                <span className="mx-3 text-zinc-700">|</span>
-                <span className="text-red-500 font-black">{aiScore.toFixed(1)}</span>
+              <div className={`text-3xl md:text-5xl font-display font-black uppercase tracking-tighter mt-1 ${accent}`}>
+                {verdict}
               </div>
+              <div className="text-lg font-display font-black uppercase tracking-tight text-zinc-200 mt-3">
+                {winnerName} <span className="text-zinc-500">over</span> {loserName}
+              </div>
+              <p className="text-sm text-zinc-400 mt-2 max-w-lg mx-auto">{sub}</p>
               <button
                 onClick={onClose}
                 className="mt-6 px-8 py-3 bg-[#ff8c42] text-black font-display font-black uppercase tracking-wider hover:bg-[#ff9d5c] transition-colors"
@@ -485,7 +504,8 @@ export default function LiveBattleViewer({
                 VIEW FULL BREAKDOWN
               </button>
             </div>
-          )}
+            );
+          })()}
         </div>
       </div>
 
