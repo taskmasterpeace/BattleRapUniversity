@@ -602,15 +602,37 @@ async function triggerLifeEvent(
 ): Promise<void> {
   console.log(`[Life Events] Triggering event: ${template.code} for battler ${battlerId}`);
 
+  const isImmediate = template.event_type === 'passive' || template.event_type === 'triggered';
+  const status = isImmediate ? 'resolved' : 'pending';
+
+  // Never stack a SECOND identical unresolved decision. A choice event that can
+  // trigger multiple times (e.g. "Rock Bottom" after a 3-0 loss) would otherwise
+  // pile up an identical pending card every rough night — we found 4 stacked.
+  // can_trigger_multiple_times / cooldown still govern re-triggering over a career;
+  // this only blocks a duplicate while one is already sitting in the queue.
+  if (status === 'pending') {
+    const { data: pendingDupe } = await supabase
+      .from('battler_life_events')
+      .select('id')
+      .eq('battler_id', battlerId)
+      .eq('template_code', template.code)
+      .eq('status', 'pending')
+      .limit(1);
+    if (pendingDupe && pendingDupe.length > 0) {
+      console.log(`[Life Events] Skipped duplicate pending event: ${template.code} (one already awaiting a decision)`);
+      return;
+    }
+  }
+
   // Create the life event instance
   const eventData: any = {
     battler_id: battlerId,
     template_code: template.code,
     battle_id: battleId,
     event_type: template.event_type,
-    status: template.event_type === 'passive' || template.event_type === 'triggered' ? 'resolved' : 'pending',
+    status,
     details_json: details,
-    effects_applied: template.event_type === 'passive' || template.event_type === 'triggered' ? template.passive_effects : {},
+    effects_applied: isImmediate ? template.passive_effects : {},
   };
 
   // For passive/triggered events, apply effects immediately
