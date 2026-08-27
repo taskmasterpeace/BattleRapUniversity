@@ -104,6 +104,20 @@ interface CareerData {
     isPrimaryFocus: boolean;
     isGrudgeArticle: boolean;
   }>;
+  wire?: {
+    handle: string;
+    display_name: string;
+    influence: number;
+    credibility: number;
+  } | null;
+  press?: Array<{
+    blogger_name: string;
+    total_articles: number;
+    sentiment_positive: number;
+    sentiment_negative: number;
+    recent_narrative: string | null;
+    last_covered_at: string;
+  }>;
 }
 
 type TabType = 'overview' | 'battles' | 'rivalries' | 'media';
@@ -347,6 +361,64 @@ function OverviewTab({ data }: { data: CareerData }) {
           </div>
         )}
       </div>
+
+      {/* Public Life — Wire presence + how the press leans (owner ask 2026-08-27:
+          "look at a battler's info and know if they have a social media") */}
+      {(data.wire || (data.press && data.press.length > 0)) && (
+        <div className="lg:col-span-3 grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* On The Wire */}
+          <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-6">
+            <h2 className="text-2xl font-display font-black uppercase tracking-tighter mb-4 text-[#ff8c42]">On The Wire</h2>
+            {data.wire ? (
+              <Link href="/wire" className="block bg-[#18191c] border-2 border-[#3a3d44] hover:border-[#ff8c42]/60 p-4 transition group">
+                <div className="font-display font-black text-lg text-zinc-100 uppercase tracking-tight group-hover:text-[#ff8c42] transition">
+                  @{data.wire.handle.replace(/^@+/, '')}
+                </div>
+                <div className="text-xs text-zinc-500 uppercase tracking-wide mb-3">{data.wire.display_name}</div>
+                <div className="flex gap-4 font-mono text-[11px] uppercase tracking-wide">
+                  <span className="text-zinc-400">INFLUENCE <b className="text-[#ff8c42]">{data.wire.influence}</b></span>
+                  <span className="text-zinc-400">CRED <b className="text-zinc-200">{data.wire.credibility}</b></span>
+                </div>
+                <div className="mt-3 text-[10px] font-mono text-zinc-600 uppercase tracking-widest group-hover:text-zinc-400 transition">SEE THEIR DROPS ON THE WIRE →</div>
+              </Link>
+            ) : (
+              <p className="text-zinc-500 text-center py-8 uppercase tracking-wide text-sm">No Wire account — off the grid</p>
+            )}
+          </div>
+
+          {/* The Press */}
+          <div className="lg:col-span-2 bg-[#2d2f35] border-2 border-[#3a3d44] p-6">
+            <h2 className="text-2xl font-display font-black uppercase tracking-tighter mb-1 text-[#ff8c42]">The Press</h2>
+            <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest mb-4">WHO COVERS THEM · AND HOW THEY LEAN</p>
+            {data.press && data.press.length > 0 ? (
+              <div className="space-y-2">
+                {data.press.slice(0, 5).map((p) => {
+                  const lean = p.sentiment_positive - p.sentiment_negative; // −100..100
+                  const leanLabel = lean >= 25 ? 'RIDES FOR THEM' : lean <= -25 ? 'STAYS ON THEIR NECK' : 'CALLS IT STRAIGHT';
+                  const leanColor = lean >= 25 ? 'text-green-400' : lean <= -25 ? 'text-red-400' : 'text-zinc-400';
+                  return (
+                    <div key={p.blogger_name} className="bg-[#18191c] border-2 border-[#3a3d44] p-3">
+                      <div className="flex flex-wrap items-center justify-between gap-2 mb-1.5">
+                        <span className="font-display font-black text-sm uppercase tracking-wide text-zinc-100">{p.blogger_name}</span>
+                        <span className={`font-mono text-[10px] uppercase tracking-wider ${leanColor}`}>{leanLabel} · {p.total_articles} {p.total_articles === 1 ? 'STORY' : 'STORIES'}</span>
+                      </div>
+                      <div className="h-1.5 bg-[#2d2f35] flex overflow-hidden">
+                        <div className="bg-green-500/70" style={{ width: `${p.sentiment_positive}%` }} />
+                        <div className="bg-red-500/70 ml-auto" style={{ width: `${p.sentiment_negative}%` }} />
+                      </div>
+                      {p.recent_narrative && (
+                        <p className="text-xs text-zinc-500 mt-1.5 line-clamp-1">&ldquo;{p.recent_narrative}&rdquo;</p>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <p className="text-zinc-500 text-center py-8 uppercase tracking-wide text-sm">No coverage yet — the blogs haven&apos;t noticed</p>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Recent Battles */}
       <div className="lg:col-span-3 bg-[#2d2f35] border-2 border-[#3a3d44] p-6">

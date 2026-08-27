@@ -82,6 +82,27 @@ export async function GET(
         .order('year', { ascending: false }),
     ]);
 
+    // 7. Public life: Wire handle + how the press leans on this battler.
+    //    social_accounts links AI battlers (and later players) to their Wire
+    //    presence; blogger_memory is each blogger's running sentiment.
+    const [{ data: wireAccount }, { data: pressRows }] = await Promise.all([
+      supabase
+        .from('social_accounts')
+        .select('handle, display_name, influence, credibility')
+        .eq('battler_id', battlerId)
+        .limit(1)
+        .maybeSingle(),
+      supabase
+        .from('blogger_memory')
+        .select(
+          'blogger_name, total_articles, sentiment_positive, sentiment_negative, recent_narrative, last_covered_at'
+        )
+        .eq('entity_type', 'battler')
+        .eq('entity_id', battlerId)
+        .order('total_articles', { ascending: false })
+        .limit(8),
+    ]);
+
     return NextResponse.json({
       battler: {
         id: battler.id,
@@ -104,6 +125,8 @@ export async function GET(
       battleHistory,
       rivalries,
       mediaMentions,
+      wire: wireAccount ?? null,
+      press: pressRows ?? [],
     });
 
   } catch (error: any) {

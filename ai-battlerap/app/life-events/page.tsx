@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { getPlayerBattler } from '@/lib/game/getPlayerBattler';
 import { createServerSupabaseClient } from '@/lib/db/server';
+import { getEventArt, QUIET_ART } from '@/lib/content/eventArt';
+import { categoryOf, severityOf } from '@/lib/content/eventCategories';
 
 /**
  * /life-events — pending life events index.
@@ -59,7 +61,11 @@ export default async function LifeEventsPage() {
       <div className="max-w-5xl mx-auto px-4 md:px-6 py-6 md:py-12">
         {pending.length === 0 ? (
           <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-10 md:p-16 text-center">
-            <div className="text-5xl mb-4">🧘</div>
+            <img
+              src={QUIET_ART}
+              alt=""
+              className="w-32 h-32 mx-auto mb-4 opacity-80 [image-rendering:pixelated]"
+            />
             <h2 className="text-xl font-display font-black uppercase tracking-wider text-zinc-300 mb-2">
               ALL QUIET OUTSIDE THE BOOTH
             </h2>
@@ -79,30 +85,51 @@ export default async function LifeEventsPage() {
               {pending.length} EVENT{pending.length === 1 ? '' : 'S'} NEED
               {pending.length === 1 ? 'S' : ''} YOUR DECISION
             </p>
-            {pending.map((event: any) => (
-              <div
-                key={event.id}
-                className="bg-[#2d2f35] border-2 border-[#3a3d44] hover:border-[#ff8c42]/50 p-6 transition"
-              >
-                <div className="flex items-start justify-between gap-4 mb-2">
-                  <h3 className="font-display font-black text-lg uppercase tracking-wide text-zinc-100">
-                    {event.template?.title ?? 'LIFE EVENT'}
-                  </h3>
-                  <span className="text-xs text-zinc-600 uppercase tracking-wide flex-shrink-0">
-                    {new Date(event.triggered_at).toLocaleDateString()}
-                  </span>
-                </div>
-                <p className="text-sm text-zinc-500 mb-4">
-                  {event.template?.description}
-                </p>
+            {pending.map((event: any) => {
+              const cat = categoryOf(event.template?.category);
+              const sev = severityOf(event.template?.severity);
+              const art = getEventArt(
+                event.template?.code,
+                event.template?.category,
+                event.template?.severity
+              );
+              return (
+                // The row IS the button — no separate CTA (LIFE_EVENTS_UI §2)
                 <Link
+                  key={event.id}
                   href={`/life-events/${event.id}`}
-                  className="inline-block px-5 py-2.5 bg-[#ff8c42] hover:bg-[#ff9d5c] text-black text-xs font-display font-black uppercase tracking-wider transition"
+                  className="relative flex items-stretch gap-3 md:gap-4 bg-[#2d2f35] border-2 border-[#3a3d44] hover:border-[#ff8c42]/60 hover:translate-x-[2px] p-3 md:p-4 pl-4 md:pl-5 transition min-h-[64px] group"
                 >
-                  MAKE DECISION →
+                  <span className={`absolute left-0 top-0 bottom-0 w-[3px] ${cat.edge}`} />
+                  {art?.thumb && (
+                    <img
+                      src={art.thumb}
+                      alt=""
+                      className="w-16 h-16 md:w-20 md:h-20 flex-none border-2 border-[#3a3d44] object-cover [image-rendering:pixelated]"
+                    />
+                  )}
+                  <span className="flex-1 min-w-0 flex flex-col justify-center">
+                    <span className="font-mono text-[10px] uppercase tracking-[0.1em] mb-0.5">
+                      <b className={`${cat.text} font-display font-black tracking-wider`}>{cat.label}</b>
+                      <span className="text-zinc-600"> · </span>
+                      <b className={`${sev.text} font-display font-black tracking-wider`}>{sev.label}</b>
+                    </span>
+                    <span className="font-display font-black text-base md:text-lg uppercase tracking-wide text-zinc-100 leading-tight">
+                      {event.template?.title ?? 'LIFE EVENT'}
+                    </span>
+                    <span className="text-xs md:text-sm text-zinc-500 line-clamp-2 mt-0.5">
+                      {event.template?.description}
+                    </span>
+                  </span>
+                  <span className="flex-none self-center flex flex-col items-end gap-1">
+                    <span className="text-[10px] font-mono text-zinc-600 uppercase">
+                      {new Date(event.triggered_at).toLocaleDateString()}
+                    </span>
+                    <span className={`text-lg ${cat.text} group-hover:translate-x-0.5 transition`}>→</span>
+                  </span>
                 </Link>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
