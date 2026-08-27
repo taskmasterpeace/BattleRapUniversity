@@ -45,6 +45,15 @@ export default async function LeaguesIndexPage() {
     console.error('[leagues] fetch error:', error);
   }
 
+  // The player's home league, so the ladder can show them where they stand.
+  const { data: battler } = await supabase
+    .from('battlers')
+    .select('primary_league_id')
+    .eq('user_id', user.id)
+    .eq('is_ai', false)
+    .maybeSingle();
+  const myLeagueId = battler?.primary_league_id ?? null;
+
   const list: League[] = leagues ?? [];
   const physical = list.filter((l) => l.city_id);
   const online = list.filter((l) => !l.city_id);
@@ -103,12 +112,23 @@ export default async function LeaguesIndexPage() {
                 </span>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {tier.leagues.map((l) => (
+                {tier.leagues.map((l) => {
+                  const isCurrent = l.id === myLeagueId;
+                  return (
                   <Link
                     key={l.id}
                     href={`/leagues/${l.id}`}
-                    className="group bg-[#18191c] border-2 border-[#3a3d44] hover:border-[#ff8c42] hover:-translate-y-[2px] hover:shadow-[0_14px_36px_-18px_rgba(255,140,66,0.6)] p-6 transition-all duration-200 block"
+                    className={`group p-6 transition-all duration-200 block hover:-translate-y-[2px] hover:shadow-[0_14px_36px_-18px_rgba(255,140,66,0.6)] ${
+                      isCurrent
+                        ? 'bg-[#ff8c42]/10 border-2 border-[#ff8c42]'
+                        : 'bg-[#18191c] border-2 border-[#3a3d44] hover:border-[#ff8c42]'
+                    }`}
                   >
+                    {isCurrent && (
+                      <div className="mb-3 inline-flex items-center gap-1.5 bg-[#ff8c42] text-black px-2.5 py-0.5 text-[10px] font-display font-black uppercase tracking-widest">
+                        ● Your Scene
+                      </div>
+                    )}
                     <div className="flex items-start gap-4 mb-3">
                       {l.logo_url && (
                         <Image
@@ -165,7 +185,8 @@ export default async function LeaguesIndexPage() {
                       </div>
                     </div>
                   </Link>
-                ))}
+                  );
+                })}
               </div>
             </section>
           ))
