@@ -516,30 +516,43 @@ export default function BattleViewerPage({
     name,
     segs,
     accent,
+    oppSegs = [],
   }: {
     name: string;
     segs: BattleSegment[];
     accent: string;
+    oppSegs?: BattleSegment[];
   }) => (
     <div>
       <div className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-1">{name}</div>
       <div className="flex gap-1.5 items-end h-[72px]">
-        {segs.map((seg) => (
-          <div key={seg.id} className="flex-1 flex flex-col justify-end h-full">
-            <div
-              className={`flex items-end justify-center border ${
-                seg.event_flags.includes('choke')
-                  ? 'bg-red-500 border-red-400 text-white'
-                  : seg.event_flags.includes('haymaker')
-                  ? 'bg-amber-500 border-amber-400 text-black'
-                  : `${accent} text-white`
-              }`}
-              style={{ height: `${Math.max(22, Math.min(100, (seg.segment_score / 10) * 100))}%` }}
-            >
-              <span className="text-[10px] font-black">{seg.segment_score.toFixed(1)}</span>
+        {segs.map((seg) => {
+          // A haymaker only earns the amber highlight if it LANDED — i.e. won its
+          // segment. The sim's "haymaker" flag is a peak ROLL (~1.2x boost), not
+          // proof the moment was big: on a weak battler it can sit on a 4.0 that
+          // still lost to the opponent's 7.1, and lighting that up next to the
+          // bigger bar reads as a bug. Choke always shows — a choke is a choke.
+          const oppScore =
+            oppSegs.find((o) => o.segment_index === seg.segment_index)?.segment_score ?? 0;
+          const landedHaymaker =
+            seg.event_flags.includes('haymaker') && seg.segment_score >= oppScore;
+          return (
+            <div key={seg.id} className="flex-1 flex flex-col justify-end h-full">
+              <div
+                className={`flex items-end justify-center border ${
+                  seg.event_flags.includes('choke')
+                    ? 'bg-red-500 border-red-400 text-white'
+                    : landedHaymaker
+                    ? 'bg-amber-500 border-amber-400 text-black'
+                    : `${accent} text-white`
+                }`}
+                style={{ height: `${Math.max(22, Math.min(100, (seg.segment_score / 10) * 100))}%` }}
+              >
+                <span className="text-[10px] font-black">{seg.segment_score.toFixed(1)}</span>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
@@ -795,11 +808,13 @@ export default function BattleViewerPage({
                       <SegmentLane
                         name={battle.player_battler.stage_name}
                         segs={playerSegments}
+                        oppSegs={aiSegments}
                         accent="bg-[#ff8c42]/70 border-[#ff8c42]"
                       />
                       <SegmentLane
                         name={battle.ai_battler.stage_name}
                         segs={aiSegments}
+                        oppSegs={playerSegments}
                         accent="bg-zinc-700 border-zinc-600"
                       />
                       <div className="flex gap-4 justify-center text-[10px] font-mono uppercase tracking-widest text-zinc-500">
