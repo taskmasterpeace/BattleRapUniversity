@@ -374,7 +374,9 @@ export default function LiveBattleViewer({
             const segName = currentSegment.battler_id === player.id ? player.stage_name : ai.stage_name;
             const moment = momentLine(currentSegment, segName);
             return (
-            <div className={`border-2 p-6 mb-8 transition-colors duration-300 ${MOOD_CARD[moment.mood]}`}>
+            // key={index} re-mounts per beat so the entrance animation replays,
+            // giving the tape a rhythm instead of an instant swap.
+            <div key={index} className={`beat-in border-2 p-4 md:p-6 mb-8 transition-colors duration-300 ${MOOD_CARD[moment.mood]}`}>
               <div className="flex items-center justify-between mb-3">
                 <div>
                   <div className="text-xs text-zinc-500 uppercase tracking-widest">
@@ -525,6 +527,17 @@ export default function LiveBattleViewer({
       <div className="px-6 py-2 border-t border-[#3a3d44] text-[10px] text-zinc-600 uppercase tracking-widest text-center">
         Space: play/pause • ← → step • Esc: exit
       </div>
+
+      <style jsx>{`
+        @keyframes beatIn {
+          from { opacity: 0; transform: translateY(10px) scale(0.99); }
+          to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .beat-in { animation: beatIn 0.28s cubic-bezier(0.2, 0.7, 0.2, 1); }
+        @media (prefers-reduced-motion: reduce) {
+          .beat-in { animation: none; }
+        }
+      `}</style>
     </div>
   );
 }
