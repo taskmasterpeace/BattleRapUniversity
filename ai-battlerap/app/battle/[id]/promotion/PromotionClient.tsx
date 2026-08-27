@@ -162,13 +162,16 @@ export default function PromotionClient({
     return Math.round(Math.min(95, Math.max(15, baseProbability + repBonus)));
   };
 
-  // Calculate expected crowd gain (factoring in success prob and recency)
-  const calculateExpectedCrowdGain = (action: PromotionAction): number => {
-    const successProb = calculateSuccessProbability(action) / 100;
+  // Crowd gain the player actually banks ON A HIT (raw gain range midpoint x
+  // timing). Do NOT weight by success probability here: Success Chance is shown
+  // as its own row, and the API grants the full gain on a hit (a reduced ~35% on
+  // a miss). Multiplying by successProb double-counted the odds and understated
+  // the payoff — the card said "+3" while a *failed* roll already banked +4.
+  const calculateCrowdGainOnHit = (action: PromotionAction): number => {
     const avgGain = (action.crowdGainRange[0] + action.crowdGainRange[1]) / 2;
     const recencyMultiplier = getRecencyMultiplier();
 
-    return Math.round(avgGain * successProb * recencyMultiplier);
+    return Math.round(avgGain * recencyMultiplier);
   };
 
   // Current crowd perception (if relationship exists)
@@ -395,7 +398,7 @@ export default function PromotionClient({
             {PROMOTION_ACTIONS.map((action) => {
               const available = isActionAvailable(action);
               const successProb = calculateSuccessProbability(action);
-              const expectedGain = calculateExpectedCrowdGain(action);
+              const expectedGain = calculateCrowdGainOnHit(action);
 
               return (
                 <button
@@ -435,7 +438,7 @@ export default function PromotionClient({
                       </span>
                     </div>
                     <div className="flex justify-between text-xs">
-                      <span className="text-zinc-500">Expected Crowd Gain</span>
+                      <span className="text-zinc-500">Crowd Gain (Hit)</span>
                       <span className="font-bold text-green-500">
                         +{expectedGain} perception
                       </span>
@@ -546,9 +549,9 @@ export default function PromotionClient({
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-zinc-500">Expected Crowd Gain:</span>
+                  <span className="text-zinc-500">Crowd Gain (Hit):</span>
                   <span className="font-bold text-green-500">
-                    +{calculateExpectedCrowdGain(selectedAction)}
+                    +{calculateCrowdGainOnHit(selectedAction)}
                   </span>
                 </div>
                 <div className="flex justify-between">
