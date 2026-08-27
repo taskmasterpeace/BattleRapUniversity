@@ -228,11 +228,21 @@ export default function PromotionClient({
         }),
       });
 
-      const data = await response.json();
-
+      // Guard: a missing/failed endpoint returns an HTML error page, not JSON —
+      // parsing that as JSON throws "Unexpected token '<'". Check ok first and
+      // parse the error body defensively so the player gets a clean message.
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to execute promotion');
+        let msg = "Promotion isn't available yet — the crowd's still warming up.";
+        try {
+          const err = await response.json();
+          if (err?.error) msg = err.error;
+        } catch {
+          /* non-JSON (e.g. 404 HTML) — keep the friendly default */
+        }
+        throw new Error(msg);
       }
+
+      const data = await response.json();
 
       // Show result
       const result = data.result;
@@ -527,7 +537,11 @@ export default function PromotionClient({
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-zinc-500">Success Chance:</span>
-                  <span className="font-bold text-green-500">
+                  <span className={`font-bold ${
+                    calculateSuccessProbability(selectedAction) >= 70 ? 'text-green-500' :
+                    calculateSuccessProbability(selectedAction) >= 40 ? 'text-yellow-500' :
+                    'text-red-500'
+                  }`}>
                     {calculateSuccessProbability(selectedAction)}%
                   </span>
                 </div>
