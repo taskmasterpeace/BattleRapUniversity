@@ -184,6 +184,48 @@ export default function RoundResultsPage() {
           aiName={battle.ai_battler?.stage_name || 'Opponent'}
         />
 
+        {/* The read — what decided the round, and a nudge to adjust. Closes the
+            strategy loop the interactive battle asks the player to play. */}
+        {playerRound && aiRound && (() => {
+          const aiName = battle.ai_battler?.stage_name || 'Your opponent';
+          const won = winner === 'player';
+          const crowdGap = (aiRound.crowd_reaction ?? 0) - (playerRound.crowd_reaction ?? 0);
+          const peakGap = (aiRound.peak_score ?? 0) - (playerRound.peak_score ?? 0);
+          const avgGap = (aiRound.average_score ?? 0) - (playerRound.average_score ?? 0);
+          let headline: string, why: string;
+          if (won) {
+            headline = 'YOU TOOK THE ROUND';
+            why = (playerRound.peak_score ?? 0) >= 8.5
+              ? 'Your haymaker landed and the room felt it. Keep that energy.'
+              : 'You edged it on the strength of a steadier round. Stay on the gas.';
+          } else if (winner === 'tie') {
+            headline = 'TOO CLOSE TO CALL';
+            why = 'A dead heat — the next round is the swing. Bring something they can’t answer.';
+          } else {
+            headline = `${aiName.toUpperCase()} TOOK THE ROUND`;
+            why =
+              crowdGap > 8 ? `${aiName} won the room — the crowd leaned their way. Win the moment back, not just the bars.`
+              : peakGap > 1.5 ? `${aiName}'s big moment outshined yours. You need a haymaker of your own next round.`
+              : avgGap > 0.5 ? `${aiName} was sharper bar-for-bar. Tighten the pen or counter their content.`
+              : 'Razor close — it slipped away on the margins. This is anybody’s battle.';
+          }
+          const nudge = roundNum < 3
+            ? 'Switch it up in the next round — counter what they’re bringing.'
+            : 'That’s the tape. The decision’s in.';
+          return (
+            <div className={`mt-6 border-2 p-5 rounded-lg ${won ? 'border-[#ff8c42]/50 bg-[#ff8c42]/5' : winner === 'tie' ? 'border-yellow-500/40 bg-yellow-500/5' : 'border-red-500/40 bg-red-500/5'}`}>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">The Read</span>
+              </div>
+              <div className={`text-xl font-display font-black uppercase tracking-tight ${won ? 'text-[#ff8c42]' : winner === 'tie' ? 'text-yellow-500' : 'text-red-400'}`}>
+                {headline}
+              </div>
+              <p className="text-sm text-zinc-300 mt-1.5 leading-snug">{why}</p>
+              <p className="text-xs text-zinc-500 mt-2 font-display font-bold uppercase tracking-wide">→ {nudge}</p>
+            </div>
+          );
+        })()}
+
         {/* Navigation */}
         <div className="mt-8 flex items-center justify-between bg-[#2d2f35] border-2 border-[#3a3d44] rounded-lg p-6">
           <div>
