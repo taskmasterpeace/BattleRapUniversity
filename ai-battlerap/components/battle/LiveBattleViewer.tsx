@@ -61,6 +61,65 @@ function flagLabel(flag: string): { text: string; tone: 'good' | 'bad' | 'neutra
   return { text: flag.replaceAll('_', ' ').toUpperCase(), tone: 'neutral' };
 }
 
+/**
+ * A described MOMENT for a segment — so the tape reads as something happening,
+ * not a number ticking up. Derived from the score band + event flags. Described
+ * reactions only, never an invented bar (culture law). Seeded by segment id so a
+ * given segment always narrates the same way.
+ */
+function momentLine(seg: Segment, name: string): { text: string; mood: 'choke' | 'haymaker' | 'hot' | 'mid' | 'cold' } {
+  const flags = (seg.event_flags ?? []).map((f) => f.toLowerCase());
+  const pick = (arr: string[]) => {
+    let h = 0;
+    for (let i = 0; i < seg.id.length; i++) h = (h * 31 + seg.id.charCodeAt(i)) >>> 0;
+    return arr[h % arr.length];
+  };
+  if (flags.some((f) => f.includes('choke'))) {
+    return { mood: 'choke', text: pick([
+      `The words leave ${name}. Dead silence — the room turns.`,
+      `${name} blanks. You can hear the AC. That round is gone.`,
+      `It’s gone. ${name} freezes and the crowd groans as one.`,
+    ]) };
+  }
+  if (flags.some((f) => f.includes('stumble'))) {
+    return { mood: 'mid', text: pick([
+      `${name} trips on the delivery — recovers, but the room caught it.`,
+      `A fumble from ${name}. Not fatal, but the section noticed.`,
+    ]) };
+  }
+  if (flags.some((f) => f.includes('haymaker') || f.includes('peak'))) {
+    return { mood: 'haymaker', text: pick([
+      `HAYMAKER. ${name} lands the one they’ll be clipping all week.`,
+      `${name} drops the bomb — the front row is on its feet.`,
+      `That’s the moment. ${name} times it to the crowd’s peak and the room erupts.`,
+    ]) };
+  }
+  if (seg.segment_score >= 7) {
+    return { mood: 'hot', text: pick([
+      `${name} is in a rhythm now — the room’s leaning all the way in.`,
+      `${name} stacking bars, the section riding every one.`,
+    ]) };
+  }
+  if (seg.segment_score >= 4) {
+    return { mood: 'mid', text: pick([
+      `${name} keeps it moving. Solid, nothing that travels.`,
+      `Competent stretch from ${name} — holds serve, doesn’t take over.`,
+    ]) };
+  }
+  return { mood: 'cold', text: pick([
+    `${name}’s bars aren’t landing. The room stays quiet.`,
+    `That didn’t connect. ${name} loses the section for a beat.`,
+  ]) };
+}
+
+const MOOD_CARD: Record<string, string> = {
+  choke: 'border-red-500/60 bg-red-500/5',
+  haymaker: 'border-amber-500/60 bg-amber-500/5',
+  hot: 'border-[#ff8c42]/50 bg-[#ff8c42]/5',
+  mid: 'border-[#3a3d44] bg-[#1a1b1e]',
+  cold: 'border-zinc-700 bg-[#141416]',
+};
+
 export default function LiveBattleViewer({
   player,
   ai,
@@ -233,15 +292,18 @@ export default function LiveBattleViewer({
           </div>
 
           {/* Current segment reveal */}
-          {!ended && currentSegment && (
-            <div className="bg-[#1a1b1e] border-2 border-[#3a3d44] p-6 mb-8">
+          {!ended && currentSegment && (() => {
+            const segName = currentSegment.battler_id === player.id ? player.stage_name : ai.stage_name;
+            const moment = momentLine(currentSegment, segName);
+            return (
+            <div className={`border-2 p-6 mb-8 transition-colors duration-300 ${MOOD_CARD[moment.mood]}`}>
               <div className="flex items-center justify-between mb-3">
                 <div>
                   <div className="text-xs text-zinc-500 uppercase tracking-widest">
                     Round {currentSegment.round_index} • Segment {currentSegment.segment_index + 1}
                   </div>
                   <div className="text-2xl font-display font-black uppercase tracking-tight mt-1">
-                    {currentSegment.battler_id === player.id ? player.stage_name : ai.stage_name}
+                    {segName}
                   </div>
                 </div>
                 <div
@@ -252,6 +314,15 @@ export default function LiveBattleViewer({
                   {currentSegment.segment_score.toFixed(1)}
                 </div>
               </div>
+              {/* The moment — described, never a bar */}
+              <p className={`text-base md:text-lg leading-snug ${
+                moment.mood === 'choke' ? 'text-red-300'
+                : moment.mood === 'haymaker' ? 'text-amber-300'
+                : moment.mood === 'cold' ? 'text-zinc-500'
+                : 'text-zinc-200'
+              }`}>
+                {moment.text}
+              </p>
               {currentSegment.event_flags && currentSegment.event_flags.length > 0 && (
                 <div className="flex flex-wrap gap-2 mt-3">
                   {currentSegment.event_flags.map((flag, i) => {
@@ -274,7 +345,8 @@ export default function LiveBattleViewer({
                 </div>
               )}
             </div>
-          )}
+            );
+          })()}
 
           {/* Round-by-round running scoreboard */}
           <div className="grid grid-cols-3 gap-4 mb-8">
