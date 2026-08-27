@@ -426,33 +426,45 @@ export default function LiveBattleViewer({
             );
           })()}
 
-          {/* Round-by-round running scoreboard */}
-          <div className="grid grid-cols-3 gap-4 mb-8">
+          {/* Round-by-round card: shows who TOOK each round (the real tally),
+              which round is live, and which are still to come. */}
+          <div className="grid grid-cols-3 gap-2 md:gap-4 mb-8">
             {Array.from({ length: totalRounds }, (_, i) => i + 1).map((r) => {
               const playerRoundScore = roundScores[r]?.player ?? 0;
               const aiRoundScore = roundScores[r]?.ai ?? 0;
               const isActive = currentRoundIndex === r && !ended;
-              const playerLeading = playerRoundScore > aiRoundScore;
-              const aiLeading = aiRoundScore > playerRoundScore;
+              const decided = (r < currentRoundIndex || ended) && (playerRoundScore > 0 || aiRoundScore > 0);
+              const playerTook = decided && playerRoundScore > aiRoundScore;
+              const aiTook = decided && aiRoundScore > playerRoundScore;
               return (
                 <div
                   key={r}
-                  className={`border-2 p-4 ${
-                    isActive ? 'border-[#ff8c42] bg-[#ff8c42]/5' : 'border-[#3a3d44] bg-[#1a1b1e]'
+                  className={`border-2 p-3 md:p-4 transition-colors ${
+                    isActive ? 'border-[#ff8c42] bg-[#ff8c42]/5'
+                    : decided ? 'border-[#3a3d44] bg-[#1a1b1e]'
+                    : 'border-[#2a2b2e] bg-[#141416]'
                   }`}
                 >
-                  <div className="text-xs text-zinc-500 uppercase tracking-widest mb-2">
-                    Round {r}
+                  <div className="flex items-center justify-between mb-1.5 md:mb-2">
+                    <span className="text-[10px] md:text-xs text-zinc-500 uppercase tracking-widest">Round {r}</span>
+                    {isActive && <span className="text-[9px] font-mono text-[#ff8c42] uppercase tracking-wider animate-pulse">● LIVE</span>}
+                    {decided && <span className="text-[9px] font-mono text-zinc-500 uppercase tracking-wider">FINAL</span>}
                   </div>
-                  <div className="flex justify-between items-center text-lg font-display font-black tabular-nums">
-                    <span className={playerLeading ? 'text-[#ff8c42]' : 'text-zinc-400'}>
-                      {playerRoundScore.toFixed(1)}
+                  <div className="flex justify-between items-center text-base md:text-lg font-display font-black tabular-nums">
+                    <span className={playerTook ? 'text-[#ff8c42]' : decided ? 'text-zinc-500' : 'text-zinc-600'}>
+                      {decided || isActive ? playerRoundScore.toFixed(1) : '—'}
                     </span>
-                    <span className="text-zinc-700 text-xs">vs</span>
-                    <span className={aiLeading ? 'text-red-500' : 'text-zinc-400'}>
-                      {aiRoundScore.toFixed(1)}
+                    <span className="text-zinc-700 text-[10px] md:text-xs">vs</span>
+                    <span className={aiTook ? 'text-red-500' : decided ? 'text-zinc-500' : 'text-zinc-600'}>
+                      {decided || isActive ? aiRoundScore.toFixed(1) : '—'}
                     </span>
                   </div>
+                  {/* Who took it — the tally you can watch build. */}
+                  {decided && (playerTook || aiTook) && (
+                    <div className={`mt-2 text-center text-[9px] md:text-[10px] font-display font-black uppercase tracking-wider ${playerTook ? 'text-[#ff8c42]' : 'text-red-500'}`}>
+                      ✓ {(playerTook ? player.stage_name : ai.stage_name).slice(0, 12)}
+                    </div>
+                  )}
                 </div>
               );
             })}
