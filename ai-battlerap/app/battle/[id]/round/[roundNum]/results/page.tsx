@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { Battle, BattleWithDetails, BattleRound, BattleSegment } from '@/lib/models';
 import { RoundResultsBreakdown } from '@/components/battle/RoundResultsBreakdown';
 import { toast } from '@/components/ui/Toast';
+import Avatar from '@/components/ui/Avatar';
 
 export default function RoundResultsPage() {
   const router = useRouter();
@@ -19,6 +20,11 @@ export default function RoundResultsPage() {
   const [aiRound, setAiRound] = useState<any>(null);
   const [playerSegments, setPlayerSegments] = useState<BattleSegment[]>([]);
   const [aiSegments, setAiSegments] = useState<BattleSegment[]>([]);
+  const [lockedContent, setLockedContent] = useState<{
+    content_types?: string[];
+    delivery_types?: string[];
+    performance_types?: string[];
+  } | null>(null);
   const [loading, setLoading] = useState(true);
   const [simulating, setSimulating] = useState(false);
 
@@ -45,6 +51,9 @@ export default function RoundResultsPage() {
         setPlayerSegments(roundData.playerSegments || []);
         setAiSegments(roundData.aiSegments || []);
       }
+      // Pre-battle: the player's own locked content, echoed back so we can show
+      // what they're walking in with on the "about to perform" screen.
+      setLockedContent(roundData.playerContentSelection || null);
     } catch (error) {
       console.error('Error fetching round data:', error);
     }
@@ -110,38 +119,115 @@ export default function RoundResultsPage() {
     );
   }
 
-  // Round not simulated yet
+  // Round not simulated yet — the "about to perform" beat. Lights-down moment:
+  // show the matchup, echo the player's own locked cards (opponent's stay
+  // hidden), then a big commit button. Matches the house battle-surface style.
   if (!playerRound || !aiRound) {
+    const fmt = (s: string) => s.replace(/_/g, ' ');
+    const lockedRows = lockedContent
+      ? [
+          { label: 'CONTENT', items: lockedContent.content_types },
+          { label: 'DELIVERY', items: lockedContent.delivery_types },
+          { label: 'PERFORMANCE', items: lockedContent.performance_types },
+        ].filter((r) => r.items && r.items.length > 0)
+      : [];
+
     return (
       <div className="min-h-screen bg-[#18191c]">
         {/* Header */}
         <div className="bg-[#2d2f35] border-b-2 border-[#3a3d44]">
-          <div className="max-w-7xl mx-auto px-4 py-4">
-            <Link href="/dashboard" className="text-[#ff8c42] hover:text-[#ff9d5c] text-sm">
+          <div className="max-w-7xl mx-auto px-4 py-5 md:py-6">
+            <Link
+              href="/dashboard"
+              className="text-[#ff8c42] hover:text-[#ff9d5c] text-sm font-display font-black uppercase tracking-wider"
+            >
               ← Back to Dashboard
             </Link>
-            <h1 className="text-2xl font-bold mt-2 text-white">Round {roundNum} Results</h1>
-            <p className="text-zinc-400 text-sm mt-1">
+            <h1 className="text-3xl md:text-4xl font-display font-black uppercase tracking-tighter text-white mt-3">
+              ON DECK · ROUND {roundNum}
+            </h1>
+            <p className="text-zinc-400 text-sm mt-1 font-display font-bold uppercase tracking-wider">
               vs {battle.ai_battler?.stage_name} • {battle.league?.name}
             </p>
           </div>
         </div>
 
-        <div className="max-w-4xl mx-auto px-4 py-16">
-          <div className="bg-[#2d2f35] border-2 border-[#3a3d44] rounded-lg p-12 text-center">
-            
-            <h2 className="text-2xl font-bold text-white mb-4">Ready to Battle?</h2>
-            <p className="text-zinc-400 mb-8">
-              Both battlers have locked in their content. Click below to simulate Round {roundNum}.
-            </p>
-            <button
-              onClick={handleSimulateRound}
-              disabled={simulating}
-              className="px-8 py-4 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all text-lg"
-            >
-              {simulating ? 'Simulating...' : `Simulate Round ${roundNum}`}
-            </button>
+        <div className="max-w-2xl mx-auto px-4 py-10 md:py-14">
+          {/* Matchup */}
+          <div className="flex items-center justify-center gap-5 md:gap-10 mb-10">
+            <div className="text-center">
+              <Avatar
+                url={battle.player_battler?.avatar_url}
+                size={88}
+                alt={battle.player_battler?.stage_name || 'You'}
+                className="mx-auto mb-2"
+              />
+              <div className="font-display font-black uppercase tracking-tight text-white text-sm md:text-base">
+                {battle.player_battler?.stage_name || 'You'}
+              </div>
+              <div className="text-[10px] text-[#ff8c42] font-display font-bold uppercase tracking-widest">
+                YOU
+              </div>
+            </div>
+            <div className="font-display font-black text-2xl md:text-3xl text-zinc-600">VS</div>
+            <div className="text-center">
+              <Avatar
+                url={battle.ai_battler?.avatar_url}
+                size={88}
+                alt={battle.ai_battler?.stage_name || 'Opponent'}
+                className="mx-auto mb-2"
+              />
+              <div className="font-display font-black uppercase tracking-tight text-white text-sm md:text-base">
+                {battle.ai_battler?.stage_name}
+              </div>
+              <div className="text-[10px] text-zinc-500 font-display font-bold uppercase tracking-widest">
+                OPPONENT
+              </div>
+            </div>
           </div>
+
+          {/* What you locked in */}
+          {lockedRows.length > 0 && (
+            <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-6 mb-8">
+              <div className="text-[11px] text-zinc-500 font-display font-black uppercase tracking-widest mb-4">
+                WHAT YOU'RE WALKING IN WITH
+              </div>
+              <div className="space-y-3">
+                {lockedRows.map(({ label, items }) => (
+                  <div key={label} className="flex flex-col sm:flex-row sm:items-center gap-2">
+                    <div className="text-[10px] text-zinc-500 font-display font-black uppercase tracking-widest w-24 shrink-0">
+                      {label}
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {items!.map((it) => (
+                        <span
+                          key={it}
+                          className="px-2.5 py-1 bg-[#18191c] border border-[#3a3d44] text-zinc-200 text-xs font-display font-bold uppercase tracking-wide"
+                        >
+                          {fmt(it)}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-4 pt-4 border-t border-[#3a3d44] text-[11px] text-zinc-500 font-display font-bold uppercase tracking-wide">
+                {battle.ai_battler?.stage_name}'s cards stay hidden until the reveal.
+              </div>
+            </div>
+          )}
+
+          {/* Perform it */}
+          <button
+            onClick={handleSimulateRound}
+            disabled={simulating}
+            className="w-full py-5 bg-[#ff8c42] hover:bg-[#ff9d5c] text-black font-display font-black uppercase tracking-widest text-lg md:text-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+          >
+            {simulating ? 'THE ROOM GOES QUIET…' : `PERFORM ROUND ${roundNum} →`}
+          </button>
+          <p className="text-center text-[11px] text-zinc-600 font-display font-bold uppercase tracking-widest mt-4">
+            Once it's performed, there's no taking it back.
+          </p>
         </div>
       </div>
     );
@@ -153,14 +239,14 @@ export default function RoundResultsPage() {
     <div className="min-h-screen bg-[#18191c]">
       {/* Header */}
       <div className="bg-[#2d2f35] border-b-2 border-[#3a3d44]">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <Link href="/dashboard" className="text-[#ff8c42] hover:text-[#ff9d5c] text-sm">
+        <div className="max-w-7xl mx-auto px-4 py-5 md:py-6">
+          <Link href="/dashboard" className="text-[#ff8c42] hover:text-[#ff9d5c] text-sm font-display font-black uppercase tracking-wider">
             ← Back to Dashboard
           </Link>
-          <div className="flex items-center justify-between mt-2">
+          <div className="flex items-center justify-between mt-3">
             <div>
-              <h1 className="text-2xl font-bold text-white">Round {roundNum} Results</h1>
-              <p className="text-zinc-400 text-sm mt-1">
+              <h1 className="text-3xl md:text-4xl font-display font-black uppercase tracking-tighter text-white">ROUND {roundNum} · THE TAPE</h1>
+              <p className="text-zinc-400 text-sm mt-1 font-display font-bold uppercase tracking-wider">
                 vs {battle.ai_battler?.stage_name} • {battle.league?.name}
               </p>
             </div>

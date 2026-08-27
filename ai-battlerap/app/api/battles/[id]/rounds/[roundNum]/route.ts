@@ -55,6 +55,16 @@ export async function GET(
   // with simulated:false so the client shows the "Simulate Round" button without
   // logging a 404 on every fresh round-results load.
   if (roundsError || !rounds || rounds.length === 0) {
+    // Echo back the player's OWN locked content so the pre-battle screen can show
+    // what they're walking in with. The opponent's cards stay hidden until the
+    // reveal — you don't get to see exactly what they'll bring.
+    const { data: preSelections } = await supabase
+      .from('round_content_selections')
+      .select('*')
+      .eq('battle_id', battleId)
+      .eq('round_index', roundIndex)
+      .eq('battler_id', battle.battler_player_id);
+    const playerContentSelection = (preSelections?.[0] ?? null) as RoundContentSelection | null;
     return NextResponse.json({
       simulated: false,
       playerRound: null,
@@ -62,6 +72,7 @@ export async function GET(
       playerSegments: [],
       aiSegments: [],
       winner: undefined,
+      playerContentSelection,
     });
   }
 
