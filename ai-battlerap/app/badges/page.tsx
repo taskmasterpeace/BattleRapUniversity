@@ -49,15 +49,29 @@ async function getBadges(): Promise<Badge[]> {
     return [];
   }
 
-  // Merge database data with descriptions. Every badge must show what it
-  // does: mechanical sim effects first, compendium flavor effects second,
-  // and a flavor-role line as the final fallback.
+  // Reduce an effect line to the attribute it talks about, ignoring the number
+  // and format, so "+5% delivery" and "Delivery +25%" map to the same key.
+  const attrKey = (line: string) =>
+    line
+      .toLowerCase()
+      .replace(/[+\-]?\d+(\.\d+)?%?/g, ' ') // drop numbers / percentages
+      .replace(/[^a-z ]+/g, ' ') // drop symbols
+      .replace(/\s+/g, ' ')
+      .trim();
+
+  // Merge database data with descriptions: mechanical sim effects first, then
+  // compendium flavor effects — but only flavor lines about an attribute the
+  // shown mechanics DON'T already cover. Exact-string dedup let "+5% delivery"
+  // (mechanic) and "Delivery +25%" (flavor) both through, so every badge listed
+  // the same stat twice with contradictory numbers. Dedup by attribute instead.
   return (badgeCosts || []).map(badge => {
     const description = BADGE_DESCRIPTIONS[badge.badge_code];
     const mechanicLines = getBadgeEffectLines(badge.badge_code);
     const flavorLines = description?.effects || [];
+    const shownMech = mechanicLines.slice(0, 4);
+    const shownMechKeys = new Set(shownMech.map(attrKey));
     const effects = mechanicLines.length > 0
-      ? [...mechanicLines.slice(0, 4), ...flavorLines.filter(l => !mechanicLines.includes(l)).slice(0, 2)]
+      ? [...shownMech, ...flavorLines.filter(l => { const k = attrKey(l); return !!k && !shownMechKeys.has(k); }).slice(0, 2)]
       : flavorLines.length > 0
         ? flavorLines
         : [getBadgeEffectText(badge.badge_code)];
