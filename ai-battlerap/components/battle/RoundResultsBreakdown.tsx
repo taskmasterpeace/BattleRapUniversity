@@ -88,83 +88,113 @@ export function RoundResultsBreakdown({
     return typeId.replace(/_/g, ' ');
   };
 
-  // Calculate max score for scaling
+  // Segment scores live on a ~0-15 scale, NOT 0-100. Scale the bars to the round's
+  // actual top score (with a little headroom) so they read as real bars instead of
+  // the tiny stubs you get from dividing a 6 by 100.
   const allScores = [
     ...playerSegments.map((s) => s.segment_score),
     ...aiSegments.map((s) => s.segment_score),
   ];
-  const maxScore = Math.max(...allScores, 100);
+  const maxScore = Math.max(...allScores, 1) * 1.05;
+
+  // The headline moment of a segment (haymaker > choke > stumble), attributed to
+  // the segment WINNER first — when both swing, the room remembers the one that
+  // landed. Choke/stumble are checked on either battler.
+  const segEvent = (
+    pFlags: string[] = [],
+    aFlags: string[] = [],
+    playerWon = true
+  ): { label: string; cls: string } | null => {
+    const ordered: { flags: string[]; name: string }[] = playerWon
+      ? [{ flags: pFlags, name: playerName }, { flags: aFlags, name: aiName }]
+      : [{ flags: aFlags, name: aiName }, { flags: pFlags, name: playerName }];
+    for (const { flags, name } of ordered) {
+      if (flags.includes('haymaker')) return { label: `★ ${name} HAYMAKER`, cls: 'bg-yellow-300 text-black' };
+    }
+    for (const { flags, name } of ordered) {
+      if (flags.includes('choke')) return { label: `✗ ${name} CHOKED`, cls: 'bg-red-600 text-white' };
+    }
+    if (pFlags.includes('stumble') || aFlags.includes('stumble')) return { label: 'STUMBLE', cls: 'bg-zinc-700 text-zinc-300' };
+    return null;
+  };
 
   return (
     <div className="space-y-6">
       {/* Winner Banner */}
-      <div className={`p-6 rounded-lg border-2 ${getWinnerBg()} text-center`}>
-        <div className={`text-3xl font-bold ${getWinnerColor()} mb-2`}>
+      <div className={`p-6 border-2 ${getWinnerBg()} text-center`}>
+        <div className={`text-4xl font-display font-black uppercase tracking-tighter ${getWinnerColor()} mb-1`}>
           {getWinnerText()}
         </div>
-        <div className="text-zinc-400 text-sm">
-          {winner === 'player' && 'You took this round!'}
+        <div className="text-zinc-400 text-sm font-display font-bold uppercase tracking-wider">
+          {winner === 'player' && 'You took this round'}
           {winner === 'ai' && 'Your opponent took this round'}
           {winner === 'tie' && 'Neither battler could secure the round'}
         </div>
       </div>
 
       {/* Segment Timeline */}
-      <div className="bg-[#2d2f35] border-2 border-[#3a3d44] rounded-lg p-6">
-        <h3 className="text-lg font-bold text-white mb-4">Segment-by-Segment Breakdown</h3>
+      <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-6">
+        <h3 className="text-lg font-display font-black uppercase tracking-wider text-white mb-4">
+          The Segments
+        </h3>
 
-        <div className="space-y-3">
+        <div className="space-y-4">
           {playerSegments.map((playerSeg, idx) => {
             const aiSeg = aiSegments[idx];
-            const playerWidth = (playerSeg.segment_score / maxScore) * 100;
-            const aiWidth = aiSeg ? (aiSeg.segment_score / maxScore) * 100 : 0;
+            const aiScore = aiSeg?.segment_score ?? 0;
+            // min 4% so even a low score shows a visible nub
+            const playerWidth = Math.max(4, (playerSeg.segment_score / maxScore) * 100);
+            const aiWidth = aiSeg ? Math.max(4, (aiScore / maxScore) * 100) : 0;
+            const playerWon = playerSeg.segment_score >= aiScore;
+            const event = segEvent(playerSeg.event_flags, aiSeg?.event_flags, playerWon);
 
             return (
-              <div key={idx} className="space-y-1">
-                <div className="flex justify-between text-xs text-zinc-400">
-                  <span>Segment {idx + 1}</span>
-                  <span>
-                    {playerSeg.segment_score.toFixed(1)} vs {aiSeg?.segment_score.toFixed(1)}
+              <div key={idx} className="space-y-1.5">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-[11px] font-display font-black uppercase tracking-widest text-zinc-500">
+                    Segment {idx + 1}
+                  </span>
+                  {event && (
+                    <span className={`px-2 py-0.5 text-[9px] font-display font-black uppercase tracking-widest ${event.cls}`}>
+                      {event.label}
+                    </span>
+                  )}
+                  <span className="text-[11px] font-display font-bold uppercase tracking-wider text-zinc-500 tabular-nums">
+                    {playerSeg.segment_score.toFixed(1)} · {aiScore.toFixed(1)}
                   </span>
                 </div>
 
                 {/* Player bar */}
                 <div className="flex items-center gap-2">
-                  <span className="text-xs text-zinc-500 w-16">{playerName}</span>
-                  <div className="flex-1 bg-[#18191c] rounded-full h-6 overflow-hidden">
+                  <span className="text-[11px] font-display font-bold uppercase tracking-wide text-zinc-400 w-20 shrink-0 truncate">
+                    {playerName}
+                  </span>
+                  <div className="flex-1 bg-[#18191c] h-7 border border-[#3a3d44] overflow-hidden">
                     <div
-                      className={`h-full flex items-center justify-end pr-2 text-xs font-semibold transition-all ${
-                        playerSeg.segment_score > (aiSeg?.segment_score || 0)
-                          ? 'bg-[#ff8c42]'
-                          : 'bg-[#ff8c42]/40'
-                      }`}
+                      className={`h-full transition-all ${playerWon ? 'bg-[#ff8c42]' : 'bg-[#ff8c42]/30'}`}
                       style={{ width: `${playerWidth}%` }}
-                    >
-                      {playerSeg.segment_score >= 50 && (
-                        <span className="text-white">{playerSeg.segment_score.toFixed(1)}</span>
-                      )}
-                    </div>
+                    />
                   </div>
+                  <span className={`w-11 text-right text-sm font-display font-black tabular-nums ${playerWon ? 'text-[#ff8c42]' : 'text-zinc-500'}`}>
+                    {playerSeg.segment_score.toFixed(1)}
+                  </span>
                 </div>
 
                 {/* AI bar */}
                 {aiSeg && (
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-zinc-500 w-16">{aiName}</span>
-                    <div className="flex-1 bg-[#18191c] rounded-full h-6 overflow-hidden">
+                    <span className="text-[11px] font-display font-bold uppercase tracking-wide text-zinc-400 w-20 shrink-0 truncate">
+                      {aiName}
+                    </span>
+                    <div className="flex-1 bg-[#18191c] h-7 border border-[#3a3d44] overflow-hidden">
                       <div
-                        className={`h-full flex items-center justify-end pr-2 text-xs font-semibold transition-all ${
-                          aiSeg.segment_score > playerSeg.segment_score
-                            ? 'bg-zinc-400'
-                            : 'bg-zinc-600'
-                        }`}
+                        className={`h-full transition-all ${!playerWon ? 'bg-zinc-300' : 'bg-zinc-600'}`}
                         style={{ width: `${aiWidth}%` }}
-                      >
-                        {aiSeg.segment_score >= 50 && (
-                          <span className="text-white">{aiSeg.segment_score.toFixed(1)}</span>
-                        )}
-                      </div>
+                      />
                     </div>
+                    <span className={`w-11 text-right text-sm font-display font-black tabular-nums ${!playerWon ? 'text-zinc-200' : 'text-zinc-500'}`}>
+                      {aiScore.toFixed(1)}
+                    </span>
                   </div>
                 )}
               </div>
@@ -177,7 +207,7 @@ export function RoundResultsBreakdown({
       <div className="grid grid-cols-2 gap-6">
         {/* Player Stats */}
         <div className="bg-[#2d2f35] border-2 border-[#3a3d44] rounded-lg p-6">
-          <h3 className="text-lg font-bold text-white mb-4">{playerName}</h3>
+          <h3 className="text-lg font-display font-black uppercase tracking-wider text-white mb-4">{playerName}</h3>
           <div className="space-y-3">
             <div className="flex justify-between items-center">
               <span className="text-sm text-zinc-400">Average Score</span>
@@ -213,7 +243,7 @@ export function RoundResultsBreakdown({
 
         {/* AI Stats */}
         <div className="bg-[#2d2f35] border-2 border-[#3a3d44] rounded-lg p-6">
-          <h3 className="text-lg font-bold text-white mb-4">{aiName}</h3>
+          <h3 className="text-lg font-display font-black uppercase tracking-wider text-white mb-4">{aiName}</h3>
           <div className="space-y-3">
             <div className="flex justify-between items-center">
               <span className="text-sm text-zinc-400">Average Score</span>
@@ -252,7 +282,7 @@ export function RoundResultsBreakdown({
       <div className="grid grid-cols-2 gap-6">
         {/* Player Content */}
         <div className="bg-[#2d2f35] border-2 border-[#3a3d44] rounded-lg p-6">
-          <h3 className="text-lg font-bold text-white mb-4">Your Content Effectiveness</h3>
+          <h3 className="text-lg font-display font-black uppercase tracking-wider text-white mb-4">Your Content Effectiveness</h3>
 
           {playerRound.contentSelection && (
             <div className="space-y-4">
@@ -356,7 +386,7 @@ export function RoundResultsBreakdown({
 
         {/* AI Content */}
         <div className="bg-[#2d2f35] border-2 border-[#3a3d44] rounded-lg p-6">
-          <h3 className="text-lg font-bold text-white mb-4">Opponent's Content Effectiveness</h3>
+          <h3 className="text-lg font-display font-black uppercase tracking-wider text-white mb-4">Opponent's Content Effectiveness</h3>
 
           {aiRound.contentSelection && (
             <div className="space-y-4">
