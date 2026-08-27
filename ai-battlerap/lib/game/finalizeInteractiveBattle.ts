@@ -148,7 +148,8 @@ export async function finalizeInteractiveBattle(
   await supabase.rpc('add_earnings_transaction', {
     p_battler_id: battle.battler_player_id,
     p_amount: playerPayout,
-    p_transaction_type: playerWon ? 'battle_win_bonus' : 'battle_base_pay',
+    // Flat pay — winning doesn't earn more, so it's never a "win bonus".
+    p_transaction_type: 'battle_base_pay',
     p_battle_id: battleId,
     p_description: `Battle payout - ${playerWon ? 'Victory' : 'Participation'}`,
     p_metadata: { league: battle.league.name, won: playerWon },
@@ -156,7 +157,7 @@ export async function finalizeInteractiveBattle(
   await supabase.rpc('add_earnings_transaction', {
     p_battler_id: battle.battler_ai_id,
     p_amount: aiPayout,
-    p_transaction_type: !playerWon ? 'battle_win_bonus' : 'battle_base_pay',
+    p_transaction_type: 'battle_base_pay',
     p_battle_id: battleId,
     p_description: `Battle payout - ${!playerWon ? 'Victory' : 'Participation'}`,
     p_metadata: { league: battle.league.name, won: !playerWon },

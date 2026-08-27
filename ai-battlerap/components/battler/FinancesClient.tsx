@@ -59,10 +59,12 @@ export default function FinancesClient({
     return amount >= 0 ? 'text-green-400' : 'text-red-400';
   };
 
-  // Calculate earnings breakdown percentages for visualization
-  const totalEarnings = winEarnings + lossEarnings + tournamentEarnings;
-  const winPercentage = totalEarnings > 0 ? (winEarnings / totalEarnings) * 100 : 0;
-  const lossPercentage = totalEarnings > 0 ? (lossEarnings / totalEarnings) * 100 : 0;
+  // Calculate earnings breakdown percentages for visualization. Battle pay is
+  // FLAT — win or lose you get the same purse — so it's a single "battle purse"
+  // category, never a win-vs-base split (which would imply winning pays more).
+  const battleEarnings = winEarnings + lossEarnings;
+  const totalEarnings = battleEarnings + tournamentEarnings;
+  const battlePercentage = totalEarnings > 0 ? (battleEarnings / totalEarnings) * 100 : 0;
   const tournamentPercentage = totalEarnings > 0 ? (tournamentEarnings / totalEarnings) * 100 : 0;
 
   return (
@@ -99,8 +101,8 @@ export default function FinancesClient({
           />
           <StatCard
             label="BATTLE EARNINGS"
-            value={formatCurrency(winEarnings + lossEarnings)}
-            icon={<Icon name="mic" size={18} />}
+            value={formatCurrency(battleEarnings)}
+            icon={<Icon name="swords" size={18} />}
             subtext="FROM BATTLES ONLY"
           />
         </div>
@@ -115,30 +117,16 @@ export default function FinancesClient({
           {totalEarnings > 0 ? (
             <div className="mb-8">
               <div className="h-16 flex overflow-hidden bg-[#18191c] border-2 border-[#3a3d44] shadow-lg">
-                {winPercentage > 0 && (
+                {battlePercentage > 0 && (
                   <div
-                    className="bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center text-sm font-display font-black text-white transition-all hover:brightness-110"
-                    style={{ width: `${winPercentage}%` }}
-                    title={`Win Bonuses: ${Math.round(winPercentage)}%`}
+                    className="bg-gradient-to-br from-[#ff8c42] to-orange-600 flex items-center justify-center text-sm font-display font-black text-black transition-all hover:brightness-110"
+                    style={{ width: `${battlePercentage}%` }}
+                    title={`Battle Purses: ${Math.round(battlePercentage)}%`}
                   >
-                    {winPercentage > 15 && (
+                    {battlePercentage > 15 && (
                       <div className="text-center uppercase">
-                        <div>{Math.round(winPercentage)}%</div>
-                        <div className="text-xs opacity-75">WINS</div>
-                      </div>
-                    )}
-                  </div>
-                )}
-                {lossPercentage > 0 && (
-                  <div
-                    className="bg-gradient-to-br from-zinc-500 to-zinc-600 flex items-center justify-center text-sm font-display font-black text-white transition-all hover:brightness-110"
-                    style={{ width: `${lossPercentage}%` }}
-                    title={`Base Pay: ${Math.round(lossPercentage)}%`}
-                  >
-                    {lossPercentage > 15 && (
-                      <div className="text-center uppercase">
-                        <div>{Math.round(lossPercentage)}%</div>
-                        <div className="text-xs opacity-75">BASE</div>
+                        <div>{Math.round(battlePercentage)}%</div>
+                        <div className="text-xs opacity-75">BATTLES</div>
                       </div>
                     )}
                   </div>
@@ -172,25 +160,15 @@ export default function FinancesClient({
           )}
 
           {/* Breakdown Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-[#18191c] border-2 border-[#3a3d44] p-4">
               <div className="flex items-center gap-2 mb-2">
-                <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                <p className="text-xs uppercase tracking-wider text-zinc-500 font-display font-bold">WIN BONUSES</p>
+                <div className="w-3 h-3 bg-[#ff8c42]"></div>
+                <p className="text-xs uppercase tracking-wider text-zinc-500 font-display font-bold">BATTLE PURSES</p>
               </div>
-              <p className="text-2xl font-display font-black text-green-400">{formatCurrency(winEarnings)}</p>
+              <p className="text-2xl font-display font-black text-[#ff8c42]">{formatCurrency(battleEarnings)}</p>
               <p className="text-xs text-zinc-500 mt-1 font-display uppercase">
-                {totalEarnings > 0 ? `${Math.round(winPercentage)}% of total` : 'From victories'}
-              </p>
-            </div>
-            <div className="bg-[#18191c] border-2 border-[#3a3d44] p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <div className="w-3 h-3 bg-zinc-500"></div>
-                <p className="text-xs uppercase tracking-wider text-zinc-500 font-display font-bold">BASE PAY</p>
-              </div>
-              <p className="text-2xl font-display font-black text-zinc-300">{formatCurrency(lossEarnings)}</p>
-              <p className="text-xs text-zinc-500 mt-1 font-display uppercase">
-                {totalEarnings > 0 ? `${Math.round(lossPercentage)}% of total` : 'Participation payouts'}
+                {totalEarnings > 0 ? `${Math.round(battlePercentage)}% of total` : 'Flat pay — win or lose'}
               </p>
             </div>
             <div className="bg-[#18191c] border-2 border-[#3a3d44] p-4">
@@ -259,9 +237,9 @@ export default function FinancesClient({
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-xs uppercase text-zinc-500 font-display font-bold">Win Rate Impact</span>
+                <span className="text-xs uppercase text-zinc-500 font-display font-bold">Tournament Share</span>
                 <span className="text-lg font-display font-black text-amber-400">
-                  {totalEarnings > 0 ? `${Math.round(winPercentage)}%` : 'N/A'}
+                  {totalEarnings > 0 ? `${Math.round(tournamentPercentage)}%` : 'N/A'}
                 </span>
               </div>
             </div>
