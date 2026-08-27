@@ -342,8 +342,10 @@ async function getActiveRivalries(supabase: any, battlerId: string) {
       const isA = rec.battler_a_id === battlerId;
       return [opponentId, {
         totalBattles: rec.total_battles,
+        // No losses column on head_to_head_records — my losses are the opponent's
+        // wins in a two-battler H2H.
         myWins: isA ? rec.battler_a_wins : rec.battler_b_wins,
-        myLosses: isA ? rec.battler_a_losses : rec.battler_b_losses,
+        myLosses: isA ? rec.battler_b_wins : rec.battler_a_wins,
         lastBattleDate: rec.last_battle_date,
         lastBattleWinner: rec.last_winner_id,
       }];

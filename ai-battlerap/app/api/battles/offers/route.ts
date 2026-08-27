@@ -193,8 +193,11 @@ export async function GET() {
       const isA = rec.battler_a_id === battler.id;
       return [opponentId, {
         totalBattles: rec.total_battles,
+        // head_to_head_records only stores wins per side — in a two-battler H2H,
+        // my losses ARE the opponent's wins. (Reading rec.battler_*_losses gave
+        // undefined, which rendered as a truncated "0-".)
         myWins: isA ? rec.battler_a_wins : rec.battler_b_wins,
-        myLosses: isA ? rec.battler_a_losses : rec.battler_b_losses,
+        myLosses: isA ? rec.battler_b_wins : rec.battler_a_wins,
         lastBattleDate: rec.last_battle_date,
       }];
     })

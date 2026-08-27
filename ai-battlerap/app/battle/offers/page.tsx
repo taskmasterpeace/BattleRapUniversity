@@ -229,7 +229,7 @@ export default function BattleOffersPage() {
                           <div className="text-zinc-400 font-display font-display font-black uppercase tracking-wider text-sm">
                             H2H RECORD:{' '}
                             <span className="text-[#ff8c42]">
-                              {offer.h2hRecord.myWins}-{offer.h2hRecord.myLosses}
+                              {offer.h2hRecord.myWins ?? 0}-{offer.h2hRecord.myLosses ?? 0}
                             </span>
                           </div>
                         )}
