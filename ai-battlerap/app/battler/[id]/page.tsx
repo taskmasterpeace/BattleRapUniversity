@@ -9,6 +9,17 @@ import { GrudgeMeter, RematchDemandBar } from '@/components/grudge';
 import ChallengeButton from '@/components/battlers/ChallengeButton';
 
 /**
+ * Relative time for a COMPLETED battle. Battles finished early through the
+ * interactive round flow keep a future scheduled_at, so the raw date would read
+ * "in 14 days" for a battle that already has a final score. Clamp to now so a
+ * finished battle never reads as upcoming — worst case is "less than a minute ago".
+ */
+function battleWhen(date: string): string {
+  const t = Math.min(new Date(date).getTime(), Date.now());
+  return formatDistanceToNow(new Date(t), { addSuffix: true });
+}
+
+/**
  * Battler Career Page - GAMING UI REDESIGN
  *
  * Route: /battler/[id]
@@ -493,7 +504,7 @@ function OverviewTab({ data }: { data: CareerData }) {
                   </div>
                 </div>
                 <div className="text-sm text-zinc-500 uppercase tracking-wide">
-                  {formatDistanceToNow(new Date(battle.date), { addSuffix: true })}
+                  {battleWhen(battle.date)}
                 </div>
               </div>
             </Link>
@@ -545,7 +556,7 @@ function BattlesTab({ battles }: { battles: CareerData['battleHistory'] }) {
               <td className="px-4 py-4 font-bold">{battle.myCrowdAvg}%</td>
               <td className="px-4 py-4 font-bold">{battle.oppCrowdAvg}%</td>
               <td className="px-4 py-4 text-sm text-zinc-500 uppercase tracking-wide">
-                {formatDistanceToNow(new Date(battle.date), { addSuffix: true })}
+                {battleWhen(battle.date)}
               </td>
               <td className="px-4 py-4">
                 <Link
