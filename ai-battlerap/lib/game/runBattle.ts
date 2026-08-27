@@ -83,10 +83,18 @@ export async function runBattleSimulation(
 
   let noShowFlag = false;
 
-  // World battles are AI vs AI — neither battler ever opens the prep planner, so
-  // an empty prep slot is NORMAL, not a no-show. Give them a default AI plan and
-  // simulate a full performance; only a real player who never prepped is a no-show.
-  const isWorld = !!battle.is_world;
+  // A "no-show" only makes sense for a real human who never opened the planner.
+  // World cards, tournament rounds, and any other AI-vs-AI bout have an AI in the
+  // player slot that never preps — flagging those as no-shows ran the whole
+  // simulated world on penalized, choke-prone performances. Detect the AI slot by
+  // its missing user_id (with is_world as a belt-and-suspenders); those get a
+  // default AI prep plan, not a no-show.
+  const { data: playerBattlerRow } = await supabase
+    .from('battlers')
+    .select('user_id')
+    .eq('id', battle.battler_player_id)
+    .single();
+  const playerSlotIsAI = !playerBattlerRow?.user_id || !!battle.is_world;
 
   // Capture BEFORE any backfill: did the player personally plan every prep day?
   // (Full hand-planned prep earns a bonus battle slot after the battle.)
@@ -101,7 +109,7 @@ export async function runBattleSimulation(
     // battles run. Either way, seed a default "winging it" plan — writing-leaning
     // with rest buffers, not punitive all-rest — then flag the no-show only when
     // an actual human ghosted.
-    noShowFlag = !isWorld;
+    noShowFlag = !playerSlotIsAI;
 
     const prepDays = prepDayCount(battle);
 
@@ -122,7 +130,7 @@ export async function runBattleSimulation(
       await supabase.from('prep_blocks').insert(autoPrepBlocks);
     }
 
-    if (!isWorld) {
+    if (!playerSlotIsAI) {
       await supabase
         .from('battles')
         .update({ no_show_player: true })
