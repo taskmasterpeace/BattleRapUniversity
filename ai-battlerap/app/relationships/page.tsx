@@ -146,6 +146,10 @@ export default async function RelationshipsPage() {
         return { label: 'TENSE', emoji: '😤', color: 'text-[#ff8c42]', bgColor: 'bg-[#ff8c42]/10' };
       case 'aware':
         return { label: 'AWARE', emoji: '👀', color: 'text-zinc-300', bgColor: 'bg-zinc-700/20' };
+      case 'unknown':
+        // The mildest tier — you've crossed paths (an offer, a promo) but no beef
+        // has formed yet. "NO HISTORY" reads as a real state; "UNKNOWN" read like a bug.
+        return { label: 'NO HISTORY', emoji: '🤝', color: 'text-zinc-400', bgColor: 'bg-zinc-800/40' };
       default:
         return { label: 'UNKNOWN', emoji: '🤝', color: 'text-zinc-500', bgColor: 'bg-zinc-800' };
     }
@@ -355,7 +359,7 @@ export default async function RelationshipsPage() {
         {/* Aware */}
         {aware.length > 0 && (
           <div className="mb-12">
-            <h2 className="text-2xl font-display font-black tracking-tighter mb-6 text-blue-500">
+            <h2 className="text-2xl font-display font-black tracking-tighter mb-6 text-zinc-300">
               👀 AWARE OF EACH OTHER ({aware.length})
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -369,8 +373,8 @@ export default async function RelationshipsPage() {
         {/* Unknown */}
         {unknown.length > 0 && (
           <div className="mb-12">
-            <h2 className="text-2xl font-display font-black tracking-tighter mb-6 text-zinc-500">
-              🤝 UNKNOWN ({unknown.length})
+            <h2 className="text-2xl font-display font-black tracking-tighter mb-6 text-zinc-400">
+              🤝 NO HISTORY ({unknown.length})
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {unknown.map((rel) => (
