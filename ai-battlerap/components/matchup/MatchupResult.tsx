@@ -78,13 +78,21 @@ export default function MatchupResult({
 
   const share = async () => {
     const url = window.location.href;
+    // Copy the link and confirm first — the reliable path that gives the
+    // "LINK COPIED" feedback everywhere. Preferring navigator.share meant a
+    // dismissed share sheet (or any browser that has the API) left the button
+    // doing nothing, with no copied link and no confirmation.
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+      return;
+    } catch {
+      /* clipboard unavailable (older browser / insecure context) — offer the OS share sheet */
+    }
     if (navigator.share) {
       await navigator.share({ title: headline ?? 'Dream Matchup', url }).catch(() => {});
-      return;
     }
-    await navigator.clipboard.writeText(url);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
   };
 
   const runItBack = async () => {
