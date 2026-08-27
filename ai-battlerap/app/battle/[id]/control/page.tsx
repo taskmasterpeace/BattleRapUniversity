@@ -43,6 +43,15 @@ export default function BattleControlPage() {
 
       setBattle(battleData.battle);
       setPrepBlocks(prepData.prepBlocks || []);
+
+      // Pre-select the battle's stored room instead of always resetting to PPV.
+      // Otherwise the picker ignores a battle's actual context and, on commit,
+      // silently overwrites it with 'ppv' (wrong for e.g. an intimate Small Room
+      // card, which should walk in as 'in_building').
+      const savedContext = battleData.battle?.context;
+      if (savedContext && CONTEXTS.some((c) => c.value === savedContext)) {
+        setSelectedContext(savedContext as ScoringContext);
+      }
     } catch (error) {
       console.error('Error fetching battle data:', error);
     }
