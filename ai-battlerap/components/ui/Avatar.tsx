@@ -13,7 +13,8 @@ type Props = {
 
 /**
  * Avatar — renders a battler's `avatar_url` (a full path under /public).
- * Falls back to a 🎤 emoji placeholder when the url is missing or fails to load.
+ * Falls back to the battler's initials when the url is missing or fails to load
+ * (never a microphone — league battle rap is acapella; only hosts hold mics).
  * Replaces the legacy BattlerSprite which selected from a hardcoded sheet
  * by numeric sprite_id (a column that never existed on the battlers table).
  */
@@ -26,6 +27,13 @@ export default function Avatar({
 }: Props) {
   const [imageError, setImageError] = useState(false);
   const showImage = !!url && !imageError;
+  // Fallback identity when there's no portrait: the battler's initials. Never a
+  // microphone (no-mics law) — and initials also render everywhere, unlike an
+  // emoji glyph. Ignore the generic default alt so it doesn't become "BA".
+  const named = alt && alt !== 'Battler avatar' ? alt.trim() : '';
+  const initials = named
+    ? named.split(/\s+/).map((w) => w[0]).filter(Boolean).slice(0, 2).join('').toUpperCase()
+    : '';
 
   return (
     <div
@@ -60,7 +68,16 @@ export default function Avatar({
         />
       ) : (
         <div className="w-full h-full flex items-center justify-center bg-[#1a1b1e]">
-          <span style={{ fontSize: Math.max(16, Math.floor(size * 0.4)) }}>🎤</span>
+          {initials ? (
+            <span
+              className="font-display font-black text-[#ff8c42] leading-none tracking-tight"
+              style={{ fontSize: Math.max(13, Math.floor(size * 0.36)) }}
+            >
+              {initials}
+            </span>
+          ) : (
+            <span style={{ fontSize: Math.max(16, Math.floor(size * 0.4)) }}>🎭</span>
+          )}
         </div>
       )}
     </div>
