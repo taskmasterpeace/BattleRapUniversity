@@ -183,9 +183,10 @@ export async function generateRivalryBattleRecap(
     grudgeContext
   );
 
-  // TODO: Call LLM with prompt (integrate with existing llmIntegration.ts)
-  // For now, return placeholder
-  const articleBody = await generateArticleWithLLM(blogger, prompt);
+  // TODO: Call LLM with prompt (integrate with existing llmIntegration.ts).
+  // Until then, a data-aware template that at least names the winner, loser,
+  // score and margin — not a one-size-fits-all recap.
+  const articleBody = await generateArticleWithLLM(blogger, prompt, articleData, rivalryContext.hasGrudge);
 
   // Create article in database
   const articleId = await createRivalryArticle(
@@ -346,26 +347,56 @@ function getIntensityLabel(intensity: number): string {
  */
 async function generateArticleWithLLM(
   blogger: BloggerName,
-  prompt: string
+  prompt: string,
+  data?: RivalryArticleData,
+  isGrudgeMatch = false
 ): Promise<string> {
-  // TODO: Call actual LLM service (OpenAI, Anthropic, etc.)
-  // For now, return placeholder markdown
+  // TODO: Call actual LLM service (OpenAI, Anthropic, etc.) with `prompt`.
+  // Until that lands, build the body from the real battle data so every recap
+  // isn't the identical generic template.
+  if (!data) {
+    return `# Grudge Match Delivers Drama\n\nThe tension was palpable as these two battlers stepped into the ring with unfinished business on their minds.\n\nThis story is far from over.`;
+  }
 
-  return `# Grudge Match Delivers Drama
+  const winner = data.winnerId === data.battlerAId ? data.battlerAName : data.battlerBName;
+  const loser = data.winnerId === data.battlerAId ? data.battlerBName : data.battlerAName;
+  const score = data.score;
+  const dominant = score.trim().startsWith('3'); // 3-0 sweep vs a 2-1 decision
+  const intensity = data.rivalryContext?.intensity ?? 0;
 
-The tension was palpable as these two battlers stepped into the ring with unfinished business on their minds. The crowd knew what was at stake - this wasn't just another battle, this was personal.
+  return `# ${dominant ? 'Statement Made' : 'Down to the Wire'}: ${winner} Takes It ${score}
+
+${winner} walked out of the building with the ${score} over ${loser}${
+    isGrudgeMatch ? ', and the bad blood between them only got thicker' : ''
+}. ${
+    dominant
+      ? `This one was never up for debate — ${winner} took every round on the cards and left ${loser} without a rebuttal.`
+      : `The cards read ${score}, but everyone in the room felt how close it was; ${loser} pushed ${winner} to the wire before it slipped away.`
+  }
 
 ## The Setup
 
-Coming into this matchup, both battlers had something to prove. The history between them added an extra layer of intensity that you could feel from the moment they locked eyes.
+${
+    isGrudgeMatch
+      ? `The history did the promo for them. By the time they locked eyes, the room already knew this one was personal.`
+      : `Two names with something to prove stepped up, and the room leaned all the way in.`
+  }
 
 ## The Battle
 
-The performance was electric. Each round saw both competitors bringing their A-game, knowing that every bar, every delivery, every crowd reaction would be dissected by fans for weeks to come.
+${
+    dominant
+      ? `${winner} controlled the pace from the opening round and never handed it back. ${loser} had a flash here and there, but couldn't string enough together to steal a single card.`
+      : `Round for round it was a fight — momentum swung both ways and the crowd rode every turn before ${winner} edged the decision.`
+  }
 
 ## The Aftermath
 
-With this result, the rivalry takes another turn. The losing side will surely be looking for another opportunity to settle the score, while the winner has momentum on their side going forward.
+${loser} will want this one back${
+    isGrudgeMatch && intensity >= 61
+      ? ` — and at this temperature, the rematch books itself.`
+      : '.'
+  } For now, ${winner} has the scoreboard and the momentum.
 
 This story is far from over.`;
 }
@@ -420,17 +451,37 @@ function generateTitle(data: RivalryArticleData, isGrudgeMatch: boolean): string
   const winner = winnerId === data.battlerAId ? battlerAName : battlerBName;
   const loser = winnerId === data.battlerAId ? battlerBName : battlerAName;
 
+  const dominant = score.trim().startsWith('3');
   if (isGrudgeMatch) {
+    // Wide on purpose — a thin pool makes the media hub read as five straight
+    // "Rivalry Intensifies" headlines. Add here, don't trim.
     const templates = [
-      `${winner} Edges ${loser} in Heated Grudge Match (${score})`,
       `Rivalry Intensifies: ${winner} Defeats ${loser} ${score}`,
       `${winner} vs ${loser}: Grudge Battle Delivers Drama`,
       `Beef Escalates as ${winner} Takes ${score} Victory Over ${loser}`,
+      dominant
+        ? `No Debate: ${winner} Bodies ${loser} ${score} to Settle the Score`
+        : `${winner} Edges ${loser} in Heated Grudge Match (${score})`,
+      `Bad Blood Boils Over: ${winner} Gets the Last Word on ${loser} (${score})`,
+      `${winner} Backs It Up, Beats ${loser} ${score} in the Rematch Everyone Wanted`,
+      `The Grudge Gets Deeper: ${winner} Over ${loser}, ${score}`,
+      dominant
+        ? `${winner} Leaves No Doubt Against ${loser} — ${score}`
+        : `Down to the Wire: ${winner} Slips Past ${loser} ${score}`,
+      `${loser} Answers the Call, But ${winner} Takes It ${score}`,
     ];
     return templates[Math.floor(Math.random() * templates.length)];
   }
 
-  return `${winner} Defeats ${loser} ${score}`;
+  const recapTemplates = [
+    `${winner} Defeats ${loser} ${score}`,
+    dominant
+      ? `${winner} Runs Through ${loser} ${score}`
+      : `${winner} Takes a Close One Over ${loser} ${score}`,
+    `${winner} Handles Business Against ${loser} (${score})`,
+    `Cards Read ${score}: ${winner} Over ${loser}`,
+  ];
+  return recapTemplates[Math.floor(Math.random() * recapTemplates.length)];
 }
 
 /**
