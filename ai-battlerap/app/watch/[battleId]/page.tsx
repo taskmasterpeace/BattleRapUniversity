@@ -48,8 +48,12 @@ function decisionLabel(verdict: string | null, decisionType: string | null): str
     classic: 'CLASSIC',
     edge: 'EDGE',
   };
-  const label = decisionType ? map[decisionType] ?? decisionType.toUpperCase() : verdict === '3-0' ? 'BODYBAG' : 'DEBATABLE';
-  return verdict ? `${verdict} ${label}` : label;
+  // Return the pure win-quality label only. The score already shows as the giant
+  // number above the stamp and in the page description — prepending the verdict
+  // here re-prints it in the opposite order (winner-first vs the corner-ordered
+  // scoreboard) and is redundant for the sweep labels (GENTLEMAN'S 30 / BODYBAG /
+  // CLEAN SWEEP all already imply 3-0).
+  return decisionType ? map[decisionType] ?? decisionType.toUpperCase() : verdict === '3-0' ? 'BODYBAG' : 'DEBATABLE';
 }
 
 export async function generateMetadata({
