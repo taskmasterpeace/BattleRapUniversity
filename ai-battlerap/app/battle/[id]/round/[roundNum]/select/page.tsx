@@ -4,12 +4,58 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { Battle, BattleWithDetails, ScoringContext } from '@/lib/models';
+import { Battle, BattleWithDetails, BattleStatus, ScoringContext } from '@/lib/models';
 import { RoundContentSelector, ContentSelection } from '@/components/battle/RoundContentSelector';
 import { EffectivenessForecast } from '@/components/battle/EffectivenessForecast';
 import { predictOpponentContent } from '@/lib/game/roundContentSelection';
 import { validateContentSelection } from '@/lib/game/roundContentSelection';
 import { toast } from '@/components/ui/Toast';
+
+// The interactive battle marches through these statuses in order. We use the
+// ordering to gate this round's selection screen: a player who lands here out
+// of sequence (stale tab, browser Back after a round, a link that skipped the
+// lock-in step) should see a clear "here's where you actually are" screen, not
+// build a full selection and hit a cryptic 409 at lock-in.
+const FLOW_ORDER: BattleStatus[] = [
+  'offered',
+  'accepted',
+  'awaiting_lock_in_choice',
+  'awaiting_r1_content',
+  'r1_simulated',
+  'awaiting_r2_content',
+  'r2_simulated',
+  'awaiting_r3_content',
+  'r3_simulated',
+  'simulated',
+  'completed',
+];
+
+/** The one correct next action for a battle, whatever screen the player is on. */
+function resumeTargetFor(status: BattleStatus, battleId: string): { label: string; href: string } {
+  switch (status) {
+    case 'offered':
+      return { label: 'VIEW THE OFFER', href: '/battle/offers' };
+    case 'accepted':
+    case 'awaiting_lock_in_choice':
+      return { label: 'GO TO BATTLE NIGHT', href: `/battle/${battleId}/control` };
+    case 'awaiting_r1_content':
+      return { label: 'CALL ROUND 1', href: `/battle/${battleId}/round/1/select` };
+    case 'r1_simulated':
+      return { label: 'SEE ROUND 1 RESULTS', href: `/battle/${battleId}/round/1/results` };
+    case 'awaiting_r2_content':
+      return { label: 'CALL ROUND 2', href: `/battle/${battleId}/round/2/select` };
+    case 'r2_simulated':
+      return { label: 'SEE ROUND 2 RESULTS', href: `/battle/${battleId}/round/2/results` };
+    case 'awaiting_r3_content':
+      return { label: 'CALL ROUND 3', href: `/battle/${battleId}/round/3/select` };
+    case 'r3_simulated':
+    case 'simulated':
+    case 'completed':
+      return { label: 'VIEW THE TAPE', href: `/battle/${battleId}` };
+    default:
+      return { label: 'BACK TO DASHBOARD', href: '/dashboard' };
+  }
+}
 
 export default function RoundSelectPage() {
   const router = useRouter();
@@ -108,6 +154,51 @@ export default function RoundSelectPage() {
     return (
       <div className="min-h-screen bg-[#18191c] flex items-center justify-center">
         <div className="text-zinc-400">Battle not found</div>
+      </div>
+    );
+  }
+
+  // Is this round's content stage the one that's actually open right now?
+  const expectedStatus = `awaiting_r${roundNum}_content` as BattleStatus;
+  const curIdx = FLOW_ORDER.indexOf(battle.status);
+  const expIdx = FLOW_ORDER.indexOf(expectedStatus);
+  const roundState: 'open' | 'locked' | 'not_yet' =
+    curIdx === expIdx ? 'open' : curIdx > expIdx ? 'locked' : 'not_yet';
+
+  if (roundState !== 'open') {
+    const resume = resumeTargetFor(battle.status, battleId);
+    const locked = roundState === 'locked';
+    return (
+      <div className="min-h-screen bg-[#18191c] flex items-center justify-center px-4">
+        <div className="max-w-md w-full bg-[#2d2f35] border-2 border-[#3a3d44] p-8 text-center">
+          <div
+            className={`inline-block px-3 py-1 mb-5 text-[11px] font-display font-black uppercase tracking-widest ${
+              locked ? 'bg-[#ff8c42]/15 text-[#ff8c42]' : 'bg-zinc-700/40 text-zinc-300'
+            }`}
+          >
+            {locked ? 'ALREADY CALLED' : 'NOT YOUR TURN YET'}
+          </div>
+          <h1 className="text-3xl font-display font-black uppercase tracking-tighter text-white mb-3">
+            {locked ? `ROUND ${roundNum} IS IN THE BOOKS` : `ROUND ${roundNum} ISN'T OPEN YET`}
+          </h1>
+          <p className="text-sm text-zinc-400 mb-8 leading-relaxed">
+            {locked
+              ? `You already called Round ${roundNum} against ${battle.ai_battler?.stage_name}. You can't re-pick a round that's been performed — here's where the battle stands now.`
+              : `You've got to work through the battle in order. Pick up right where you left off against ${battle.ai_battler?.stage_name}.`}
+          </p>
+          <Link
+            href={resume.href}
+            className="block w-full py-3 bg-[#ff8c42] hover:bg-[#ff9d5c] text-black font-display font-black uppercase tracking-wider transition-all"
+          >
+            {resume.label} →
+          </Link>
+          <Link
+            href="/dashboard"
+            className="inline-block mt-4 text-xs text-zinc-500 hover:text-zinc-300 font-display font-bold uppercase tracking-wider"
+          >
+            ← Back to Dashboard
+          </Link>
+        </div>
       </div>
     );
   }

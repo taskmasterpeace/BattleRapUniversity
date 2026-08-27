@@ -84,7 +84,11 @@ export async function POST(
   const expectedStatus = `awaiting_r${roundIndex}_content`;
   if (battle.status !== expectedStatus) {
     return NextResponse.json(
-      { error: `Battle must be in '${expectedStatus}' status. Current status: ${battle.status}` },
+      {
+        // Player-facing: never leak the internal status name into a toast.
+        error: `Round ${roundIndex} isn't open for selection right now.`,
+        detail: `expected '${expectedStatus}', got '${battle.status}'`,
+      },
       { status: 409 }
     );
   }
