@@ -171,6 +171,19 @@ export async function generateOffersForPlayer(
     opponentPool = anyAi || [];
   }
 
+  // Never book the player against their own crew — you don't battle your team.
+  // Rival rematches are offered on purpose, so without this a crew member who is
+  // also a rival could be matched against you and escalate a beef with someone on
+  // your own payroll (an owner "at war" with their own crew makes no sense).
+  const { data: crewRows } = await supabase
+    .from('crew_members')
+    .select('member_battler_id')
+    .eq('owner_battler_id', battler.id);
+  const crewIds = new Set((crewRows || []).map((c: any) => c.member_battler_id));
+  if (crewIds.size > 0) {
+    opponentPool = opponentPool.filter((o: any) => !crewIds.has(o.id));
+  }
+
   if (opponentPool.length === 0) {
     console.error('No AI opponents available');
     return 0;
