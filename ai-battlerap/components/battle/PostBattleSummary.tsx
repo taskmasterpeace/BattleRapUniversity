@@ -75,9 +75,9 @@ export default function PostBattleSummary({
 
   const VIEW_TIER_CONFIG = {
     low: { label: 'LOW', color: 'text-zinc-400', bgColor: 'bg-zinc-700/30' },
-    mid: { label: 'MID', color: 'text-blue-400', bgColor: 'bg-blue-500/20' },
-    top: { label: 'TOP', color: 'text-purple-400', bgColor: 'bg-purple-500/20' },
-    goat: { label: 'GOAT', color: 'text-amber-400', bgColor: 'bg-amber-500/20' },
+    mid: { label: 'MID', color: 'text-emerald-400', bgColor: 'bg-emerald-500/20' },
+    top: { label: 'TOP', color: 'text-amber-400', bgColor: 'bg-amber-500/20' },
+    goat: { label: 'GOAT', color: 'text-[#ff8c42]', bgColor: 'bg-[#ff8c42]/20' },
   };
 
   return (
@@ -178,7 +178,7 @@ export default function PostBattleSummary({
                     </div>
                   )}
                   {levelUpData.xpBreakdown.haymakerBonus > 0 && (
-                    <div className="flex justify-between text-purple-400">
+                    <div className="flex justify-between text-amber-400">
                       <span>Haymaker Bonus</span>
                       <span className="font-bold">+{levelUpData.xpBreakdown.haymakerBonus}</span>
                     </div>

@@ -18,10 +18,11 @@ type Battler = {
 type LeagueLite = { id: string; name: string; short_code: string };
 type Ranking = { battler_id: string; rating: number; wins: number; losses: number };
 
+// Cold->hot prestige ladder — no purple (house rule #1), no blue default.
 const TIER_COLOR: Record<string, string> = {
   low: 'text-zinc-400 border-zinc-600',
-  mid: 'text-blue-300 border-blue-500/50',
-  top: 'text-purple-300 border-purple-500/50',
+  mid: 'text-emerald-300 border-emerald-500/50',
+  top: 'text-amber-300 border-amber-500/50',
   god: 'text-[#ff8c42] border-[#ff8c42]',
 };
 

@@ -30,10 +30,12 @@ type LeagueRow = {
   round_length_minutes: number;
 };
 
+// Tier ladder as a cold->hot prestige climb — no purple (house rule #1) and no
+// blue default: gray -> green -> gold -> the brand flame at the top.
 const TIER_COLOR: Record<string, string> = {
   low: 'text-zinc-400 border-zinc-600',
-  mid: 'text-blue-300 border-blue-500/50',
-  top: 'text-purple-300 border-purple-500/50',
+  mid: 'text-emerald-300 border-emerald-500/50',
+  top: 'text-amber-300 border-amber-500/50',
   god: 'text-[#ff8c42] border-[#ff8c42]',
 };
 
