@@ -180,6 +180,16 @@ export default function WirePage() {
     return true;
   });
 
+  // The newsroom shouldn't list the same story twice under two different bloggers.
+  // Dedup by the story itself (subject + opponent + hint), keeping the first.
+  const seenStories = new Set<string>();
+  const dedupedDeveloping = developing.filter((d) => {
+    const key = `${d.subject ?? ''}|${d.other ?? ''}|${(d.hint ?? '').trim()}`;
+    if (seenStories.has(key)) return false;
+    seenStories.add(key);
+    return true;
+  });
+
   return (
     <div className="min-h-screen bg-[#0b0c0e] text-zinc-100">
       <main className="max-w-5xl mx-auto px-4 sm:px-6 py-6">
@@ -410,13 +420,13 @@ export default function WirePage() {
               <p className="text-[9px] font-mono uppercase tracking-widest text-zinc-600 mb-2.5">
                 WHAT THE BLOGS ARE SITTING ON
               </p>
-              {developing.length === 0 ? (
+              {dedupedDeveloping.length === 0 ? (
                 <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-600">
                   NO STORIES DEVELOPING
                 </p>
               ) : (
                 <ul className="space-y-2.5">
-                  {developing.slice(0, 8).map((d) => {
+                  {dedupedDeveloping.slice(0, 8).map((d) => {
                     const sit = SIT_LABEL[d.sitReason] ?? SIT_LABEL.developing;
                     return (
                       <li key={d.id} className="border-l-2 border-[#3a3d44] pl-2.5">
