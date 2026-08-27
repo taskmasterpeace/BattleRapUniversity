@@ -27,6 +27,14 @@ interface EffectivenessForecastProps {
   context: ScoringContext;
 }
 
+// Proper venue labels. CSS `capitalize` mangles the "ppv" acronym into "Ppv",
+// so map each context to its display form explicitly.
+const CONTEXT_LABELS: Record<ScoringContext, string> = {
+  in_building: 'In Building',
+  ppv: 'PPV',
+  on_cam: 'On Cam',
+};
+
 export function EffectivenessForecast({
   yourSelection,
   opponentSelection,
@@ -132,8 +140,8 @@ export function EffectivenessForecast({
           <div className={`text-2xl font-bold ${getMultiplierColor(forecast.contextModifier)}`}>
             {forecast.contextModifier.toFixed(2)}x
           </div>
-          <div className="text-xs text-zinc-400 mt-1 capitalize">
-            {context.replace('_', ' ')}
+          <div className="text-xs text-zinc-400 mt-1">
+            {CONTEXT_LABELS[context] ?? context}
           </div>
         </div>
 
