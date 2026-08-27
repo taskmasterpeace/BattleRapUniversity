@@ -130,13 +130,17 @@ export default function BattleOffersPage() {
     setActionLoading(null);
   };
 
+  // Full class set (text + tinted bg + border) so the badge renders as a proper
+  // colored chip. Previously this returned only a text-* class and the bg/border
+  // were built by string-mangling it into `rgb(var(--yellow-40020)` — malformed
+  // CSS that browsers silently dropped, so the tint never showed.
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case 'easy': return 'text-green-400';
-      case 'medium': return 'text-yellow-400';
-      case 'hard': return 'text-orange-400';
-      case 'extreme': return 'text-red-400';
-      default: return 'text-zinc-400';
+      case 'easy': return 'text-green-400 bg-green-500/20 border-green-500/50';
+      case 'medium': return 'text-yellow-400 bg-yellow-500/20 border-yellow-500/50';
+      case 'hard': return 'text-orange-400 bg-orange-500/20 border-orange-500/50';
+      case 'extreme': return 'text-red-400 bg-red-500/20 border-red-500/50';
+      default: return 'text-zinc-400 bg-zinc-800/50 border-zinc-600/50';
     }
   };
 
@@ -315,12 +319,7 @@ export default function BattleOffersPage() {
                             <span className="px-3 py-1 bg-[#18191c] text-zinc-400 border-2 border-[#3a3d44] font-display font-display font-black uppercase text-xs tracking-wider">
                               {offer.ai_battler.tier} TIER
                             </span>
-                            <span className={`px-3 py-1 border-2 font-display font-display font-black uppercase text-xs tracking-wider ${getDifficultyColor(offer.difficulty)}`}
-                              style={{
-                                backgroundColor: `${getDifficultyColor(offer.difficulty).replace('text-', 'rgb(var(--')}20)`,
-                                borderColor: `${getDifficultyColor(offer.difficulty).replace('text-', 'rgb(var(--')}50)`
-                              }}
-                            >
+                            <span className={`px-3 py-1 border-2 font-display font-display font-black uppercase text-xs tracking-wider ${getDifficultyColor(offer.difficulty)}`}>
                               {offer.difficulty}
                             </span>
                           </div>
