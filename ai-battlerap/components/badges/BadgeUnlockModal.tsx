@@ -15,7 +15,7 @@ type BadgeUnlockModalProps = {
 
 const BADGE_TYPE_ICONS: Record<string, string> = {
   writing: '✍️',
-  performance: '🎤',
+  performance: '🎭',
   reputation: '⭐',
   content: '🎯',
   career: '🏆',

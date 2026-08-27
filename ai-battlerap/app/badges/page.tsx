@@ -20,7 +20,7 @@ const categoryIcons = {
   writing: '✍️',
   performance: '🎭',
   content: '💡',
-  delivery: '🎤',
+  delivery: '🔥',
   reputation_positive: '⭐',
   reputation_negative: '⚠️'
 };

@@ -180,12 +180,16 @@ function laneResultsForSegment(
   );
 }
 
-const MIC_BADGE: Record<string, { label: string; tone: string }> = {
+// Per-segment mood badge over a battler's portrait. NB: league battle rap is
+// acapella — no "on the mic" (that was a culture-rule violation). And the "cold"
+// label deliberately avoids the word "room" so it doesn't clash with the
+// cumulative WHO-OWNS-THE-ROOM meter below the scoreboard.
+const MOOD_BADGE: Record<string, { label: string; tone: string }> = {
   haymaker: { label: '💥 HAYMAKER', tone: 'bg-amber-400 text-black' },
   choke:    { label: '💀 CHOKING', tone: 'bg-red-500 text-white' },
   hot:      { label: '🔥 ON ONE', tone: 'bg-[#ff8c42] text-black' },
-  cold:     { label: 'LOSING THE ROOM', tone: 'bg-zinc-700 text-zinc-300' },
-  mid:      { label: '🎤 ON THE MIC', tone: 'bg-[#ff8c42] text-black' },
+  cold:     { label: 'CROWD WENT COLD', tone: 'bg-zinc-700 text-zinc-300' },
+  mid:      { label: 'IN THE POCKET', tone: 'bg-[#ff8c42] text-black' },
 };
 
 export default function LiveBattleViewer({
@@ -364,8 +368,8 @@ export default function LiveBattleViewer({
               <div className="relative inline-block w-[84px] md:w-[180px] aspect-square">
                 <Avatar url={playerAvatarUrl} size={180} className={`!w-full !h-full ${ended ? (playerWon ? 'ring-4 ring-[#ff8c42] shadow-[0_0_44px_rgba(255,140,66,0.65)] scale-110 transition-all duration-500' : 'opacity-40 grayscale scale-95 transition-all duration-500') : portraitFx(!!activeIsPlayer, activeMood)}`} alt={player.stage_name} />
                 {activeIsPlayer && !ended && activeMood && (
-                  <span className={`absolute -bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap px-1.5 md:px-2.5 py-0.5 text-[8px] md:text-[10px] font-display font-black uppercase tracking-wider ${MIC_BADGE[activeMood].tone}`}>
-                    {MIC_BADGE[activeMood].label}
+                  <span className={`absolute -bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap px-1.5 md:px-2.5 py-0.5 text-[8px] md:text-[10px] font-display font-black uppercase tracking-wider ${MOOD_BADGE[activeMood].tone}`}>
+                    {MOOD_BADGE[activeMood].label}
                   </span>
                 )}
               </div>
@@ -389,8 +393,8 @@ export default function LiveBattleViewer({
               <div className="relative inline-block w-[84px] md:w-[180px] aspect-square">
                 <Avatar url={aiAvatarUrl} size={180} className={`!w-full !h-full ${ended ? (!playerWon && winnerId ? 'ring-4 ring-red-500 shadow-[0_0_44px_rgba(239,68,68,0.6)] scale-110 transition-all duration-500' : 'opacity-40 grayscale scale-95 transition-all duration-500') : portraitFx(!activeIsPlayer && !!currentSegment, activeMood)}`} alt={ai.stage_name} />
                 {!activeIsPlayer && currentSegment && !ended && activeMood && (
-                  <span className={`absolute -bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap px-1.5 md:px-2.5 py-0.5 text-[8px] md:text-[10px] font-display font-black uppercase tracking-wider ${MIC_BADGE[activeMood].tone}`}>
-                    {MIC_BADGE[activeMood].label}
+                  <span className={`absolute -bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap px-1.5 md:px-2.5 py-0.5 text-[8px] md:text-[10px] font-display font-black uppercase tracking-wider ${MOOD_BADGE[activeMood].tone}`}>
+                    {MOOD_BADGE[activeMood].label}
                   </span>
                 )}
               </div>
