@@ -250,7 +250,11 @@ export default function WirePage() {
         )}
 
         {toast && (
-          <div className="bg-[#18191c] border-2 border-[#ff8c42]/60 px-3 py-2 mb-4 text-xs font-mono uppercase tracking-wider text-[#ff8c42]">
+          // Fixed floating toast, not an inline top-of-page banner. Response
+          // prompts appear throughout a long feed, so a banner at the top would be
+          // off-screen when the player acts on a post far down — the confirmation
+          // (and its rivalry/rep effects) must be visible wherever they are.
+          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-[#18191c] border-2 border-[#ff8c42]/60 px-4 py-3 text-xs font-mono uppercase tracking-wider text-[#ff8c42] shadow-[0_0_24px_-4px_rgba(255,140,66,0.6)] animate-fade-in-up max-w-[90vw] text-center">
             {toast}
           </div>
         )}
