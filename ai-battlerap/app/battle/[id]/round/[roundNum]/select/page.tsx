@@ -202,6 +202,7 @@ export default function RoundSelectPage() {
           <RoundContentSelector
             onSelectionChange={setSelection}
             initialSelection={selection}
+            opponentContent={predictedOppContent}
           />
         </div>
 

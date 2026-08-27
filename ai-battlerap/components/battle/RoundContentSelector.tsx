@@ -9,6 +9,7 @@ import {
   getAllDeliveryTypes,
   getAllPerformanceTypes,
 } from '@/lib/game/contentTypes';
+import { getEffectiveness } from '@/lib/game/contentEffectiveness';
 
 export interface ContentSelection {
   contentTypes: ContentType[];
@@ -19,11 +20,52 @@ export interface ContentSelection {
 interface RoundContentSelectorProps {
   onSelectionChange: (selection: ContentSelection) => void;
   initialSelection?: ContentSelection;
+  /** Opponent's predicted content — surfaces per-option effectiveness so the
+   *  matchup system is legible instead of a chart the player has to memorize. */
+  opponentContent?: ContentSelection | null;
+}
+
+/** Best matchup of one of my options vs everything the opponent is bringing. */
+function matchupVs(
+  myType: ContentType | DeliveryType | PerformanceType,
+  oppTypes: (ContentType | DeliveryType | PerformanceType)[]
+): { kind: 'super' | 'weak'; vs: string } | null {
+  let superVs: string | null = null;
+  let weakVs: string | null = null;
+  for (const opp of oppTypes ?? []) {
+    const m = getEffectiveness(myType, opp);
+    if (m === 2.0 && !superVs) superVs = opp;
+    if (m === 0.5 && !weakVs) weakVs = opp;
+  }
+  if (superVs) return { kind: 'super', vs: superVs };
+  if (weakVs) return { kind: 'weak', vs: weakVs };
+  return null;
+}
+
+function MatchupBadge({ m }: { m: ReturnType<typeof matchupVs> }) {
+  if (!m) return null;
+  const label = m.vs.replace(/_/g, ' ');
+  return m.kind === 'super' ? (
+    <span
+      title={`Super effective vs their ${label} (2×)`}
+      className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-green-500/15 text-green-400 border border-green-500/40 text-[9px] font-mono font-bold uppercase tracking-wider"
+    >
+      ★ 2× VS {label}
+    </span>
+  ) : (
+    <span
+      title={`Not very effective vs their ${label} (0.5×)`}
+      className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-red-500/15 text-red-400 border border-red-500/40 text-[9px] font-mono font-bold uppercase tracking-wider"
+    >
+      ▼ 0.5× VS {label}
+    </span>
+  );
 }
 
 export function RoundContentSelector({
   onSelectionChange,
   initialSelection,
+  opponentContent,
 }: RoundContentSelectorProps) {
   const [selectedContent, setSelectedContent] = useState<ContentType[]>(
     initialSelection?.contentTypes || []
@@ -136,6 +178,10 @@ export function RoundContentSelector({
                   </span>
                 </div>
                 <p className="text-xs text-zinc-400 line-clamp-2">{type.description}</p>
+                {opponentContent && (() => {
+                  const m = matchupVs(type.id, opponentContent.contentTypes);
+                  return m ? <div className="mt-1.5"><MatchupBadge m={m} /></div> : null;
+                })()}
               </button>
             );
           })}
@@ -179,6 +225,10 @@ export function RoundContentSelector({
               >
                 <div className="font-semibold text-white text-sm mb-1">{type.name}</div>
                 <p className="text-xs text-zinc-400 line-clamp-2">{type.description}</p>
+                {opponentContent && (() => {
+                  const m = matchupVs(type.id, opponentContent.deliveryTypes);
+                  return m ? <div className="mt-1.5"><MatchupBadge m={m} /></div> : null;
+                })()}
               </button>
             );
           })}
@@ -222,6 +272,10 @@ export function RoundContentSelector({
               >
                 <div className="font-semibold text-white text-sm mb-1">{type.name}</div>
                 <p className="text-xs text-zinc-400 line-clamp-2">{type.description}</p>
+                {opponentContent && (() => {
+                  const m = matchupVs(type.id, opponentContent.performanceTypes);
+                  return m ? <div className="mt-1.5"><MatchupBadge m={m} /></div> : null;
+                })()}
               </button>
             );
           })}
