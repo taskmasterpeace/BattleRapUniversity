@@ -486,7 +486,7 @@ function OverviewTab({ data }: { data: CareerData }) {
           {data.battleHistory.slice(0, 5).map((battle) => (
             <Link
               key={battle.battleId}
-              href={`/battle/${battle.battleId}/viewer`}
+              href={`/watch/${battle.battleId}`}
               className="block bg-[#18191c] p-4 hover:bg-[#3a3d44] transition-colors border-2 border-[#3a3d44] hover:border-[#ff8c42]"
             >
               <div className="flex items-center justify-between">
@@ -560,7 +560,7 @@ function BattlesTab({ battles }: { battles: CareerData['battleHistory'] }) {
               </td>
               <td className="px-4 py-4">
                 <Link
-                  href={`/battle/${battle.battleId}/viewer`}
+                  href={`/watch/${battle.battleId}`}
                   className="text-[#ff8c42] hover:text-[#ff9d5c] text-sm font-display font-black uppercase tracking-wide"
                 >
                   View Battle →
