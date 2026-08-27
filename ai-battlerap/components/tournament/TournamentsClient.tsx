@@ -43,6 +43,11 @@ export default function TournamentsClient({
   const router = useRouter();
   const [registering, setRegistering] = useState<string | null>(null);
 
+  // "Available" means available to JOIN — the player's own tournaments are already
+  // shown in their own section above, so don't list them here too.
+  const registeredIds = new Set(myRegistrations.map((r) => r.tournaments.id));
+  const availableTournaments = tournaments.filter((t) => !registeredIds.has(t.id));
+
   const handleRegister = async (tournamentId: string) => {
     setRegistering(tournamentId);
     try {
@@ -170,14 +175,14 @@ export default function TournamentsClient({
           <h2 className="text-lg font-display font-black uppercase tracking-wider text-[#ff8c42] mb-6">
             AVAILABLE TOURNAMENTS
           </h2>
-          {tournaments.length === 0 ? (
+          {availableTournaments.length === 0 ? (
             <div className="bg-[#18191c] border-2 border-[#3a3d44] p-12 text-center">
               <p className="text-xl font-display font-black uppercase tracking-tighter text-zinc-300 mb-2">No Brackets Open</p>
               <p className="text-xs text-zinc-500 uppercase tracking-wide">The next tournament announcement drops when you least expect it</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {tournaments.map((tournament) => {
+              {availableTournaments.map((tournament) => {
                 const eligible = canRegister(tournament);
                 const registered = myRegistrations.some((r) => r.tournaments.id === tournament.id);
 
