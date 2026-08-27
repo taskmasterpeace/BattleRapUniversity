@@ -37,6 +37,23 @@ export async function createNotification(
   data: NotificationData
 ): Promise<string | null> {
   try {
+    // Don't stack an identical UNREAD notification. Repeated identical events —
+    // three 3-0 losses all firing "Rock Bottom", or "Brackets Released" sent
+    // twice — would otherwise flood the bell with the same card. Once the player
+    // has read it, a fresh identical one is allowed through again.
+    const { data: existingDupe } = await supabase
+      .from('notifications')
+      .select('id')
+      .eq('battler_id', battlerId)
+      .eq('type', data.type)
+      .eq('title', data.title)
+      .eq('message', data.message)
+      .eq('is_read', false)
+      .limit(1);
+    if (existingDupe && existingDupe.length > 0) {
+      return existingDupe[0].id as string;
+    }
+
     const { data: notificationId, error } = await supabase.rpc('create_notification', {
       p_battler_id: battlerId,
       p_type: data.type,
