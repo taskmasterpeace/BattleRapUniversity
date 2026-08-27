@@ -2,8 +2,9 @@
 
 import Link from 'next/link';
 import { createClient } from '@/lib/db/client';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
+import { toast } from '@/components/ui/Toast';
 import Avatar from '@/components/ui/Avatar';
 import Icon from '@/components/ui/Icon';
 import StatCard from '@/components/ui/StatCard';
@@ -80,9 +81,46 @@ export default function DashboardClient({
 }: Props) {
   const nextBattle = activeBattles && activeBattles.length > 0 ? activeBattles[0] : null;
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [recentNews, setRecentNews] = useState<NewsArticle[]>([]);
   const [simulating, setSimulating] = useState(false);
   const [tournamentData, setTournamentData] = useState<any>(null);
+
+  // After a life-event decision the resolver bounces here with the outcome in the
+  // query string. Confirm it (a MAJOR "this call is final" choice deserves an
+  // acknowledgement), then strip the params so a refresh doesn't replay it.
+  useEffect(() => {
+    if (searchParams.get('event_resolved') !== 'true') return;
+    const title = searchParams.get('event_title') || 'Life event';
+    const LABELS: Record<string, string> = {
+      reputation: 'REP',
+      resilience: 'RESILIENCE',
+      financial_stability: 'FINANCES',
+      family_bond: 'FAMILY',
+      preparation: 'PREP',
+      prep_bonus_all: 'ALL PREP',
+      prep_penalty: 'PREP',
+      public_knowledge: 'BUZZ',
+    };
+    let effectStr = '';
+    try {
+      const effects = JSON.parse(searchParams.get('effects') || '{}') as Record<string, number>;
+      effectStr = Object.entries(effects)
+        .filter(([, v]) => typeof v === 'number' && v !== 0)
+        .map(([k, v]) => `${LABELS[k] || k.replace(/_/g, ' ').toUpperCase()} ${v > 0 ? '+' : ''}${v}`)
+        .join(' · ');
+    } catch {
+      /* malformed effects — just confirm the decision landed */
+    }
+    // Defer past this mount tick: <Toaster> is rendered AFTER {children} in the
+    // layout, so its dispatcher isn't wired up until after this effect runs —
+    // firing synchronously here would silently drop the toast.
+    const msg = `✓ ${title} — decision locked in${effectStr ? `\n${effectStr}` : ''}`;
+    const timer = setTimeout(() => toast(msg, 'success'), 60);
+    router.replace('/dashboard');
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Convert battler tier to CharacterPortrait tier format
   const getTierForPortrait = (tier: string): 'low' | 'mid' | 'top' | 'god' => {
