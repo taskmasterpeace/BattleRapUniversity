@@ -294,20 +294,25 @@ export default async function CalendarPage({
                   {cell.date.getUTCDate()}
                 </div>
                 <div className="space-y-1">
-                  {dayEvents.slice(0, 4).map((e, idx) => (
-                    <Link
-                      key={idx}
-                      href={e.href}
-                      title={e.title}
-                      className={`block text-[10px] px-1.5 py-1 leading-tight line-clamp-2 hover:translate-x-[1px] transition-all duration-150 ${
-                        e.mine
-                          ? 'bg-[#ff8c42] border-l-2 border-[#ff8c42] text-black font-black hover:bg-[#ff9d5c]'
-                          : `${KIND_STYLE[e.kind]} hover:bg-[#2d2f35]`
-                      }`}
-                    >
-                      {e.title}
-                    </Link>
-                  ))}
+                  {dayEvents.slice(0, 4).map((e, idx) => {
+                    // Already-fought battles are dimmed and checked so the player
+                    // can tell past matchups from ones still on the books at a glance.
+                    const done = e.status === 'completed';
+                    return (
+                      <Link
+                        key={idx}
+                        href={e.href}
+                        title={e.title}
+                        className={`block text-[10px] px-1.5 py-1 leading-tight line-clamp-2 hover:translate-x-[1px] transition-all duration-150 ${
+                          e.mine
+                            ? 'bg-[#ff8c42] border-l-2 border-[#ff8c42] text-black font-black hover:bg-[#ff9d5c]'
+                            : `${KIND_STYLE[e.kind]} hover:bg-[#2d2f35]`
+                        } ${done ? 'opacity-50' : ''}`}
+                      >
+                        {done ? '✓ ' : ''}{e.title}
+                      </Link>
+                    );
+                  })}
                   {dayEvents.length > 4 && (
                     <div className="text-[10px] text-zinc-500 px-1">
                       +{dayEvents.length - 4} more
