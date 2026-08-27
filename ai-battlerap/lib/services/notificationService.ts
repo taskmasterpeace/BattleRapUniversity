@@ -234,8 +234,11 @@ export async function notifyLifeEvent(
 ): Promise<string | null> {
   return createNotification(supabase, battlerId, {
     type: 'life_event',
-    title: 'Life Event',
-    message: eventTitle,
+    // Title is the event itself ("Rock Bottom"), not a generic "Life Event" that
+    // just repeats the type badge; the body carries the real detail so three of
+    // these aren't three identical, contentless rows.
+    title: eventTitle,
+    message: eventDescription || eventTitle,
     metadata: { eventId, eventTitle, eventDescription }
   });
 }
