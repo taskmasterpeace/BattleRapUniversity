@@ -129,6 +129,18 @@ export async function POST(
     );
   }
 
+  // Supersede any stale duplicate pending events of the same template (e.g. a
+  // second "Rock Bottom" left over from before insert-time dedup). Resolving the
+  // shown card clears the rest of that kind — without re-applying their effects —
+  // so a duplicate doesn't pop back up right after the player makes the decision.
+  await supabase
+    .from('battler_life_events')
+    .update({ status: 'resolved', resolved_at: getVirtualNowISO() })
+    .eq('battler_id', event.battler_id)
+    .eq('template_code', event.template_code)
+    .eq('status', 'pending')
+    .neq('id', eventId);
+
   // The Newsroom: a resolved life event may become a story the blogs pick up.
   // Fire-and-forget — never blocks the resolve response.
   try {
