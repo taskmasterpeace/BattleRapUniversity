@@ -63,8 +63,15 @@ export default function PostBattleSummary({
   fanGrowth = null,
   levelUpData = null
 }: Props) {
-  const hasPositiveChanges = attributeChanges.some(c => c.change > 0);
-  const hasNegativeChanges = attributeChanges.some(c => c.change < 0);
+  // Attribute changes are shown to one decimal, so a real-but-tiny gain like +0.04
+  // (common after a loss — progression halves the loser's gains) rounds to "+0.0"
+  // and reads as a contradiction under "Improved Attributes". Only surface changes
+  // that actually round to at least ±0.1.
+  const SHOWN_DELTA = 0.05;
+  const isGain = (c: AttributeChange) => c.change >= SHOWN_DELTA;
+  const isLoss = (c: AttributeChange) => c.change <= -SHOWN_DELTA;
+  const hasPositiveChanges = attributeChanges.some(isGain);
+  const hasNegativeChanges = attributeChanges.some(isLoss);
 
   const VIEW_TIER_CONFIG = {
     low: { label: 'LOW', color: 'text-zinc-400', bgColor: 'bg-zinc-700/30' },
@@ -251,7 +258,7 @@ export default function PostBattleSummary({
             ✓ Improved Attributes
           </h3>
           <div className="grid grid-cols-2 gap-3">
-            {attributeChanges.filter(c => c.change > 0).map((change, index) => (
+            {attributeChanges.filter(isGain).map((change, index) => (
               <div key={index} className="p-3 bg-green-500/5 border-2 border-green-500/20 rounded">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xs uppercase tracking-wide text-zinc-400 font-bold">
@@ -286,7 +293,7 @@ export default function PostBattleSummary({
             ⚠ Decreased Attributes
           </h3>
           <div className="grid grid-cols-2 gap-3">
-            {attributeChanges.filter(c => c.change < 0).map((change, index) => (
+            {attributeChanges.filter(isLoss).map((change, index) => (
               <div key={index} className="p-3 bg-red-500/5 border-2 border-red-500/20 rounded">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xs uppercase tracking-wide text-zinc-400 font-bold">
