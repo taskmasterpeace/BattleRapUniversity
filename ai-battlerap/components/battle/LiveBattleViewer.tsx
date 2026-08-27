@@ -282,53 +282,53 @@ export default function LiveBattleViewer({
         />
       </div>
 
-      <div className="flex-1 overflow-y-auto px-6 py-8">
+      <div className="flex-1 overflow-y-auto px-4 md:px-6 py-6 md:py-8">
         <div className="max-w-6xl mx-auto">
           {/* Scoreboard */}
-          <div className="grid grid-cols-[1fr_auto_1fr] gap-6 items-center mb-10">
+          <div className="grid grid-cols-[1fr_auto_1fr] gap-2 md:gap-6 items-center mb-8 md:mb-10">
             {/* Player */}
-            <div className="text-center">
-              <div className="relative inline-block">
-                <Avatar url={playerAvatarUrl} size={180} className={`mx-auto ${ended ? (playerWon ? 'ring-4 ring-[#ff8c42] shadow-[0_0_44px_rgba(255,140,66,0.65)] scale-110 transition-all duration-500' : 'opacity-40 grayscale scale-95 transition-all duration-500') : portraitFx(!!activeIsPlayer, activeMood)}`} alt={player.stage_name} />
+            <div className="text-center min-w-0">
+              <div className="relative inline-block w-[84px] md:w-[180px] aspect-square">
+                <Avatar url={playerAvatarUrl} size={180} className={`!w-full !h-full ${ended ? (playerWon ? 'ring-4 ring-[#ff8c42] shadow-[0_0_44px_rgba(255,140,66,0.65)] scale-110 transition-all duration-500' : 'opacity-40 grayscale scale-95 transition-all duration-500') : portraitFx(!!activeIsPlayer, activeMood)}`} alt={player.stage_name} />
                 {activeIsPlayer && !ended && activeMood && (
-                  <span className={`absolute -bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap px-2.5 py-0.5 text-[10px] font-display font-black uppercase tracking-wider ${MIC_BADGE[activeMood].tone}`}>
+                  <span className={`absolute -bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap px-1.5 md:px-2.5 py-0.5 text-[8px] md:text-[10px] font-display font-black uppercase tracking-wider ${MIC_BADGE[activeMood].tone}`}>
                     {MIC_BADGE[activeMood].label}
                   </span>
                 )}
               </div>
-              <h2 className="mt-3 text-3xl font-display font-black uppercase tracking-tight">
+              <h2 className="mt-2 md:mt-3 text-base md:text-3xl font-display font-black uppercase tracking-tight truncate">
                 {player.stage_name}
               </h2>
-              <p className="text-xs text-[#ff8c42] uppercase tracking-widest mb-2">YOU</p>
-              <div className="text-6xl font-display font-black text-[#ff8c42] tabular-nums">
+              <p className="text-[10px] md:text-xs text-[#ff8c42] uppercase tracking-widest mb-1 md:mb-2">YOU</p>
+              <div className="text-3xl md:text-6xl font-display font-black text-[#ff8c42] tabular-nums">
                 {playerScore.toFixed(1)}
               </div>
-              <p className="text-[10px] text-zinc-500 uppercase tracking-widest">Cumulative</p>
+              <p className="text-[9px] md:text-[10px] text-zinc-500 uppercase tracking-widest">Cumulative</p>
             </div>
             {/* VS */}
-            <div className="text-center">
-              <div className="text-5xl font-display font-black uppercase tracking-wider text-zinc-700">
+            <div className="text-center px-1">
+              <div className="text-xl md:text-5xl font-display font-black uppercase tracking-wider text-zinc-700">
                 VS
               </div>
             </div>
             {/* AI */}
-            <div className="text-center">
-              <div className="relative inline-block">
-                <Avatar url={aiAvatarUrl} size={180} className={`mx-auto ${ended ? (!playerWon && winnerId ? 'ring-4 ring-red-500 shadow-[0_0_44px_rgba(239,68,68,0.6)] scale-110 transition-all duration-500' : 'opacity-40 grayscale scale-95 transition-all duration-500') : portraitFx(!activeIsPlayer && !!currentSegment, activeMood)}`} alt={ai.stage_name} />
+            <div className="text-center min-w-0">
+              <div className="relative inline-block w-[84px] md:w-[180px] aspect-square">
+                <Avatar url={aiAvatarUrl} size={180} className={`!w-full !h-full ${ended ? (!playerWon && winnerId ? 'ring-4 ring-red-500 shadow-[0_0_44px_rgba(239,68,68,0.6)] scale-110 transition-all duration-500' : 'opacity-40 grayscale scale-95 transition-all duration-500') : portraitFx(!activeIsPlayer && !!currentSegment, activeMood)}`} alt={ai.stage_name} />
                 {!activeIsPlayer && currentSegment && !ended && activeMood && (
-                  <span className={`absolute -bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap px-2.5 py-0.5 text-[10px] font-display font-black uppercase tracking-wider ${MIC_BADGE[activeMood].tone}`}>
+                  <span className={`absolute -bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap px-1.5 md:px-2.5 py-0.5 text-[8px] md:text-[10px] font-display font-black uppercase tracking-wider ${MIC_BADGE[activeMood].tone}`}>
                     {MIC_BADGE[activeMood].label}
                   </span>
                 )}
               </div>
-              <h2 className="mt-3 text-3xl font-display font-black uppercase tracking-tight">
+              <h2 className="mt-2 md:mt-3 text-base md:text-3xl font-display font-black uppercase tracking-tight truncate">
                 {ai.stage_name}
               </h2>
-              <p className="text-xs text-red-500 uppercase tracking-widest mb-2">OPPONENT</p>
-              <div className="text-6xl font-display font-black text-red-500 tabular-nums">
+              <p className="text-[10px] md:text-xs text-red-500 uppercase tracking-widest mb-1 md:mb-2">OPPONENT</p>
+              <div className="text-3xl md:text-6xl font-display font-black text-red-500 tabular-nums">
                 {aiScore.toFixed(1)}
               </div>
-              <p className="text-[10px] text-zinc-500 uppercase tracking-widest">Cumulative</p>
+              <p className="text-[9px] md:text-[10px] text-zinc-500 uppercase tracking-widest">Cumulative</p>
             </div>
           </div>
 
