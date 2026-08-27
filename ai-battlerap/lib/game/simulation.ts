@@ -957,9 +957,19 @@ async function simulateRound(
       playerPerformancePower
     );
 
-    // Apply content effectiveness multipliers to segment scores
-    const playerAdjustedScore = playerSegment.score * playerFinalMultiplier;
-    const aiAdjustedScore = aiSegment.score * aiFinalMultiplier;
+    // Apply content effectiveness multipliers to segment scores. simulateSegment()
+    // already clamps to SCORE_CEILING, but the multiplier lands AFTER that clamp —
+    // so a battler at the ceiling could exceed it (11 × >1 = out of scale). Re-clamp
+    // the ceiling. Floor is intentionally left un-reapplied so a weak-matchup
+    // multiplier (<1) can still penalize below the base floor.
+    const playerAdjustedScore = Math.min(
+      CONFIG.SCORE_CEILING,
+      playerSegment.score * playerFinalMultiplier
+    );
+    const aiAdjustedScore = Math.min(
+      CONFIG.SCORE_CEILING,
+      aiSegment.score * aiFinalMultiplier
+    );
 
     playerSegmentScores.push(playerAdjustedScore);
     aiSegmentScores.push(aiAdjustedScore);

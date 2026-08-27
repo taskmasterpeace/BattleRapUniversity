@@ -194,9 +194,20 @@ export async function simulateSingleRound(
       playerPerformancePower
     );
 
-    // Apply content effectiveness multipliers
-    const playerAdjustedScore = playerSegment.score * playerForecast.finalMultiplier;
-    const aiAdjustedScore = aiSegment.score * aiForecast.finalMultiplier;
+    // Apply content effectiveness multipliers. simulateSegment() already clamps
+    // to SCORE_CEILING, but the multiplier is applied AFTER that clamp — so a
+    // top-tier battler at the ceiling could be pushed past it (e.g. 11 × 1.26 =
+    // 13.8), breaking the 0–SCORE_CEILING scale. Re-clamp the ceiling here. The
+    // floor is deliberately NOT re-applied so a weak-matchup multiplier (<1) can
+    // still drag a score below the base floor as an intended penalty.
+    const playerAdjustedScore = Math.min(
+      CONFIG.SCORE_CEILING,
+      playerSegment.score * playerForecast.finalMultiplier
+    );
+    const aiAdjustedScore = Math.min(
+      CONFIG.SCORE_CEILING,
+      aiSegment.score * aiForecast.finalMultiplier
+    );
 
     playerSegmentScores.push(playerAdjustedScore);
     aiSegmentScores.push(aiAdjustedScore);
