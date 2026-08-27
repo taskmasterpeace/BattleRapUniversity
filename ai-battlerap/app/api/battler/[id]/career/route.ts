@@ -82,10 +82,9 @@ export async function GET(
         .order('year', { ascending: false }),
     ]);
 
-    // 7. Public life: Wire handle + how the press leans on this battler.
-    //    social_accounts links AI battlers (and later players) to their Wire
-    //    presence; blogger_memory is each blogger's running sentiment.
-    const [{ data: wireAccount }, { data: pressRows }] = await Promise.all([
+    // 7. Public life: Wire handle + how the press leans on this battler +
+    //    stories the blogs are currently SITTING on about them.
+    const [{ data: wireAccount }, { data: pressRows }, { data: devRows }] = await Promise.all([
       supabase
         .from('social_accounts')
         .select('handle, display_name, influence, credibility')
@@ -101,7 +100,28 @@ export async function GET(
         .eq('entity_id', battlerId)
         .order('total_articles', { ascending: false })
         .limit(8),
+      supabase
+        .from('blogger_assignments')
+        .select(
+          'sit_reason, publish_after, account:social_accounts(display_name, handle), lead:story_leads!inner(subcategory, headline_hint, subject_battler_id)'
+        )
+        .eq('status', 'holding')
+        .eq('lead.subject_battler_id', battlerId)
+        .order('claimed_at', { ascending: false })
+        .limit(5),
     ]);
+
+    const developing = (devRows ?? []).map((d: any) => {
+      const acc = Array.isArray(d.account) ? d.account[0] : d.account;
+      const lead = Array.isArray(d.lead) ? d.lead[0] : d.lead;
+      return {
+        sitReason: d.sit_reason,
+        publishAfter: d.publish_after,
+        blogger: acc?.handle ?? acc?.display_name ?? 'A blogger',
+        subcategory: lead?.subcategory ?? null,
+        hint: lead?.headline_hint ?? '',
+      };
+    });
 
     return NextResponse.json({
       battler: {
@@ -127,6 +147,7 @@ export async function GET(
       mediaMentions,
       wire: wireAccount ?? null,
       press: pressRows ?? [],
+      developing,
     });
 
   } catch (error: any) {

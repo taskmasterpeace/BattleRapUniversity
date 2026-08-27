@@ -37,6 +37,35 @@ type WirePost = {
 
 type HeatingTag = { tag: string; score: number; posts: number };
 type MyAction = { post_id: string | null; action: string; stance: string | null };
+type DevelopingStory = {
+  id: string;
+  sitReason: string;
+  publishAfter: string;
+  blogger: string;
+  handle: string;
+  subcategory: string | null;
+  category: string | null;
+  heat: number;
+  hint: string;
+  subject: string | null;
+  other: string | null;
+};
+
+const SIT_LABEL: Record<string, { label: string; tone: string }> = {
+  breaking: { label: 'BREAKING', tone: 'text-red-400' },
+  developing: { label: 'DEVELOPING', tone: 'text-[#ff8c42]' },
+  building_it: { label: 'WORKING IT', tone: 'text-yellow-500' },
+  backburner: { label: 'SITTING ON IT', tone: 'text-zinc-500' },
+};
+
+function dropsIn(iso: string): string {
+  const ms = new Date(iso).getTime() - Date.now();
+  if (ms <= 0) return 'any minute';
+  const h = ms / 3_600_000;
+  if (h < 1) return `${Math.round(ms / 60000)}m`;
+  if (h < 24) return `${Math.round(h)}h`;
+  return `${Math.round(h / 24)}d`;
+}
 
 const KIND_CHIPS: Record<string, { label: string; tone: string }> = {
   league: { label: 'LEAGUE', tone: 'bg-amber-500/15 text-amber-400 border-amber-500/40' },
@@ -81,6 +110,7 @@ export default function WirePage() {
   const [busy, setBusy] = useState<string | null>(null);
   const [composerOpen, setComposerOpen] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
+  const [developing, setDeveloping] = useState<DevelopingStory[]>([]);
 
   const load = useCallback(async () => {
     try {
@@ -91,6 +121,7 @@ export default function WirePage() {
       setHeating(data.heatingUp ?? []);
       setMyActions(data.myActions ?? []);
       setMyStageName(data.myStageName ?? null);
+      setDeveloping(data.developing ?? []);
     } finally {
       setLoading(false);
     }
@@ -353,6 +384,47 @@ export default function WirePage() {
                     </li>
                   ))}
                 </ol>
+              )}
+            </div>
+
+            {/* THE NEWSROOM — stories the blogs have landed and are sitting on. */}
+            <div className="bg-[#101114] border-2 border-[#3a3d44] p-3 mt-4 lg:sticky lg:top-[calc(1rem+180px)]">
+              <h2 className="text-sm font-display font-black uppercase tracking-tighter text-[#ff8c42] mb-1">
+                📰 THE NEWSROOM
+              </h2>
+              <p className="text-[9px] font-mono uppercase tracking-widest text-zinc-600 mb-2.5">
+                WHAT THE BLOGS ARE SITTING ON
+              </p>
+              {developing.length === 0 ? (
+                <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-600">
+                  NO STORIES DEVELOPING
+                </p>
+              ) : (
+                <ul className="space-y-2.5">
+                  {developing.slice(0, 8).map((d) => {
+                    const sit = SIT_LABEL[d.sitReason] ?? SIT_LABEL.developing;
+                    return (
+                      <li key={d.id} className="border-l-2 border-[#3a3d44] pl-2.5">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className={`text-[9px] font-mono font-bold uppercase tracking-widest ${sit.tone}`}>
+                            {sit.label}
+                          </span>
+                          <span className="text-[9px] font-mono text-zinc-600 shrink-0">
+                            DROPS ~{dropsIn(d.publishAfter)}
+                          </span>
+                        </div>
+                        <p className="text-xs text-zinc-300 leading-snug mt-0.5">
+                          {d.subject}
+                          {d.other ? <span className="text-zinc-500"> vs {d.other}</span> : null}
+                        </p>
+                        <p className="text-[10px] text-zinc-500 leading-snug line-clamp-2">{d.hint}</p>
+                        <p className="text-[9px] font-mono text-zinc-600 mt-0.5">
+                          {d.handle} on the {(d.subcategory ?? 'story').replace(/_/g, ' ')}
+                        </p>
+                      </li>
+                    );
+                  })}
+                </ul>
               )}
             </div>
           </aside>

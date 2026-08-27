@@ -374,6 +374,17 @@ export async function applyPostBattleCareerEffects(
     console.error('Error evaluating post-battle life events:', lifeEventError);
   }
 
+  // The Newsroom: the battle becomes leads (result, beef, streak), then bloggers
+  // land/sit/drop them. Fire-and-forget — never blocks the battle.
+  try {
+    const { createLeadsFromBattle } = await import('@/lib/game/newsroom/leads');
+    const { runNewsroomTick } = await import('@/lib/game/newsroom/engine');
+    await createLeadsFromBattle(supabase, battle.id);
+    await runNewsroomTick(supabase);
+  } catch (newsroomError) {
+    console.error('Error running newsroom after battle:', newsroomError);
+  }
+
   // Update battler's stress level after battle completion
   try {
     await updateBattlerStress(supabase, battle.battler_player_id);

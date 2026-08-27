@@ -29,7 +29,7 @@ export async function GET() {
     { auth: { autoRefreshToken: false, persistSession: false } }
   );
 
-  const [{ data: posts }, heatingUp, actions] = await Promise.all([
+  const [{ data: posts }, heatingUp, actions, { data: developing }] = await Promise.all([
     admin
       .from('wire_posts')
       .select(
@@ -44,7 +44,48 @@ export async function GET() {
           .select('post_id, action, stance')
           .eq('battler_id', battler.id)
       : Promise.resolve({ data: [] as { post_id: string | null; action: string; stance: string | null }[] }),
+    // THE NEWSROOM — stories bloggers have LANDED and are SITTING on. Seeing a
+    // story brew before it drops is the point. Newest claims first.
+    admin
+      .from('blogger_assignments')
+      .select(
+        'id, sit_reason, publish_after, claimed_at, account:social_accounts(handle, display_name), lead:story_leads(subcategory, category, headline_hint, heat, subject_battler_id, secondary_battler_id)'
+      )
+      .eq('status', 'holding')
+      .order('claimed_at', { ascending: false })
+      .limit(12),
   ]);
+
+  // Resolve battler names for developing stories.
+  const devRows = developing ?? [];
+  const nameIds = new Set<string>();
+  for (const d of devRows as any[]) {
+    const lead = Array.isArray(d.lead) ? d.lead[0] : d.lead;
+    if (lead?.subject_battler_id) nameIds.add(lead.subject_battler_id);
+    if (lead?.secondary_battler_id) nameIds.add(lead.secondary_battler_id);
+  }
+  const nameMap = new Map<string, string>();
+  if (nameIds.size > 0) {
+    const { data: names } = await admin.from('battlers').select('id, stage_name').in('id', [...nameIds]);
+    for (const n of names ?? []) nameMap.set(n.id, n.stage_name);
+  }
+  const developingStories = (devRows as any[]).map((d) => {
+    const lead = Array.isArray(d.lead) ? d.lead[0] : d.lead;
+    const account = Array.isArray(d.account) ? d.account[0] : d.account;
+    return {
+      id: d.id,
+      sitReason: d.sit_reason,
+      publishAfter: d.publish_after,
+      blogger: account?.display_name ?? account?.handle ?? 'A blogger',
+      handle: account?.handle ?? '',
+      subcategory: lead?.subcategory ?? null,
+      category: lead?.category ?? null,
+      heat: lead?.heat ?? 0,
+      hint: lead?.headline_hint ?? '',
+      subject: lead?.subject_battler_id ? nameMap.get(lead.subject_battler_id) ?? null : null,
+      other: lead?.secondary_battler_id ? nameMap.get(lead.secondary_battler_id) ?? null : null,
+    };
+  });
 
   return NextResponse.json({
     posts: posts ?? [],
@@ -52,5 +93,6 @@ export async function GET() {
     myBattlerId: battler?.id ?? null,
     myStageName: battler?.stage_name ?? null,
     myActions: (actions.data ?? []).filter((a) => a.post_id),
+    developing: developingStories,
   });
 }

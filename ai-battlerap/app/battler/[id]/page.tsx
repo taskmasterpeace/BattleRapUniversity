@@ -118,6 +118,13 @@ interface CareerData {
     recent_narrative: string | null;
     last_covered_at: string;
   }>;
+  developing?: Array<{
+    sitReason: string;
+    publishAfter: string;
+    blogger: string;
+    subcategory: string | null;
+    hint: string;
+  }>;
 }
 
 type TabType = 'overview' | 'battles' | 'rivalries' | 'media';
@@ -390,6 +397,32 @@ function OverviewTab({ data }: { data: CareerData }) {
           <div className="lg:col-span-2 bg-[#2d2f35] border-2 border-[#3a3d44] p-6">
             <h2 className="text-2xl font-display font-black uppercase tracking-tighter mb-1 text-[#ff8c42]">The Press</h2>
             <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest mb-4">WHO COVERS THEM · AND HOW THEY LEAN</p>
+
+            {/* Developing — stories the blogs are sitting on about this battler */}
+            {data.developing && data.developing.length > 0 && (
+              <div className="mb-4 bg-[#18191c] border-2 border-[#ff8c42]/30 p-3">
+                <p className="text-[10px] font-mono text-[#ff8c42] uppercase tracking-widest mb-2">
+                  📰 DEVELOPING · THE BLOGS ARE SITTING ON THIS
+                </p>
+                <div className="space-y-2">
+                  {data.developing.map((d, i) => {
+                    const ms = new Date(d.publishAfter).getTime() - Date.now();
+                    const drops = ms <= 0 ? 'any minute' : ms < 86_400_000 ? `~${Math.round(ms / 3_600_000)}h` : `~${Math.round(ms / 86_400_000)}d`;
+                    return (
+                      <div key={i} className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="text-xs text-zinc-300 leading-snug">{d.hint}</p>
+                          <p className="text-[10px] font-mono text-zinc-600 uppercase tracking-wide">
+                            {d.blogger} · on the {(d.subcategory ?? 'story').replace(/_/g, ' ')}
+                          </p>
+                        </div>
+                        <span className="text-[9px] font-mono text-zinc-500 shrink-0 uppercase">drops {drops}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
             {data.press && data.press.length > 0 ? (
               <div className="space-y-2">
                 {data.press.slice(0, 5).map((p) => {

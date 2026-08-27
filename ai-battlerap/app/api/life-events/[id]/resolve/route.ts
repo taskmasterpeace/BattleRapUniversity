@@ -129,6 +129,17 @@ export async function POST(
     );
   }
 
+  // The Newsroom: a resolved life event may become a story the blogs pick up.
+  // Fire-and-forget — never blocks the resolve response.
+  try {
+    const { createLeadFromLifeEvent } = await import('@/lib/game/newsroom/leads');
+    const { runNewsroomTick } = await import('@/lib/game/newsroom/engine');
+    const leadId = await createLeadFromLifeEvent(supabase, eventId);
+    if (leadId) await runNewsroomTick(supabase);
+  } catch (newsroomError) {
+    console.error('Error running newsroom after life event:', newsroomError);
+  }
+
   // Calculate attribute changes for outcome display
   const attributeChanges: Record<string, { before: number; after: number; change: number }> = {};
 
