@@ -44,7 +44,7 @@ function decisionLabel(verdict: string | null, decisionType: string | null): str
   const map: Record<string, string> = {
     bodybag: 'BODYBAG',
     clean_sweep: 'CLEAN SWEEP',
-    gentlemans_30: "GENTLEMAN'S 3-0",
+    gentlemans_30: "GENTLEMAN'S 30",
     classic: 'CLASSIC',
     edge: 'EDGE',
   };
