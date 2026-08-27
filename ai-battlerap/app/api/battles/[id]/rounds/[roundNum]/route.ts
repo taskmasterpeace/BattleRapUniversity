@@ -51,11 +51,18 @@ export async function GET(
     .eq('round_index', roundIndex)
     .in('battler_id', [battle.battler_player_id, battle.battler_ai_id]);
 
+  // "Not simulated yet" is a VALID pre-battle state, not an error — return 200
+  // with simulated:false so the client shows the "Simulate Round" button without
+  // logging a 404 on every fresh round-results load.
   if (roundsError || !rounds || rounds.length === 0) {
-    return NextResponse.json(
-      { error: `Round ${roundIndex} results not found. The round may not have been simulated yet.` },
-      { status: 404 }
-    );
+    return NextResponse.json({
+      simulated: false,
+      playerRound: null,
+      aiRound: null,
+      playerSegments: [],
+      aiSegments: [],
+      winner: undefined,
+    });
   }
 
   // Fetch content selections for both battlers
@@ -110,6 +117,7 @@ export async function GET(
   }
 
   return NextResponse.json({
+    simulated: true,
     playerRound: {
       ...playerRound,
       contentSelection: playerContentSelection,
