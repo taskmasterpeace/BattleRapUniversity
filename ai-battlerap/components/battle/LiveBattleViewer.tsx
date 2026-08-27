@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Avatar from '@/components/ui/Avatar';
+import { CROWD_LANES, reactionFromScore, REACTION_DISPLAY, fnv1a } from '@/lib/game/crowdLanes';
 
 type Segment = {
   id: string;
@@ -132,6 +133,26 @@ function portraitFx(isActive: boolean, mood: string | null): string {
     case 'cold':     return base + 'ring-zinc-600 opacity-80 scale-100';
     default:         return base + 'ring-[#ff8c42]/70 scale-105'; // mid
   }
+}
+
+/** How each section of the room takes THIS beat. Same crowd figure, but each
+ *  lane leans a little differently (deterministic per segment) so the room reads
+ *  as sections reacting, not one meter. */
+function laneReactionsForSegment(seg: Segment | null) {
+  // Derive a room figure from the beat itself (the tape carries score + flags).
+  let base = 40;
+  if (seg) {
+    base = seg.segment_score * 8; // a 7.0 reads warm, a 9.0 pops, a 3.0 goes cold
+    const flags = (seg.event_flags ?? []).map((f) => f.toLowerCase());
+    if (flags.some((f) => f.includes('haymaker') || f.includes('peak'))) base += 20;
+    if (flags.some((f) => f.includes('choke'))) base -= 40;
+    base = Math.max(0, Math.min(100, base));
+  }
+  return CROWD_LANES.map((lane) => {
+    const offset = seg ? (fnv1a(seg.id + lane.id) % 30) - 14 : 0; // -14..+15
+    const score = Math.max(0, Math.min(100, base + offset));
+    return { lane, reaction: reactionFromScore(score) };
+  });
 }
 
 const MIC_BADGE: Record<string, { label: string; tone: string }> = {
@@ -368,6 +389,29 @@ export default function LiveBattleViewer({
               </div>
             );
           })()}
+
+          {/* THE SECTIONS — the room reacts in lanes, beat by beat. */}
+          {!ended && (
+            <div className="grid grid-cols-3 gap-2 md:gap-3 mb-8">
+              {laneReactionsForSegment(currentSegment).map(({ lane, reaction }) => {
+                const d = REACTION_DISPLAY[reaction];
+                return (
+                  <div
+                    key={lane.id}
+                    className={`border-2 p-2.5 md:p-3 text-center transition-colors duration-300 ${
+                      reaction === 'loved' ? 'border-[#ff8c42]/50 bg-[#ff8c42]/5'
+                      : reaction === 'cold' ? 'border-sky-500/40 bg-sky-500/5'
+                      : 'border-[#3a3d44] bg-[#1a1b1e]'
+                    }`}
+                  >
+                    <div className="text-lg md:text-2xl leading-none mb-1">{d.emoji}</div>
+                    <div className="text-[9px] md:text-[10px] font-display font-black uppercase tracking-wider text-zinc-300 truncate">{lane.name}</div>
+                    <div className={`text-[9px] md:text-[10px] font-mono uppercase tracking-wide ${d.tone}`}>{d.label}</div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
 
           {/* Current segment reveal */}
           {!ended && currentSegment && (() => {
