@@ -314,11 +314,16 @@ export default function PromotionClient({
           </div>
         </div>
 
-        {/* Crowd Perception Status */}
-        {relationship && (
+        {/* Crowd Perception Status — always shown so the player can see the
+            authenticity and perception their promotion actions spend and earn,
+            even against a fresh (non-rivalry) opponent (defaults: 50/50 · 100). */}
+        {(
           <div className="mb-12 bg-[#2d2f35] border-2 border-[#3a3d44] rounded-lg p-6">
             <h2 className="text-lg font-black uppercase tracking-wider mb-6 text-[#ff8c42]">
               📊 CURRENT STANDINGS
+              {!relationship && (
+                <span className="ml-2 text-[10px] font-mono text-zinc-500 tracking-widest">NO HISTORY — EVEN FOOTING</span>
+              )}
             </h2>
             <div className="grid grid-cols-2 gap-6 mb-6">
               <div>
