@@ -88,7 +88,10 @@ export default async function LeagueHomePage({ params }: { params: Promise<{ id:
     .from('battles')
     .select('id, status, scheduled_at, battler_player_id, battler_ai_id, winner_battler_id')
     .eq('league_id', leagueId)
-    .neq('status', 'completed')
+    // Only genuinely upcoming bouts. A cancelled card isn't upcoming, and its
+    // fighters (often Test_ simulation rows that never make the roster) were
+    // leaking their raw internal names onto the league's UPCOMING CARD.
+    .not('status', 'in', '("completed","cancelled","forfeit")')
     .order('scheduled_at', { ascending: true })
     .limit(12);
 
