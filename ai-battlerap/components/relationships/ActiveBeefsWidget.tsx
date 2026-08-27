@@ -68,7 +68,7 @@ export default function ActiveBeefsWidget({ battlerId }: Props) {
       case 'at_war':
         return { label: 'AT WAR', emoji: '🔥', color: 'text-red-500' };
       case 'legendary_beef':
-        return { label: 'LEGENDARY BEEF', emoji: '👑', color: 'text-purple-500' };
+        return { label: 'LEGENDARY BEEF', emoji: '👑', color: 'text-amber-400' };
       case 'tense':
         return { label: 'TENSE', emoji: '😤', color: 'text-[#ff8c42]' };
       default:
@@ -252,7 +252,7 @@ export default function ActiveBeefsWidget({ battlerId }: Props) {
                   </span>
                 )}
                 {rel.highWaterMark !== rel.currentState && (
-                  <span className="px-2 py-1 bg-purple-500/20 text-purple-400 border-2 border-purple-500/30 text-xs font-display font-black uppercase tracking-wide rounded">
+                  <span className="px-2 py-1 bg-amber-500/20 text-amber-400 border-2 border-amber-500/30 text-xs font-display font-black uppercase tracking-wide rounded">
                     PEAK: {getStateLabel(rel.highWaterMark).label}
                   </span>
                 )}

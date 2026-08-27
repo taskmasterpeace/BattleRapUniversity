@@ -183,7 +183,7 @@ export default async function RelationshipDetailPage({ params }: Props) {
   const getStateInfo = (state: string): { label: string; emoji: string; color: string; bgColor: string } => {
     switch (state) {
       case 'legendary_beef':
-        return { label: 'LEGENDARY BEEF', emoji: '👑', color: 'text-purple-500', bgColor: 'bg-purple-500/10' };
+        return { label: 'LEGENDARY BEEF', emoji: '👑', color: 'text-amber-400', bgColor: 'bg-amber-500/10' };
       case 'at_war':
         return { label: 'AT WAR', emoji: '🔥', color: 'text-red-500', bgColor: 'bg-red-500/10' };
       case 'rivals':
@@ -191,7 +191,7 @@ export default async function RelationshipDetailPage({ params }: Props) {
       case 'tense':
         return { label: 'TENSE', emoji: '😤', color: 'text-[#ff8c42]', bgColor: 'bg-[#ff8c42]/10' };
       case 'aware':
-        return { label: 'AWARE', emoji: '👀', color: 'text-blue-500', bgColor: 'bg-blue-500/10' };
+        return { label: 'AWARE', emoji: '👀', color: 'text-zinc-300', bgColor: 'bg-zinc-700/20' };
       default:
         return { label: 'UNKNOWN', emoji: '🤝', color: 'text-zinc-500', bgColor: 'bg-zinc-800' };
     }
@@ -314,7 +314,7 @@ export default async function RelationshipDetailPage({ params }: Props) {
               </span>
             )}
             {relData.highWaterMark !== relData.currentState && (
-              <span className="px-3 py-2 bg-purple-500/20 text-purple-400 border-2 border-purple-500/30 text-xs font-display font-black uppercase tracking-wide rounded">
+              <span className="px-3 py-2 bg-amber-500/20 text-amber-400 border-2 border-amber-500/30 text-xs font-display font-black uppercase tracking-wide rounded">
                 PEAK: {getStateInfo(relData.highWaterMark).label}
               </span>
             )}

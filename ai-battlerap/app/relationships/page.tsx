@@ -137,7 +137,7 @@ export default async function RelationshipsPage() {
   const getStateInfo = (state: string): { label: string; emoji: string; color: string; bgColor: string } => {
     switch (state) {
       case 'legendary_beef':
-        return { label: 'LEGENDARY BEEF', emoji: '👑', color: 'text-purple-500', bgColor: 'bg-purple-500/10' };
+        return { label: 'LEGENDARY BEEF', emoji: '👑', color: 'text-amber-400', bgColor: 'bg-amber-500/10' };
       case 'at_war':
         return { label: 'AT WAR', emoji: '🔥', color: 'text-red-500', bgColor: 'bg-red-500/10' };
       case 'rivals':
@@ -145,7 +145,7 @@ export default async function RelationshipsPage() {
       case 'tense':
         return { label: 'TENSE', emoji: '😤', color: 'text-[#ff8c42]', bgColor: 'bg-[#ff8c42]/10' };
       case 'aware':
-        return { label: 'AWARE', emoji: '👀', color: 'text-blue-500', bgColor: 'bg-blue-500/10' };
+        return { label: 'AWARE', emoji: '👀', color: 'text-zinc-300', bgColor: 'bg-zinc-700/20' };
       default:
         return { label: 'UNKNOWN', emoji: '🤝', color: 'text-zinc-500', bgColor: 'bg-zinc-800' };
     }
@@ -247,7 +247,7 @@ export default async function RelationshipsPage() {
             </span>
           )}
           {rel.highWaterMark !== rel.currentState && (
-            <span className="px-2 py-1 bg-purple-500/20 text-purple-400 border-2 border-purple-500/30 text-xs font-display font-black uppercase tracking-wide">
+            <span className="px-2 py-1 bg-amber-500/20 text-amber-400 border-2 border-amber-500/30 text-xs font-display font-black uppercase tracking-wide">
               PEAK: {getStateInfo(rel.highWaterMark).label}
             </span>
           )}
@@ -299,7 +299,7 @@ export default async function RelationshipsPage() {
         {/* Legendary Beefs */}
         {legendaryBeefs.length > 0 && (
           <div className="mb-12">
-            <h2 className="text-2xl font-display font-black tracking-tighter mb-6 text-purple-500">
+            <h2 className="text-2xl font-display font-black tracking-tighter mb-6 text-amber-400">
               👑 LEGENDARY BEEFS ({legendaryBeefs.length})
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
