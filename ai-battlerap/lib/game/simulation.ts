@@ -1513,34 +1513,39 @@ async function saveBattleResults(
     })
     .eq('id', battleId);
 
-  // Add earnings to player battler (using SQL function from migration)
-  await supabase.rpc('add_earnings_transaction', {
-    p_battler_id: playerBattlerId,
-    p_amount: playerPayout,
-    // Flat pay — winning doesn't earn more, so it's never a "win bonus".
-    p_transaction_type: 'battle_base_pay',
-    p_battle_id: battleId,
-    p_description: `Battle payout - ${playerWon ? 'Victory' : 'Participation'}`,
-    p_metadata: {
-      league: league.name,
-      tier: playerTier,
-      won: playerWon,
-    },
-  });
+  // Tournament battles pay through the prize pool, not per-battle — payout is 0.
+  // Don't write a $0 "battle payout - participation" earning that would clutter
+  // the ledger and misrepresent a tournament bout as an unpaid league battle.
+  if (!isTournamentBattle) {
+    // Add earnings to player battler (using SQL function from migration)
+    await supabase.rpc('add_earnings_transaction', {
+      p_battler_id: playerBattlerId,
+      p_amount: playerPayout,
+      // Flat pay — winning doesn't earn more, so it's never a "win bonus".
+      p_transaction_type: 'battle_base_pay',
+      p_battle_id: battleId,
+      p_description: `Battle payout - ${playerWon ? 'Victory' : 'Participation'}`,
+      p_metadata: {
+        league: league.name,
+        tier: playerTier,
+        won: playerWon,
+      },
+    });
 
-  // Add earnings to AI battler
-  await supabase.rpc('add_earnings_transaction', {
-    p_battler_id: aiBattlerId,
-    p_amount: aiPayout,
-    p_transaction_type: 'battle_base_pay',
-    p_battle_id: battleId,
-    p_description: `Battle payout - ${aiWon ? 'Victory' : 'Participation'}`,
-    p_metadata: {
-      league: league.name,
-      tier: aiTier,
-      won: aiWon,
-    },
-  });
+    // Add earnings to AI battler
+    await supabase.rpc('add_earnings_transaction', {
+      p_battler_id: aiBattlerId,
+      p_amount: aiPayout,
+      p_transaction_type: 'battle_base_pay',
+      p_battle_id: battleId,
+      p_description: `Battle payout - ${aiWon ? 'Victory' : 'Participation'}`,
+      p_metadata: {
+        league: league.name,
+        tier: aiTier,
+        won: aiWon,
+      },
+    });
+  }
 
   // Insert all segments
   const segmentsWithBattleId = segments.map((s) => ({
