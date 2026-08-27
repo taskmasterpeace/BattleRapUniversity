@@ -142,6 +142,7 @@ export async function finalizeInteractiveBattle(
       ai_payout: aiPayout,
       verdict,
       decision_type: decisionType,
+      completed_at: new Date().toISOString(),
     })
     .eq('id', battleId);
 

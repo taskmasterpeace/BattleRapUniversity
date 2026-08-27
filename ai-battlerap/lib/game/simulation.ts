@@ -1510,6 +1510,7 @@ async function saveBattleResults(
       ai_payout: aiPayout,
       verdict: verdict,
       decision_type: decisionType,
+      completed_at: new Date().toISOString(),
     })
     .eq('id', battleId);
 

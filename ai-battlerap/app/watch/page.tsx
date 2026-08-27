@@ -93,13 +93,17 @@ export default async function WatchPage() {
     supabase
       .from('battles')
       .select(
-        `id, league_id, scheduled_at, created_at, is_world, verdict, decision_type, winner_battler_id,
+        `id, league_id, scheduled_at, created_at, completed_at, is_world, verdict, decision_type, winner_battler_id,
          league:leagues(id, name),
          a:battlers!battles_battler_player_id_fkey(${battlerJoin}),
          b:battlers!battles_battler_ai_id_fkey(${battlerJoin})`
       )
       .eq('status', 'completed')
       .not('verdict', 'is', null)
+      // Order by when the verdict actually dropped, not when the card was booked,
+      // so "Fresh Verdicts" is genuinely fresh. completed_at falls back to
+      // created_at for older rows that predate the column.
+      .order('completed_at', { ascending: false, nullsFirst: false })
       .order('created_at', { ascending: false })
       .limit(40),
   ]);
@@ -127,7 +131,7 @@ export default async function WatchPage() {
       leagueId: row.league?.id ?? row.league_id,
       leagueName: row.league?.name ?? 'UNKNOWN LEAGUE',
       verdict: row.verdict,
-      agoLabel: agoLabel(row.created_at, now),
+      agoLabel: agoLabel(row.completed_at ?? row.created_at, now),
       winnerId: row.winner_battler_id,
       a: side(row.a),
       b: side(row.b),
