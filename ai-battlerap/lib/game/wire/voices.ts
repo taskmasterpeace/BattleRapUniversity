@@ -213,10 +213,22 @@ export const VOICE_BANKS: VoiceBank[] = [
   {
     profile: 'battler_ego',
     templates: {
+      // Kept wide on purpose: gloats are the callouts the whole scene sees, so a
+      // thin pool makes two different winners tweet the exact same line. Add here,
+      // don't trim.
       gloat: [
         'They know what it was tonight. Cards said what the room already knew. Next.',
         'I told everybody what was going to happen and it happened. Who\'s next on the list? {tag}',
         'Respect to {loser} for showing up. That\'s the only respect being handed out tonight.',
+        'Told y\'all. Same result, different night. Line the next one up. {tag}',
+        'They booked me to lose. I don\'t read scripts. {loser} found that out.',
+        'Undefeated in this room and it\'s staying that way. Send somebody.',
+        'Ran it back in my head — didn\'t drop a round. On to the next name.',
+        'Whole building watched. Ain\'t no debate to have and {loser} knows it.',
+        'That wasn\'t a battle, that was a checkup. {loser} needed the reps.',
+        'They\'ll blame the room, the crowd, the cards. Never the pen. Never me.',
+        'Every card, same story: I show up, they fold. Who wants it? {tag}',
+        '{loser} fought a good fight. Scoreboard don\'t care about good fights.',
       ],
     },
   },

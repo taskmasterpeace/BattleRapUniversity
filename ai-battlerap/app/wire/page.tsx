@@ -162,10 +162,22 @@ export default function WirePage() {
     }
   };
 
+  // Drop verbatim-duplicate bodies: two different battlers pulling the same voice
+  // template shouldn't both surface — the scene never tweets the identical line
+  // twice. (Belt-and-suspenders with the widened template pools in wire/voices.)
+  const seenBodies = new Set<string>();
   const visible = posts.filter((p) => {
-    if (filter === 'all') return true;
-    if (filter === 'actionable') return !!p.actionable && !actedPostIds.has(p.id);
-    return p.feed_hint === filter;
+    const matchesFilter =
+      filter === 'all'
+        ? true
+        : filter === 'actionable'
+        ? !!p.actionable && !actedPostIds.has(p.id)
+        : p.feed_hint === filter;
+    if (!matchesFilter) return false;
+    const key = p.body.trim();
+    if (seenBodies.has(key)) return false;
+    seenBodies.add(key);
+    return true;
   });
 
   return (
