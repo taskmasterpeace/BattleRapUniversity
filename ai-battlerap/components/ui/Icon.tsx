@@ -114,11 +114,16 @@ const PATHS: Record<IconName, React.ReactNode> = {
   pen: (
     <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
   ),
+  // Spotlight casting a beam onto a stage floor. The old glyph was a peaked-roof
+  // building with a door — visually identical to the `home` icon, so PERFORMANCE
+  // and LIFE read as the same house across the app. A spotlight reads clearly as
+  // "stage presence" and avoids a microphone (no-mics law).
   stage: (
     <>
-      <path d="M2 20h20" />
-      <path d="M4 20V8l8-4 8 4v12" />
-      <path d="M9 20v-6h6v6" />
+      <rect x="10" y="3" width="4" height="3" />
+      <path d="M10 6 5 20" />
+      <path d="M14 6 19 20" />
+      <path d="M3 20h18" />
     </>
   ),
   home: (
