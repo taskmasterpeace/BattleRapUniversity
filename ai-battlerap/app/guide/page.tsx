@@ -288,7 +288,7 @@ export default function GameplayGuidePage() {
               </Card>
               <Card title="BATTLE NIGHT — HIT THE BUTTON">
                 <p>
-                  When it’s time, smash <Hl>🎤 BATTLE TIME</Hl> on your dashboard. The engine
+                  When it’s time, smash <Hl>BATTLE TIME</Hl> on your dashboard. The engine
                   runs the whole battle — three rounds, segment by segment — and drops you on the
                   results page. Watch the timeline. Find your haymaker. Pray there’s no choke
                   flag.
