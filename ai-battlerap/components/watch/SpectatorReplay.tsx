@@ -148,10 +148,10 @@ export default function SpectatorReplay({
                 <span className="w-10 font-mono text-xs text-zinc-300 text-right">{r.a.avg.toFixed(1)}</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="w-20 md:w-28 font-mono text-[10px] uppercase truncate text-blue-400">{b.name}</span>
+                <span className="w-20 md:w-28 font-mono text-[10px] uppercase truncate text-zinc-300">{b.name}</span>
                 <div className="flex-1 h-4 bg-[#18191c] border border-[#3a3d44]">
                   <div
-                    className={`h-full animate-bar-fill ${r.b.choke ? 'bg-red-500/70' : r.winner === 'b' ? 'bg-blue-400' : 'bg-blue-400/40'}`}
+                    className={`h-full animate-bar-fill ${r.b.choke ? 'bg-red-500/70' : r.winner === 'b' ? 'bg-zinc-300' : 'bg-zinc-300/40'}`}
                     style={{
                       ['--bar-w' as string]: `${(r.b.avg / max) * 100}%`,
                       animationDelay: `${i * 1500 + 250}ms`,
