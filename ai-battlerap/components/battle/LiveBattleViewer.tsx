@@ -291,6 +291,43 @@ export default function LiveBattleViewer({
             </div>
           </div>
 
+          {/* WHO OWNS THE ROOM — a live crowd-ownership meter that shifts as the
+              tape plays, so the empty middle reads as a room reacting. */}
+          {(() => {
+            const total = playerScore + aiScore;
+            const playerPct = total > 0 ? (playerScore / total) * 100 : 50;
+            const diff = playerPct - 50;
+            const leaderIsPlayer = diff >= 0;
+            const leader = leaderIsPlayer ? player.stage_name : ai.stage_name;
+            const mag = Math.abs(diff);
+            const verdict =
+              total === 0 ? 'THE ROOM IS WAITING'
+              : mag < 5 ? 'THE ROOM IS SPLIT'
+              : mag < 14 ? `${leader.toUpperCase()} IS EDGING IT`
+              : mag < 26 ? `${leader.toUpperCase()} OWNS THE ROOM`
+              : `${leader.toUpperCase()} RUNNING AWAY WITH IT`;
+            return (
+              <div className="mb-8">
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-600">THE ROOM</span>
+                  <span className={`text-[11px] font-display font-black uppercase tracking-wider ${
+                    total === 0 ? 'text-zinc-600' : mag < 5 ? 'text-zinc-300' : leaderIsPlayer ? 'text-[#ff8c42]' : 'text-red-500'
+                  }`}>
+                    {verdict}
+                  </span>
+                </div>
+                <div className="relative h-3 bg-red-500/25 overflow-hidden border border-[#3a3d44]">
+                  <div
+                    className="absolute inset-y-0 left-0 bg-[#ff8c42] transition-all duration-500 ease-out"
+                    style={{ width: `${playerPct}%` }}
+                  />
+                  {/* center line */}
+                  <div className="absolute inset-y-0 left-1/2 w-px bg-black/50" />
+                </div>
+              </div>
+            );
+          })()}
+
           {/* Current segment reveal */}
           {!ended && currentSegment && (() => {
             const segName = currentSegment.battler_id === player.id ? player.stage_name : ai.stage_name;
