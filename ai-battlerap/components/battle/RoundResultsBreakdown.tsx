@@ -97,20 +97,27 @@ export function RoundResultsBreakdown({
   ];
   const maxScore = Math.max(...allScores, 1) * 1.05;
 
-  // The headline moment of a segment (haymaker > choke > stumble), attributed to
-  // the segment WINNER first — when both swing, the room remembers the one that
-  // landed. Choke/stumble are checked on either battler.
+  // The headline moment of a segment (haymaker > choke > stumble). A haymaker only
+  // gets the badge if it landed on the segment WINNER: the sim's "haymaker" flag is
+  // a peak ROLL (a ~1.2x boost), not proof the moment was big — on a low-tier
+  // battler it can lift a 3.3 to a 4.0 that still loses to the opponent's 7.1.
+  // Badging that as "★ NAME HAYMAKER" next to the bar that actually won reads as a
+  // bug. A peak that got topped didn't land, so it shows no badge. Choke/stumble
+  // still show for either battler — those land regardless of who won the segment.
   const segEvent = (
     pFlags: string[] = [],
     aFlags: string[] = [],
     playerWon = true
   ): { label: string; cls: string } | null => {
+    const winner = playerWon
+      ? { flags: pFlags, name: playerName }
+      : { flags: aFlags, name: aiName };
+    if (winner.flags.includes('haymaker')) {
+      return { label: `★ ${winner.name} HAYMAKER`, cls: 'bg-yellow-300 text-black' };
+    }
     const ordered: { flags: string[]; name: string }[] = playerWon
       ? [{ flags: pFlags, name: playerName }, { flags: aFlags, name: aiName }]
       : [{ flags: aFlags, name: aiName }, { flags: pFlags, name: playerName }];
-    for (const { flags, name } of ordered) {
-      if (flags.includes('haymaker')) return { label: `★ ${name} HAYMAKER`, cls: 'bg-yellow-300 text-black' };
-    }
     for (const { flags, name } of ordered) {
       if (flags.includes('choke')) return { label: `✗ ${name} CHOKED`, cls: 'bg-red-600 text-white' };
     }
