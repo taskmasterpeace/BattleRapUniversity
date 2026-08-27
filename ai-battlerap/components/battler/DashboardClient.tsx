@@ -495,7 +495,7 @@ export default function DashboardClient({
                                         : 'Slot available'
                                     }
                                   >
-                                    <Icon name="mic" size={20} className={isUsed ? 'text-zinc-600' : 'text-[#ff8c42]'} />
+                                    <Icon name="swords" size={20} className={isUsed ? 'text-zinc-600' : 'text-[#ff8c42]'} />
                                     {isBonus && (
                                       <span className="absolute -top-1 -right-1.5 text-[9px] font-display font-black text-[#ff8c42] not-italic">
                                         +
