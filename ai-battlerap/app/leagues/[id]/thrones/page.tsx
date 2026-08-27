@@ -87,14 +87,46 @@ export default async function LeagueThronesPage({ params }: Props) {
   let thrones: ThronePosition[] = [];
 
   if (missingTable || !thronesRaw || thronesRaw.length === 0) {
-    thrones = ([1, 2, 3] as const).map((position) => ({
-      id: '',
-      league_id: leagueId,
-      position,
-      battler_id: null,
-      started_at: new Date().toISOString(),
-      defense_count: 0,
-    }));
+    // No persisted throne data yet — seed the display from the league standings.
+    // The thrones ARE the top 3 by rating (per "TOP 3 RANKINGS"), so a league full
+    // of ranked battlers should read as its top three, not three empty thrones.
+    const { data: leagueBattlers } = await supabase
+      .from('battlers')
+      .select('id, stage_name')
+      .eq('primary_league_id', leagueId)
+      .not('stage_name', 'like', 'Test_%');
+    const ids = (leagueBattlers ?? []).map((b) => b.id as string);
+    let ranked: { id: string; name: string; rating: number }[] = [];
+    if (ids.length > 0) {
+      const { data: rs } = await supabase
+        .from('rankings')
+        .select('battler_id, rating')
+        .in('battler_id', ids);
+      const nameById = new Map(
+        (leagueBattlers ?? []).map((b) => [b.id as string, b.stage_name as string])
+      );
+      ranked = (rs ?? [])
+        .map((r) => ({
+          id: r.battler_id as string,
+          name: nameById.get(r.battler_id as string) ?? 'Unknown',
+          rating: r.rating as number,
+        }))
+        .sort((a, b) => b.rating - a.rating)
+        .slice(0, 3);
+    }
+    thrones = ([1, 2, 3] as const).map((position) => {
+      const top = ranked[position - 1];
+      return {
+        id: '',
+        league_id: leagueId,
+        position,
+        battler_id: top?.id ?? null,
+        battlerName: top?.name,
+        battlerRating: top?.rating,
+        started_at: new Date().toISOString(),
+        defense_count: 0,
+      };
+    });
   } else {
     const battlerIds = thronesRaw.filter((t) => t.battler_id).map((t) => t.battler_id as string);
     let nameMap = new Map<string, string>();
