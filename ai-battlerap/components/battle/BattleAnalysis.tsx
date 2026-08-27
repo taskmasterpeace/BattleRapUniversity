@@ -245,7 +245,11 @@ export default function BattleAnalysis({
     } else if (decisionType === 'clean_sweep') {
       points.push('CLEAR 3-0 - Decisive victory across all rounds.');
     } else if (decisionType === 'gentlemans_30') {
-      points.push("GENTLEMAN'S 30 - You won/lost all rounds but it was competitive.");
+      points.push(
+        playerWon
+          ? "GENTLEMAN'S 30 - You took all three rounds, but they kept it competitive."
+          : "GENTLEMAN'S 30 - They took all three rounds, but you kept it competitive."
+      );
     } else if (decisionType === 'classic') {
       points.push('CLASSIC BATTLE - Both battlers brought their A-game.');
     } else if (decisionType === 'edge') {

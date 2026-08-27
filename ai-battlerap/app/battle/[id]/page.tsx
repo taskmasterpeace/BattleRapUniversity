@@ -16,6 +16,37 @@ import { useBadgeQueue } from '@/lib/hooks/useBadgeQueue';
 import { getBadgeRarity } from '@/lib/game/badgeRarity';
 import { toast } from '@/components/ui/Toast';
 
+/**
+ * The verdict chip on a settled battle. A 3-0 is NOT automatically a body bag —
+ * the sim classifies it (bodybag / clean_sweep / gentlemans_30), and calling a
+ * competitive gentleman's-30 a "BODY'D" contradicts the Battle Analysis, which
+ * reads the same decision_type. Honor decision_type; fall back to the scoreline.
+ */
+function verdictLabel(
+  decisionType: string | undefined,
+  verdict: string | undefined,
+  playerWon: boolean
+): string {
+  switch (decisionType) {
+    case 'bodybag':
+      return playerWon ? 'BODYBAG' : "BODY'D";
+    case 'clean_sweep':
+      return playerWon ? 'CLEAN SWEEP' : 'SWEPT';
+    case 'gentlemans_30':
+      return "GENTLEMAN'S 30";
+    case 'classic':
+      return 'CLASSIC';
+    case 'edge':
+      return 'RAZOR THIN';
+    default: {
+      // No stored decision_type — infer from the scoreline.
+      const sweep = verdict === '3-0';
+      if (playerWon) return sweep ? 'SWEEP' : 'VICTORY';
+      return sweep ? 'SWEPT' : 'DEFEAT';
+    }
+  }
+}
+
 type BattleRound = {
   id: string;
   round_index: number;
@@ -606,11 +637,11 @@ export default function BattleViewerPage({
                     <div className="mt-1.5 md:mt-2">
                       {playerWon ? (
                         <span className="inline-block px-2 md:px-4 py-0.5 md:py-1 bg-green-500/20 text-green-400 border-2 border-green-500/50 font-display font-black text-[11px] md:text-sm uppercase tracking-wider">
-                          {battle.verdict === '3-0' ? 'BODYBAG' : 'VICTORY'}
+                          {verdictLabel(battle.decision_type, battle.verdict, true)}
                         </span>
                       ) : (
                         <span className="inline-block px-2 md:px-4 py-0.5 md:py-1 bg-red-500/20 text-red-400 border-2 border-red-500/50 font-display font-black text-[11px] md:text-sm uppercase tracking-wider">
-                          {battle.verdict === '3-0' ? "BODY'D" : 'DEFEAT'}
+                          {verdictLabel(battle.decision_type, battle.verdict, false)}
                         </span>
                       )}
                     </div>
