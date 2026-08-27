@@ -120,6 +120,28 @@ const MOOD_CARD: Record<string, string> = {
   cold: 'border-zinc-700 bg-[#141416]',
 };
 
+/** Portrait treatment: the battler on the mic reacts to how the moment lands;
+ *  the one waiting their turn dims out. Makes the static faces feel alive. */
+function portraitFx(isActive: boolean, mood: string | null): string {
+  if (!isActive) return 'opacity-45 grayscale-[45%] scale-95 transition-all duration-500';
+  const base = 'transition-all duration-300 ring-4 ';
+  switch (mood) {
+    case 'haymaker': return base + 'ring-amber-400 shadow-[0_0_40px_rgba(251,191,36,0.6)] scale-110';
+    case 'choke':    return base + 'ring-red-500 grayscale opacity-70 scale-95';
+    case 'hot':      return base + 'ring-[#ff8c42] shadow-[0_0_28px_rgba(255,140,66,0.45)] scale-105';
+    case 'cold':     return base + 'ring-zinc-600 opacity-80 scale-100';
+    default:         return base + 'ring-[#ff8c42]/70 scale-105'; // mid
+  }
+}
+
+const MIC_BADGE: Record<string, { label: string; tone: string }> = {
+  haymaker: { label: '💥 HAYMAKER', tone: 'bg-amber-400 text-black' },
+  choke:    { label: '💀 CHOKING', tone: 'bg-red-500 text-white' },
+  hot:      { label: '🔥 ON ONE', tone: 'bg-[#ff8c42] text-black' },
+  cold:     { label: 'LOSING THE ROOM', tone: 'bg-zinc-700 text-zinc-300' },
+  mid:      { label: '🎤 ON THE MIC', tone: 'bg-[#ff8c42] text-black' },
+};
+
 export default function LiveBattleViewer({
   player,
   ai,
@@ -185,6 +207,11 @@ export default function LiveBattleViewer({
   );
 
   const currentSegment = index >= 0 && index < timeline.length ? timeline[index] : null;
+  // Who's on the mic right now, and how it's landing — drives the portrait reactions.
+  const activeIsPlayer = currentSegment?.battler_id === player.id;
+  const activeMood = currentSegment
+    ? momentLine(currentSegment, activeIsPlayer ? player.stage_name : ai.stage_name).mood
+    : null;
   const currentRoundIndex = currentSegment?.round_index ?? 1;
   const totalRounds = Math.max(...rounds.map((r) => r.round_index), 1);
   const segmentProgress =
@@ -261,7 +288,14 @@ export default function LiveBattleViewer({
           <div className="grid grid-cols-[1fr_auto_1fr] gap-6 items-center mb-10">
             {/* Player */}
             <div className="text-center">
-              <Avatar url={playerAvatarUrl} size={180} className="mx-auto" alt={player.stage_name} />
+              <div className="relative inline-block">
+                <Avatar url={playerAvatarUrl} size={180} className={`mx-auto ${portraitFx(!!activeIsPlayer && !ended, activeMood)}`} alt={player.stage_name} />
+                {activeIsPlayer && !ended && activeMood && (
+                  <span className={`absolute -bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap px-2.5 py-0.5 text-[10px] font-display font-black uppercase tracking-wider ${MIC_BADGE[activeMood].tone}`}>
+                    {MIC_BADGE[activeMood].label}
+                  </span>
+                )}
+              </div>
               <h2 className="mt-3 text-3xl font-display font-black uppercase tracking-tight">
                 {player.stage_name}
               </h2>
@@ -279,7 +313,14 @@ export default function LiveBattleViewer({
             </div>
             {/* AI */}
             <div className="text-center">
-              <Avatar url={aiAvatarUrl} size={180} className="mx-auto" alt={ai.stage_name} />
+              <div className="relative inline-block">
+                <Avatar url={aiAvatarUrl} size={180} className={`mx-auto ${portraitFx(!activeIsPlayer && !!currentSegment && !ended, activeMood)}`} alt={ai.stage_name} />
+                {!activeIsPlayer && currentSegment && !ended && activeMood && (
+                  <span className={`absolute -bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap px-2.5 py-0.5 text-[10px] font-display font-black uppercase tracking-wider ${MIC_BADGE[activeMood].tone}`}>
+                    {MIC_BADGE[activeMood].label}
+                  </span>
+                )}
+              </div>
               <h2 className="mt-3 text-3xl font-display font-black uppercase tracking-tight">
                 {ai.stage_name}
               </h2>
