@@ -405,7 +405,17 @@ function OverviewTab({ data }: { data: CareerData }) {
                   📰 DEVELOPING · THE BLOGS ARE SITTING ON THIS
                 </p>
                 <div className="space-y-2">
-                  {data.developing.map((d, i) => {
+                  {/* Dedup by the story itself — the blogs shouldn't be "sitting on"
+                      the identical line under two different names. */}
+                  {(() => {
+                    const seen = new Set<string>();
+                    return data.developing.filter((d) => {
+                      const k = (d.hint ?? '').trim();
+                      if (seen.has(k)) return false;
+                      seen.add(k);
+                      return true;
+                    });
+                  })().map((d, i) => {
                     const ms = new Date(d.publishAfter).getTime() - Date.now();
                     const drops = ms <= 0 ? 'any minute' : ms < 86_400_000 ? `~${Math.round(ms / 3_600_000)}h` : `~${Math.round(ms / 86_400_000)}d`;
                     return (
