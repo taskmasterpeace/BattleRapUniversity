@@ -2,7 +2,12 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Avatar from '@/components/ui/Avatar';
-import { CROWD_LANES, reactionFromScore, REACTION_DISPLAY, fnv1a } from '@/lib/game/crowdLanes';
+import {
+  deriveLaneReactions,
+  REACTION_DISPLAY,
+  type LaneResult,
+  type LeagueRaceDemographics,
+} from '@/lib/game/crowdLanes';
 
 type Segment = {
   id: string;
@@ -31,6 +36,12 @@ type Battler = {
   sprite_set?: string[] | null;
 };
 
+type League = {
+  name: string;
+  short_code?: string | null;
+  logo_url?: string | null;
+};
+
 type Props = {
   player: Battler;
   ai: Battler;
@@ -38,6 +49,10 @@ type Props = {
   rounds: Round[];
   winnerId?: string | null;
   onClose: () => void;
+  /** League branding for the battle-night banner. */
+  league?: League | null;
+  /** Crowd race mix for the sprite reactions (from the league's audience). */
+  raceDemographics?: LeagueRaceDemographics;
 };
 
 const SEGMENT_MS_BY_SPEED: Record<string, number> = {
@@ -135,24 +150,34 @@ function portraitFx(isActive: boolean, mood: string | null): string {
   }
 }
 
-/** How each section of the room takes THIS beat. Same crowd figure, but each
- *  lane leans a little differently (deterministic per segment) so the room reads
- *  as sections reacting, not one meter. */
-function laneReactionsForSegment(seg: Segment | null) {
-  // Derive a room figure from the beat itself (the tape carries score + flags).
-  let base = 40;
-  if (seg) {
-    base = seg.segment_score * 8; // a 7.0 reads warm, a 9.0 pops, a 3.0 goes cold
-    const flags = (seg.event_flags ?? []).map((f) => f.toLowerCase());
-    if (flags.some((f) => f.includes('haymaker') || f.includes('peak'))) base += 20;
-    if (flags.some((f) => f.includes('choke'))) base -= 40;
-    base = Math.max(0, Math.min(100, base));
-  }
-  return CROWD_LANES.map((lane) => {
-    const offset = seg ? (fnv1a(seg.id + lane.id) % 30) - 14 : 0; // -14..+15
-    const score = Math.max(0, Math.min(100, base + offset));
-    return { lane, reaction: reactionFromScore(score) };
-  });
+/** How each section of the room takes THIS beat — with real crowd-member
+ *  sprites (the same model the results-page crowd strip uses). The room figure
+ *  is derived from the beat itself (the tape carries score + flags). */
+function laneResultsForSegment(
+  seg: Segment | null,
+  raceDemographics?: LeagueRaceDemographics
+): LaneResult[] {
+  const flags = (seg?.event_flags ?? []).map((f) => f.toLowerCase());
+  const isHaymaker = flags.some((f) => f.includes('haymaker') || f.includes('peak'));
+  const choked = flags.some((f) => f.includes('choke'));
+  let base = seg ? seg.segment_score * 8 : 40; // a 7.0 reads warm, a 9.0 pops
+  if (isHaymaker) base += 20;
+  if (choked) base -= 40;
+  base = Math.max(0, Math.min(100, base));
+  return deriveLaneReactions(
+    {
+      battleId: seg?.id ?? 'preroll', // segment id → stable reactions per beat
+      roundIndex: seg?.round_index ?? 1,
+      battlerId: seg?.battler_id ?? 'x',
+      crowdReaction: base,
+      peakScore: isHaymaker ? 9 : seg?.segment_score ?? 4,
+      choked,
+      styleTags: [],
+      writingWeight: 0.5,
+      performanceWeight: 0.5,
+    },
+    raceDemographics
+  );
 }
 
 const MIC_BADGE: Record<string, { label: string; tone: string }> = {
@@ -170,6 +195,8 @@ export default function LiveBattleViewer({
   rounds,
   winnerId,
   onClose,
+  league,
+  raceDemographics,
 }: Props) {
   // Interleave segments so that segment_index 0 of round 1 plays for player then ai, etc.
   const timeline = useMemo(() => {
@@ -305,6 +332,31 @@ export default function LiveBattleViewer({
 
       <div className="flex-1 overflow-y-auto px-4 md:px-6 py-6 md:py-8">
         <div className="max-w-6xl mx-auto">
+          {/* League banner — the stage you're battling on tonight. */}
+          {league && (
+            <div className="mb-6 md:mb-8 flex items-center justify-center gap-3 md:gap-4 border-y-2 border-[#3a3d44] bg-gradient-to-r from-transparent via-[#ff8c42]/5 to-transparent py-2.5 md:py-3">
+              {league.logo_url && (
+                <img
+                  src={league.logo_url}
+                  alt=""
+                  className="w-8 h-8 md:w-11 md:h-11 object-contain [image-rendering:pixelated] shrink-0"
+                  onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                />
+              )}
+              <div className="text-center min-w-0">
+                <div className="text-[9px] md:text-[10px] font-mono uppercase tracking-[0.3em] text-[#ff8c42]">Battle Night · Live</div>
+                <div className="font-display font-black uppercase tracking-tight text-lg md:text-2xl text-zinc-100 truncate">
+                  {league.name}
+                </div>
+              </div>
+              {league.short_code && (
+                <span className="hidden sm:inline-block px-2 py-0.5 border-2 border-[#3a3d44] font-mono text-[10px] md:text-xs text-zinc-400 tracking-widest shrink-0">
+                  {league.short_code}
+                </span>
+              )}
+            </div>
+          )}
+
           {/* Scoreboard */}
           <div className="grid grid-cols-[1fr_auto_1fr] gap-2 md:gap-6 items-center mb-8 md:mb-10">
             {/* Player */}
@@ -390,22 +442,32 @@ export default function LiveBattleViewer({
             );
           })()}
 
-          {/* THE SECTIONS — the room reacts in lanes, beat by beat. */}
+          {/* THE SECTIONS — the room reacts in lanes, beat by beat, with real
+              crowd-member sprites drawn from the league's audience. */}
           {!ended && (
             <div className="grid grid-cols-3 gap-2 md:gap-3 mb-8">
-              {laneReactionsForSegment(currentSegment).map(({ lane, reaction }) => {
-                const d = REACTION_DISPLAY[reaction];
+              {laneResultsForSegment(currentSegment, raceDemographics).map((res) => {
+                const d = REACTION_DISPLAY[res.reaction];
                 return (
                   <div
-                    key={lane.id}
-                    className={`border-2 p-2.5 md:p-3 text-center transition-colors duration-300 ${
-                      reaction === 'loved' ? 'border-[#ff8c42]/50 bg-[#ff8c42]/5'
-                      : reaction === 'cold' ? 'border-sky-500/40 bg-sky-500/5'
+                    key={res.lane.id}
+                    className={`border-2 p-2 md:p-3 flex flex-col items-center gap-1.5 transition-colors duration-300 ${
+                      res.reaction === 'loved' ? 'border-[#ff8c42]/50 bg-[#ff8c42]/5'
+                      : res.reaction === 'cold' ? 'border-sky-500/40 bg-sky-500/5'
                       : 'border-[#3a3d44] bg-[#1a1b1e]'
                     }`}
+                    title={`${res.lane.name}: ${d.label} (${res.score}/100)`}
                   >
-                    <div className="text-lg md:text-2xl leading-none mb-1">{d.emoji}</div>
-                    <div className="text-[9px] md:text-[10px] font-display font-black uppercase tracking-wider text-zinc-300 truncate">{lane.name}</div>
+                    <div className="relative w-12 h-12 md:w-16 md:h-16 shrink-0 bg-[#18191c] border-2 border-[#3a3d44] overflow-hidden">
+                      <img
+                        src={res.sprite}
+                        alt={`${res.lane.name} crowd member — ${d.label}`}
+                        className="w-full h-full object-cover [image-rendering:pixelated]"
+                        onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                      />
+                      <span className="absolute bottom-0 right-0 text-xs md:text-sm bg-[#18191c]/80 px-0.5 leading-none">{d.emoji}</span>
+                    </div>
+                    <div className="text-[9px] md:text-[10px] font-display font-black uppercase tracking-wider text-zinc-300 truncate w-full text-center">{res.lane.name}</div>
                     <div className={`text-[9px] md:text-[10px] font-mono uppercase tracking-wide ${d.tone}`}>{d.label}</div>
                   </div>
                 );

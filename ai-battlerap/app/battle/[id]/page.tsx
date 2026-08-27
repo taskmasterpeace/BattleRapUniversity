@@ -132,6 +132,8 @@ type Battle = {
   decision_type?: string;
   league: {
     name: string;
+    short_code?: string | null;
+    logo_url?: string | null;
     round_length_minutes: number;
     writing_weight: number;
     performance_weight: number;
@@ -530,6 +532,12 @@ export default function BattleViewerPage({
           rounds={rounds}
           winnerId={battle.winner_battler_id ?? null}
           onClose={() => setLiveMode(false)}
+          league={battle.league ? {
+            name: battle.league.name,
+            short_code: battle.league.short_code,
+            logo_url: battle.league.logo_url,
+          } : null}
+          raceDemographics={battle.league?.crowd_demographics}
         />
       )}
 
