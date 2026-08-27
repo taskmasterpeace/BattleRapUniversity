@@ -258,6 +258,21 @@ export default function LiveBattleViewer({
     [timeline, index, ai.id]
   );
 
+  // Equal-footing totals for the room-ownership meter. The timeline is
+  // interleaved call-and-response, so mid-exchange one battler is a segment ahead
+  // of the other; judging "who owns the room" on those lopsided cumulatives named
+  // the wrong leader (e.g. "X IS EDGING IT" the instant before the other drops a
+  // haymaker they hadn't performed yet). Compare only through the segments BOTH
+  // have now performed.
+  const [pairedPlayerScore, pairedAiScore] = useMemo(() => {
+    const revealed = timeline.slice(0, Math.max(0, index + 1));
+    const p = revealed.filter((s) => s.battler_id === player.id).map((s) => s.segment_score);
+    const a = revealed.filter((s) => s.battler_id === ai.id).map((s) => s.segment_score);
+    const n = Math.min(p.length, a.length);
+    const sum = (arr: number[]) => arr.slice(0, n).reduce((x, y) => x + y, 0);
+    return [sum(p), sum(a)];
+  }, [timeline, index, player.id, ai.id]);
+
   const currentSegment = index >= 0 && index < timeline.length ? timeline[index] : null;
   // Who's on the mic right now, and how it's landing — drives the portrait reactions.
   const activeIsPlayer = currentSegment?.battler_id === player.id;
@@ -412,8 +427,8 @@ export default function LiveBattleViewer({
           {/* WHO OWNS THE ROOM — a live crowd-ownership meter that shifts as the
               tape plays, so the empty middle reads as a room reacting. */}
           {(() => {
-            const total = playerScore + aiScore;
-            const playerPct = total > 0 ? (playerScore / total) * 100 : 50;
+            const total = pairedPlayerScore + pairedAiScore;
+            const playerPct = total > 0 ? (pairedPlayerScore / total) * 100 : 50;
             const diff = playerPct - 50;
             const leaderIsPlayer = diff >= 0;
             const leader = leaderIsPlayer ? player.stage_name : ai.stage_name;
