@@ -69,8 +69,9 @@ export default function BattleControlPage() {
         if (mode === 'locked_in') {
           router.push(`/battle/${battleId}/round/1/select`);
         } else {
-          // Auto mode simulates inside the lock-in call — straight to results.
-          router.push(`/battle/${battleId}`);
+          // Auto mode simulates inside the lock-in call. The player saw none of
+          // the fight, so land them on the tape (?watch=1), not the spoiler.
+          router.push(`/battle/${battleId}?watch=1`);
         }
         return;
       }

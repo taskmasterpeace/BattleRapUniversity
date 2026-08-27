@@ -238,6 +238,21 @@ export default function BattleViewerPage({
     fetchBattleData();
   }, [id]);
 
+  // Arriving from an AUTO battle (?watch=1): the player saw nothing of the fight,
+  // so open the tape instead of the spoiler. Strip the param so a refresh won't
+  // re-trigger it. Fires once the battle + segments have loaded.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('watch') !== '1') return;
+    if (battle?.status === 'completed' && segments.length > 0) {
+      setLiveMode(true);
+      params.delete('watch');
+      const qs = params.toString();
+      window.history.replaceState(null, '', window.location.pathname + (qs ? `?${qs}` : ''));
+    }
+  }, [battle, segments]);
+
   const fetchBattleData = async () => {
     setLoading(true);
     try {
