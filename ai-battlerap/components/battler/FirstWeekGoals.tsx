@@ -46,7 +46,7 @@ export default function FirstWeekGoals({
       done: hasFullPrep || totalBattles > 0,
     },
     {
-      icon: 'mic',
+      icon: 'stage',
       label: 'TAKE THE STAGE',
       detail: 'Hit BATTLE TIME when you’re ready',
       href: '/dashboard',

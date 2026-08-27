@@ -78,7 +78,7 @@ export default function FightProjection({
 
         {/* PERFORMANCE */}
         <ProjectionTile
-          icon="mic"
+          icon="stage"
           label="PERFORMANCE"
           value={fmtBoost(projection.performanceBoost)}
           active={projection.performanceBoost > 0}

@@ -12,7 +12,7 @@ type Props = {
 // Archetype identity in the house icon language (template.icon is legacy emoji)
 const TEMPLATE_ICONS: Record<string, IconName> = {
   lyrical_assassin: 'pen',
-  performance_beast: 'mic',
+  performance_beast: 'stage',
   versatile_warrior: 'bolt',
   aggressive_puncher: 'flame',
   comedy_specialist: 'heart',

@@ -46,7 +46,7 @@ const categoryIcons: Record<string, IconName> = {
   writing: 'pen',
   performance: 'stage',
   content: 'bolt',
-  delivery: 'mic',
+  delivery: 'flame',
   reputation_positive: 'star',
   reputation_negative: 'warning',
 };

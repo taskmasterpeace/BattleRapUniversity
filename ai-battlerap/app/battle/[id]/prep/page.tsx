@@ -50,7 +50,7 @@ type Battle = {
 const FOCUS_OPTIONS = [
   { value: 'research', label: 'RESEARCH', icon: 'search' as const, color: 'bg-amber-500/15 text-amber-400 border-amber-500/60', chipBg: 'bg-amber-500/25 border-amber-400', description: 'Angles + unlock scouting intel' },
   { value: 'writing', label: 'WRITING', icon: 'pen' as const, color: 'bg-[#ff8c42]/15 text-[#ff8c42] border-[#ff8c42]/60', chipBg: 'bg-[#ff8c42]/25 border-[#ff8c42]', description: 'Bars & wordplay' },
-  { value: 'performance', label: 'PERFORMANCE', icon: 'mic' as const, color: 'bg-red-500/15 text-red-400 border-red-500/60', chipBg: 'bg-red-500/25 border-red-400', description: 'Delivery & presence' },
+  { value: 'performance', label: 'PERFORMANCE', icon: 'stage' as const, color: 'bg-red-500/15 text-red-400 border-red-500/60', chipBg: 'bg-red-500/25 border-red-400', description: 'Delivery & presence' },
   { value: 'life', label: 'LIFE', icon: 'home' as const, color: 'bg-green-500/15 text-green-400 border-green-500/60', chipBg: 'bg-green-500/25 border-green-400', description: 'Handle personal' },
   { value: 'rest', label: 'REST', icon: 'rest' as const, color: 'bg-zinc-700/50 text-zinc-400 border-zinc-500', chipBg: 'bg-zinc-600/40 border-zinc-400', description: 'Recover & reset' },
 ];

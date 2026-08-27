@@ -237,7 +237,7 @@ export default function AttributeAllocationStep({
             color="bg-[#ff8c42]"
           />
           <AttributeBar
-            icon={<Icon name="mic" size={18} />}
+            icon={<Icon name="flame" size={18} />}
             label="DELIVERY"
             value={attributes.performance.delivery}
             category="performance"

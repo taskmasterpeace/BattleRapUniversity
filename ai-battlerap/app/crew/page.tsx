@@ -37,7 +37,7 @@ const TIER_COLOR: Record<string, string> = {
 const SPECIALTY_ICON: Record<CrewSpecialty, string> = {
   research: 'search',
   writing: 'pen',
-  performance: 'mic',
+  performance: 'stage',
 };
 
 export default async function CrewPage() {
