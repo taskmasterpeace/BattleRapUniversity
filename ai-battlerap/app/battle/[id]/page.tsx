@@ -920,8 +920,14 @@ export default function BattleViewerPage({
                           battlerName,
                           type: event as 'haymaker' | 'choke' | 'stumble',
                           score: s.segment_score,
+                          // A haymaker is a swing for the knockout — the score says
+                          // whether it LANDED. Don't call a 3.8 a room-shaker.
                           description: event === 'haymaker'
-                            ? 'Massive moment that shook the room'
+                            ? s.segment_score >= 8
+                              ? 'Massive moment that shook the room'
+                              : s.segment_score >= 5.5
+                              ? 'Big swing that connected'
+                              : "Reached for the knockout — but it didn't land"
                             : event === 'choke'
                             ? 'Catastrophic failure - forgot lines'
                             : 'Minor stumble - slight hesitation',
