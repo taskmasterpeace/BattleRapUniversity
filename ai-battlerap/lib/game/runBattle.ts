@@ -26,6 +26,7 @@ type BattleRow = {
   battler_ai_id: string;
   lock_prep_at: string;
   created_at: string;
+  is_world?: boolean | null;
 };
 
 export type RunBattleResult = {
@@ -82,6 +83,11 @@ export async function runBattleSimulation(
 
   let noShowFlag = false;
 
+  // World battles are AI vs AI — neither battler ever opens the prep planner, so
+  // an empty prep slot is NORMAL, not a no-show. Give them a default AI plan and
+  // simulate a full performance; only a real player who never prepped is a no-show.
+  const isWorld = !!battle.is_world;
+
   // Capture BEFORE any backfill: did the player personally plan every prep day?
   // (Full hand-planned prep earns a bonus battle slot after the battle.)
   const playerFullyPrepped =
@@ -90,10 +96,12 @@ export async function runBattleSimulation(
     playerPrepBlocks.every((b: any) => !b.auto_generated);
 
   if (!playerPrepBlocks || playerPrepBlocks.length === 0) {
-    // No-show detected - player never opened the prep planner.
-    // Generate a default "winging it" prep plan: lighter than fully-planned,
-    // but no longer punitive all-rest (which used to guarantee chokes).
-    noShowFlag = true;
+    // No prep for the player-slot battler. For a real player this is a no-show
+    // (they never opened the planner); for a world/AI battler it's just how AI
+    // battles run. Either way, seed a default "winging it" plan — writing-leaning
+    // with rest buffers, not punitive all-rest — then flag the no-show only when
+    // an actual human ghosted.
+    noShowFlag = !isWorld;
 
     const prepDays = prepDayCount(battle);
 
@@ -114,10 +122,12 @@ export async function runBattleSimulation(
       await supabase.from('prep_blocks').insert(autoPrepBlocks);
     }
 
-    await supabase
-      .from('battles')
-      .update({ no_show_player: true })
-      .eq('id', battle.id);
+    if (!isWorld) {
+      await supabase
+        .from('battles')
+        .update({ no_show_player: true })
+        .eq('id', battle.id);
+    }
   } else {
     // Player set SOME prep but maybe not all days — backfill missing days
     // with 'rest' (their choice to leave gaps, no no_show flag).
