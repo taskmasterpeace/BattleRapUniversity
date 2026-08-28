@@ -322,6 +322,17 @@ export default function BattleOffersPage() {
                             <span className={`px-3 py-1 border-2 font-display font-display font-black uppercase text-xs tracking-wider ${getDifficultyColor(offer.difficulty)}`}>
                               {offer.difficulty}
                             </span>
+                            {/* Head-to-head record — relevant for any rematch, not
+                                just grudges. The grudge block already shows H2H for
+                                rivalries, so only surface it here when there's no
+                                grudge, to avoid double-showing. */}
+                            {offer.h2hRecord &&
+                              (offer.h2hRecord.myWins ?? 0) + (offer.h2hRecord.myLosses ?? 0) > 0 &&
+                              !offer.grudge && (
+                                <span className="px-3 py-1 bg-[#18191c] text-zinc-300 border-2 border-[#3a3d44] font-display font-black uppercase text-xs tracking-wider">
+                                  H2H {offer.h2hRecord.myWins ?? 0}-{offer.h2hRecord.myLosses ?? 0}
+                                </span>
+                              )}
                           </div>
 
                           {/* Style Tags */}
