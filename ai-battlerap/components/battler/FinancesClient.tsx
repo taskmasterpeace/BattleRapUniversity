@@ -293,12 +293,17 @@ export default function FinancesClient({
                           VIEW BATTLE →
                         </Link>
                       )}
-                      {transaction.metadata?.tier && (
+                      {/* Render tier and league independently — some earnings records
+                          carry a league but no tier, and gating the whole block on
+                          tier hid the league tag too, so those rows showed nothing. */}
+                      {(transaction.metadata?.tier || transaction.metadata?.league) && (
                         <div className="flex gap-2 mt-2">
-                          <span className="text-xs bg-[#2d2f35] border-2 border-[#3a3d44] px-2 py-1 uppercase font-display font-bold">
-                            {transaction.metadata.tier} TIER
-                          </span>
-                          {transaction.metadata.league && (
+                          {transaction.metadata?.tier && (
+                            <span className="text-xs bg-[#2d2f35] border-2 border-[#3a3d44] px-2 py-1 uppercase font-display font-bold">
+                              {transaction.metadata.tier} TIER
+                            </span>
+                          )}
+                          {transaction.metadata?.league && (
                             <span className="text-xs bg-[#2d2f35] border-2 border-[#3a3d44] px-2 py-1 font-display font-display font-black uppercase">
                               {transaction.metadata.league}
                             </span>
