@@ -66,11 +66,21 @@ export default function LifeEventResolutionClient({ event, battler }: Props) {
       });
       if (response.ok) {
         const data = await response.json();
+        // Report what ACTUALLY landed, not what was promised. Effects clamp to the
+        // 1–10 range, so a +0.5 nudge into a near-capped stat only moves it a little.
+        // The API already computed the true post-clamp deltas in outcome.attributeChanges —
+        // forward those for attribute keys, and keep any non-attribute effects
+        // (e.g. next-battle prep bonuses) at their promised value so nothing drops.
+        const appliedEffects: Record<string, number> = { ...(data.effects || {}) };
+        const changes = data.outcome?.attributeChanges || {};
+        for (const [key, ch] of Object.entries<any>(changes)) {
+          appliedEffects[key] = Math.round((ch?.change ?? 0) * 100) / 100;
+        }
         const outcomeParams = new URLSearchParams({
           event_resolved: 'true',
           event_title: template.title,
           choice: selected,
-          effects: JSON.stringify(data.effects),
+          effects: JSON.stringify(appliedEffects),
         });
         router.push(`/dashboard?${outcomeParams.toString()}`);
         router.refresh();
