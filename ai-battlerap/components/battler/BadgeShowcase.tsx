@@ -125,7 +125,7 @@ export default function BadgeShowcase({ styleTags, badgeProgress = [], badgeIcon
           href="/badges"
           className="text-xs font-display font-black uppercase tracking-wider text-zinc-400 hover:text-[#ff8c42] transition-colors"
         >
-          VIEW ALL 97 →
+          VIEW ALL →
         </Link>
       </div>
 
