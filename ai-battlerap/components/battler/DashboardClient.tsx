@@ -625,11 +625,16 @@ export default function DashboardClient({
               }
               icon={<Icon name={(ranking?.streak || 0) > 0 ? 'flame' : (ranking?.streak || 0) < 0 ? 'snow' : 'chart'} size={20} />}
               subtext={
-                (ranking?.streak || 0) > 0
-                  ? 'HOT STREAK'
-                  : (ranking?.streak || 0) < 0
-                  ? 'COLD STREAK'
-                  : 'NO STREAK'
+                // Keep "HOT"/"COLD STREAK" for a real run (3+). A lone win after a
+                // rough stretch shouldn't read as a "HOT STREAK" — it's just winning.
+                (() => {
+                  const s = ranking?.streak || 0;
+                  if (s >= 3) return 'HOT STREAK';
+                  if (s > 0) return 'WINNING';
+                  if (s <= -3) return 'COLD STREAK';
+                  if (s < 0) return 'COOLING OFF';
+                  return 'NO STREAK';
+                })()
               }
             />
             <StatCard
