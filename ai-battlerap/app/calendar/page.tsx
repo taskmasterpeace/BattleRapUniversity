@@ -43,6 +43,25 @@ const KIND_STYLE: Record<Event['kind'], string> = {
   'tournament-reg-close': 'bg-yellow-500/20 border-l-2 border-yellow-400 text-yellow-200',
 };
 
+// One event chip in a day cell. Already-fought battles are dimmed and checked so
+// past matchups read differently from ones still on the books.
+function EventChip({ e }: { e: Event }) {
+  const done = e.status === 'completed';
+  return (
+    <Link
+      href={e.href}
+      title={e.title}
+      className={`block text-[10px] px-1.5 py-1 leading-tight line-clamp-2 hover:translate-x-[1px] transition-all duration-150 ${
+        e.mine
+          ? 'bg-[#ff8c42] border-l-2 border-[#ff8c42] text-black font-black hover:bg-[#ff9d5c]'
+          : `${KIND_STYLE[e.kind]} hover:bg-[#2d2f35]`
+      } ${done ? 'opacity-50' : ''}`}
+    >
+      {done ? '✓ ' : ''}{e.title}
+    </Link>
+  );
+}
+
 function toDateKey(iso: string): string {
   return iso.slice(0, 10);
 }
@@ -294,29 +313,24 @@ export default async function CalendarPage({
                   {cell.date.getUTCDate()}
                 </div>
                 <div className="space-y-1">
-                  {dayEvents.slice(0, 4).map((e, idx) => {
-                    // Already-fought battles are dimmed and checked so the player
-                    // can tell past matchups from ones still on the books at a glance.
-                    const done = e.status === 'completed';
-                    return (
-                      <Link
-                        key={idx}
-                        href={e.href}
-                        title={e.title}
-                        className={`block text-[10px] px-1.5 py-1 leading-tight line-clamp-2 hover:translate-x-[1px] transition-all duration-150 ${
-                          e.mine
-                            ? 'bg-[#ff8c42] border-l-2 border-[#ff8c42] text-black font-black hover:bg-[#ff9d5c]'
-                            : `${KIND_STYLE[e.kind]} hover:bg-[#2d2f35]`
-                        } ${done ? 'opacity-50' : ''}`}
-                      >
-                        {done ? '✓ ' : ''}{e.title}
-                      </Link>
-                    );
-                  })}
+                  {dayEvents.slice(0, 4).map((e, idx) => (
+                    <EventChip key={idx} e={e} />
+                  ))}
                   {dayEvents.length > 4 && (
-                    <div className="text-[10px] text-zinc-500 px-1">
-                      +{dayEvents.length - 4} more
-                    </div>
+                    // Native disclosure so the overflow is actually reachable — the
+                    // old "+N more" was a dead label, hiding every event past the
+                    // fourth on a busy day. Expanding grows the week's row.
+                    <details className="group">
+                      <summary className="text-[10px] text-zinc-500 px-1 cursor-pointer list-none hover:text-[#ff8c42] [&::-webkit-details-marker]:hidden">
+                        <span className="group-open:hidden">+{dayEvents.length - 4} more</span>
+                        <span className="hidden group-open:inline">show less</span>
+                      </summary>
+                      <div className="space-y-1 mt-1">
+                        {dayEvents.slice(4).map((e, idx) => (
+                          <EventChip key={idx + 4} e={e} />
+                        ))}
+                      </div>
+                    </details>
                   )}
                 </div>
               </div>
