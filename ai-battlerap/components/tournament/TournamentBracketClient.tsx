@@ -92,6 +92,25 @@ export default function TournamentBracketClient({
 
   const rounds = ['first_round', 'quarterfinals', 'semifinals', 'finals'];
 
+  // Single elimination: one loss and you're out. Derive it from battles_lost (which
+  // is accurate) rather than is_active/eliminated_in_round, which aren't always
+  // written back when a match completes — so a knocked-out player was still reading
+  // as a live "Seed #N" in a green box. Round reached = battles_won (0 -> first).
+  const isEliminated =
+    !!playerParticipation &&
+    (playerParticipation.is_active === false ||
+      !!playerParticipation.eliminated_in_round ||
+      (playerParticipation.battles_lost ?? 0) > 0);
+  const elimRoundLabel = playerParticipation
+    ? getRoundLabel(
+        playerParticipation.eliminated_in_round ||
+          rounds[Math.min(rounds.length - 1, playerParticipation.battles_won ?? 0)]
+      )
+    : '';
+  const statusBoxClass = isEliminated
+    ? 'bg-red-500/10 border-2 border-red-500/30'
+    : 'bg-green-500/10 border-2 border-green-500/30';
+
   return (
     <div className="min-h-screen bg-[#18191c] text-zinc-100">
       {/* Header */}
@@ -161,17 +180,24 @@ export default function TournamentBracketClient({
         {playerParticipation && activeTab === 'mystats' && (
           <div className="space-y-6">
             {/* Player Status Summary */}
-            <div className="bg-green-500/10 border-2 border-green-500/30 p-6">
+            <div className={`${statusBoxClass} p-6`}>
               <div className="flex justify-between items-center">
                 <div>
                   <p className="text-xs text-zinc-500 uppercase mb-1">YOUR STATUS</p>
                   <p className="text-lg font-bold">
                     Seed #{playerParticipation.seed_number || 'TBD'}
                   </p>
-                  {playerParticipation.final_placement && (
+                  {isEliminated ? (
+                    <p className="text-sm text-red-400 mt-1">
+                      ELIMINATED — {elimRoundLabel}
+                      {playerParticipation.final_placement ? ` · ${playerParticipation.final_placement.toUpperCase()}` : ''}
+                    </p>
+                  ) : playerParticipation.final_placement ? (
                     <p className="text-sm text-green-400 mt-1">
                       Placement: {playerParticipation.final_placement.toUpperCase()}
                     </p>
+                  ) : (
+                    <p className="text-sm text-green-400 mt-1">STILL ALIVE</p>
                   )}
                 </div>
                 {playerParticipation.prize_amount > 0 && (
@@ -246,17 +272,24 @@ export default function TournamentBracketClient({
           <>
             {/* Player Status (shown in bracket view) */}
             {playerParticipation && (
-              <div className="bg-green-500/10 border-2 border-green-500/30 p-6 mb-12">
+              <div className={`${statusBoxClass} p-6 mb-12`}>
                 <div className="flex justify-between items-center">
                   <div>
                     <p className="text-xs text-zinc-500 uppercase mb-1">YOUR STATUS</p>
                     <p className="text-lg font-bold">
                       Seed #{playerParticipation.seed_number || 'TBD'}
                     </p>
-                    {playerParticipation.final_placement && (
+                    {isEliminated ? (
+                      <p className="text-sm text-red-400 mt-1">
+                        ELIMINATED — {elimRoundLabel}
+                        {playerParticipation.final_placement ? ` · ${playerParticipation.final_placement.toUpperCase()}` : ''}
+                      </p>
+                    ) : playerParticipation.final_placement ? (
                       <p className="text-sm text-green-400 mt-1">
                         Placement: {playerParticipation.final_placement.toUpperCase()}
                       </p>
+                    ) : (
+                      <p className="text-sm text-green-400 mt-1">STILL ALIVE</p>
                     )}
                   </div>
                   {playerParticipation.prize_amount > 0 && (
