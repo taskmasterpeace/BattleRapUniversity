@@ -18,6 +18,7 @@ type CrewRow = {
   recruit_cost: number;
   recruited_at: string;
   recruited_in_city_id: string | null;
+  loyalty: number | null;
   member: {
     id: string;
     stage_name: string;
@@ -59,7 +60,7 @@ export default async function CrewPage() {
     supabase
       .from('crew_members')
       .select(
-        'id, specialty, recruit_cost, recruited_at, recruited_in_city_id, member:battlers!crew_members_member_battler_id_fkey(id, stage_name, tier, is_real, avatar_url)'
+        'id, specialty, recruit_cost, recruited_at, recruited_in_city_id, loyalty, member:battlers!crew_members_member_battler_id_fkey(id, stage_name, tier, is_real, avatar_url)'
       )
       .eq('owner_battler_id', battler.id)
       .order('recruited_at'),
@@ -71,6 +72,31 @@ export default async function CrewPage() {
   );
 
   const crew = ((crewRows ?? []) as unknown as CrewRow[]).filter((c) => c.member);
+
+  // A crew member you're beefing with (rivals/at_war/legendary_beef) stays on the
+  // crew — real crews split slowly — but the card flags TENSION rather than showing
+  // them as a loyal member. Map each member to their relationship state with you.
+  const memberIds = crew.map((c) => c.member!.id);
+  const tensionByMember = new Map<string, string>();
+  if (memberIds.length) {
+    const { data: rels } = await supabase
+      .from('battler_relationships')
+      .select('battler_a_id, battler_b_id, current_state')
+      .or(
+        `and(battler_a_id.eq.${battler.id},battler_b_id.in.(${memberIds.join(',')})),and(battler_b_id.eq.${battler.id},battler_a_id.in.(${memberIds.join(',')}))`
+      );
+    const TENSE = new Set(['rivals', 'at_war', 'legendary_beef']);
+    for (const r of rels || []) {
+      if (!TENSE.has(r.current_state)) continue;
+      const otherId = r.battler_a_id === battler.id ? r.battler_b_id : r.battler_a_id;
+      tensionByMember.set(otherId, r.current_state);
+    }
+  }
+  const TENSION_LABEL: Record<string, string> = {
+    rivals: 'RIVALS',
+    at_war: 'AT WAR WITH YOU',
+    legendary_beef: 'LEGENDARY BEEF',
+  };
   const emptySlots = Math.max(0, MAX_CREW_SIZE - crew.length);
 
   return (
@@ -95,10 +121,13 @@ export default async function CrewPage() {
             const recruitedIn = c.recruited_in_city_id
               ? cityNames.get(c.recruited_in_city_id)
               : null;
+            const tension = tensionByMember.get(m.id);
             return (
               <div
                 key={c.id}
-                className="bg-[#18191c] border-2 border-[#3a3d44] overflow-hidden flex flex-col"
+                className={`bg-[#18191c] border-2 overflow-hidden flex flex-col ${
+                  tension ? 'border-red-500/60' : 'border-[#3a3d44]'
+                }`}
               >
                 <Link href={`/battler/${m.id}`} className="group block">
                   <div
@@ -114,6 +143,11 @@ export default async function CrewPage() {
                     {m.is_real && (
                       <span className="absolute top-2 left-2 px-1.5 py-0.5 bg-[#ff8c42] text-black text-[9px] font-black uppercase tracking-widest">
                         ✓ Verified
+                      </span>
+                    )}
+                    {tension && (
+                      <span className="absolute top-2 right-2 px-1.5 py-0.5 bg-red-500 text-white text-[9px] font-black uppercase tracking-widest">
+                        ⚠ Tension
                       </span>
                     )}
                     <div className="absolute bottom-2 left-3 right-3">
@@ -136,6 +170,16 @@ export default async function CrewPage() {
                   <div className="px-3 py-2 bg-[#ff8c42]/10 border border-[#ff8c42]/40 text-[#ff8c42] text-[10px] font-black uppercase tracking-widest text-center">
                     {SPECIALTY_BONUS_LABEL[c.specialty]}
                   </div>
+
+                  {/* Beefing with you — kept on the crew, but flagged, not loyal */}
+                  {tension && (
+                    <div className="px-3 py-2 bg-red-500/10 border border-red-500/40 text-red-400 text-[10px] font-black uppercase tracking-widest text-center">
+                      ⚔ {TENSION_LABEL[tension] ?? 'TENSION'}
+                      {typeof c.loyalty === 'number' && (
+                        <span className="text-red-300"> · Loyalty {c.loyalty}%</span>
+                      )}
+                    </div>
+                  )}
 
                   <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-600">
                     Signed{recruitedIn ? ` in ${recruitedIn}` : ''} · ${c.recruit_cost}
