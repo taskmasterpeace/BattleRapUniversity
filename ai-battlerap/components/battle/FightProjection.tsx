@@ -47,6 +47,14 @@ export default function FightProjection({
   const readline = projectionReadline(counts, projection, totalPrepDays);
   const fullWeek = projection.totalDaysAssigned >= totalPrepDays;
 
+  // Choke risk is lowered by WRITING (prep reduction) and REST (resilience buffer).
+  // Name only the ones actually banked so a writing-only camp doesn't get told its
+  // (nonexistent) rest days are "paying off".
+  const chokeDrivers =
+    [counts.writing > 0 ? 'WRITING' : null, counts.rest > 0 ? 'REST' : null]
+      .filter(Boolean)
+      .join(' + ') || 'YOUR PREP';
+
   return (
     <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-6 md:p-8 mb-6 md:mb-8">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-1">
@@ -134,7 +142,7 @@ export default function FightProjection({
           }
           sub={
             chokeDelta < -0.0005
-              ? `▼ DOWN FROM ${fmtPct(projection.baselineChokePerBattle)} — WRITING + REST PAYING OFF`
+              ? `▼ DOWN FROM ${fmtPct(projection.baselineChokePerBattle)} — ${chokeDrivers} PAYING OFF`
               : `BASELINE ${fmtPct(projection.baselineChokePerBattle)} — WRITING & REST DAYS LOWER THIS`
           }
         />
