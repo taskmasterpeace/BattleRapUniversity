@@ -76,10 +76,14 @@ const PREP_WEEK = [
   { day: 'SUN', focus: 'REST', icon: '😴' },
 ];
 
+// Match the real prep planner's focus palette (app/battle/[id]/prep): writing is
+// orange, performance is red, research amber, rest zinc — so the demo teaches the
+// same colour language the player meets in-game (and no stray blue on a brand page,
+// where WRITE was blue and PERFORM wore LIFE's green).
 const FOCUS_COLORS: Record<string, string> = {
   RESEARCH: 'border-amber-500/60 text-amber-300',
-  WRITE: 'border-blue-500/60 text-blue-300',
-  PERFORM: 'border-green-500/60 text-green-300',
+  WRITE: 'border-[#ff8c42]/60 text-[#ff8c42]',
+  PERFORM: 'border-red-500/60 text-red-300',
   REST: 'border-zinc-500/60 text-zinc-400',
 };
 
@@ -187,7 +191,7 @@ export default function GameLoopDemo() {
               </div>
               <div className="mt-6 flex justify-center gap-6 text-center animate-fade-in" style={{ animationDelay: '3s' }}>
                 <div>
-                  <p className="font-display text-2xl font-black text-blue-400">+WORDPLAY</p>
+                  <p className="font-display text-2xl font-black text-[#ff8c42]">+WORDPLAY</p>
                   <p className="text-[10px] uppercase tracking-widest text-zinc-600">writing days</p>
                 </div>
                 <div>
@@ -290,7 +294,7 @@ export default function GameLoopDemo() {
                   <span className="animate-chip-pop px-3 py-1.5 border-2 border-green-500/50 text-green-400 font-display font-black text-sm" style={{ animationDelay: '1.8s' }}>
                     ▲ {story.rating} RATING
                   </span>
-                  <span className="animate-chip-pop px-3 py-1.5 border-2 border-blue-500/50 text-blue-400 font-display font-black text-sm" style={{ animationDelay: '2.2s' }}>
+                  <span className="animate-chip-pop px-3 py-1.5 border-2 border-amber-400/50 text-amber-300 font-display font-black text-sm" style={{ animationDelay: '2.2s' }}>
                     {story.xp}
                   </span>
                   <span className="animate-chip-pop px-3 py-1.5 border-2 border-[#ff8c42]/50 text-[#ff8c42] font-display font-black text-sm" style={{ animationDelay: '2.6s' }}>
