@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 import { getVirtualNowISO } from '@/lib/dev/timeManipulation';
 import { runWorldBattle } from '@/lib/game/runWorldBattle';
+import { contextForLeague } from '@/lib/game/contextModifiers';
 
 /**
  * POST /api/internal/run-world-tick
@@ -77,7 +78,7 @@ export async function POST(request: Request) {
   // ── Load the world state ──────────────────────────────────────────────
   const [{ data: leagues }, { data: aiBattlers }, { data: rankings }, { data: upcoming }] =
     await Promise.all([
-      supabase.from('leagues').select('id, name'),
+      supabase.from('leagues').select('id, name, short_code, prestige_level, base_crowd_factor'),
       supabase
         .from('battlers')
         .select('id, stage_name, primary_league_id, is_real')
@@ -141,7 +142,7 @@ export async function POST(request: Request) {
         scheduled_at: scheduledAt.toISOString(),
         lock_prep_at: lockPrepAt.toISOString(),
         deposit_required: false,
-        context: 'ppv',
+        context: contextForLeague(league.short_code, league.prestige_level, league.base_crowd_factor),
       });
 
       if (error) {
@@ -176,6 +177,7 @@ export async function POST(request: Request) {
 
     if (opponent) {
       const { scheduledAt, lockPrepAt } = randomScheduleWindow(nowMs);
+      const truFoeLeague = (leagues || []).find((l) => l.id === truFoe.primary_league_id);
       const { error } = await supabase.from('battles').insert({
         league_id: truFoe.primary_league_id,
         battler_player_id: truFoe.id,
@@ -185,7 +187,11 @@ export async function POST(request: Request) {
         scheduled_at: scheduledAt.toISOString(),
         lock_prep_at: lockPrepAt.toISOString(),
         deposit_required: false,
-        context: 'ppv',
+        context: contextForLeague(
+          truFoeLeague?.short_code,
+          truFoeLeague?.prestige_level,
+          truFoeLeague?.base_crowd_factor
+        ),
       });
 
       if (!error) {

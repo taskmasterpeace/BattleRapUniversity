@@ -265,6 +265,65 @@ export const LEAGUE_CONTEXT_MODIFIERS: LeagueContextModifiers[] = [
 ];
 
 // =====================================================
+// LEAGUE -> DEFAULT VENUE CONTEXT
+// =====================================================
+
+/**
+ * Default venue scoring-context per league, keyed by short_code. The venue a
+ * league runs in decides how content is scored (see CONTEXT_MODIFIERS):
+ *   on_cam      — online / recorded, no live crowd (text & app battles)
+ *   in_building — intimate underground / local live crowd
+ *   ppv         — big-event arena / national / premier spectacle
+ *
+ * Confirmed split (2026-08): crowd_factor <= 0.30 -> on_cam; prestige <= 4 or
+ * Small Room Circuit -> in_building; everything else -> ppv.
+ */
+export const LEAGUE_DEFAULT_CONTEXT: Record<string, ScoringContext> = {
+  // Online / recorded — no live crowd
+  TXW: 'on_cam', // Text Wars
+  APP: 'on_cam', // The App
+  // Underground / local / intimate — live in-the-building crowd
+  STC: 'in_building', // Street Cipher
+  IDW: 'in_building', // I Do What I Want
+  YGS: 'in_building', // You Got Smoked
+  GBA: 'in_building', // Gunbarz Assembly
+  SLP: 'in_building', // Slap
+  GIG: 'in_building', // Get It Get It
+  MIL: 'in_building', // Milwaukee Massacre
+  MMA: 'in_building', // Mic Masters Arena
+  SRC: 'in_building', // Small Room Circuit — intimate despite its prestige
+  // Big-event arenas / national / premier — PPV spectacle
+  BSL: 'ppv', // Barz Supreme League
+  FSY: 'ppv', // Flow Syndicate
+  MSA: 'ppv', // Main Stage Arena
+  CCB: 'ppv', // Crown City Battle League
+  SFA: 'ppv', // Spitfire Arena
+  UWL: 'ppv', // Urban Warfare League
+  BBB: 'ppv', // Block Buster Battles
+  RTC: 'ppv', // Respect The Craft
+  STF: 'ppv', // Stay Forever
+  RWS: 'ppv', // Royal Wordsmiths
+};
+
+/**
+ * Default venue scoring-context for a league. The explicit map wins; for any
+ * league not listed (e.g. a newly added one) fall back to the crowd/prestige
+ * rule so it still gets a sane context instead of silently defaulting to 'ppv'.
+ */
+export function contextForLeague(
+  shortCode: string | null | undefined,
+  prestigeLevel?: number | null,
+  baseCrowdFactor?: number | null
+): ScoringContext {
+  if (shortCode && LEAGUE_DEFAULT_CONTEXT[shortCode]) {
+    return LEAGUE_DEFAULT_CONTEXT[shortCode];
+  }
+  if (typeof baseCrowdFactor === 'number' && baseCrowdFactor <= 0.3) return 'on_cam';
+  if (typeof prestigeLevel === 'number' && prestigeLevel <= 4) return 'in_building';
+  return 'ppv';
+}
+
+// =====================================================
 // UTILITY FUNCTIONS
 // =====================================================
 

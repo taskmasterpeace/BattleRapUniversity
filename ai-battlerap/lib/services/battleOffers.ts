@@ -4,10 +4,13 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { contextForLeague } from '@/lib/game/contextModifiers';
 
 interface League {
   id: string;
   name: string;
+  short_code: string;
+  prestige_level: number;
   round_length_minutes: number;
   writing_weight: number;
   performance_weight: number;
@@ -256,6 +259,9 @@ async function createBattleOffer(
     lock_prep_at: lockPrepAt.toISOString(),
     status: 'offered',
     no_show_player: false,
+    // Venue scoring-context derived from the league (was silently defaulting to
+    // 'ppv' for every battle, making the in_building/on_cam modifiers dead).
+    context: contextForLeague(league.short_code, league.prestige_level, league.base_crowd_factor),
   }).select('id').single();
 
   if (error) {
