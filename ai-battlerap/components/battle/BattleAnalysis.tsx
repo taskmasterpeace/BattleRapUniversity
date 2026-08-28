@@ -237,9 +237,13 @@ export default function BattleAnalysis({
       );
     }
 
-    // Key moments
-    const playerHaymakers = keyMoments.filter(m => m.type === 'haymaker' && m.battlerName === playerName).length;
-    const opponentHaymakers = keyMoments.filter(m => m.type === 'haymaker' && m.battlerName === opponentName).length;
+    // Key moments. Only count haymakers that actually CONNECTED (score >= 5.5,
+    // the same threshold the moment prose uses for "landed" vs "reached for the
+    // knockout — but it didn't land"). A 4.0 peak-roll that whiffed shouldn't be
+    // cited as a reason you won — Key Moments already tells the player it missed.
+    const LANDED_HAYMAKER = 5.5;
+    const playerHaymakers = keyMoments.filter(m => m.type === 'haymaker' && m.battlerName === playerName && m.score >= LANDED_HAYMAKER).length;
+    const opponentHaymakers = keyMoments.filter(m => m.type === 'haymaker' && m.battlerName === opponentName && m.score >= LANDED_HAYMAKER).length;
     const playerChokes = keyMoments.filter(m => m.type === 'choke' && m.battlerName === playerName).length;
 
     if (playerHaymakers > opponentHaymakers + 1) {
