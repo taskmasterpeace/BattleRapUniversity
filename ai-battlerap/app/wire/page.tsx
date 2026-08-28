@@ -162,10 +162,31 @@ export default function WirePage() {
     }
   };
 
-  // Drop verbatim-duplicate bodies: two different battlers pulling the same voice
-  // template shouldn't both surface — the scene never tweets the identical line
-  // twice. (Belt-and-suspenders with the widened template pools in wire/voices.)
+  // Template-aware dedup so the scene doesn't read like a mail-merge:
+  //  1. verbatim bodies never repeat;
+  //  2. the SAME handle can't post the same template twice — normalise away the
+  //     hashtag and the round number (the usual fill-in variables) so "round 2"
+  //     and "round 3" of one voice's line collapse to one;
+  //  3. no single handle floods the timeline (cap per render). Combined with the
+  //     widened pools in wire/voices, a prolific blogger's posts now read varied.
+  const MAX_PER_HANDLE = 3;
+  // Reduce a body to its TEMPLATE skeleton so "ran the numbers on <Name A>" and
+  // "...on <Name B>" collapse to the same key: drop hashtags and digits, then mask
+  // Title-Case tokens (battler names fill in as {winner}/{loser}). All-caps
+  // emphasis and lowercase structure words — the parts that actually distinguish
+  // one template from another — survive.
+  const normalizeShape = (s: string) =>
+    s
+      .replace(/#[\w]+/g, '')
+      .replace(/\d+/g, '#')
+      .replace(/\b[A-Z][a-z]+\b/g, '@')
+      .toLowerCase()
+      .replace(/[^a-z@# ]+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
   const seenBodies = new Set<string>();
+  const seenHandleShape = new Set<string>();
+  const handleCount = new Map<string, number>();
   const visible = posts.filter((p) => {
     const matchesFilter =
       filter === 'all'
@@ -174,9 +195,22 @@ export default function WirePage() {
         ? !!p.actionable && !actedPostIds.has(p.id)
         : p.feed_hint === filter;
     if (!matchesFilter) return false;
+
     const key = p.body.trim();
     if (seenBodies.has(key)) return false;
+
+    const handle = p.account?.handle ?? '';
+    const shape = `${handle}|${normalizeShape(p.body)}`;
+    if (handle && seenHandleShape.has(shape)) return false;
+
+    const count = handle ? handleCount.get(handle) ?? 0 : 0;
+    if (handle && count >= MAX_PER_HANDLE) return false;
+
     seenBodies.add(key);
+    if (handle) {
+      seenHandleShape.add(shape);
+      handleCount.set(handle, count + 1);
+    }
     return true;
   });
 

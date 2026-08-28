@@ -113,37 +113,88 @@ export const VOICE_BANKS: VoiceBank[] = [
     },
   },
   {
+    // Media/blogger voices post about many battles in one feed — keep these pools
+    // WIDE so one handle doesn't tweet the same line about three different names.
     profile: 'analyst_measured',
     templates: {
-      clean_sweep: ['{winner} over {loser}, 3-0. Round-by-round control, no real swing moments against. The gap was preparation.'],
-      debatable: ['{winner} edges it 2-1. Round {round} decided it — momentum, crowd, and material all peaked at once.'],
-      robbery: ['Cards read {winner} 2-1, crowd metrics favored {loser}. This is exactly the judging-criteria debate the scene keeps refusing to settle.'],
-      choke: ['The round {round} stall changes the whole card. You can\'t give away a round at this level and expect the other two to carry.'],
+      clean_sweep: [
+        '{winner} over {loser}, 3-0. Round-by-round control, no real swing moments against. The gap was preparation.',
+        'Clean 3-0 for {winner}. Won the exchange on bars AND clarity every round. Nothing to protest here.',
+        '{winner} 3-0. When you take content, delivery and the crowd in all three, the card writes itself.',
+        'Not a controversial 30. {winner} set the terms in round one and {loser} never adjusted. Chess, not checkers.',
+      ],
+      debatable: [
+        '{winner} edges it 2-1. Round {round} decided it — momentum, crowd, and material all peaked at once.',
+        '2-1 {winner}, but reasonable people score this differently. Round {round} is the swing everyone will argue.',
+        'Scored it live: {winner} banks one and {round}, {loser} takes the middle. Thin margins all night.',
+        'A true pick-em. {winner} gets the nod on output, {loser} has the room. That IS the whole debate.',
+      ],
+      robbery: [
+        'Cards read {winner} 2-1, crowd metrics favored {loser}. Exactly the judging-criteria debate the scene refuses to settle.',
+        '{loser} loses on the cards, wins the room. Until we agree what we\'re scoring, nights like this stay contested.',
+        'Score performance and {loser} took it. Score pen and {winner} did. Both camps are right — that\'s the problem.',
+      ],
+      choke: [
+        'The round {round} stall changes the whole card. You can\'t give away a round at this level and expect the other two to carry.',
+        'Round {round} wasn\'t nerves so much as a hole in the prep — {loser} had nothing loaded for that exchange.',
+        'One blank round at this tier is a loss. {loser} was competitive everywhere except the thirty seconds that mattered.',
+      ],
     },
   },
   {
     profile: 'analyst_moments',
     templates: {
-      haymaker: ['Round {round}. THAT is the moment everyone will be quoting from this card. {winner} built the whole round to set it up.'],
-      choke: ['Rewatched round {round} three times. It wasn\'t nerves — the material just wasn\'t there. Prep questions.'],
-      debatable: ['{tag} delivered. Two legit swing rounds, one all-timer moment, and a debate that won\'t die this week.'],
-      clean_sweep: ['No single flashpoint — {winner} just won every exchange by a little. Death by a thousand cuts battle.'],
+      haymaker: [
+        'Round {round}. THAT is the moment everyone will be quoting from this card. {winner} built the whole round to set it up.',
+        'The round {round} bar from {winner} is the clip of the week — set up two bars early, cashed it with the room standing.',
+        'That round {round} sequence loops on every timeline by morning. {winner} timed it to the crowd perfectly.',
+      ],
+      choke: [
+        'Rewatched round {round} three times. It wasn\'t nerves — the material just wasn\'t there. Prep questions.',
+        'Round {round} for {loser} is the kind of quiet you can\'t un-hear. That clip follows you a while.',
+      ],
+      debatable: [
+        '{tag} delivered. Two legit swing rounds, one all-timer moment, and a debate that won\'t die this week.',
+        '{tag} had it all — a robbery argument, a viral moment, and a rematch demand before the cards were even read.',
+      ],
+      clean_sweep: [
+        'No single flashpoint — {winner} just won every exchange by a little. Death by a thousand cuts battle.',
+        'Not one highlight bar, just {winner} being cleaner in every round. Boring to clip, brutal to fight.',
+      ],
     },
   },
   {
     profile: 'analyst_news',
     templates: {
-      league_result: ['RESULT: {winner} def. {loser} ({league}). Full recap and round breakdown on the blog shortly.'],
-      debatable: ['RESULT: {winner} def. {loser} 2-1 ({league}). Expect discourse — crowd and cards did not fully agree.'],
-      clean_sweep: ['RESULT: {winner} def. {loser} 3-0 ({league}). One-way traffic by every measure we track.'],
+      league_result: [
+        'RESULT: {winner} def. {loser} ({league}). Full recap and round breakdown on the blog shortly.',
+        'IT\'S OFFICIAL: {winner} takes it over {loser} at {league}. Write-up incoming.',
+      ],
+      debatable: [
+        'RESULT: {winner} def. {loser} 2-1 ({league}). Expect discourse — crowd and cards did not fully agree.',
+        'RESULT: {winner} 2-1 {loser} ({league}). Already seeing "robbery" in the replies. Buckle up.',
+      ],
+      clean_sweep: [
+        'RESULT: {winner} def. {loser} 3-0 ({league}). One-way traffic by every measure we track.',
+        'RESULT: {winner} 3-0 {loser} ({league}). No asterisks on this one.',
+      ],
     },
   },
   {
     profile: 'analyst_rankings',
     templates: {
-      clean_sweep: ['A 30 at this level moves the board. {winner} enters the tier conversation; {loser} needs a statement next out.'],
-      debatable: ['Rankings impact: minimal. A debatable 2-1 protects both stocks. The REMATCH is where the board moves.'],
-      robbery: ['{loser}\'s stock goes UP in a loss. Crowd had them, cards didn\'t. Bookers watch crowds, not cards.'],
+      clean_sweep: [
+        'A 30 at this level moves the board. {winner} enters the tier conversation; {loser} needs a statement next out.',
+        'Rankings update: {winner} climbs on a clean 30. {loser} slides, but the tape says it\'s fixable.',
+      ],
+      debatable: [
+        'Rankings impact: minimal. A debatable 2-1 protects both stocks. The REMATCH is where the board moves.',
+        'Nobody\'s stock really moves on a 2-1 this close. Book the rematch and let the sequel settle it.',
+      ],
+      robbery: [
+        '{loser}\'s stock goes UP in a loss. Crowd had them, cards didn\'t. Bookers watch crowds, not cards.',
+        'Weird night for the board: {loser} loses and gains value. That\'s what a "robbery" does to a stock.',
+      ],
     },
   },
   {

@@ -38,15 +38,25 @@ export const NEWSROOM_COPY: Record<string, CopySet> = {
     developing: [
       'Ran the numbers on {subject}’s streak. This isn’t luck anymore, it’s a problem for the division.',
       'Quietly, {subject} put together the best stretch nobody’s talking about. Until now.',
+      'The book on {subject} used to work. It doesn’t anymore. Here’s what changed.',
+      'At what point do we stop calling {subject} a prospect and start calling them a problem?',
     ],
   },
   close_call: {
     breaking: ['{subject} escaped. {hint} That was closer than the scorecard says.'],
-    developing: ['Rewatched the {subject} decision. The debate everybody wants to have, broken down.'],
+    developing: [
+      'Rewatched the {subject} decision. The debate everybody wants to have, broken down.',
+      'A win’s a win, but {subject} got all they wanted in that one. Let’s be honest about it.',
+      '{subject} survived on the cards. The tape tells a more complicated story.',
+    ],
   },
   bad_night: {
     breaking: ['Rough one for {subject}. {hint}', '{subject} got got. It happens to everybody once.'],
-    developing: ['Not a funeral, but {subject} has questions to answer after that one. Let’s talk about it.'],
+    developing: [
+      'Not a funeral, but {subject} has questions to answer after that one. Let’s talk about it.',
+      'One bad night doesn’t define a career — but ignore the {subject} tape and you’ll miss the fix.',
+      'The {subject} loss wasn’t the opponent. It was the prep. I’ll show you where.',
+    ],
   },
   slump: {
     breaking: ['Three of the last outings gone wrong for {subject}. Something’s off.'],
@@ -62,11 +72,19 @@ export const NEWSROOM_COPY: Record<string, CopySet> = {
   },
   robbed: {
     breaking: ['{subject} got ROBBED. {hint} The room knew it, the cards didn’t.'],
-    developing: ['The {subject} “robbery” everybody’s screaming about — here’s what the tape actually shows.'],
+    developing: [
+      'The {subject} “robbery” everybody’s screaming about — here’s what the tape actually shows.',
+      'Was {subject} really robbed, or did the crowd just get loud? I went frame by frame.',
+      '{subject} lost the decision and won the night. That gap is the whole judging problem.',
+    ],
   },
   beef: {
     breaking: ['{subject} and {other} are NOT friends. {hint}', '{subject} just put {other} on notice.'],
-    developing: ['This {subject} / {other} thing has been building for a while. Let me walk you through it.'],
+    developing: [
+      'This {subject} / {other} thing has been building for a while. Let me walk you through it.',
+      'The {subject} and {other} history nobody’s connecting the dots on. I did the timeline.',
+      '{subject} vs {other} isn’t about bars anymore. It got personal, and here’s when it turned.',
+    ],
   },
   ducking: {
     breaking: ['They’re saying {subject} is ducking. {hint}'],
@@ -78,11 +96,17 @@ export const NEWSROOM_COPY: Record<string, CopySet> = {
   },
   disrespect: {
     breaking: ['{subject} said WHAT about {other}? The disrespect is crazy.'],
-    developing: ['The {subject}–{other} disrespect isn’t random. There’s history. Here it is.'],
+    developing: [
+      'The {subject}–{other} disrespect isn’t random. There’s history. Here it is.',
+      'That {subject} shot at {other} crossed a line the scene usually respects. On purpose.',
+    ],
   },
   callout: {
     breaking: ['{subject} just called {other} OUT. Ball’s in {other}’s court.'],
-    developing: ['{subject}’s callout of {other} is smarter than it looks. Breaking down the angle.'],
+    developing: [
+      '{subject}’s callout of {other} is smarter than it looks. Breaking down the angle.',
+      'Everybody’s hyped for {subject} vs {other}, but look at WHO called who out. That tells you everything.',
+    ],
   },
   come_up: {
     breaking: ['{subject} is eating now. {hint}', 'The bag found {subject}. Deserved.'],

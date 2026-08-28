@@ -12,6 +12,11 @@ const SEVERITY_HEAT: Record<string, number> = {
   critical: 84,
 };
 
+/** Pick a random phrasing so the newsroom doesn't headline every result identically. */
+function pickHint(variants: string[]): string {
+  return variants[Math.floor(Math.random() * variants.length)];
+}
+
 function isFixture(name: string | null | undefined): boolean {
   if (!name) return true;
   return /^test/i.test(name) || /^pvp challenger/i.test(name) || name.includes('_');
@@ -170,7 +175,11 @@ export async function createLeadsFromBattle(
   // 1. The result. Shape the beat by how it went.
   let subcategory = 'close_call';
   let heat = 52;
-  let hint = `${winnerName} took it ${wWon}-${lWon} over ${loserName}.`;
+  let hint = pickHint([
+    `${winnerName} took it ${wWon}-${lWon} over ${loserName}.`,
+    `${winnerName} got the ${wWon}-${lWon} nod over ${loserName}.`,
+    `Cards said ${winnerName}, ${wWon}-${lWon}, over ${loserName}.`,
+  ]);
   if (wWon >= 3 && lWon === 0) {
     subcategory = 'statement_win';
     heat = 70;
@@ -226,7 +235,12 @@ export async function createLeadsFromBattle(
         subject_battler_id: winnerId,
         secondary_battler_id: loserId,
         source_ref_id: battleId,
-        headline_hint: `${winnerName} and ${loserName} ran it back, and it’s still not squashed.`,
+        headline_hint: pickHint([
+          `${winnerName} and ${loserName} ran it back, and it’s still not squashed.`,
+          `Round two of ${winnerName} vs ${loserName} settled nothing. This one’s got legs.`,
+          `${winnerName} beat ${loserName} again — and the beef only got louder for it.`,
+          `${winnerName} and ${loserName} keep finding each other. The scene isn’t mad about it.`,
+        ]),
         summary: (rel as any).origin_story ?? null,
         heat: 68,
       })) !== null
