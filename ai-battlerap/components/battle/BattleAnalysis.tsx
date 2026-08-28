@@ -218,12 +218,23 @@ export default function BattleAnalysis({
       }
     }
 
-    // Prep analysis
+    // Prep analysis — phrase it to fit the WHY YOU WON / WHY YOU LOST header this
+    // list sits under. "Strong prep maximized your potential" reads as praise, so
+    // on a loss it can't be a reason you lost; reframe it as effort that the
+    // matchup still beat. Likewise light prep is only a knock on a loss.
     const totalPrepDays = playerPrep.writingDays + playerPrep.performanceDays + playerPrep.researchDays + playerPrep.restDays + playerPrep.lifeDays;
     if (totalPrepDays >= 8) {
-      points.push(`Strong prep strategy (${totalPrepDays} days) maximized your potential.`);
+      points.push(
+        playerWon
+          ? `Strong prep strategy (${totalPrepDays} days) maximized your potential.`
+          : `You maxed your prep (${totalPrepDays} days) — this one was the matchup, not your preparation.`
+      );
     } else if (totalPrepDays <= 3) {
-      points.push(`Limited prep (${totalPrepDays} days) left performance on the table.`);
+      points.push(
+        playerWon
+          ? `You pulled it off on light prep (${totalPrepDays} days) — imagine with a full camp.`
+          : `Limited prep (${totalPrepDays} days) left performance on the table.`
+      );
     }
 
     // Key moments
