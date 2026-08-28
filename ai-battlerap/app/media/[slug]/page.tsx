@@ -19,22 +19,26 @@ type Article = {
   battle?: { id: string; scheduled_at: string; winner_battler_id: string } | null;
 };
 
+// Kept in sync with the media hub (app/media/page.tsx): brand palette only —
+// warm hues, red for smoke, green for careers, zinc default. No blue/cyan.
 const TYPE_LABELS: Record<string, string> = {
   battle_recap: 'Battle Recap',
   scandal: 'Scandal',
   career_update: 'Career Update',
   league_update: 'League Update',
   power_ranking: 'Power Rankings',
+  grudge_coverage: 'Grudge Coverage',
   culture: 'Culture',
 };
 
 const TYPE_COLORS: Record<string, string> = {
-  battle_recap: 'bg-blue-500/20 text-blue-400 border-2 border-blue-500/30',
+  battle_recap: 'bg-[#ff8c42]/15 text-[#ff8c42] border-2 border-[#ff8c42]/40',
   scandal: 'bg-red-500/20 text-red-400 border-2 border-red-500/30',
   career_update: 'bg-green-500/20 text-green-400 border-2 border-green-500/30',
-  league_update: 'bg-[#ff8c42]/20 text-[#ff8c42] border-2 border-[#ff8c42]/30',
+  league_update: 'bg-amber-500/20 text-amber-400 border-2 border-amber-500/30',
   power_ranking: 'bg-yellow-500/20 text-yellow-400 border-2 border-yellow-500/30',
-  culture: 'bg-cyan-500/20 text-cyan-400 border-2 border-cyan-500/30',
+  grudge_coverage: 'bg-red-500/15 text-red-300 border-2 border-red-500/40',
+  culture: 'bg-zinc-500/20 text-zinc-300 border-2 border-zinc-500/30',
 };
 
 export default function ArticlePage({
@@ -106,7 +110,7 @@ export default function ArticlePage({
               TYPE_COLORS[article.type] || 'bg-zinc-800/50 text-zinc-300 border-2 border-[#3a3d44]'
             }`}
           >
-            {TYPE_LABELS[article.type] || article.type}
+            {TYPE_LABELS[article.type] || article.type.replace(/_/g, ' ')}
           </span>
 
           {/* Title */}
