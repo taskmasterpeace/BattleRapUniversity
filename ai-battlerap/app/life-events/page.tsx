@@ -4,6 +4,7 @@ import { getPlayerBattler } from '@/lib/game/getPlayerBattler';
 import { createServerSupabaseClient } from '@/lib/db/server';
 import { getEventArt, QUIET_ART } from '@/lib/content/eventArt';
 import { categoryOf, severityOf } from '@/lib/content/eventCategories';
+import { prepareLifeEvents } from '@/lib/content/lifeEventContext';
 
 /**
  * /life-events — pending life events index.
@@ -31,7 +32,9 @@ export default async function LifeEventsPage() {
     .eq('status', 'pending')
     .order('triggered_at', { ascending: false });
 
-  const pending = events || [];
+  // Dedup exact-duplicate events and attach each event's opponent/league so two
+  // losses to two different opponents read as distinct beats, not duplicate cards.
+  const pending = await prepareLifeEvents(supabase, events || []);
 
   return (
     <div className="min-h-screen bg-[#18191c] text-zinc-100">
@@ -117,6 +120,14 @@ export default async function LifeEventsPage() {
                     <span className="font-display font-black text-base md:text-lg uppercase tracking-wide text-zinc-100 leading-tight">
                       {event.template?.title ?? 'LIFE EVENT'}
                     </span>
+                    {event.battle_context?.opponent && (
+                      <span className="font-mono text-[11px] uppercase tracking-wide text-[#ff8c42] mt-0.5">
+                        vs {event.battle_context.opponent}
+                        {event.battle_context.league ? (
+                          <span className="text-zinc-500"> · {event.battle_context.league}</span>
+                        ) : null}
+                      </span>
+                    )}
                     <span className="text-xs md:text-sm text-zinc-500 line-clamp-2 mt-0.5">
                       {event.template?.description}
                     </span>

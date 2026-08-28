@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { createServerSupabaseClient } from '@/lib/db/server';
 import DashboardClient from '@/components/battler/DashboardClient';
 import { getVirtualNowISO } from '@/lib/dev/timeManipulation';
+import { prepareLifeEvents } from '@/lib/content/lifeEventContext';
 
 export default async function DashboardPage() {
   const { user, battler } = await getPlayerBattler();
@@ -239,13 +240,9 @@ export default async function DashboardPage() {
   // (e.g. two "Rock Bottom") to the newest per template_code (already ordered
   // newest-first). Matches the /api/life-events dedup so the dashboard and the
   // widget never disagree on how many decisions are waiting.
-  const seenPending = new Set<string>();
-  const dedupedPendingEvents = (pendingEvents || []).filter((e: any) => {
-    if (!e?.template_code) return true;
-    if (seenPending.has(e.template_code)) return false;
-    seenPending.add(e.template_code);
-    return true;
-  });
+  // Dedup exact-duplicate events + attach opponent/league so the widget matches
+  // the /life-events page (same count, same "vs Opponent" context).
+  const dedupedPendingEvents = await prepareLifeEvents(supabase, pendingEvents || []);
 
   return (
     <DashboardClient

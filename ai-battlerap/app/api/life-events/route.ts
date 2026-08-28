@@ -1,6 +1,7 @@
 import { createServerSupabaseClient } from '@/lib/db/server';
 import { NextResponse } from 'next/server';
 import { getPlayerBattler } from '@/lib/game/getPlayerBattler';
+import { prepareLifeEvents } from '@/lib/content/lifeEventContext';
 
 /**
  * GET /api/life-events
@@ -32,17 +33,9 @@ export async function GET() {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  // Never surface the same pending decision twice. Insert-time dedup now blocks
-  // new stacking, but rows created before it (and the "sticky, one card per event"
-  // design intent) mean the same template can still sit in the queue more than
-  // once. Collapse to the newest pending event per template_code (already ordered
-  // newest-first) so the player sees one Rock Bottom, not a stack of identical cards.
-  const seen = new Set<string>();
-  const deduped = (events || []).filter((e: any) => {
-    if (seen.has(e.template_code)) return false;
-    seen.add(e.template_code);
-    return true;
-  });
+  // Dedup exact-duplicate events and attach opponent/league so the widget can
+  // tell two different 3-0 losses apart (see prepareLifeEvents).
+  const enriched = await prepareLifeEvents(supabase, events || []);
 
-  return NextResponse.json({ events: deduped });
+  return NextResponse.json({ events: enriched });
 }

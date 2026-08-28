@@ -11,6 +11,7 @@ type LifeEvent = {
   status: string;
   triggered_at: string;
   details_json: any;
+  battle_context?: { opponent?: string; league?: string } | null;
   template: {
     id: string;
     code: string;
@@ -123,6 +124,14 @@ export default function PendingLifeEventsWidget({ initialEvents = [] }: Props) {
                 {new Date(event.triggered_at).toLocaleDateString()}
               </span>
             </div>
+            {event.battle_context?.opponent && (
+              <p className="font-mono text-[10px] uppercase tracking-wide text-[#ff8c42] mb-1">
+                vs {event.battle_context.opponent}
+                {event.battle_context.league ? (
+                  <span className="text-zinc-500"> · {event.battle_context.league}</span>
+                ) : null}
+              </p>
+            )}
             <p className="text-xs text-zinc-500 line-clamp-2 mb-3">
               {event.template.description}
             </p>
