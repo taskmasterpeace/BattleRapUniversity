@@ -543,7 +543,7 @@ export default function BattleViewerPage({
                   seg.event_flags.includes('choke')
                     ? 'bg-red-500 border-red-400 text-white'
                     : landedHaymaker
-                    ? 'bg-amber-500 border-amber-400 text-black'
+                    ? 'bg-amber-300 border-amber-200 ring-2 ring-amber-300/50 text-black relative z-10'
                     : `${accent} text-white`
                 }`}
                 style={{ height: `${Math.max(22, Math.min(100, (seg.segment_score / 10) * 100))}%` }}
@@ -819,7 +819,7 @@ export default function BattleViewerPage({
                       />
                       <div className="flex gap-4 justify-center text-[10px] font-mono uppercase tracking-widest text-zinc-500">
                         <span className="flex items-center gap-1">
-                          <span className="inline-block w-3 h-3 bg-amber-500 border border-amber-400"></span> HAYMAKER
+                          <span className="inline-block w-3 h-3 bg-amber-300 border border-amber-200"></span> HAYMAKER
                         </span>
                         <span className="flex items-center gap-1">
                           <span className="inline-block w-3 h-3 bg-red-500 border border-red-400"></span> CHOKE
