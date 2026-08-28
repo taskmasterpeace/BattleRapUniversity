@@ -293,8 +293,12 @@ export async function getHeatingUp(
     cur.posts += 1;
     byTag.set(p.crowd_tag, cur);
   }
+  // Rank by DROPS (the number the UI actually shows) so the list never reads as
+  // mis-sorted (an 8-drop tag sitting below a 5-drop one). The decay-weighted
+  // score still breaks ties, so among tags with equal drops the fresher, more
+  // engaged one rises — keeping "heating up" about momentum, not just volume.
   return [...byTag.entries()]
     .map(([tag, v]) => ({ tag, score: Math.round(v.score), posts: v.posts }))
-    .sort((a, b) => b.score - a.score)
+    .sort((a, b) => b.posts - a.posts || b.score - a.score)
     .slice(0, limit);
 }
