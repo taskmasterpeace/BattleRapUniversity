@@ -30,6 +30,72 @@ Battle Rap University is a **battle rap simulation and strategy game** where you
 
 ---
 
+## 📸 The Game, Screen by Screen
+
+A tour of the actual playable build — every shot below is captured live, not a mockup.
+
+### 1. Your Command Center
+You run one battler. ELO, level and XP, your next booked battle, and every result — one hub, one road from the app-camera underground to god tier.
+
+![Dashboard](docs/screenshots/01-dashboard.png)
+
+### 2. Pick Your Battleground
+Before the bell: choose the **room** (In Building / PPV / On Cam — the crowd and scoring shift with the venue), then choose how you fight it — **Locked In** (call every round yourself) or **Auto** (trust the camp).
+
+![Battle Night control](docs/screenshots/02-battleground.png)
+
+### 3. Counter-Pick the Matchup
+Read the opponent's predicted style, then call your shot: content, delivery, performance. Rock-paper-scissors with teeth — punchlines are **2× super-effective** into name flips, schemes get **0.5× punished** by punchlines. An effectiveness forecast grades your plan before you commit.
+
+![Call Your Shot](docs/screenshots/03-call-your-shot.png)
+
+### 4. Segment-by-Segment
+You never type a bar. Every round plays out as timed segments the engine simulates — haymakers land or whiff, stumbles and chokes happen under pressure, and the crowd owns the verdict.
+
+![The Tape](docs/screenshots/04-the-tape.png)
+
+### 5. The Read
+Between rounds the opponent's picks are revealed and your effectiveness is broken all the way down — content × crowd × venue into a final multiplier — plus coaching on whether to ride it or switch it up.
+
+![The Read](docs/screenshots/05-the-read.png)
+
+### 6. Watch the Tape
+Any battle replays as a cinematic tape: Battle Night staging, a live "the room" ownership meter, and crowd demographics reacting in real time — at 0.5× to 4× speed.
+
+![Watch the Tape](docs/screenshots/06-watch-the-tape.png)
+
+### 7. The Full Recap
+Every completed battle becomes a permanent page: the scoreline and verdict, a round-by-round breakdown, and the tale of the tape by attribute.
+
+![Battle recap](docs/screenshots/07-recap.png)
+
+### 8. The Scene Reacts
+A living media layer. Bloggers write recaps and the timeline argues about your night — who got robbed, who leveled up, who should run it back. Your battles generate the storylines.
+
+![The Internet feed](docs/screenshots/08-the-internet.png)
+
+### 9. Deep-Dive Analysis
+Why you won or lost, the key moments that decided it (which haymakers actually connected), and how your prep and matchup read paid off.
+
+![Battle analysis](docs/screenshots/09-analysis.png)
+
+### 10. Life Between Battles
+Streaks, chokes, and close calls trigger life events with real weight. The choice is final — it moves your reputation, resilience, and finances, and your story.
+
+![Life events](docs/screenshots/10-life-events.png)
+
+### 11. Strengths & Flaws — The Badge Compendium
+Badges aren't stickers — they change the simulation. **76 badges** across 6 categories, each with a tier and a real effect. Strengths sharpen you; flaws like Choker or Drama Starter follow you into every room. The culture remembers what you are.
+
+![Badge compendium](docs/screenshots/11-badges.png)
+
+### 12. The Wire
+The in-world social network where the whole roster lives out loud — beefs brewing, callouts, run-it-backs. The storytelling machine that makes the world feel populated.
+
+![The Wire](docs/screenshots/12-the-wire.png)
+
+---
+
 ## Features
 
 <table>
