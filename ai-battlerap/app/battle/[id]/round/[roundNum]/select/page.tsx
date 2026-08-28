@@ -267,19 +267,19 @@ export default function RoundSelectPage() {
                 <div>
                   <div className="text-zinc-500 mb-1">Content</div>
                   <div className="text-zinc-300">
-                    {predictedOppContent.contentTypes.join(', ')}
+                    {predictedOppContent.contentTypes.map((t) => t.replace(/_/g, ' ')).join(', ')}
                   </div>
                 </div>
                 <div>
                   <div className="text-zinc-500 mb-1">Delivery</div>
                   <div className="text-zinc-300">
-                    {predictedOppContent.deliveryTypes.join(', ')}
+                    {predictedOppContent.deliveryTypes.map((t) => t.replace(/_/g, ' ')).join(', ')}
                   </div>
                 </div>
                 <div>
                   <div className="text-zinc-500 mb-1">Performance</div>
                   <div className="text-zinc-300">
-                    {predictedOppContent.performanceTypes.join(', ')}
+                    {predictedOppContent.performanceTypes.map((t) => t.replace(/_/g, ' ')).join(', ')}
                   </div>
                 </div>
               </div>
