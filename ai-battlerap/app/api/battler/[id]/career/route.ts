@@ -172,6 +172,7 @@ async function getBattleHistory(supabase: any, battlerId: string) {
     .select(`
       id,
       scheduled_at,
+      completed_at,
       winner_battler_id,
       battler_player_id,
       battler_ai_id,
@@ -212,7 +213,10 @@ async function getBattleHistory(supabase: any, battlerId: string) {
 
     return {
       battleId: battle.id,
-      date: battle.scheduled_at,
+      // When it was FOUGHT, not when it was booked. Battles can sit scheduled for
+      // in-game months before they're simulated, so scheduled_at read "3 months ago"
+      // for a battle fought minutes ago — and clashed with the rivalry it created.
+      date: battle.completed_at ?? battle.scheduled_at,
       opponentId,
       opponentName,
       result: won ? 'W' : 'L',
@@ -227,7 +231,10 @@ async function getBattleHistory(supabase: any, battlerId: string) {
         crowdReaction: r.crowd_reaction,
       })),
     };
-  });
+  })
+  // Order by when fought (completed_at) rather than when booked, so the most
+  // recently CONTESTED battle leads the list.
+  .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
 }
 
 /**
