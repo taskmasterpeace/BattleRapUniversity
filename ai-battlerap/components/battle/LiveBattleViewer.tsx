@@ -293,8 +293,12 @@ export default function LiveBattleViewer({
   const activeMood = currentSegment
     ? momentLine(currentSegment, activeIsPlayer ? player.stage_name : ai.stage_name).mood
     : null;
-  const currentRoundIndex = currentSegment?.round_index ?? 1;
   const totalRounds = Math.max(...rounds.map((r) => r.round_index), 1);
+  // At end-of-tape currentSegment is null (index runs one past the last segment),
+  // so fall back to the final round — never 1, which read as "Round 1 / 3" on the
+  // finished battle. The header itself shows FINAL once ended (see below).
+  const lastRoundIndex = timeline.length ? timeline[timeline.length - 1].round_index : totalRounds;
+  const currentRoundIndex = currentSegment?.round_index ?? lastRoundIndex;
   const segmentProgress =
     timeline.length === 0 ? 0 : Math.min(100, ((index + 1) / timeline.length) * 100);
   const ended = index >= timeline.length;
@@ -329,7 +333,13 @@ export default function LiveBattleViewer({
             ✕ EXIT LIVE
           </button>
           <div className="text-zinc-500 text-xs uppercase tracking-widest">
-            Round <span className="text-[#ff8c42] font-black text-base">{currentRoundIndex}</span> / {totalRounds}
+            {ended ? (
+              <span className="text-[#ff8c42] font-black text-base">FINAL</span>
+            ) : (
+              <>
+                Round <span className="text-[#ff8c42] font-black text-base">{currentRoundIndex}</span> / {totalRounds}
+              </>
+            )}
           </div>
         </div>
         <div className="flex items-center gap-3">
