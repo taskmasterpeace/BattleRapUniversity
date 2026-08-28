@@ -258,12 +258,13 @@ export default function LiveBattleViewer({
     [timeline, index, ai.id]
   );
 
-  // Equal-footing totals for the room-ownership meter. The timeline is
-  // interleaved call-and-response, so mid-exchange one battler is a segment ahead
-  // of the other; judging "who owns the room" on those lopsided cumulatives named
-  // the wrong leader (e.g. "X IS EDGING IT" the instant before the other drops a
-  // haymaker they hadn't performed yet). Compare only through the segments BOTH
-  // have now performed.
+  // Equal-footing totals for the scoreboard AND the room-ownership meter. The
+  // timeline is interleaved call-and-response and the player always spits first,
+  // so mid-exchange the player is a segment ahead of the opponent; a raw
+  // cumulative would show the player "winning" 13.0-8.6 right after their bar even
+  // while getting bodied every exchange, and named the wrong room leader the
+  // instant before the opponent answered. Compare only through the segments BOTH
+  // have now performed so the scoreboard and the room meter tell one true story.
   const [pairedPlayerScore, pairedAiScore] = useMemo(() => {
     const revealed = timeline.slice(0, Math.max(0, index + 1));
     const p = revealed.filter((s) => s.battler_id === player.id).map((s) => s.segment_score);
@@ -393,7 +394,7 @@ export default function LiveBattleViewer({
               </h2>
               <p className="text-[10px] md:text-xs text-[#ff8c42] uppercase tracking-widest mb-1 md:mb-2">YOU</p>
               <div className="text-3xl md:text-6xl font-display font-black text-[#ff8c42] tabular-nums">
-                {playerScore.toFixed(1)}
+                {pairedPlayerScore.toFixed(1)}
               </div>
               <p className="text-[9px] md:text-[10px] text-zinc-500 uppercase tracking-widest">Cumulative</p>
             </div>
@@ -418,7 +419,7 @@ export default function LiveBattleViewer({
               </h2>
               <p className="text-[10px] md:text-xs text-red-500 uppercase tracking-widest mb-1 md:mb-2">OPPONENT</p>
               <div className="text-3xl md:text-6xl font-display font-black text-red-500 tabular-nums">
-                {aiScore.toFixed(1)}
+                {pairedAiScore.toFixed(1)}
               </div>
               <p className="text-[9px] md:text-[10px] text-zinc-500 uppercase tracking-widest">Cumulative</p>
             </div>
