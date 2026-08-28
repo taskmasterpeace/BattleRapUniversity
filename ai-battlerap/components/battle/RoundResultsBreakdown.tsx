@@ -211,7 +211,7 @@ export function RoundResultsBreakdown({
       </div>
 
       {/* Score Comparison */}
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Player Stats */}
         <div className="bg-[#2d2f35] border-2 border-[#3a3d44] rounded-lg p-6">
           <h3 className="text-lg font-display font-black uppercase tracking-wider text-white mb-4">{playerName}</h3>
@@ -286,7 +286,7 @@ export function RoundResultsBreakdown({
       </div>
 
       {/* Content Effectiveness Breakdown */}
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Player Content */}
         <div className="bg-[#2d2f35] border-2 border-[#3a3d44] rounded-lg p-6">
           <h3 className="text-lg font-display font-black uppercase tracking-wider text-white mb-4">Your Content Effectiveness</h3>
