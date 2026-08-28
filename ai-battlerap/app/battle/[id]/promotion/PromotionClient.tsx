@@ -399,6 +399,10 @@ export default function PromotionClient({
               const available = isActionAvailable(action);
               const successProb = calculateSuccessProbability(action);
               const expectedGain = calculateCrowdGainOnHit(action);
+              // Even a missed roll still banks ~35% of the gain (API line: crowdGain =
+              // success ? fullGain : max(1, round(fullGain * 0.35))). Surfacing it stops
+              // a 21% "Success Chance" from reading as a 79% chance of nothing.
+              const missGain = Math.max(1, Math.round(expectedGain * 0.35));
 
               return (
                 <button
@@ -441,6 +445,12 @@ export default function PromotionClient({
                       <span className="text-zinc-500">Crowd Gain (Hit)</span>
                       <span className="font-bold text-green-500">
                         +{expectedGain} perception
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-xs">
+                      <span className="text-zinc-500">Even On A Miss</span>
+                      <span className="font-bold text-green-500/60">
+                        +{missGain} perception
                       </span>
                     </div>
                     <div className="flex justify-between text-xs">
@@ -552,6 +562,12 @@ export default function PromotionClient({
                   <span className="text-zinc-500">Crowd Gain (Hit):</span>
                   <span className="font-bold text-green-500">
                     +{calculateCrowdGainOnHit(selectedAction)}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-zinc-500">Even On A Miss:</span>
+                  <span className="font-bold text-green-500/60">
+                    +{Math.max(1, Math.round(calculateCrowdGainOnHit(selectedAction) * 0.35))}
                   </span>
                 </div>
                 <div className="flex justify-between">
