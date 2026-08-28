@@ -16,6 +16,7 @@ type Segment = {
   battler_id: string;
   segment_score: number;
   event_flags: string[];
+  crowd_reaction?: number;
 };
 
 type Round = {
@@ -103,17 +104,29 @@ function momentLine(seg: Segment, name: string): { text: string; mood: 'choke' |
       `A fumble from ${name}. Not fatal, but the section noticed.`,
     ]) };
   }
+  // The room's ACTUAL reaction (0-100, straight from the sim) decides whether the
+  // narration gets to claim the crowd erupted. A technically strong bar the room
+  // sat on shouldn't read "the room's leaning all the way in" right next to the
+  // MIXED crowd lanes. Falls back to the score band when crowd data is absent.
+  const crowd = typeof seg.crowd_reaction === 'number' ? seg.crowd_reaction : seg.segment_score * 8;
+  const roomMoved = crowd >= 62;
   if (flags.some((f) => f.includes('haymaker') || f.includes('peak'))) {
-    return { mood: 'haymaker', text: pick([
+    return { mood: 'haymaker', text: pick(roomMoved ? [
       `HAYMAKER. ${name} lands the one they’ll be clipping all week.`,
       `${name} drops the bomb — the front row is on its feet.`,
       `That’s the moment. ${name} times it to the crowd’s peak and the room erupts.`,
+    ] : [
+      `${name} swings for the knockout — connects clean, but the room only half-bites.`,
+      `${name} reaches for the big one and lands it, though the section stays measured.`,
     ]) };
   }
   if (seg.segment_score >= 7) {
-    return { mood: 'hot', text: pick([
+    return { mood: 'hot', text: pick(roomMoved ? [
       `${name} is in a rhythm now — the room’s leaning all the way in.`,
       `${name} stacking bars, the section riding every one.`,
+    ] : [
+      `${name} is stacking bars clean — sharp writing, the room still weighing it.`,
+      `${name} locked in on the page; the section respects it more than it reacts.`,
     ]) };
   }
   if (seg.segment_score >= 4) {
