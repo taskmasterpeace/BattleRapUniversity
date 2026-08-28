@@ -29,10 +29,12 @@ export const EVENT_CATEGORIES: Record<
   },
   personal: {
     label: 'PERSONAL',
-    edge: 'bg-sky-500',
-    text: 'text-sky-400',
-    tint: 'bg-sky-500/10',
-    border: 'border-sky-500/40',
+    // Amber, not sky-blue — the project bans blue, and amber still reads distinct
+    // from career-orange, financial-emerald, scandal-red and relationship-rose.
+    edge: 'bg-amber-500',
+    text: 'text-amber-400',
+    tint: 'bg-amber-500/10',
+    border: 'border-amber-500/40',
   },
   relationship: {
     label: 'RELATIONSHIP',
