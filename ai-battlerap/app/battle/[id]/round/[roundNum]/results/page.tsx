@@ -295,9 +295,15 @@ export default function RoundResultsPage() {
               : avgGap > 0.5 ? `${aiName} was sharper bar-for-bar. Tighten the pen or counter their content.`
               : 'Razor close — it slipped away on the margins. This is anybody’s battle.';
           }
-          const nudge = roundNum < 3
-            ? 'Switch it up in the next round — counter what they’re bringing.'
-            : 'That’s the tape. The decision’s in.';
+          // The nudge has to agree with the headline: telling a player who just
+          // TOOK the round to "switch it up and counter" contradicts "stay on the gas".
+          const nudge = roundNum >= 3
+            ? 'That’s the tape. The decision’s in.'
+            : won
+              ? 'Ride the momentum — just don’t get predictable.'
+              : winner === 'tie'
+                ? 'The next round’s the swing — take control of it.'
+                : 'Switch it up in the next round — counter what they’re bringing.';
           return (
             <div className={`mt-6 border-2 p-5 rounded-lg ${won ? 'border-[#ff8c42]/50 bg-[#ff8c42]/5' : winner === 'tie' ? 'border-yellow-500/40 bg-yellow-500/5' : 'border-red-500/40 bg-red-500/5'}`}>
               <div className="flex items-center gap-2 mb-1">
