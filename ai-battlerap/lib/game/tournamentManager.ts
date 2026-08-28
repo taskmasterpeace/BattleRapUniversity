@@ -856,19 +856,8 @@ export async function updateBracketWithBattleResult(
     })
     .eq('id', bracket.id);
 
-  // Update participant placement if eliminated
-  await supabase
-    .from('tournament_participants')
-    .update({
-      eliminated_in_round: bracket.round,
-    })
-    .eq('tournament_id', bracket.tournament_id)
-    .eq('battler_id', loserId);
-
-  // 4. NOTIFICATION: Match Result (notify winner and loser)
-  const roundName = getRoundDisplayName(bracket.round);
-
-  // Determine placement for loser
+  // Placement label for the loser's round (computed up here so it can go into the
+  // elimination update, not just the notification below).
   const placementMap: Record<string, string> = {
     first_round: 'First Round',
     quarterfinals: 'Quarterfinalist',
@@ -876,6 +865,39 @@ export async function updateBracketWithBattleResult(
     finals: 'Runner-Up',
   };
   const placement = placementMap[bracket.round];
+
+  // Current win/loss tallies for both battlers so we can increment them.
+  const { data: partRows } = await supabase
+    .from('tournament_participants')
+    .select('battler_id, battles_won, battles_lost')
+    .eq('tournament_id', bracket.tournament_id)
+    .in('battler_id', [winnerId, loserId]);
+  const winnerRow = partRows?.find((p) => p.battler_id === winnerId);
+  const loserRow = partRows?.find((p) => p.battler_id === loserId);
+
+  // Loser is out: mark eliminated fully (is_active + final_placement, not just
+  // eliminated_in_round — a stale is_active=true was misleading every consumer)
+  // and bump their loss count.
+  await supabase
+    .from('tournament_participants')
+    .update({
+      eliminated_in_round: bracket.round,
+      is_active: false,
+      final_placement: placement,
+      battles_lost: (loserRow?.battles_lost ?? 0) + 1,
+    })
+    .eq('tournament_id', bracket.tournament_id)
+    .eq('battler_id', loserId);
+
+  // Winner advances: bump their win count.
+  await supabase
+    .from('tournament_participants')
+    .update({ battles_won: (winnerRow?.battles_won ?? 0) + 1 })
+    .eq('tournament_id', bracket.tournament_id)
+    .eq('battler_id', winnerId);
+
+  // 4. NOTIFICATION: Match Result (notify winner and loser)
+  const roundName = getRoundDisplayName(bracket.round);
 
   await Promise.all([
     supabase.rpc('create_notification', {
