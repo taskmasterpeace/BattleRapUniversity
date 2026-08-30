@@ -18,19 +18,23 @@ export async function GET(request: NextRequest) {
 
     // Build query for AI battlers that aren't owned by anyone
     // Now includes city join for proper region support
+    // Schema note: battlers has hometown_city_id/current_city_id (no city_id) and
+    // no manager_id column — management lives elsewhere. cities has no region column;
+    // region filtering uses battlers.region.
     let query = supabase
       .from('battlers')
       .select(`
         *,
         battler_attributes(*),
         rankings(*),
-        city:cities!battlers_city_id_fkey(
+        city:cities!battlers_hometown_city_id_fkey(
           id,
           name,
           state,
-          region,
           scene_size,
-          culture_style
+          culture_style,
+          background_url,
+          skyline_url
         ),
         primary_league:leagues!battlers_primary_league_id_fkey(
           id,
@@ -40,12 +44,16 @@ export async function GET(request: NextRequest) {
       `)
       .eq('is_ai', true)
       .is('user_id', null)
-      .is('manager_id', null)  // Only show battlers without a manager
       .limit(limit)
 
     // Filter by tier if provided (tier is on battlers table, not leagues)
     if (tier && tier !== 'all') {
       query = query.ilike('tier', `%${tier}%`)
+    }
+
+    // Filter by region (battlers.region — cities table has no region column)
+    if (region && region !== 'all') {
+      query = query.ilike('region', `%${region}%`)
     }
 
     const { data, error } = await query
@@ -55,11 +63,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    // Filter by region if provided (need to do this after query since region is on cities table)
-    let filteredData = data || []
-    if (region && region !== 'all') {
-      filteredData = filteredData.filter((b: any) => b.city?.region === region)
-    }
+    const filteredData = data || []
 
     // Transform data to match frontend expectations
     const battlers = filteredData.map((b: any) => {
