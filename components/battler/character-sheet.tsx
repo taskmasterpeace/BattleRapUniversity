@@ -23,6 +23,7 @@ export interface BadgeInfo {
   name: string
   tier: "bronze" | "silver" | "gold"
   icon?: string
+  emoji?: string // fallback medallion until real badge art exists
   effects: BadgeEffect[]
 }
 
@@ -122,7 +123,7 @@ export function CharacterSheet({
               {badges.map((b) => (
                 <div className={`fs-badge${b.tier === "gold" ? " gold" : ""}`} key={b.name}>
                   <div className="med">
-                    {b.icon && (
+                    {b.icon ? (
                       <img
                         src={b.icon}
                         alt={b.name}
@@ -130,6 +131,21 @@ export function CharacterSheet({
                           ;(e.currentTarget as HTMLImageElement).style.visibility = "hidden"
                         }}
                       />
+                    ) : (
+                      <div
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          display: "grid",
+                          placeItems: "center",
+                          fontSize: 44,
+                          background: "radial-gradient(circle at 50% 38%, #2C261F, #17181C 72%)",
+                          border: "1px solid var(--fs-line2)",
+                          borderRadius: 12,
+                        }}
+                      >
+                        {b.emoji ?? "🏅"}
+                      </div>
                     )}
                   </div>
                   <div>

@@ -17,17 +17,28 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
         region,
         style_tags,
         avatar_url,
-        sprite_url,
         primary_league_id,
         is_ai,
+        level,
+        total_xp,
+        current_level_xp,
+        current_balance,
         league:primary_league_id(
           id,
           name,
           short_code
+        ),
+        hometown:hometown_city_id(
+          name,
+          state,
+          background_url,
+          skyline_url
         )
       `)
       .eq('id', battlerId)
       .single()
+
+    if (battlerError) console.error('Battler fetch error:', battlerError)
 
     if (battlerError || !battler) {
       return NextResponse.json({ error: 'Battler not found' }, { status: 404 })
@@ -134,9 +145,23 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       })) || [],
       styleTags: (battler.style_tags as string[]) || [],
       portrait: {
-        spriteUrl: battler.sprite_url || battler.avatar_url || '/sprites/characters/sprite_661.png',
+        spriteUrl: battler.avatar_url || '/sprites/characters/sprite_661.png',
         crop: { scale: 1, offsetX: 0, offsetY: 0 },
       },
+      // Flyer System: city-as-identity + progression
+      city: battler.hometown
+        ? {
+            name: (battler.hometown as any).name,
+            state: (battler.hometown as any).state,
+            backdrop: (battler.hometown as any).background_url || (battler.hometown as any).skyline_url,
+          }
+        : null,
+      level: battler.level ?? 1,
+      xp: {
+        total: battler.total_xp ?? 0,
+        current: battler.current_level_xp ?? 0,
+      },
+      balance: battler.current_balance ?? 0,
       // Manager tracking
       managerHistory: managerHistory?.map(h => ({
         id: h.id,
