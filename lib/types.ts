@@ -137,6 +137,10 @@ export interface Battler {
   careerPublic?: boolean
   careerTier?: CareerTier
   careerDisplay?: string  // Human readable: "3 weeks", "1.5 years", or "???"
+  // Flyer System: city-as-identity + progression
+  cityBackdrop?: string
+  level?: number
+  xp?: { current: number; needed: number }
 }
 
 export interface Rivalry {

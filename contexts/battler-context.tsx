@@ -78,6 +78,10 @@ export function BattlerProvider({ children }: { children: ReactNode }) {
         careerPublic: b.careerPublic || b.career_public || false,
         careerTier: b.careerTier || b.career_tier || 'rookie',
         careerDisplay: b.careerDisplay || b.career_display || '0 days',
+        // Flyer System: city backdrop + progression for the command hero
+        cityBackdrop: b.city?.backdrop || undefined,
+        level: b.level || 1,
+        xp: { current: b.currentLevelXp || 0, needed: 1000 },
       }))
 
       // If no battlers, keep empty array

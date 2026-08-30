@@ -7,6 +7,8 @@ export async function GET() {
     const supabase = createServerClient()
 
     // Get all player-controlled battlers with their attributes, rankings, leagues, crews, and cities
+    // NOTE: battlers has no crew_id/city_id columns (schema drift) — crews live in the
+    // crew_members join table, and cities hang off hometown_city_id / current_city_id.
     const { data: battlers, error } = await supabase
       .from('battlers')
       .select(`
@@ -14,8 +16,7 @@ export async function GET() {
         battler_attributes(*),
         rankings(*),
         leagues:primary_league_id(id, name, prestige_level),
-        crews:crew_id(id, name, tag),
-        cities:city_id(id, name, state, region, scene_size)
+        hometown:hometown_city_id(id, name, state, background_url, skyline_url)
       `)
       .eq('is_ai', false)
       .order('created_at', { ascending: false })
@@ -73,7 +74,7 @@ export async function GET() {
       const attrs = battler.battler_attributes?.[0] || {}
       const ranking = battler.rankings?.[0] || {}
       const league = battler.leagues
-      const city = battler.cities
+      const city = battler.hometown
       const nextBattle = nextBattles?.find(b => b.battler_player_id === battler.id)
 
       const wins = ranking.wins || 0
@@ -93,22 +94,19 @@ export async function GET() {
         styleTags: battler.style_tags || [],
         avatarUrl: battler.avatar_url || "/rapper-pixel.jpg",
         bannerUrl: battler.banner_url || "/small-intimate-battle-rap-venue-purple-lighting.jpg",
-        // City data from cities table
+        // City data from cities table (hometown — city-as-identity)
         city: city ? {
           name: city.name,
           state: city.state,
-          region: city.region,
+          region: battler.region || null,
+          backdrop: city.background_url || city.skyline_url || null,
         } : null,
-        region: city?.region || battler.region || null,
+        region: battler.region || null,
         league: league ? {
           name: league.name,
           logo_url: "/placeholder-logo.png",
         } : null,
-        crew: battler.crews ? {
-          id: battler.crews.id,
-          name: battler.crews.name,
-          tag: battler.crews.tag,
-        } : null,
+        crew: null, // crews come from crew_members join table — not wired yet
         attributes: {
           writing: attrs.writing || { lyricism: 5, wordplay: 5, creativity: 5, flow: 5 },
           performance: attrs.performance || { stagePresence: 5, crowdControl: 5, delivery: 5 },
@@ -149,6 +147,10 @@ export async function GET() {
           })
           .filter(Boolean),
         isActive: battler.id === battlers[0]?.id, // First battler is active
+        // Flyer System: progression for the command hero
+        level: battler.level ?? 1,
+        currentLevelXp: battler.current_level_xp ?? 0,
+        totalXp: battler.total_xp ?? 0,
         // Career tracking data
         careerDays,
         careerPublic,

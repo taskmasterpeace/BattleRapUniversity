@@ -26,8 +26,7 @@ import { StressWidget } from "@/components/life-events/stress-widget"
 import { RegionalSceneWidget } from "@/components/dashboard/regional-scene-widget"
 import { RivalriesWidget } from "@/components/media/rivalries-widget"
 import { ActiveStorylines } from "@/components/dashboard/active-storylines"
-import { BattlerCard } from "@/components/dashboard/battler-card"
-import { StatsGrid } from "@/components/dashboard/stats-grid"
+import { BattlerHero } from "@/components/dashboard/battler-hero"
 import { PrepProgressWidget } from "@/components/battle-prep/prep-progress-widget"
 import type { StressState } from "@/lib/life-events"
 
@@ -89,11 +88,14 @@ export default function DashboardPage() {
               portrait: { spriteUrl: offer.opponent?.avatar || offer.opponent?.sprite_url }
             },
             league: {
-              displayName: offer.league?.name || 'Unknown League',
+              // offers API returns league as a plain string
+              displayName: (typeof offer.league === 'string' ? offer.league : offer.league?.name) || 'Unknown League',
               slug: offer.league?.short_code || 'unknown'
             },
-            purse: offer.purse || 0,
-            expiresAt: offer.expiresAt || offer.expires_at
+            // flat pay — winner does NOT earn more (culture law)
+            purse: offer.payout?.basePay ?? offer.purse ?? 0,
+            expiresAt: offer.expiresAt || offer.expires_at,
+            dateLabel: offer.battleDate
           })))
 
           // Check for accepted battles (next battle)
@@ -196,29 +198,32 @@ export default function DashboardPage() {
 
   return (
     <div className="p-4 md:p-6 space-y-6">
+      {/* Flyer System command hero — big portrait over the origin city, matchup-forward */}
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+        <BattlerHero
+          battler={activeBattler}
+          cityName={activeBattler.city?.name}
+          cityBackdrop={activeBattler.cityBackdrop}
+          level={activeBattler.level ?? 1}
+          levelLabel={(activeBattler.careerTier || "rookie").toUpperCase()}
+          elo={activeBattler.elo}
+          xp={activeBattler.xp}
+          nextBattle={
+            nextBattle
+              ? {
+                  opponentName: nextBattle.opponent?.stageName,
+                  opponentAvatar: nextBattle.opponent?.portrait?.spriteUrl,
+                  league: nextBattle.league?.displayName,
+                  dateLabel: `${nextBattle.daysUntil} days left`,
+                }
+              : null
+          }
+        />
+      </motion.div>
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* BattlerCard at top left showing player stats and hometown */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="lg:col-span-1"
-        >
-          <BattlerCard battler={activeBattler} />
-        </motion.div>
-
-        {/* StatsGrid showing attribute meters */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.05 }}
-          className="lg:col-span-1"
-        >
-          <StatsGrid battler={activeBattler} />
-        </motion.div>
-
         {/* Stress + Pending Events Column */}
-        <div className="space-y-4">
+        <div className="space-y-4 lg:col-span-3">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -399,7 +404,7 @@ export default function DashboardPage() {
                     </div>
                     <div className="text-right">
                       <p className="text-sm font-display font-bold text-green-400">${offer.purse.toLocaleString()}</p>
-                      <p className="text-xs text-zinc-500">{daysLeft}d left</p>
+                      <p className="text-xs text-zinc-500">{(offer as any).dateLabel || `${daysLeft}d left`}</p>
                     </div>
                   </div>
                 )
@@ -592,8 +597,8 @@ export default function DashboardPage() {
         <Link href="/leagues">
           <Card className="bg-zinc-900 border-zinc-800 hover:border-orange-500/50 transition-colors cursor-pointer h-full">
             <CardContent className="p-4 flex items-center gap-3">
-              <div className="w-10 h-10 bg-purple-600/20 flex items-center justify-center">
-                <TrendingUp className="w-5 h-5 text-purple-500" />
+              <div className="w-10 h-10 bg-blue-600/20 flex items-center justify-center">
+                <TrendingUp className="w-5 h-5 text-blue-500" />
               </div>
               <div>
                 <p className="font-display font-bold text-zinc-200 text-sm">Leagues</p>
