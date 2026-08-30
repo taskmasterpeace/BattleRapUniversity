@@ -1,0 +1,595 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Battle Rap University — The Flyer System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#14110E; --surface:#1C1815; --raised:#241F1A; --raised2:#2C261F;
+  --line:#37302A; --line2:#4A4038;
+  --ink:#F5F1EA; --mut:#A99E92; --mut2:#7E746A;
+  --brand:#F5731A; --red:#E23A2E; --blue:#2F7DD1; --gold:#E7B23C; --green:#35C46B;
+  --red-d:#9E241C; --blue-d:#1C4E86;
+  --pixel:'Press Start 2P'; --disp:'Anton'; --head:'Rajdhani'; --body:'Inter';
+  --r:12px; --rs:8px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);-webkit-font-smoothing:antialiased}
+body{overflow-x:hidden}
+img{display:block;max-width:100%}
+.wrap{max-width:1200px;margin:0 auto;padding:0 clamp(12px,3vw,28px)}
+h1,h2,h3,h4{margin:0}
+.disp{font-family:var(--disp);font-weight:400;letter-spacing:.01em;text-transform:uppercase;line-height:.92}
+.head{font-family:var(--head);font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.mut{color:var(--mut)}
+.seccap{display:flex;align-items:center;gap:12px;margin:46px 0 16px}
+.seccap .n{font-family:var(--pixel);font-size:11px;color:var(--bg);background:var(--brand);padding:8px 9px;border-radius:6px}
+.seccap h2{font-family:var(--disp);font-size:clamp(20px,3.4vw,30px);text-transform:uppercase;letter-spacing:.01em}
+.seccap p{margin:2px 0 0;color:var(--mut);font-size:13px}
+.scan::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(180deg,rgba(0,0,0,.16) 0 1px,transparent 1px 3px);mix-blend-mode:overlay;opacity:.5}
+.halftone{background-image:radial-gradient(rgba(255,255,255,.10) 1.1px,transparent 1.2px);background-size:7px 7px}
+.ticks::before,.ticks::after{content:"";position:absolute;width:14px;height:14px;border:2px solid var(--brand);opacity:.9;z-index:3}
+.ticks::before{top:8px;left:8px;border-right:0;border-bottom:0}
+.ticks::after{bottom:8px;right:8px;border-left:0;border-top:0}
+.pageband{border-bottom:1px solid var(--line);background:linear-gradient(180deg,#1a1611,#14110E)}
+.brandline{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:22px 0 10px}
+.logo{display:flex;align-items:center;gap:10px}
+.logo .mk{width:34px;height:34px;border-radius:8px;background:linear-gradient(135deg,var(--brand),#c94f10);display:grid;place-items:center;box-shadow:3px 3px 0 #000}
+.logo .mk svg{width:19px;height:19px;fill:#1a0f06}
+.logo b{font-family:var(--disp);font-size:24px;letter-spacing:.02em;text-transform:uppercase}
+.logo .sub{font-family:var(--pixel);font-size:8px;color:var(--brand);margin-top:3px;display:block}
+.langgrid{display:grid;grid-template-columns:1.3fr 1fr;gap:18px;padding:8px 0 26px}
+@media(max-width:820px){.langgrid{grid-template-columns:1fr}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r)}
+.pad{padding:16px}
+.kick{font-family:var(--pixel);font-size:9px;color:var(--mut);letter-spacing:.02em;margin-bottom:12px;display:block}
+.sw{display:flex;flex-wrap:wrap;gap:8px}
+.chipC{display:flex;align-items:center;gap:8px;background:var(--raised);border:1px solid var(--line);border-radius:8px;padding:6px 10px 6px 6px;font-family:var(--head);font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.05em}
+.dot{width:20px;height:20px;border-radius:5px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)}
+.spec b{font-family:var(--disp);font-size:26px;text-transform:uppercase;display:block;line-height:1}
+.spec .r{font-family:var(--head);font-weight:700;font-size:15px;letter-spacing:.08em}
+.spec .p{font-family:var(--pixel);font-size:11px;color:var(--gold)}
+.spec .i{font-family:var(--body);font-size:13px;color:var(--mut)}
+.spec>div{padding:9px 0;border-bottom:1px dashed var(--line)}
+.spec>div:last-child{border-bottom:0}
+.princ{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.princ span{font-family:var(--head);font-weight:600;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--mut);border:1px solid var(--line);border-radius:20px;padding:5px 11px}
+.screen{position:relative;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--bg);box-shadow:0 24px 60px rgba(0,0,0,.5)}
+.appnav{display:flex;align-items:center;gap:18px;padding:14px 18px;border-bottom:1px solid var(--line);background:#161310;position:relative;z-index:3;flex-wrap:wrap}
+.appnav .nl{margin-left:auto;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.navi{font-family:var(--head);font-weight:700;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--mut);display:flex;align-items:center;gap:6px}
+.navi.on{color:var(--brand)}
+.navi.pill{border:1px solid var(--brand);color:var(--brand);padding:7px 12px;border-radius:8px}
+.bell{position:relative}.bell .b{position:absolute;top:-6px;right:-8px;background:var(--red);color:#fff;font-family:var(--pixel);font-size:8px;border-radius:10px;padding:2px 4px}
+.menu{border:1px solid var(--line2);padding:7px 12px;border-radius:8px;color:var(--ink)}
+.dash{padding:clamp(14px,2.4vw,22px)}
+.hero{position:relative;border-radius:14px;overflow:hidden;border:1px solid var(--line);display:grid;grid-template-columns:270px 1fr 300px;gap:0;min-height:290px}
+@media(max-width:1080px){.hero{grid-template-columns:220px 1fr}.hero .nextb{grid-column:1/-1;border-left:0;border-top:1px solid var(--line)}}
+@media(max-width:680px){.hero{grid-template-columns:1fr}.hero .port{height:300px}}
+.hero .port{position:relative;overflow:hidden;background:#0e0c0a}
+.hero .port .bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;transform:scale(1.5);transform-origin:center 30%;image-rendering:pixelated;opacity:.4;filter:saturate(1.1) contrast(1.05)}
+.hero .port .fg{position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);height:104%;image-rendering:pixelated;filter:drop-shadow(0 6px 10px rgba(0,0,0,.55))}
+.hero .port::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,17,14,.05),rgba(20,17,14,.72))}
+.hero .mid{position:relative;padding:20px 22px;display:flex;flex-direction:column;justify-content:center;background:linear-gradient(180deg,#1b1712,#151210)}
+.hero .mid .status{font-family:var(--pixel);font-size:8px;color:var(--green);letter-spacing:.05em;margin-bottom:10px}
+.hero .mid .status i{width:7px;height:7px;background:var(--green);border-radius:50%;display:inline-block;margin-right:6px;box-shadow:0 0 8px var(--green)}
+.hero .name{font-family:var(--disp);font-size:clamp(34px,5vw,60px);line-height:.86;text-transform:uppercase}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin:14px 0 4px}
+.chip{font-family:var(--head);font-weight:700;font-size:11px;letter-spacing:.05em;text-transform:uppercase;padding:6px 10px;border-radius:7px;border:1px solid var(--line2);color:var(--mut);background:var(--raised);display:flex;align-items:center;gap:6px}
+.chip.city{color:var(--blue);border-color:#2a4360}
+.chip.loc{color:var(--brand);border-color:#5a3418}
+.chip.tier{color:var(--ink)}
+.lvl{display:inline-flex;align-items:center;gap:9px;margin-top:14px;background:linear-gradient(90deg,#3a2413,#241811);border:1px solid #5a3418;border-radius:9px;padding:8px 13px;width:fit-content}
+.lvl .r{font-family:var(--pixel);font-size:8px;color:var(--mut)}
+.lvl b{font-family:var(--disp);font-size:22px;color:var(--brand);text-transform:uppercase}
+.elowrap{margin-top:16px}
+.elowrap .row{display:flex;align-items:flex-end;justify-content:space-between;gap:14px}
+.elo{font-family:var(--pixel);font-size:clamp(20px,3vw,30px);color:var(--brand);line-height:1}
+.elo small{display:block;font-family:var(--head);font-size:10px;color:var(--mut);letter-spacing:.14em;margin-top:8px}
+.xp{margin-top:9px;height:12px;border:1px solid var(--line2);border-radius:7px;background:#0f0d0b;overflow:hidden;position:relative}
+.xp i{position:absolute;inset:0 29% 0 0;background:repeating-linear-gradient(90deg,var(--brand) 0 8px,#d0600f 8px 16px)}
+.xp b{position:absolute;right:8px;top:-20px;font-family:var(--pixel);font-size:8px;color:var(--mut)}
+.nextb{position:relative;border-left:1px solid var(--line);background:linear-gradient(135deg,var(--red-d) 0%,#211a15 42% 58%,var(--blue-d) 100%);padding:16px;display:flex;flex-direction:column}
+.nextb .lab{font-family:var(--pixel);font-size:8px;color:var(--gold);letter-spacing:.04em}
+.nextb .vsrow{display:flex;align-items:center;justify-content:center;gap:8px;margin:6px 0 8px}
+.nextb .f{width:74px;height:74px;border-radius:10px;overflow:hidden;border:2px solid #000;background:#0e0c0a;position:relative;box-shadow:3px 3px 0 rgba(0,0,0,.5)}
+.nextb .f img{position:absolute;left:50%;bottom:-4px;transform:translateX(-50%);height:118%;image-rendering:pixelated}
+.nextb .f.r{border-color:var(--red)}.nextb .f.b{border-color:var(--blue)}
+.nextb .vs{font-family:var(--pixel);font-size:14px;color:#fff;text-shadow:2px 2px 0 #000}
+.nextb .opp{font-family:var(--disp);font-size:19px;text-transform:uppercase;text-align:center}
+.nextb .meta{text-align:center;font-size:11px;color:var(--mut);margin-top:2px}
+.nextb .prep{margin-top:auto;padding-top:12px}
+.nextb .prep .t{display:flex;justify-content:space-between;font-family:var(--head);font-weight:700;font-size:10px;letter-spacing:.08em;color:var(--mut);text-transform:uppercase;margin-bottom:5px}
+.bar{height:9px;border-radius:6px;background:#0f0d0b;border:1px solid var(--line2);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--green)}
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:14px}
+@media(max-width:820px){.tiles{grid-template-columns:repeat(2,1fr)}}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:13px 14px;position:relative;overflow:hidden}
+.tile .k{font-family:var(--head);font-weight:700;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);display:flex;align-items:center;gap:6px}
+.tile .v{font-family:var(--pixel);font-size:22px;margin:11px 0 4px}
+.tile .s{font-size:11px;color:var(--mut2)}
+.tile.hot{border-color:#5a3418}.tile.hot .v{color:var(--brand)}
+.tile svg.spark{position:absolute;right:10px;bottom:10px;opacity:.7}
+.lower{display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:12px;margin-top:12px}
+@media(max-width:980px){.lower{grid-template-columns:1fr 1fr}}
+@media(max-width:620px){.lower{grid-template-columns:1fr}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:15px}
+.panel .pt{font-family:var(--head);font-weight:700;font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--mut);margin-bottom:12px}
+.donut{display:flex;align-items:center;gap:14px}
+.ring{width:104px;height:104px;border-radius:50%;flex:0 0 auto;background:conic-gradient(var(--brand) 0 40%,var(--blue) 40% 70%,var(--green) 70% 90%,var(--gold) 90% 100%);display:grid;place-items:center;position:relative}
+.ring::after{content:"";position:absolute;width:64px;height:64px;border-radius:50%;background:var(--surface)}
+.ring b{position:relative;z-index:1;font-family:var(--pixel);font-size:11px;color:var(--ink);text-align:center;line-height:1.4}
+.leg{font-size:12px}
+.leg div{display:flex;align-items:center;gap:8px;padding:3px 0;color:var(--mut)}
+.leg i{width:10px;height:10px;border-radius:3px}
+.momo{display:flex;gap:8px}
+.momo .b{flex:1;background:var(--raised);border:1px solid var(--line);border-radius:9px;padding:8px}
+.momo .b .r{font-family:var(--head);font-weight:700;font-size:9px;letter-spacing:.05em;color:var(--mut2);text-transform:uppercase;text-align:center;margin-top:5px}
+.feed div{display:flex;gap:9px;padding:9px 0;border-bottom:1px dashed var(--line);font-size:12.5px;line-height:1.35}
+.feed div:last-child{border-bottom:0}
+.feed .tg{font-family:var(--pixel);font-size:7.5px;padding:4px 5px;border-radius:4px;height:fit-content;white-space:nowrap}
+.feed .blog{background:#173a2a;color:var(--green)}
+.feed .scandal{background:#3a1f17;color:var(--red)}
+.acts{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
+@media(max-width:620px){.acts{grid-template-columns:1fr}}
+.btn{border:0;cursor:pointer;font-family:var(--head);font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:13px;padding:15px;border-radius:11px;display:flex;align-items:center;justify-content:center;gap:9px;color:#1a0f06;background:linear-gradient(180deg,#ff8a30,#e0640f);box-shadow:0 4px 0 #a5490b}
+.btn.ghost{background:var(--raised);color:var(--ink);box-shadow:0 4px 0 #000;border:1px solid var(--line2)}
+.btn.ghost b{color:var(--brand)}
+.flyrow{display:grid;grid-template-columns:1.35fr 1fr;gap:16px}
+@media(max-width:900px){.flyrow{grid-template-columns:1fr}}
+.flyer{position:relative;border-radius:14px;overflow:hidden;border:2px solid #000;box-shadow:6px 6px 0 rgba(0,0,0,.55)}
+.flyer .split{position:absolute;inset:0;background:linear-gradient(115deg,var(--red) 0 44%,#140b0a 47% 53%,var(--blue) 56% 100%)}
+.flyer .split.mono{background:linear-gradient(115deg,#243b2a 0 44%,#0e120e 47% 53%,#1c2b20 56% 100%)}
+.flyer .veil{position:absolute;inset:0;background:radial-gradient(120% 90% at 50% 0,transparent,rgba(0,0,0,.5))}
+.flyer .in{position:relative;padding:16px 16px 0}
+.flyer .league{font-family:var(--pixel);font-size:8px;color:#fff;opacity:.85;text-align:center;letter-spacing:.06em}
+.flyer .title{font-family:var(--disp);font-size:clamp(38px,7vw,66px);text-align:center;color:#fff;text-shadow:3px 3px 0 #000;letter-spacing:.02em;margin-top:2px}
+.matchup{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:6px;margin-top:6px}
+.fighter{text-align:center}
+.fighter .frame{position:relative;height:190px;margin:0 auto;width:100%;max-width:200px}
+.fighter .frame img{position:absolute;left:50%;bottom:0;transform:translateX(-50%);height:100%;image-rendering:pixelated;filter:drop-shadow(0 4px 8px rgba(0,0,0,.6))}
+.fighter.sil .frame img{filter:brightness(0) drop-shadow(0 4px 8px rgba(0,0,0,.5))}
+.fighter .nm{font-family:var(--disp);font-size:clamp(18px,3.4vw,26px);color:#fff;text-shadow:2px 2px 0 #000;text-transform:uppercase;line-height:.9;margin-top:2px}
+.fighter .tag{font-family:var(--pixel);font-size:7px;color:#fff;opacity:.85;margin-top:5px}
+.vsseal{width:60px;height:60px;border-radius:50%;background:var(--gold);display:grid;place-items:center;border:3px solid #000;box-shadow:0 0 0 3px var(--gold);font-family:var(--pixel);font-size:15px;color:#1a0f06;z-index:2}
+.under{position:relative;margin-top:14px;background:rgba(10,8,7,.72);border-top:2px solid #000;padding:10px 12px 12px}
+.urow{display:grid;grid-template-columns:26px 1fr 26px;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.08)}
+.urow:last-child{border-bottom:0}
+.urow .sil{width:26px;height:26px;border-radius:6px;background:#000;position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.15)}
+.urow .sil img{position:absolute;left:50%;bottom:-2px;transform:translateX(-50%);height:150%;filter:brightness(0)}
+.urow .mm{display:flex;align-items:center;justify-content:center;gap:12px;font-family:var(--disp);font-size:clamp(13px,2.4vw,17px);color:#fff;text-transform:uppercase}
+.urow .mm em{font-family:var(--pixel);font-size:9px;color:var(--gold);font-style:normal}
+.flyer .foot{position:relative;background:#0a0807;padding:10px 12px;text-align:center;border-top:2px solid var(--gold)}
+.flyer .foot .d{font-family:var(--head);font-weight:700;font-size:11px;letter-spacing:.08em;color:var(--ink);text-transform:uppercase}
+.flyer .foot .sp{font-family:var(--pixel);font-size:7px;color:var(--mut2);margin-top:7px;letter-spacing:.04em}
+.tott{padding:16px}
+.tott .top{display:grid;grid-template-columns:1fr auto 1fr;align-items:end;gap:8px;margin-bottom:14px}
+.tott .ff{text-align:center}
+.tott .ff .frame{position:relative;height:120px;width:120px;margin:0 auto;border-radius:12px;overflow:hidden;border:2px solid #000}
+.tott .ff.r .frame{border-color:var(--red);box-shadow:0 0 0 2px var(--red-d)}
+.tott .ff.b .frame{border-color:var(--blue);box-shadow:0 0 0 2px var(--blue-d)}
+.tott .ff .frame .cbg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;transform:scale(1.6);transform-origin:center 26%;opacity:.38;image-rendering:pixelated}
+.tott .ff .frame .pf{position:absolute;left:50%;bottom:-4px;transform:translateX(-50%);height:112%;image-rendering:pixelated}
+.tott .ff .nm{font-family:var(--disp);font-size:18px;text-transform:uppercase;margin-top:8px}
+.tott .ff .rec{font-family:var(--pixel);font-size:8px;color:var(--mut)}
+.tott .tvs{font-family:var(--pixel);font-size:13px;color:var(--gold);padding-bottom:34px}
+.cmp .cr{display:grid;grid-template-columns:1fr 96px 1fr;align-items:center;gap:8px;margin:9px 0}
+.cmp .lab{font-family:var(--pixel);font-size:8px;color:var(--mut);text-align:center}
+.cmp .mb{height:11px;background:#0f0d0b;border:1px solid var(--line);border-radius:6px;overflow:hidden;display:flex}
+.cmp .mb.l{justify-content:flex-end}
+.cmp .mb i{height:100%;display:block}
+.cmp .mb.l i{background:var(--red)}.cmp .mb.r i{background:var(--blue)}
+.sheet{display:grid;grid-template-columns:360px 1fr;gap:16px;padding:clamp(14px,2.4vw,22px)}
+@media(max-width:880px){.sheet{grid-template-columns:1fr}}
+.bigport{position:relative;border-radius:14px;overflow:hidden;border:1px solid var(--line);min-height:440px;background:#0e0c0a}
+.bigport .cbg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;transform:scale(1.5);transform-origin:center 28%;image-rendering:pixelated;opacity:.46;filter:saturate(1.15)}
+.bigport::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,17,14,.1) 40%,rgba(20,17,14,.92))}
+.bigport .pf{position:absolute;left:50%;bottom:-10px;transform:translateX(-50%);height:96%;image-rendering:pixelated;filter:drop-shadow(0 8px 14px rgba(0,0,0,.6));z-index:1}
+.bigport .cap{position:absolute;left:0;right:0;bottom:0;padding:16px;z-index:2}
+.bigport .cap .nm{font-family:var(--disp);font-size:clamp(38px,6vw,58px);text-transform:uppercase;line-height:.86}
+.bigport .cap .r{display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap}
+.bigport .cap .r .t{font-family:var(--head);font-weight:700;font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--mut);border:1px solid var(--line2);padding:5px 9px;border-radius:6px}
+.bigport .cap .r .e{font-family:var(--pixel);font-size:12px;color:var(--gold)}
+.attrs .grp{margin-bottom:14px}
+.attrs .gt{font-family:var(--head);font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--brand);display:flex;align-items:center;gap:8px;margin-bottom:9px}
+.attrs .gt::after{content:"";flex:1;height:1px;background:var(--line)}
+.attr{display:grid;grid-template-columns:120px 1fr 34px;align-items:center;gap:10px;margin:7px 0}
+.attr .l{font-family:var(--head);font-weight:600;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--mut)}
+.g{height:12px;background:#0f0d0b;border:1px solid var(--line);border-radius:7px;overflow:hidden}
+.g i{display:block;height:100%;background:linear-gradient(90deg,#c94f10,var(--brand))}
+.g i.hi{background:linear-gradient(90deg,#1c7a3f,var(--green))}
+.g i.lo{background:linear-gradient(90deg,#7a1f1a,var(--red))}
+.attr .v{font-family:var(--pixel);font-size:11px;text-align:right;color:var(--ink)}
+.badges{margin-top:6px}
+.bgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:560px){.bgrid{grid-template-columns:1fr}}
+.badge{display:grid;grid-template-columns:66px 1fr;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px}
+.badge.gold{border-color:#6a521e;background:linear-gradient(180deg,#241d10,#1a1712)}
+.badge .med{width:66px;height:66px;position:relative}
+.badge .med img{width:100%;height:100%;object-fit:contain;image-rendering:pixelated}
+.badge .bn{font-family:var(--disp);font-size:17px;text-transform:uppercase;line-height:.95}
+.tierchip{font-family:var(--pixel);font-size:7px;padding:3px 6px;border-radius:4px;color:#1a0f06;display:inline-block;margin-top:5px}
+.tier-bronze{background:#b07a43}.tier-silver{background:#c9c9d1}.tier-gold{background:var(--gold)}
+.eff{margin-top:8px;display:flex;flex-direction:column;gap:3px}
+.eff span{font-size:11.5px;color:var(--mut);display:flex;gap:7px;align-items:baseline}
+.eff span b{font-family:var(--head);font-weight:700;width:52px;text-align:right;flex:0 0 auto}
+.eff .up b{color:var(--green)}.eff .dn b{color:var(--red)}
+.net{margin-top:12px;background:linear-gradient(135deg,#241811,#161310);border:1px solid #5a3418;border-radius:12px;padding:14px}
+.net .pt{font-family:var(--pixel);font-size:9px;color:var(--brand);letter-spacing:.03em;margin-bottom:11px}
+.net .row{display:flex;flex-wrap:wrap;gap:8px}
+.net .m{font-family:var(--head);font-weight:700;font-size:12px;letter-spacing:.03em;text-transform:uppercase;border:1px solid var(--line2);border-radius:20px;padding:6px 11px;color:var(--ink)}
+.net .m b{margin-left:6px}
+.net .m .p{color:var(--green)}.net .m .n{color:var(--red)}
+.footnote{color:var(--mut2);font-size:12px;text-align:center;padding:34px 0 50px;line-height:1.6}
+.footnote b{color:var(--brand);font-family:var(--head);letter-spacing:.05em}
+/* ===== NEUTRAL THEME (de-brown) + bigger badge medallions ===== */
+:root{
+  --bg:#0F0F12; --surface:#17181C; --raised:#1F2024; --raised2:#282A2F;
+  --line:#2E2F35; --line2:#3E404A; --ink:#F4F4F6; --mut:#A6A8B0; --mut2:#74767E;
+}
+html,body{background:#0F0F12}
+.pageband{background:linear-gradient(180deg,#17181C,#0F0F12)}
+.hero .mid{background:linear-gradient(180deg,#1B1C21,#141519)}
+.hero .port,.nextb .f{background:#0D0D10}
+.nextb{background:linear-gradient(135deg,var(--red-d) 0%,#1A1B20 42% 58%,var(--blue-d) 100%)}
+.lvl{background:linear-gradient(90deg,#2A1A0C,#1C1D22)}
+.net{background:linear-gradient(135deg,#2A1A0C,#141519)}
+.badge.gold{background:linear-gradient(180deg,#1F2024,#17181C)}
+.xp,.bar,.g,.cmp .mb{background:#0E0E12}
+.chipC .dot[style*="#14110E"]{background:#0F0F12 !important}
+.chipC .dot[style*="#1C1815"]{background:#17181C !important}
+.badge{grid-template-columns:92px 1fr;gap:14px}
+.badge .med{width:92px;height:92px}
+/* ===== round 2: portrait proportion + name legibility ===== */
+/* fix: global img max-width was squishing positioned portraits */
+.hero .port .fg,.bigport .pf,.fighter .frame img,.tott .ff .frame .pf,.nextb .f img,.urow .sil img{max-width:none}
+.sheet{grid-template-columns:clamp(300px,34%,420px) 1fr}
+.bigport{min-height:540px}
+.bigport .pf{height:100%;bottom:0;left:50%;transform:translateX(-50%)}
+.bigport .cap{background:linear-gradient(180deg,transparent 28%,rgba(15,15,18,.5) 52%,rgba(15,15,18,.94))}
+.name,.bigport .cap .nm,.fighter .nm,.tott .ff .nm,.nextb .opp{
+  text-shadow:0 3px 12px rgba(0,0,0,.9),0 1px 2px rgba(0,0,0,.85);
+  overflow-wrap:anywhere;hyphens:auto}
+.hero .name{font-size:clamp(30px,4.4vw,54px)}
+.bigport .cap .nm{font-size:clamp(32px,3.6vw,50px);line-height:.9}
+/* ===== round 3: portraits FILL the frame (shoulders to bottom, no floating) + city wordmark ===== */
+.hero .port{z-index:0}
+.hero .port .fg{width:126%;height:auto;bottom:-3%;left:50%;transform:translateX(-50%);z-index:2}
+.bigport .pf{width:auto;height:88%;bottom:-2%;left:50%;transform:translateX(-50%)}
+.nextb .f{overflow:hidden}
+.nextb .f img{width:150%;height:auto;bottom:-4%;left:50%;transform:translateX(-50%)}
+.cityback{position:absolute;z-index:1;left:0;right:0;bottom:47%;text-align:center;
+  font-family:var(--disp);font-size:clamp(22px,2.8vw,38px);letter-spacing:.06em;text-transform:uppercase;
+  line-height:.85;color:rgba(245,115,26,.32);text-shadow:0 2px 10px rgba(0,0,0,.8);pointer-events:none}
+.bigport .cityback{bottom:auto;top:5%;font-size:clamp(32px,4.4vw,60px);color:rgba(245,115,26,.24)}
+</style>
+</head>
+<body>
+
+<div class="pageband">
+  <div class="wrap">
+    <div class="brandline">
+      <div class="logo">
+        <span class="mk"><svg viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3zm-7 9a7 7 0 0 0 6 6.92V21H8v2h8v-2h-3v-3.08A7 7 0 0 0 19 11h-2a5 5 0 0 1-10 0H5z"/></svg></span>
+        <div><b>Battle Rap U</b><span class="sub">THE FLYER SYSTEM · V1</span></div>
+      </div>
+      <div style="margin-left:auto;text-align:right">
+        <div class="head" style="font-size:12px;color:var(--brand);letter-spacing:.1em">DESIGN LANGUAGE LOCK</div>
+        <div class="mut" style="font-size:12px;margin-top:3px">Modern skin · pixel accents · zero purple</div>
+      </div>
+    </div>
+    <div class="langgrid">
+      <div class="card pad">
+        <span class="kick">PALETTE — RED CORNER · BLUE CORNER · BRAND · GOLD (NO PURPLE)</span>
+        <div class="sw">
+          <span class="chipC"><i class="dot" style="background:#14110E"></i>BASE</span>
+          <span class="chipC"><i class="dot" style="background:#1C1815"></i>SURFACE</span>
+          <span class="chipC"><i class="dot" style="background:#F5731A"></i>BRAND</span>
+          <span class="chipC"><i class="dot" style="background:#E23A2E"></i>RED</span>
+          <span class="chipC"><i class="dot" style="background:#2F7DD1"></i>BLUE</span>
+          <span class="chipC"><i class="dot" style="background:#E7B23C"></i>GOLD</span>
+          <span class="chipC"><i class="dot" style="background:#35C46B"></i>LIVE</span>
+        </div>
+        <div class="princ">
+          <span>Poster / VS layouts</span><span>Big portraits</span><span>City = origin</span>
+          <span>Silhouette variants</span><span>Stat gauges</span><span>Modular cards</span><span>Always show names</span>
+        </div>
+      </div>
+      <div class="card pad spec">
+        <span class="kick">TYPE SYSTEM</span>
+        <div><b>Anton</b><span class="i">Display · poster names · big numbers</span></div>
+        <div><span class="r">RAJDHANI 700</span> &nbsp;<span class="i">— section headers &amp; labels</span></div>
+        <div><span class="i" style="font-family:Inter;color:var(--ink)">Inter — body copy, descriptions, dense reading.</span></div>
+        <div><span class="p">PRESS START 2P</span> <span class="i">— pixel accent: VS · ELO · stat #s</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div class="seccap"><span class="n">A</span><div><h2>Command-Center Dashboard</h2><p>Big framed portrait over your city · matchup-forward hero · rich stat tiles · prep + momentum + the scene</p></div></div>
+  <div class="screen scan">
+    <div class="appnav">
+      <span class="navi on" style="font-family:var(--disp);font-size:15px;color:var(--brand)">BATTLE RAP U</span>
+      <div class="nl">
+        <span class="navi pill">DASHBOARD</span>
+        <span class="navi">BATTLES</span>
+        <span class="navi">CALENDAR</span>
+        <span class="navi">LEAGUES</span>
+        <span class="navi bell">&#128276;<span class="b">6</span></span>
+        <span class="navi menu">&#9776; MENU</span>
+      </div>
+    </div>
+    <div class="dash">
+      <div class="hero ticks halftone">
+        <div class="port">
+          <img class="bg" src="/public/sprites/cities/new-york-day.png" alt="" onerror="fb(this)">
+          <span class="cityback">New York</span>
+          <img class="fg" src="/public/images/sprite-536.png" alt="Flow Tester" data-i="FT" onerror="fb(this)">
+        </div>
+        <div class="mid">
+          <div class="status"><i></i>ACTIVE BATTLER · 1 / 3 ROSTER SLOTS</div>
+          <h1 class="name">Flow<br>Tester</h1>
+          <div class="chips">
+            <span class="chip tier">SMALL ROOM CIRCUIT</span>
+            <span class="chip">LOW TIER</span>
+            <span class="chip city">&#127961; NYC</span>
+            <span class="chip loc">&#128205; IN ATLANTA</span>
+          </div>
+          <span class="lvl"><span class="r">ROOKIE</span><b>LEVEL 2</b></span>
+          <div class="elowrap">
+            <div class="row"><div class="elo">1118<small>ELO RATING</small></div>
+              <div style="flex:1"><div class="xp"><i></i><b>1841 / 2598 XP</b></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="nextb">
+          <span class="lab">&#9700; NEXT BATTLE</span>
+          <div class="vsrow">
+            <span class="f r"><img src="/public/sprites/characters/sprite_569.png" onerror="fb(this)"></span>
+            <span class="vs">VS</span>
+            <span class="f b"><img src="/public/sprites/characters/sprite_571.png" onerror="fb(this)"></span>
+          </div>
+          <div class="opp">vs Slim 44</div>
+          <div class="meta">Small Room Circuit · Dec 5 · 10 days left</div>
+          <div class="prep">
+            <div class="t"><span>PREP PROGRESS</span><span>70%</span></div>
+            <div class="bar"><i style="width:70%"></i></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tiles">
+        <div class="tile"><div class="k">&#9876; TOTAL BATTLES</div><div class="v">13</div><div class="s">1W · 12L</div>
+          <svg class="spark" width="46" height="20"><polyline points="0,15 9,12 18,16 27,8 36,11 45,5" fill="none" stroke="#A99E92" stroke-width="2"/></svg></div>
+        <div class="tile hot"><div class="k">&#9678; WIN RATE</div><div class="v">8%</div><div class="s">last 5: &#9650; trending</div>
+          <svg class="spark" width="46" height="20"><polyline points="0,17 9,16 18,14 27,15 36,10 45,6" fill="none" stroke="#F5731A" stroke-width="2"/></svg></div>
+        <div class="tile"><div class="k">&#10039; CURRENT STREAK</div><div class="v" style="color:var(--green)">W1</div><div class="s">winning</div></div>
+        <div class="tile"><div class="k">&#9733; ELO RATING</div><div class="v">1118</div><div class="s">low tier · +12 last</div></div>
+      </div>
+
+      <div class="lower">
+        <div class="panel">
+          <div class="pt">Prep Balance</div>
+          <div class="donut">
+            <div class="ring"><b>WRITE<br>HEAVY</b></div>
+            <div class="leg">
+              <div><i style="background:var(--brand)"></i>Writing 40%</div>
+              <div><i style="background:var(--blue)"></i>Research 30%</div>
+              <div><i style="background:var(--green)"></i>Performance 20%</div>
+              <div><i style="background:var(--gold)"></i>Life / Rest 10%</div>
+            </div>
+          </div>
+          <p class="mut" style="font-size:12px;margin:12px 0 0">Leaning heavy on writing. Small Room likes that — but performance is lagging.</p>
+        </div>
+        <div class="panel">
+          <div class="pt">Last 3 Battles</div>
+          <div class="momo">
+            <div class="b"><svg viewBox="0 0 60 34" width="100%"><polyline points="0,30 12,10 24,22 36,6 48,18 60,14" fill="none" stroke="#35C46B" stroke-width="2.5"/></svg><div class="r">W · Body</div></div>
+            <div class="b"><svg viewBox="0 0 60 34" width="100%"><polyline points="0,26 12,24 24,12 36,16 48,8 60,20" fill="none" stroke="#E23A2E" stroke-width="2.5"/></svg><div class="r">L · 2-1</div></div>
+            <div class="b"><svg viewBox="0 0 60 34" width="100%"><polyline points="0,28 12,18 24,20 36,10 48,14 60,4" fill="none" stroke="#35C46B" stroke-width="2.5"/></svg><div class="r">W · 2-1</div></div>
+          </div>
+          <p class="mut" style="font-size:12px;margin:12px 0 0">Momentum swinging up. Peak segments climbing round over round.</p>
+        </div>
+        <div class="panel">
+          <div class="pt">The Scene</div>
+          <div class="feed">
+            <div><span class="tg blog">BLOG</span><span>Young Algorithm edges out Crowd Favorite in a tight Small Room clash.</span></div>
+            <div><span class="tg scandal">SCANDAL</span><span>Main Stage star no-shows the headliner — fans flame him online.</span></div>
+            <div><span class="tg blog">BLOG</span><span>&ldquo;Flow Tester&rdquo; quietly stacking reps in Atlanta. Who books him next?</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="acts">
+        <button class="btn">&#9654; PREP TODAY</button>
+        <button class="btn ghost">&#8635; REVIEW <b>LAST BATTLE</b></button>
+        <button class="btn ghost">&#9998; CHECK <b>BATTLE OFFERS</b></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="seccap"><span class="n">B</span><div><h2>The Battle Flyer — Modular Card Styles</h2><p>Same engine, many arrangements: headliner poster · silhouette (unrevealed) · tale-of-the-tape · undercard rows — names always shown</p></div></div>
+  <div class="flyrow">
+    <div class="flyer scan">
+      <div class="split"></div><div class="veil"></div>
+      <div class="in">
+        <div class="league">&#9672; OUTSIDE 5 · SMALL ROOM CIRCUIT &#9672;</div>
+        <div class="title">Outside 5</div>
+        <div class="matchup">
+          <div class="fighter">
+            <div class="frame"><img src="/public/sprites/characters/sprite_571.png" onerror="fb(this)"></div>
+            <div class="nm">Geechi<br>Gotti</div><div class="tag">RED CORNER</div>
+          </div>
+          <div class="vsseal">VS</div>
+          <div class="fighter">
+            <div class="frame"><img src="/public/sprites/characters/sprite_655.png" onerror="fb(this)"></div>
+            <div class="nm">Chef<br>Trez</div><div class="tag">BLUE CORNER</div>
+          </div>
+        </div>
+        <div class="under">
+          <div class="urow"><span class="sil"><img src="/public/sprites/characters/sprite_661.png" onerror="fb(this)"></span><span class="mm">T-Top <em>VS</em> Kyd Slade</span><span class="sil"><img src="/public/sprites/characters/sprite_667.png" onerror="fb(this)"></span></div>
+          <div class="urow"><span class="sil"><img src="/public/images/sprite-536.png" onerror="fb(this)"></span><span class="mm">A Ward <em>VS</em> Jakkboy Maine</span><span class="sil"><img src="/public/sprites/characters/sprite_569.png" onerror="fb(this)"></span></div>
+          <div class="urow"><span class="sil"><img src="/public/sprites/characters/sprite_571.png" onerror="fb(this)"></span><span class="mm">Ms Hustle <em>VS</em> Lu Castro</span><span class="sil"><img src="/public/sprites/characters/sprite_655.png" onerror="fb(this)"></span></div>
+          <div class="urow"><span class="sil"><img src="/public/sprites/characters/sprite_661.png" onerror="fb(this)"></span><span class="mm">Danny Myers <em>VS</em> Dice</span><span class="sil"><img src="/public/sprites/characters/sprite_667.png" onerror="fb(this)"></span></div>
+        </div>
+      </div>
+      <div class="foot"><div class="d">FRI · DEC 5 · 8PM &nbsp;|&nbsp; THE ANNEX, ATLANTA &nbsp;|&nbsp; PPV + TICKETS</div><div class="sp">SPONSOR · SPONSOR · SPONSOR</div></div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="flyer scan" style="flex:0 0 auto">
+        <div class="split mono"></div><div class="veil"></div>
+        <div class="in" style="padding-bottom:14px">
+          <div class="league" style="color:var(--gold)">&#9672; MAIN EVENT · UNANNOUNCED &#9672;</div>
+          <div class="title" style="color:#cfe8d6;font-size:clamp(30px,6vw,44px)">Who's Next?</div>
+          <div class="matchup" style="margin-bottom:8px">
+            <div class="fighter sil"><div class="frame" style="height:150px"><img src="/public/sprites/characters/sprite_667.png" onerror="fb(this)"></div><div class="nm">???</div><div class="tag">TBA</div></div>
+            <div class="vsseal" style="background:#cfe8d6">VS</div>
+            <div class="fighter sil"><div class="frame" style="height:150px"><img src="/public/sprites/characters/sprite_661.png" onerror="fb(this)"></div><div class="nm">???</div><div class="tag">TBA</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flyer" style="border-color:var(--line);box-shadow:0 12px 30px rgba(0,0,0,.4);flex:1">
+        <div class="tott">
+          <div class="head" style="font-size:11px;color:var(--gold);letter-spacing:.1em;text-align:center;margin-bottom:12px">&#9670; TALE OF THE TAPE &#9670;</div>
+          <div class="top">
+            <div class="ff r"><div class="frame"><img class="cbg" src="/public/sprites/cities/philadelphia-dusk.png" onerror="fb(this)"><img class="pf" src="/public/sprites/characters/sprite_571.png" onerror="fb(this)"></div><div class="nm">Geechi Gotti</div><div class="rec">18W · 4L · ELO 1642</div></div>
+            <div class="tvs">VS</div>
+            <div class="ff b"><div class="frame"><img class="cbg" src="/public/sprites/cities/new-york-day.png" onerror="fb(this)"><img class="pf" src="/public/sprites/characters/sprite_655.png" onerror="fb(this)"></div><div class="nm">Chef Trez</div><div class="rec">15W · 6L · ELO 1588</div></div>
+          </div>
+          <div class="cmp">
+            <div class="cr"><div class="mb l"><i style="width:88%"></i></div><div class="lab">LYRICISM</div><div class="mb r"><i style="width:74%"></i></div></div>
+            <div class="cr"><div class="mb l"><i style="width:70%"></i></div><div class="lab">DELIVERY</div><div class="mb r"><i style="width:90%"></i></div></div>
+            <div class="cr"><div class="mb l"><i style="width:82%"></i></div><div class="lab">STAGE PRES.</div><div class="mb r"><i style="width:78%"></i></div></div>
+            <div class="cr"><div class="mb l"><i style="width:76%"></i></div><div class="lab">CROWD CTRL</div><div class="mb r"><i style="width:84%"></i></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="seccap"><span class="n">C</span><div><h2>Character Sheet — Big Face, Every Stat, Every Badge Effect</h2><p>Full-height portrait over origin city · all attributes as gauges · badges show their real sim effects · net modifiers</p></div></div>
+  <div class="screen">
+    <div class="sheet">
+      <div class="bigport ticks">
+        <img class="cbg" src="/public/sprites/cities/atlanta-dusk.png" onerror="fb(this)">
+        <span class="cityback">Atlanta</span>
+        <img class="pf" src="/public/sprites/characters/image_1764146494580/sprite_841.png" data-i="TF" onerror="fb(this)">
+        <div class="cap">
+          <div class="nm">Tru Foe</div>
+          <div class="r"><span class="t">MID TIER</span><span class="t">4W · 2L</span><span class="e">ELO 1290</span></div>
+        </div>
+      </div>
+      <div>
+        <div class="attrs">
+          <div class="grp">
+            <div class="gt">Writing &amp; Rapping</div>
+            <div class="attr"><span class="l">Lyricism</span><div class="g"><i class="hi" style="width:84%"></i></div><span class="v">84</span></div>
+            <div class="attr"><span class="l">Wordplay</span><div class="g"><i class="hi" style="width:79%"></i></div><span class="v">79</span></div>
+            <div class="attr"><span class="l">Creativity</span><div class="g"><i style="width:66%"></i></div><span class="v">66</span></div>
+            <div class="attr"><span class="l">Flow</span><div class="g"><i style="width:71%"></i></div><span class="v">71</span></div>
+          </div>
+          <div class="grp">
+            <div class="gt">Performance</div>
+            <div class="attr"><span class="l">Stage Presence</span><div class="g"><i style="width:58%"></i></div><span class="v">58</span></div>
+            <div class="attr"><span class="l">Crowd Control</span><div class="g"><i style="width:62%"></i></div><span class="v">62</span></div>
+            <div class="attr"><span class="l">Delivery</span><div class="g"><i style="width:69%"></i></div><span class="v">69</span></div>
+          </div>
+          <div class="grp">
+            <div class="gt">Personal</div>
+            <div class="attr"><span class="l">Financial Stab.</span><div class="g"><i class="lo" style="width:41%"></i></div><span class="v">41</span></div>
+            <div class="attr"><span class="l">Reputation</span><div class="g"><i style="width:55%"></i></div><span class="v">55</span></div>
+            <div class="attr"><span class="l">Family Bond</span><div class="g"><i class="hi" style="width:80%"></i></div><span class="v">80</span></div>
+            <div class="attr"><span class="l">Preparation</span><div class="g"><i style="width:64%"></i></div><span class="v">64</span></div>
+          </div>
+          <div class="grp">
+            <div class="gt">Mental</div>
+            <div class="attr"><span class="l">Resilience</span><div class="g"><i class="lo" style="width:44%"></i></div><span class="v">44</span></div>
+          </div>
+        </div>
+
+        <div class="badges">
+          <div class="attrs"><div class="gt" style="margin-bottom:12px">Badges &amp; Effects</div></div>
+          <div class="bgrid">
+            <div class="badge gold">
+              <div class="med"><img src="/public/sprites/badges/badge_046.png" onerror="fb(this)"></div>
+              <div><div class="bn">Freestyle Genius</div><span class="tierchip tier-gold">GOLD</span>
+                <div class="eff">
+                  <span class="up"><b>+15%</b>creativity</span><span class="up"><b>+10%</b>rebuttals going 2nd</span>
+                  <span class="up"><b>+8%</b>haymakers</span><span class="up"><b>&minus;25%</b>choke chance</span><span class="up"><b>+20%</b>research prep</span>
+                </div>
+              </div>
+            </div>
+            <div class="badge">
+              <div class="med"><img src="/public/sprites/badges/badge_054.png" onerror="fb(this)"></div>
+              <div><div class="bn">Animated Performer</div><span class="tierchip tier-bronze">BRONZE</span>
+                <div class="eff">
+                  <span class="up"><b>+18%</b>stage presence</span><span class="up"><b>+15%</b>crowd control</span>
+                  <span class="up"><b>+12</b>crowd reaction</span><span class="dn"><b>&minus;5%</b>in small rooms</span>
+                </div>
+              </div>
+            </div>
+            <div class="badge">
+              <div class="med"><img src="/public/images/badge-046.png" onerror="fb(this)"></div>
+              <div><div class="bn">Aggressive Battler</div><span class="tierchip tier-bronze">BRONZE</span>
+                <div class="eff">
+                  <span class="up"><b>+5%</b>delivery</span><span class="up"><b>+4%</b>stage presence</span>
+                  <span class="up"><b>+1</b>crowd reaction</span><span class="dn"><b>+2%</b>choke risk</span>
+                </div>
+              </div>
+            </div>
+            <div class="badge">
+              <div class="med"><img src="/public/images/badge-048.png" onerror="fb(this)"></div>
+              <div><div class="bn">Smooth Flow</div><span class="tierchip tier-silver">SILVER</span>
+                <div class="eff">
+                  <span class="up"><b>+10%</b>flow</span><span class="up"><b>+6%</b>delivery</span><span class="up"><b>&minus;3%</b>stumble risk</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="net">
+            <div class="pt">&#9700; NET EFFECT ON TRU FOE</div>
+            <div class="row">
+              <span class="m">STAGE PRESENCE<b class="p">+22%</b></span>
+              <span class="m">DELIVERY<b class="p">+11%</b></span>
+              <span class="m">CREATIVITY<b class="p">+15%</b></span>
+              <span class="m">CHOKE<b class="p">&minus;23%</b></span>
+              <span class="m">HAYMAKERS<b class="p">+8%</b></span>
+              <span class="m">SMALL ROOMS<b class="n">&minus;5%</b></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footnote">
+    <b>THE FLYER SYSTEM</b> — one modular card engine, three flagship surfaces shown.<br>
+    Modern, mobile-safe skin · pixel-art accents · red-corner / blue-corner / brand-orange / gold · <b>zero purple</b>.<br>
+    Portraits, city skylines and badge medallions are real in-game assets.
+  </div>
+</div>
+
+<script>
+function fb(img){
+  var i = img.getAttribute('data-i') || (img.alt? img.alt.split(' ').map(function(w){return w[0]}).join('').slice(0,2).toUpperCase() : '★');
+  var d = document.createElement('div');
+  d.className = img.className;
+  d.style.cssText = getComputedStyle(img).cssText;
+  d.style.display='flex';d.style.alignItems='flex-end';d.style.justifyContent='center';
+  d.style.background='linear-gradient(160deg,#2a2018,#171310)';d.style.color='#5a4d40';
+  d.style.fontFamily="'Anton',sans-serif";d.style.fontSize='34px';d.style.paddingBottom='6px';
+  d.textContent=i;
+  if(img.parentNode) img.parentNode.replaceChild(d,img);
+}
+window.fb = fb;
+</script>
+</body>
+</html>
