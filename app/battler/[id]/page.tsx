@@ -9,6 +9,7 @@ import { useParams } from "next/navigation"
 import { ArrowLeft, Flame, Newspaper, Swords, TrendingUp, TrendingDown } from "lucide-react"
 import { CharacterSheet } from "@/components/battler/character-sheet"
 import { toBadgeInfos, toNetEffects } from "@/lib/badge-display"
+import { leagueCrest } from "@/lib/league-crests"
 import type { Battler } from "@/lib/types"
 
 type TabType = "overview" | "battles" | "rivalries" | "media"
@@ -134,6 +135,13 @@ export default function BattlerCareerPage() {
             tierLabel={battler.tier}
             record={`${battler.record?.wins || 0}W · ${battler.record?.losses || 0}L`}
             elo={battler.elo}
+            level={(battler as any).level ?? 1}
+            styleTags={battler.styleTags || []}
+            league={{
+              name: battler.league,
+              crest: leagueCrest(battler.league),
+              subtitle: (battler as any).city?.name ? `${(battler as any).city.name} scene` : undefined,
+            }}
             groups={[
               {
                 title: "Writing & Rapping",

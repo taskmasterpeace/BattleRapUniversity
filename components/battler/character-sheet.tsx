@@ -4,26 +4,26 @@ import { portraitFillStyle } from "@/lib/sprite-crops"
 
 export interface AttrRow {
   label: string
-  value: number // 0–100, or 1–10 (auto-detected per group via scale10)
+  value: number // 0–100, or 1–10 (scale10)
 }
 
 export interface AttrGroup {
   title: string
-  scale10?: boolean // values are on the 1–10 game scale
+  scale10?: boolean
   rows: AttrRow[]
 }
 
 export interface BadgeEffect {
   label: string
-  delta: string // e.g. "+15%", "−25%", "+12"
-  good: boolean // green (buff) vs red (cost)
+  delta: string
+  good: boolean
 }
 
 export interface BadgeInfo {
   name: string
   tier: "bronze" | "silver" | "gold"
   icon?: string
-  emoji?: string // fallback medallion until real badge art exists
+  emoji?: string
   effects: BadgeEffect[]
 }
 
@@ -31,6 +31,17 @@ export interface NetEffect {
   label: string
   delta: string
   good: boolean
+}
+
+export interface LeagueInfo {
+  name: string
+  crest?: string
+  subtitle?: string
+}
+
+export interface LineageEntry {
+  crest?: string
+  label?: string
 }
 
 interface CharacterSheetProps {
@@ -41,20 +52,101 @@ interface CharacterSheetProps {
   tierLabel?: string
   record?: string
   elo?: number
+  level?: number
+  styleTags?: string[]
+  league?: LeagueInfo
+  lineage?: LineageEntry[]
   groups: AttrGroup[]
   badges?: BadgeInfo[]
   netEffects?: NetEffect[]
 }
 
-function gaugeClass(pct: number): string {
-  if (pct >= 75) return "hi"
-  if (pct < 50) return "lo"
-  return ""
+type Grade = "S" | "A" | "B" | "C" | "D"
+
+// grade code: S gold · A green · B blue · C yellow · D red (dossier legend)
+function gradeOf(v10: number): Grade {
+  if (v10 >= 8.5) return "S"
+  if (v10 >= 7.5) return "A"
+  if (v10 >= 6.5) return "B"
+  if (v10 >= 5) return "C"
+  return "D"
 }
 
+function to10(row: AttrRow, scale10?: boolean): number {
+  return scale10 ? row.value : row.value / 10
+}
+
+function fmt10(v: number): string {
+  return Number.isInteger(v) ? String(v) : v.toFixed(1)
+}
+
+/** Segmented, notched gauge (pips at 3/6/9) colored by grade. */
+function SegGauge({ v10, grade }: { v10: number; grade: Grade }) {
+  const filled = Math.round(v10)
+  return (
+    <div className="fs-seg">
+      {Array.from({ length: 10 }).map((_, i) => (
+        <i
+          key={i}
+          className={`${i < filled ? `on ${grade}` : ""}${i === 2 || i === 5 || i === 8 ? " notch" : ""}`}
+        />
+      ))}
+    </div>
+  )
+}
+
+/** FIGHT SHAPE — six-axis radar giving the battler an instantly readable silhouette. */
+function FightShape({ axes }: { axes: { label: string; v10: number }[] }) {
+  const size = 190
+  const cx = size / 2
+  const cy = size / 2
+  const R = size / 2 - 26
+  const pt = (i: number, r: number) => {
+    const a = (Math.PI * 2 * i) / axes.length - Math.PI / 2
+    return [cx + r * Math.cos(a), cy + r * Math.sin(a)]
+  }
+  const ring = (frac: number) =>
+    axes.map((_, i) => pt(i, R * frac).join(",")).join(" ")
+  const shape = axes.map((ax, i) => pt(i, (R * Math.max(0.08, ax.v10)) / 10).join(",")).join(" ")
+  return (
+    <svg viewBox={`0 0 ${size} ${size}`} width="100%" style={{ maxWidth: 230, margin: "0 auto", display: "block" }}>
+      {[1, 0.66, 0.33].map((f) => (
+        <polygon key={f} points={ring(f)} fill="none" stroke="#2E2F35" strokeWidth="1" />
+      ))}
+      {axes.map((_, i) => {
+        const [x, y] = pt(i, R)
+        return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="#2E2F35" strokeWidth="1" />
+      })}
+      <polygon points={shape} fill="rgba(245,115,26,.28)" stroke="#F5731A" strokeWidth="2" strokeLinejoin="round" />
+      {axes.map((ax, i) => {
+        const [x, y] = pt(i, (R * Math.max(0.08, ax.v10)) / 10)
+        return <circle key={i} cx={x} cy={y} r="3" fill="#F5731A" stroke="#0F0F12" strokeWidth="1.5" />
+      })}
+      {axes.map((ax, i) => {
+        const [x, y] = pt(i, R + 15)
+        return (
+          <text
+            key={i}
+            x={x}
+            y={y}
+            textAnchor="middle"
+            dominantBaseline="middle"
+            fill="#A6A8B0"
+            style={{ font: "700 7.5px Rajdhani, sans-serif", letterSpacing: ".08em", textTransform: "uppercase" }}
+          >
+            {ax.label.toUpperCase()} {fmt10(ax.v10)}
+          </text>
+        )
+      })}
+    </svg>
+  )
+}
+
+const RADAR_PICKS = ["Lyricism", "Wordplay", "Flow", "Stage Presence", "Crowd Control", "Resilience"]
+
 /**
- * Flyer System character sheet — big face over the origin city (name crowning the frame),
- * every attribute as a gauge, every badge with its real sim effects, net-effect summary.
+ * Flyer System character sheet v2 (Codex collab) — dossier-grade identity masthead,
+ * Fight Shape radar, graded notched attribute matrix, league lineage, badge jewels.
  * See docs/design/flyer-system/DESIGN_LANGUAGE.md
  */
 export function CharacterSheet({
@@ -65,54 +157,165 @@ export function CharacterSheet({
   tierLabel,
   record,
   elo,
+  level,
+  styleTags = [],
+  league,
+  lineage = [],
   groups,
   badges = [],
   netEffects = [],
 }: CharacterSheetProps) {
+  // radar axes + range/floor from all rows
+  const all: { label: string; v10: number }[] = groups.flatMap((g) =>
+    g.rows.map((r) => ({ label: r.label, v10: to10(r, g.scale10) })),
+  )
+  const axes = RADAR_PICKS.map((p) => all.find((a) => a.label.toLowerCase().startsWith(p.toLowerCase()))).filter(
+    Boolean,
+  ) as { label: string; v10: number }[]
+  const best = all.reduce((m, a) => (a.v10 > m.v10 ? a : m), all[0])
+  const worst = all.reduce((m, a) => (a.v10 < m.v10 ? a : m), all[0])
+
   return (
     <div className="fs fs-sheet">
       <div className="fs-bigport fs-ticks">
-        {cityBackdrop && (
-          <img
-            className="fs-bg"
-            src={cityBackdrop}
-            alt=""
-            onError={(e) => {
-              ;(e.currentTarget as HTMLImageElement).style.display = "none"
-            }}
-          />
-        )}
-        {cityName && <span className="fs-cityback">{cityName}</span>}
-        <img className="fs-pf" src={portrait} alt={name} style={portraitFillStyle(portrait, { targetH: 0.78 })} />
-        <div className="fs-cap">
-          <h2 className="nm">{name}</h2>
-          <div className="r">
-            {tierLabel && <span className="t">{tierLabel}</span>}
-            {record && <span className="t">{record}</span>}
-            {elo != null && <span className="e">ELO {elo}</span>}
-          </div>
+          {cityBackdrop && (
+            <img
+              className="fs-bg"
+              src={cityBackdrop}
+              alt=""
+              onError={(e) => {
+                ;(e.currentTarget as HTMLImageElement).style.display = "none"
+              }}
+            />
+          )}
+          {cityName && <span className="fs-cityback">{cityName}</span>}
+          <img className="fs-pf" src={portrait} alt={name} style={portraitFillStyle(portrait, { targetH: 0.78 })} />
+          <div className="fs-cap">
+            <h2 className="nm">{name}</h2>
+            <div className="fs-idplates">
+              {tierLabel && (
+                <span className="p">
+                  <span className="k">Tier</span>
+                  <span className="v">{tierLabel.replace(/\s*TIER\s*/i, "")}</span>
+                </span>
+              )}
+              {record && (
+                <span className="p">
+                  <span className="k">Record</span>
+                  <span className="v">{record}</span>
+                </span>
+              )}
+              {elo != null && (
+                <span className="p">
+                  <span className="k">ELO</span>
+                  <span className="v pix">{elo}</span>
+                </span>
+              )}
+              {level != null && (
+                <span className="p">
+                  <span className="k">Level</span>
+                  <span className="v">{String(level).padStart(2, "0")}</span>
+                </span>
+              )}
+            </div>
+            {styleTags.length > 0 && (
+              <div className="fs-chips" style={{ marginTop: 10 }}>
+                {styleTags.slice(0, 4).map((t) => (
+                  <span className="fs-chip loc" key={t}>
+                    {t}
+                  </span>
+                ))}
+              </div>
+            )}
         </div>
       </div>
 
       <div>
-        {groups.map((g) => (
-          <div className="fs-grp" key={g.title}>
-            <h3 className="fs-gt">{g.title}</h3>
-            {g.rows.map((row) => {
-              const pct = g.scale10 ? Math.min(100, row.value * 10) : Math.min(100, row.value)
-              const display = g.scale10 ? row.value : Math.round(row.value)
-              return (
-                <div className="fs-attr" key={row.label}>
-                  <span className="l">{row.label}</span>
-                  <div className="fs-g">
-                    <i className={gaugeClass(pct)} style={{ width: `${pct}%` }} />
-                  </div>
-                  <span className="v">{display}</span>
-                </div>
-              )
-            })}
+        <div className="fs-sheet2-top">
+          <div className="fs-radarwrap">
+            <div>
+              <div className="hd">
+                Fight Shape <span className="sub">// SIGNATURE</span>
+              </div>
+              {axes.length >= 3 ? <FightShape axes={axes} /> : null}
+            </div>
+            <div className="fs-radar-side">
+              <div className="fs-statchip">
+                <div className="k">Range</div>
+                <div className="v">{fmt10(best?.v10 ?? 0)}</div>
+                <div className="s">highest / {best?.label.toLowerCase()}</div>
+              </div>
+              <div className="fs-statchip" style={{ borderLeftColor: "var(--fs-red)" }}>
+                <div className="k">Floor</div>
+                <div className="v">{fmt10(worst?.v10 ?? 0)}</div>
+                <div className="s">lowest / {worst?.label.toLowerCase()}</div>
+              </div>
+            </div>
           </div>
-        ))}
+
+          {league && (
+            <div className="fs-league">
+              <div className="hd">
+                <span className="t">League Affiliation</span>
+                <span className="cur">CURRENT</span>
+              </div>
+              <div className="main">
+                {league.crest && (
+                  <span className="crest">
+                    <img
+                      src={league.crest}
+                      alt={league.name}
+                      onError={(e) => {
+                        ;(e.currentTarget as HTMLImageElement).style.visibility = "hidden"
+                      }}
+                    />
+                  </span>
+                )}
+                <div>
+                  <div className="nm">{league.name}</div>
+                  <div className="sub">{league.subtitle ?? "Current affiliation"}</div>
+                </div>
+              </div>
+              {lineage.length > 0 && (
+                <div className="lineage">
+                  <span className="lab">Career lineage</span>
+                  {lineage.map((l, i) => (
+                    <span className="mini" key={i} title={l.label}>
+                      {l.crest && <img src={l.crest} alt={l.label ?? ""} />}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {groups.map((g, gi) => {
+          const avg = g.rows.reduce((s, r) => s + to10(r, g.scale10), 0) / Math.max(1, g.rows.length)
+          const gGrade = gradeOf(avg)
+          return (
+            <div className="fs-grp2" key={g.title}>
+              <div className="hd">
+                <span className="n">{String(gi + 1).padStart(2, "0")}</span>
+                <span className="t">{g.title}</span>
+                <span className="sp" />
+                <span className={`fs-gseal ${gGrade}`}>{gGrade}</span>
+              </div>
+              {g.rows.map((row) => {
+                const v10 = to10(row, g.scale10)
+                const grade = gradeOf(v10)
+                return (
+                  <div className="fs-attr2" key={row.label}>
+                    <span className="l">{row.label}</span>
+                    <SegGauge v10={v10} grade={grade} />
+                    <span className={`fs-grade ${grade}`}>{grade}</span>
+                    <span className="v">{fmt10(v10)}</span>
+                  </div>
+                )
+              })}
+            </div>
+          )
+        })}
 
         {badges.length > 0 && (
           <>
