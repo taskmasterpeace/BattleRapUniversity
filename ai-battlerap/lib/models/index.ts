@@ -235,6 +235,9 @@ export interface ModifiedAttributes {
   performance: PerformanceStats;
   personal: PersonalStats;
   resilience: number;
+  /** Carried into the sim so stress/fame pressure actually fire (they read 0 when absent) */
+  stress: number;
+  public_knowledge: number;
 }
 
 export interface BattlerWithDetails extends Battler {

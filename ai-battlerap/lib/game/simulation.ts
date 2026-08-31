@@ -192,6 +192,8 @@ export async function simulateBattle(
         },
         personal: { ...playerModified.personal },
         resilience: Math.min(10, playerModified.resilience * playerMomentumBoost),
+        stress: playerModified.stress,
+        public_knowledge: playerModified.public_knowledge,
       };
 
       aiModifiedWithMomentum = {
@@ -207,6 +209,8 @@ export async function simulateBattle(
         },
         personal: { ...aiModified.personal },
         resilience: Math.min(10, aiModified.resilience * aiMomentumBoost),
+        stress: aiModified.stress,
+        public_knowledge: aiModified.public_knowledge,
       };
     }
 
@@ -681,6 +685,9 @@ export function applyPrepModifiers(
     performance: { ...attributes.performance },
     personal: attributes.personal ? { ...attributes.personal } : { ...defaultPersonal },
     resilience: attributes.resilience,
+    // Rest days relieve battle-night stress on top of persisted stress management.
+    stress: Math.max(0, (attributes.stress ?? 0) - prep.restDays * CONFIG.STRESS_REST_RELIEF),
+    public_knowledge: attributes.public_knowledge ?? 0,
   };
 
   // === PREP IMPROVEMENTS (with badge efficiency modifiers and preparation attribute) ===
@@ -1218,7 +1225,7 @@ export function simulateSegment(
   stumbleProbability -= abilityAboveAverage * CONFIG.STUMBLE_ABILITY_REDUCTION;
 
   // Stress increases stumbles (less than chokes though)
-  const stress = (attrs as any).stress || 0;
+  const stress = attrs.stress || 0;
   stumbleProbability += (stress / 100) * CONFIG.STUMBLE_STRESS_MULTIPLIER;
 
   // Apply badge modifiers
@@ -1294,7 +1301,7 @@ export function simulateSegment(
     // }
 
     // Fame pressure: High public knowledge creates expectations
-    const publicKnowledge = (attrs as any).public_knowledge || 0;
+    const publicKnowledge = attrs.public_knowledge || 0;
     if (publicKnowledge > CONFIG.CHOKE_FAME_THRESHOLD) {
       chokeProbability += (publicKnowledge - CONFIG.CHOKE_FAME_THRESHOLD) * CONFIG.CHOKE_FAME_MULTIPLIER;
     }

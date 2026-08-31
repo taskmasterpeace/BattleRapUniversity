@@ -172,10 +172,21 @@ export const SIMULATION_CONFIG = {
    * High stress from multiple concurrent battles increases choke risk
    *
    * Formula: stress_impact = (stress / 100) × CHOKE_STRESS_MULTIPLIER
-   * Example: 50 stress = 50/100 × 0.10 = 0.05 (5% additional choke chance)
-   * Example: 100 stress = 100/100 × 0.10 = 0.10 (10% additional choke chance)
+   * Example: 50 stress = 50/100 × 0.06 = 0.03 (+3% choke chance per segment)
+   * Example: 100 stress = 100/100 × 0.06 = 0.06 (+6% per segment)
+   * Tempered 0.10 → 0.06 when the stress channel was wired live (2026-08-31):
+   * max-stress must stay BELOW the Known Choker badge (+7%/segment) so a
+   * stressed-out battler chokes like a near-Known-Choker, not worse.
    */
-  CHOKE_STRESS_MULTIPLIER: 0.10,  // NEW (stress at 100 adds 10% choke)
+  CHOKE_STRESS_MULTIPLIER: 0.06,
+
+  /**
+   * Battle-night stress relief from rest prep days.
+   * Each rest day shaves this many stress points off the effective stress
+   * carried into the sim (on top of persisted stress-management decay) —
+   * rest is the direct counter to walking in stressed.
+   */
+  STRESS_REST_RELIEF: 6,
 
   // ============================================================================
   // PERSONAL FACTORS (NEW - PHASE 4 CHOKE EXPANSION)
@@ -415,12 +426,18 @@ export const SIMULATION_CONFIG = {
   /**
    * Crowd reaction normalization factor
    *
-   * Crowd reaction is 0-100, need to normalize to ~0-15 range to match score scale
-   * Formula: normalized_crowd = (crowd_reaction / 100) × CROWD_SCALE
-   *
-   * NEW: Scale crowd 0-100 → 0-15 for scoring
+   * Crowd reaction is 0-100; normalize onto the 0-10 score scale so the 25%
+   * crowd weight actually carries. Formula: normalized = (crowd/100) × SCALE.
+   * BUG FIX 2026-08-31: was 0.15 (a factor-of-100 slip) which made a PERFECT
+   * crowd worth <1% of the composite — the whole "room-shaking performances
+   * steal close rounds" design was silently dead. Restored to 6 (not the full
+   * 10): crowd ≈ 13-15% of a typical composite, a 20-point crowd advantage ≈
+   * a 0.3-point edge — enough to steal CLOSE rounds without letting the room
+   * overturn clear pen gaps. Full-scale 10 also destabilized choke calibration
+   * through the momentum→resilience coupling (round winners gain momentum,
+   * momentum scales resilience, resilience drives chokes) — validated 2026-08-31.
    */
-  ROUND_JUDGING_CROWD_SCALE: 0.15,  // Scale factor for crowd reaction
+  ROUND_JUDGING_CROWD_SCALE: 6,
 
   /**
    * Threshold for 3-0 "bodybag" decisions

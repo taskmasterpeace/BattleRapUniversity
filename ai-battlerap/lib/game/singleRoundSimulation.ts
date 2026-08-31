@@ -471,6 +471,9 @@ function applyPrepModifiers(
     performance: { ...attributes.performance },
     personal: attributes.personal ? { ...attributes.personal } : { ...defaultPersonal },
     resilience: attributes.resilience,
+    // Rest days relieve battle-night stress (same rule as the full sim)
+    stress: Math.max(0, (attributes.stress ?? 0) - prep.restDays * CONFIG.STRESS_REST_RELIEF),
+    public_knowledge: attributes.public_knowledge ?? 0,
   };
 
   const preparationAttribute = (attributes.personal && attributes.personal.preparation) || 5;
@@ -635,6 +638,7 @@ function simulateSegment(
   let stumbleProbability = CONFIG.STUMBLE_BASE_PROBABILITY;
   stumbleProbability -= prep.performanceDays * CONFIG.STUMBLE_PREP_REDUCTION;
   stumbleProbability -= Math.max(0, deliveryFlow - 5) * CONFIG.STUMBLE_ABILITY_REDUCTION;
+  stumbleProbability += ((attrs.stress || 0) / 100) * CONFIG.STUMBLE_STRESS_MULTIPLIER;
   stumbleProbability -= badgeEffects.stumbleReduction || 0;
   stumbleProbability += badgeEffects.stumbleIncrease || 0;
   stumbleProbability = Math.max(
@@ -667,6 +671,13 @@ function simulateSegment(
     let chokeProbability = CONFIG.CHOKE_BASE_PROBABILITY;
     chokeProbability -= resilienceAboveAverage * CONFIG.CHOKE_RESILIENCE_FACTOR;
     chokeProbability -= prep.writingDays * CONFIG.CHOKE_PREP_REDUCTION;
+
+    // Stress + fame pressure — parity with the full sim's choke formula
+    chokeProbability += ((attrs.stress || 0) / 100) * CONFIG.CHOKE_STRESS_MULTIPLIER;
+    const publicKnowledge = attrs.public_knowledge || 0;
+    if (publicKnowledge > CONFIG.CHOKE_FAME_THRESHOLD) {
+      chokeProbability += (publicKnowledge - CONFIG.CHOKE_FAME_THRESHOLD) * CONFIG.CHOKE_FAME_MULTIPLIER;
+    }
 
     const financialStability = (attrs.personal && attrs.personal.financial_stability) || 5;
     const totalPrep = prep.writingDays + prep.performanceDays + prep.researchDays;
