@@ -19,12 +19,6 @@ interface RematchDemandBarProps {
 }
 
 export function RematchDemandBar({ demand, size = 'md', showLabel = true, className = '' }: RematchDemandBarProps) {
-  const getHeight = () => {
-    if (size === 'sm') return 'h-2';
-    if (size === 'lg') return 'h-6';
-    return 'h-4';
-  };
-
   const getTextSize = () => {
     if (size === 'sm') return 'text-xs';
     if (size === 'lg') return 'text-base';
@@ -48,16 +42,27 @@ export function RematchDemandBar({ demand, size = 'md', showLabel = true, classN
           </span>
         </div>
       )}
-      <div className="w-full bg-zinc-800 rounded-full overflow-hidden">
-        <div
-          className={`${getHeight()} bg-blue-600 transition-all duration-500 ease-out`}
-          style={{ width: `${Math.min(100, Math.max(0, demand))}%` }}
-          role="progressbar"
-          aria-valuenow={demand}
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-label={`Rematch demand: ${demand} out of 100, ${getLabel()}`}
-        />
+      <div
+        className="fs"
+        role="progressbar"
+        aria-valuenow={demand}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-label={`Rematch demand: ${demand} out of 100, ${getLabel()}`}
+      >
+        <div className="fs-seg">
+          {Array.from({ length: 10 }).map((_, i) => (
+            <i
+              key={i}
+              className={i === 2 || i === 5 || i === 8 ? 'notch' : undefined}
+              style={
+                i < Math.round(Math.min(100, Math.max(0, demand)) / 10)
+                  ? { background: 'linear-gradient(180deg,#5b9fe3,#2F7DD1)' }
+                  : undefined
+              }
+            />
+          ))}
+        </div>
       </div>
     </div>
   );

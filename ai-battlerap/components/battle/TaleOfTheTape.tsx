@@ -9,6 +9,7 @@
  */
 
 import { useState } from 'react';
+import { SegGauge, gradeOf } from '@/components/ui/StatGauge';
 
 type AttrGroup = {
   writing: { lyricism: number; wordplay: number; creativity: number; flow: number };
@@ -78,22 +79,16 @@ function MirrorRow({ row }: { row: StatRow }) {
         >
           {row.player.toFixed(1)}
         </span>
-        {/* player bar grows right→left */}
-        <div className="h-2 bg-[#18191c] border border-[#3a3d44] flex justify-end">
-          <div
-            className={`h-full ${playerWins ? 'bg-[#ff8c42]' : 'bg-zinc-600'}`}
-            style={{ width: `${Math.min(100, (row.player / 10) * 100)}%` }}
-          />
+        {/* player gauge fills right→left (mirrored dossier meter) */}
+        <div className="min-w-0 [transform:scaleX(-1)]">
+          <SegGauge v10={row.player} grade={gradeOf(row.player)} />
         </div>
         <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 text-center min-w-[92px]">
           {row.label}
         </span>
-        {/* opponent bar grows left→right */}
-        <div className="h-2 bg-[#18191c] border border-[#3a3d44]">
-          <div
-            className={`h-full ${oppWins ? 'bg-red-400' : 'bg-zinc-600'}`}
-            style={{ width: `${Math.min(100, (row.opponent / 10) * 100)}%` }}
-          />
+        {/* opponent gauge fills left→right */}
+        <div className="min-w-0">
+          <SegGauge v10={row.opponent} grade={gradeOf(row.opponent)} />
         </div>
         <span
           className={`text-sm font-display font-black tabular-nums text-right ${
@@ -131,7 +126,10 @@ export default function TaleOfTheTape({
       : `PERFORMANCE · ${(performanceWeight * 100).toFixed(0)}% OF SCORING`;
 
   return (
-    <div className="bg-[#101114] border-2 border-[#3a3d44] p-4">
+    <div
+      className="fs bg-[#101114] border-2 border-black p-4 shadow-[4px_4px_0_rgba(0,0,0,.45)]"
+      style={{ borderTop: '3px solid #F5731A' }}
+    >
       <div className="flex items-baseline justify-between mb-1">
         <h3 className="text-lg font-display font-black uppercase tracking-tighter text-[#ff8c42]">
           TALE OF THE TAPE

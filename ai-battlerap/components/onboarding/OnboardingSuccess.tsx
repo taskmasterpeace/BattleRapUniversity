@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import Icon from '@/components/ui/Icon';
+import StatGauge from '@/components/ui/StatGauge';
+import { portraitFillStyle } from '@/lib/sprite-crops';
 
 type Props = {
   stageName: string;
@@ -96,12 +98,10 @@ export default function OnboardingSuccess({
         {avatarUrl && (
           <div className="text-center mb-8">
             <div className="inline-block bg-[#0a0a0a] border-[3px] border-[#ff8c42] shadow-[0_0_40px_rgba(255,140,66,0.5)] p-2">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={avatarUrl}
-                alt={`${stageName}'s face`}
-                className="w-40 h-40 object-contain [image-rendering:pixelated]"
-              />
+              <div className="relative w-40 h-40 overflow-hidden">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={avatarUrl} alt={`${stageName}'s face`} style={portraitFillStyle(avatarUrl)} />
+              </div>
             </div>
             <p className="mt-4 font-mono text-sm uppercase tracking-widest text-[#ff8c42] font-bold">
               THIS FACE IS YOURS. FOREVER.
@@ -122,180 +122,31 @@ export default function OnboardingSuccess({
           </div>
 
           {/* Stats Grid */}
-          <div className="grid md:grid-cols-3 gap-6 mb-6">
+          <div className="grid md:grid-cols-3 gap-x-6 gap-y-4 mb-6">
             {/* Writing */}
             <div className="space-y-2">
-              <h3 className="text-xs font-black uppercase text-zinc-500 mb-3">WRITING</h3>
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <span className="text-xs text-zinc-400">Lyricism</span>
-                  <div className="flex items-center gap-2">
-                    <div className="w-16 h-2 bg-zinc-800 overflow-hidden">
-                      <div
-                        className="h-full bg-[#ff8c42]"
-                        style={{ width: `${(attributes.writing.lyricism / 10) * 100}%` }}
-                      />
-                    </div>
-                    <span className="text-sm font-black text-[#ff8c42] w-6">
-                      {attributes.writing.lyricism}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-xs text-zinc-400">Wordplay</span>
-                  <div className="flex items-center gap-2">
-                    <div className="w-16 h-2 bg-zinc-800 overflow-hidden">
-                      <div
-                        className="h-full bg-[#ff8c42]"
-                        style={{ width: `${(attributes.writing.wordplay / 10) * 100}%` }}
-                      />
-                    </div>
-                    <span className="text-sm font-black text-[#ff8c42] w-6">
-                      {attributes.writing.wordplay}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-xs text-zinc-400">Creativity</span>
-                  <div className="flex items-center gap-2">
-                    <div className="w-16 h-2 bg-zinc-800 overflow-hidden">
-                      <div
-                        className="h-full bg-[#ff8c42]"
-                        style={{ width: `${(attributes.writing.creativity / 10) * 100}%` }}
-                      />
-                    </div>
-                    <span className="text-sm font-black text-[#ff8c42] w-6">
-                      {attributes.writing.creativity}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-xs text-zinc-400">Flow</span>
-                  <div className="flex items-center gap-2">
-                    <div className="w-16 h-2 bg-zinc-800 overflow-hidden">
-                      <div
-                        className="h-full bg-[#ff8c42]"
-                        style={{ width: `${(attributes.writing.flow / 10) * 100}%` }}
-                      />
-                    </div>
-                    <span className="text-sm font-black text-[#ff8c42] w-6">
-                      {attributes.writing.flow}
-                    </span>
-                  </div>
-                </div>
-              </div>
+              <h3 className="text-xs font-black uppercase text-zinc-500 mb-2">WRITING</h3>
+              <StatGauge label="LYRICISM" v10={attributes.writing.lyricism} />
+              <StatGauge label="WORDPLAY" v10={attributes.writing.wordplay} />
+              <StatGauge label="CREATIVITY" v10={attributes.writing.creativity} />
+              <StatGauge label="FLOW" v10={attributes.writing.flow} />
             </div>
 
             {/* Performance */}
             <div className="space-y-2">
-              <h3 className="text-xs font-black uppercase text-zinc-500 mb-3">PERFORMANCE</h3>
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <span className="text-xs text-zinc-400">Stage</span>
-                  <div className="flex items-center gap-2">
-                    <div className="w-16 h-2 bg-zinc-800 overflow-hidden">
-                      <div
-                        className="h-full bg-[#ff8c42]"
-                        style={{ width: `${(attributes.performance.stage_presence / 10) * 100}%` }}
-                      />
-                    </div>
-                    <span className="text-sm font-black text-[#ff8c42] w-6">
-                      {attributes.performance.stage_presence}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-xs text-zinc-400">Crowd</span>
-                  <div className="flex items-center gap-2">
-                    <div className="w-16 h-2 bg-zinc-800 overflow-hidden">
-                      <div
-                        className="h-full bg-[#ff8c42]"
-                        style={{ width: `${(attributes.performance.crowd_control / 10) * 100}%` }}
-                      />
-                    </div>
-                    <span className="text-sm font-black text-[#ff8c42] w-6">
-                      {attributes.performance.crowd_control}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-xs text-zinc-400">Delivery</span>
-                  <div className="flex items-center gap-2">
-                    <div className="w-16 h-2 bg-zinc-800 overflow-hidden">
-                      <div
-                        className="h-full bg-[#ff8c42]"
-                        style={{ width: `${(attributes.performance.delivery / 10) * 100}%` }}
-                      />
-                    </div>
-                    <span className="text-sm font-black text-[#ff8c42] w-6">
-                      {attributes.performance.delivery}
-                    </span>
-                  </div>
-                </div>
-              </div>
+              <h3 className="text-xs font-black uppercase text-zinc-500 mb-2">PERFORMANCE</h3>
+              <StatGauge label="STAGE" v10={attributes.performance.stage_presence} />
+              <StatGauge label="CROWD" v10={attributes.performance.crowd_control} />
+              <StatGauge label="DELIVERY" v10={attributes.performance.delivery} />
             </div>
 
             {/* Mental & Personal */}
             <div className="space-y-2">
-              <h3 className="text-xs font-black uppercase text-zinc-500 mb-3">MENTAL & PERSONAL</h3>
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <span className="text-xs text-zinc-400">Resilience</span>
-                  <div className="flex items-center gap-2">
-                    <div className="w-16 h-2 bg-zinc-800 overflow-hidden">
-                      <div
-                        className="h-full bg-[#ff8c42]"
-                        style={{ width: `${(attributes.resilience / 10) * 100}%` }}
-                      />
-                    </div>
-                    <span className="text-sm font-black text-[#ff8c42] w-6">
-                      {attributes.resilience}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-xs text-zinc-400">Finances</span>
-                  <div className="flex items-center gap-2">
-                    <div className="w-16 h-2 bg-zinc-800 overflow-hidden">
-                      <div
-                        className="h-full bg-[#ff8c42]"
-                        style={{ width: `${(attributes.personal.financial_stability / 10) * 100}%` }}
-                      />
-                    </div>
-                    <span className="text-sm font-black text-[#ff8c42] w-6">
-                      {attributes.personal.financial_stability}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-xs text-zinc-400">Reputation</span>
-                  <div className="flex items-center gap-2">
-                    <div className="w-16 h-2 bg-zinc-800 overflow-hidden">
-                      <div
-                        className="h-full bg-[#ff8c42]"
-                        style={{ width: `${(attributes.personal.reputation / 10) * 100}%` }}
-                      />
-                    </div>
-                    <span className="text-sm font-black text-[#ff8c42] w-6">
-                      {attributes.personal.reputation}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-xs text-zinc-400">Family</span>
-                  <div className="flex items-center gap-2">
-                    <div className="w-16 h-2 bg-zinc-800 overflow-hidden">
-                      <div
-                        className="h-full bg-[#ff8c42]"
-                        style={{ width: `${(attributes.personal.family_bond / 10) * 100}%` }}
-                      />
-                    </div>
-                    <span className="text-sm font-black text-[#ff8c42] w-6">
-                      {attributes.personal.family_bond}
-                    </span>
-                  </div>
-                </div>
-              </div>
+              <h3 className="text-xs font-black uppercase text-zinc-500 mb-2">MENTAL & PERSONAL</h3>
+              <StatGauge label="RESILIENCE" v10={attributes.resilience} />
+              <StatGauge label="FINANCES" v10={attributes.personal.financial_stability} />
+              <StatGauge label="REPUTATION" v10={attributes.personal.reputation} />
+              <StatGauge label="FAMILY" v10={attributes.personal.family_bond} />
             </div>
           </div>
 

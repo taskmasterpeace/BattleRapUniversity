@@ -1,6 +1,7 @@
 import { createServerSupabaseClient } from '@/lib/db/server';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
+import { SegGauge } from '@/components/ui/StatGauge';
 
 export const metadata = {
   title: 'Relationships | Battle Rap University',
@@ -204,15 +205,12 @@ export default async function RelationshipsPage() {
             </span>
           </div>
 
-          {/* Bars */}
+          {/* Gauges */}
           <div className="grid grid-cols-2 gap-2">
             <div>
               <p className="text-xs text-zinc-600 mb-1">YOU</p>
-              <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-green-500 to-green-600"
-                  style={{ width: `${rel.playerCrowdPerception}%` }}
-                />
+              <div className="fs">
+                <SegGauge v10={rel.playerCrowdPerception / 10} grade="A" />
               </div>
               <p className="text-xs text-green-500 font-bold mt-1">
                 {rel.playerCrowdPerception}
@@ -220,11 +218,8 @@ export default async function RelationshipsPage() {
             </div>
             <div>
               <p className="text-xs text-zinc-600 mb-1">THEM</p>
-              <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-red-500 to-red-600"
-                  style={{ width: `${rel.opponentCrowdPerception}%` }}
-                />
+              <div className="fs">
+                <SegGauge v10={rel.opponentCrowdPerception / 10} grade="D" />
               </div>
               <p className="text-xs text-red-500 font-bold mt-1">
                 {rel.opponentCrowdPerception}

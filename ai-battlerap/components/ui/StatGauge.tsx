@@ -44,6 +44,35 @@ export function SegGauge({ v10, grade }: { v10: number; grade: Grade }) {
   );
 }
 
+/**
+ * Two-sided share gauge in the same cell texture — e.g. crowd perception
+ * (your share of the room vs theirs). Left cells = side A, rest = side B.
+ */
+export function SplitGauge({
+  pctA,
+  aCell = 'linear-gradient(180deg,#ff9d5c,#c4560f)',
+  bCell = 'linear-gradient(180deg,#e86458,#a5281e)',
+}: {
+  pctA: number;
+  aCell?: string;
+  bCell?: string;
+}) {
+  const cellsA = Math.round(Math.max(0, Math.min(100, pctA)) / 10);
+  return (
+    <div className="fs">
+      <div className="fs-seg">
+        {Array.from({ length: 10 }).map((_, i) => (
+          <i
+            key={i}
+            className={i === 2 || i === 5 || i === 8 ? 'notch' : undefined}
+            style={{ background: i < cellsA ? aCell : bCell }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 interface StatGaugeProps {
   label: string;
   /** value on the 0-10 scale (pass pct/10 for percentages) */

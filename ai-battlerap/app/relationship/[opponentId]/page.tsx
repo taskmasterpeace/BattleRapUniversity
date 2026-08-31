@@ -1,6 +1,7 @@
 import { createServerSupabaseClient } from '@/lib/db/server';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
+import { SegGauge } from '@/components/ui/StatGauge';
 
 export const metadata = {
   title: 'Relationship Detail | Battle Rap University',
@@ -336,11 +337,8 @@ export default async function RelationshipDetailPage({ params }: Props) {
                   {relData.playerCrowdPerception}/100
                 </span>
               </div>
-              <div className="h-4 bg-zinc-800 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-green-500 to-green-600"
-                  style={{ width: `${relData.playerCrowdPerception}%` }}
-                />
+              <div className="fs">
+                <SegGauge v10={relData.playerCrowdPerception / 10} grade="A" />
               </div>
             </div>
 
@@ -353,11 +351,8 @@ export default async function RelationshipDetailPage({ params }: Props) {
                   {relData.opponentCrowdPerception}/100
                 </span>
               </div>
-              <div className="h-4 bg-zinc-800 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-red-500 to-red-600"
-                  style={{ width: `${relData.opponentCrowdPerception}%` }}
-                />
+              <div className="fs">
+                <SegGauge v10={relData.opponentCrowdPerception / 10} grade="D" />
               </div>
             </div>
           </div>

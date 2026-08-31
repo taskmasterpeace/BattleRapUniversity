@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { SegGauge } from '@/components/ui/StatGauge';
 
 type Relationship = {
   id: string;
@@ -174,30 +175,21 @@ export default function ActiveBeefsWidget({ battlerId }: Props) {
                   </span>
                 </div>
 
-                {/* Dual Perception Bars */}
+                {/* Dual Perception Gauges */}
                 <div className="space-y-1">
-                  {/* Player Bar */}
                   <div className="flex items-center gap-2">
                     <span className="text-xs text-zinc-600 w-12">YOU</span>
-                    <div className="flex-1 h-2 bg-zinc-800 rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-gradient-to-r from-green-500 to-green-600 transition-all"
-                        style={{ width: `${rel.playerCrowdPerception}%` }}
-                      />
+                    <div className="fs flex-1 min-w-0">
+                      <SegGauge v10={rel.playerCrowdPerception / 10} grade="A" />
                     </div>
                     <span className="text-xs font-bold text-green-500 w-8 text-right">
                       {rel.playerCrowdPerception}
                     </span>
                   </div>
-
-                  {/* Opponent Bar */}
                   <div className="flex items-center gap-2">
                     <span className="text-xs text-zinc-600 w-12">THEM</span>
-                    <div className="flex-1 h-2 bg-zinc-800 rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-gradient-to-r from-red-500 to-red-600 transition-all"
-                        style={{ width: `${rel.opponentCrowdPerception}%` }}
-                      />
+                    <div className="fs flex-1 min-w-0">
+                      <SegGauge v10={rel.opponentCrowdPerception / 10} grade="D" />
                     </div>
                     <span className="text-xs font-bold text-red-500 w-8 text-right">
                       {rel.opponentCrowdPerception}

@@ -53,12 +53,21 @@ export default function BadgeProgress({
               </span>
             </div>
 
-            {/* Progress Bar */}
-            <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-gradient-to-r from-orange-500 to-amber-500 transition-all duration-500"
-                style={{ width: `${Math.min(100, item.progressPercent)}%` }}
-              />
+            {/* Progress Gauge */}
+            <div className="fs">
+              <div className="fs-seg">
+                {Array.from({ length: 10 }).map((_, i) => (
+                  <i
+                    key={i}
+                    className={i === 2 || i === 5 || i === 8 ? 'notch' : undefined}
+                    style={
+                      i < Math.round(Math.min(100, item.progressPercent) / 10)
+                        ? { background: 'linear-gradient(180deg,#ff9d5c,#c4560f)' }
+                        : undefined
+                    }
+                  />
+                ))}
+              </div>
             </div>
 
             {/* Progress Percentage */}

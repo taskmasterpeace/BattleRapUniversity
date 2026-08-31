@@ -210,13 +210,27 @@ export default function BadgeShowcase({ styleTags, badgeProgress = [], badgeIcon
                           {bp.pct}%
                         </span>
                       </div>
-                      <div className="w-full bg-[#0e0f12] h-2 overflow-hidden">
-                        <div
-                          className={`h-full transition-all duration-500 ${
-                            bp.pct >= 80 ? 'bg-green-500' : bp.pct >= 40 ? 'bg-[#ff8c42]' : 'bg-zinc-600'
-                          }`}
-                          style={{ width: `${Math.min(100, bp.pct)}%` }}
-                        />
+                      <div className="fs">
+                        <div className="fs-seg">
+                          {Array.from({ length: 10 }).map((_, i) => (
+                            <i
+                              key={i}
+                              className={i === 2 || i === 5 || i === 8 ? 'notch' : undefined}
+                              style={
+                                i < Math.round(Math.min(100, bp.pct) / 10)
+                                  ? {
+                                      background:
+                                        bp.pct >= 80
+                                          ? 'linear-gradient(180deg,#3fd67e,#1c7a3f)'
+                                          : bp.pct >= 40
+                                            ? 'linear-gradient(180deg,#ff9d5c,#c4560f)'
+                                            : 'linear-gradient(180deg,#5a5c66,#3a3c44)',
+                                    }
+                                  : undefined
+                              }
+                            />
+                          ))}
+                        </div>
                       </div>
                       <p className="text-xs text-zinc-500 mt-2 uppercase tracking-wide">{bp.detail}</p>
                     </div>

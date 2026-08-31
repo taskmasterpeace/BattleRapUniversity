@@ -1,5 +1,7 @@
 'use client';
 
+import { SegGauge, gradeOf } from '@/components/ui/StatGauge';
+
 type BattlerAttributes = {
   writing: {
     lyricism: number;
@@ -279,18 +281,14 @@ function AttributeBar({
         </div>
       </div>
 
-      {/* Comparison Bar */}
-      <div className="relative h-3 bg-zinc-800 rounded-full overflow-hidden">
-        {/* Player bar (left side) */}
-        <div
-          className="absolute left-0 h-full bg-blue-500 transition-all duration-500"
-          style={{ width: `${(comparison.playerValue / 10) * 50}%` }}
-        />
-        {/* Opponent bar (right side) */}
-        <div
-          className="absolute right-0 h-full bg-zinc-700 transition-all duration-500"
-          style={{ width: `${(comparison.opponentValue / 10) * 50}%` }}
-        />
+      {/* Comparison — mirrored dossier gauges, player fills right→left */}
+      <div className="fs grid grid-cols-2 gap-2 items-center">
+        <div className="min-w-0 [transform:scaleX(-1)]">
+          <SegGauge v10={comparison.playerValue} grade={gradeOf(comparison.playerValue)} />
+        </div>
+        <div className="min-w-0">
+          <SegGauge v10={comparison.opponentValue} grade={gradeOf(comparison.opponentValue)} />
+        </div>
       </div>
 
       {/* Advantage Indicator */}

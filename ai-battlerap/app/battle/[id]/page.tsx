@@ -3,6 +3,7 @@
 import { useState, useEffect, use, type ReactNode } from 'react';
 import Link from 'next/link';
 import MatchupMasthead, { battleFace } from '@/components/battle/MatchupMasthead';
+import { SegGauge, gradeOf } from '@/components/ui/StatGauge';
 import GamingButton from '@/components/ui/GamingButton';
 import PostBattleSummary from '@/components/battle/PostBattleSummary';
 import JudgeScorecard from '@/components/battle/JudgeScorecard';
@@ -484,20 +485,14 @@ export default function BattleViewerPage({
           {player.toFixed(suffix ? 0 : 2)}
           {suffix}
         </span>
-        <div className="h-2 bg-[#18191c] border border-[#3a3d44] flex justify-end">
-          <div
-            className={`h-full ${playerLeads ? 'bg-[#ff8c42]' : 'bg-zinc-600'}`}
-            style={{ width: `${Math.min(100, (player / max) * 100)}%` }}
-          />
+        <div className="fs min-w-0 [transform:scaleX(-1)]">
+          <SegGauge v10={(player / max) * 10} grade={gradeOf((player / max) * 10)} />
         </div>
         <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 text-center min-w-[64px]">
           {label}
         </span>
-        <div className="h-2 bg-[#18191c] border border-[#3a3d44]">
-          <div
-            className={`h-full ${oppLeads ? 'bg-red-400' : 'bg-zinc-600'}`}
-            style={{ width: `${Math.min(100, (opponent / max) * 100)}%` }}
-          />
+        <div className="fs min-w-0">
+          <SegGauge v10={(opponent / max) * 10} grade={gradeOf((opponent / max) * 10)} />
         </div>
         <span
           className={`text-sm font-display font-black tabular-nums text-right ${

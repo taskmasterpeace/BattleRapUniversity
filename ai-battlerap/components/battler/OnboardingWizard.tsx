@@ -13,6 +13,7 @@ import OnboardingSuccess from '@/components/onboarding/OnboardingSuccess';
 import { BattlerTemplate } from '@/lib/game/battlerTemplates';
 import Tooltip from '@/components/onboarding/Tooltip';
 import { getCityBonus } from '@/lib/game/cityBonuses';
+import { portraitFillStyle } from '@/lib/sprite-crops';
 
 type League = {
   id: string;
@@ -525,7 +526,7 @@ export default function OnboardingWizard() {
                             key={sprite}
                             data-face={sprite}
                             onClick={() => setSelectedAvatar(sprite)}
-                            className={`cursor-pointer aspect-square bg-[#0a0a0a] overflow-hidden transition ${
+                            className={`relative cursor-pointer aspect-square bg-[#0a0a0a] overflow-hidden transition ${
                               isSelected
                                 ? 'border-[3px] border-[#ff8c42] shadow-[0_0_15px_rgba(255,140,66,0.6)]'
                                 : 'border-2 border-[#3a3d44] hover:border-zinc-500'
@@ -535,7 +536,7 @@ export default function OnboardingWizard() {
                             <img
                               src={sprite}
                               alt="Battler face"
-                              className="w-full h-full object-contain [image-rendering:pixelated]"
+                              style={portraitFillStyle(sprite)}
                               loading="lazy"
                             />
                           </div>

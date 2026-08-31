@@ -1,6 +1,7 @@
 /**
- * Fan Stats Widget
- * Displays fan count, trending score, and fan growth on dashboard
+ * Fan Stats Widget — the FAN BASE plate.
+ * Flyer System poster plate; the hardcore/casual mix renders as ONE split
+ * cell gauge (green = hardcore, blue = casual) in the app-wide meter texture.
  */
 
 type FanStatsProps = {
@@ -14,11 +15,14 @@ type FanStatsProps = {
   } | null;
 };
 
+const HARDCORE_CELL = 'linear-gradient(180deg,#3fd67e,#1c7a3f)';
+const CASUAL_CELL = 'linear-gradient(180deg,#5b9fe3,#2F7DD1)';
+
 export default function FanStatsWidget({ fanData }: FanStatsProps) {
   if (!fanData) {
     return (
-      <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-6">
-        <h3 className="text-lg font-black uppercase tracking-wider mb-4">FAN BASE</h3>
+      <div className="fs bg-[#17181C] border-2 border-black p-6 shadow-[4px_4px_0_rgba(0,0,0,.45)]">
+        <h3 className="text-lg font-display font-black uppercase tracking-tighter text-[#ff8c42] mb-3">FAN BASE</h3>
         <div className="text-zinc-500 text-sm uppercase tracking-wider">No fan data available</div>
       </div>
     );
@@ -31,88 +35,103 @@ export default function FanStatsWidget({ fanData }: FanStatsProps) {
   };
 
   const getTrendingLabel = (score: number) => {
-    if (score >= 80) return { label: 'VIRAL', color: 'text-amber-400', bg: 'bg-amber-500/20', border: 'border-amber-500/30' };
-    if (score >= 60) return { label: 'HOT', color: 'text-orange-400', bg: 'bg-[#ff8c42]/20', border: 'border-[#ff8c42]/30' };
-    if (score >= 40) return { label: 'RISING', color: 'text-blue-400', bg: 'bg-blue-500/20', border: 'border-blue-500/30' };
-    return { label: 'STEADY', color: 'text-zinc-400', bg: 'bg-zinc-700/20', border: 'border-zinc-600/30' };
+    if (score >= 80) return { label: 'VIRAL', color: '#E7B23C' };
+    if (score >= 60) return { label: 'HOT', color: '#F5731A' };
+    if (score >= 40) return { label: 'RISING', color: '#2F7DD1' };
+    return { label: 'STEADY', color: '#9CA3AF' };
   };
 
   const trending = getTrendingLabel(fanData.trending_score);
-  const hardcorePercent = ((fanData.hardcore_fans / fanData.total_fans) * 100).toFixed(0);
-  const casualPercent = ((fanData.casual_fans / fanData.total_fans) * 100).toFixed(0);
+  const total = Math.max(1, fanData.total_fans);
+  const hardcorePercent = Math.round((fanData.hardcore_fans / total) * 100);
+  const casualPercent = Math.round((fanData.casual_fans / total) * 100);
+  const hardcoreCells = Math.round(hardcorePercent / 10);
 
   return (
-    <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-6">
+    <div
+      className="fs bg-[#17181C] border-2 border-black p-6 shadow-[4px_4px_0_rgba(0,0,0,.45)]"
+      style={{ borderTop: '3px solid #F5731A' }}
+    >
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-black uppercase tracking-wider">FAN BASE</h3>
-        <div className={`px-3 py-1 border-2 ${trending.bg} ${trending.border} ${trending.color} text-xs font-black uppercase tracking-wider`}>
+      <div className="flex items-center justify-between mb-5">
+        <h3 className="text-lg font-display font-black uppercase tracking-tighter text-[#ff8c42]">FAN BASE</h3>
+        <span
+          className="px-2.5 py-1 border-2 border-black shadow-[2px_2px_0_rgba(0,0,0,.4)]"
+          style={{
+            fontFamily: 'var(--font-pixel)',
+            fontSize: 8,
+            color: '#0F0F12',
+            background: trending.color,
+          }}
+        >
           {trending.label}
-        </div>
+        </span>
       </div>
 
       {/* Total Fans */}
-      <div className="mb-6">
-        <div className="text-xs uppercase tracking-wider text-zinc-500 font-bold mb-2">
+      <div className="mb-5">
+        <div className="font-mono text-[8px] uppercase tracking-[0.25em] text-zinc-500 mb-1.5">
           TOTAL FANS
         </div>
-        <div className="text-5xl font-display font-black tracking-tighter text-zinc-100">
+        <div
+          className="leading-none text-zinc-100"
+          style={{ fontFamily: 'var(--font-poster)', fontSize: 44, textShadow: '3px 3px 0 #000' }}
+        >
           {formatNumber(fanData.total_fans)}
         </div>
       </div>
 
-      {/* Fan Segments */}
-      <div className="space-y-4 mb-6">
-        {/* Hardcore Fans */}
-        <div>
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-xs uppercase tracking-wide text-zinc-400 font-bold">Hardcore Fans</span>
-            <span className="text-sm font-black text-green-400">{formatNumber(fanData.hardcore_fans)} ({hardcorePercent}%)</span>
-          </div>
-          <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-green-500"
-              style={{ width: `${hardcorePercent}%` }}
+      {/* Fan mix — one split cell gauge */}
+      <div className="mb-2">
+        <div className="fs-seg">
+          {Array.from({ length: 10 }).map((_, i) => (
+            <i
+              key={i}
+              className={i === 2 || i === 5 || i === 8 ? 'notch' : undefined}
+              style={{ background: i < hardcoreCells ? HARDCORE_CELL : CASUAL_CELL }}
             />
-          </div>
-          <div className="text-xs text-zinc-600 mt-1">Always watch your battles</div>
-        </div>
-
-        {/* Casual Fans */}
-        <div>
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-xs uppercase tracking-wide text-zinc-400 font-bold">Casual Fans</span>
-            <span className="text-sm font-black text-blue-400">{formatNumber(fanData.casual_fans)} ({casualPercent}%)</span>
-          </div>
-          <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-blue-500"
-              style={{ width: `${casualPercent}%` }}
-            />
-          </div>
-          <div className="text-xs text-zinc-600 mt-1">Watch when you're trending</div>
+          ))}
         </div>
       </div>
+      <div className="flex justify-between gap-3 mb-5">
+        <span className="font-mono text-[9px] uppercase tracking-wide">
+          <span className="text-green-400 font-bold">■ HARDCORE</span>{' '}
+          <span className="text-zinc-400">{formatNumber(fanData.hardcore_fans)} · {hardcorePercent}%</span>
+        </span>
+        <span className="font-mono text-[9px] uppercase tracking-wide text-right">
+          <span className="text-[#5b9fe3] font-bold">■ CASUAL</span>{' '}
+          <span className="text-zinc-400">{formatNumber(fanData.casual_fans)} · {casualPercent}%</span>
+        </span>
+      </div>
+      <p className="font-mono text-[8px] uppercase tracking-[0.2em] text-zinc-600 -mt-3 mb-5">
+        HARDCORE ALWAYS PULL UP · CASUALS WATCH WHEN YOU'RE TRENDING
+      </p>
 
-      {/* Growth Stats */}
-      <div className="pt-4 border-t-2 border-[#3a3d44] space-y-3">
+      {/* Growth stats */}
+      <div className="pt-4 border-t-2 border-black space-y-2.5">
         <div className="flex justify-between items-center">
-          <span className="text-xs uppercase tracking-wide text-zinc-500">Trending Score</span>
-          <span className={`font-black text-lg ${trending.color}`}>
+          <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-zinc-500">Trending Score</span>
+          <span style={{ fontFamily: 'var(--font-pixel)', fontSize: 11, color: trending.color }}>
             {fanData.trending_score.toFixed(0)}/100
           </span>
         </div>
 
         <div className="flex justify-between items-center">
-          <span className="text-xs uppercase tracking-wide text-zinc-500">Growth Rate</span>
-          <span className={`font-black text-sm ${fanData.fan_growth_rate >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+          <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-zinc-500">Growth Rate</span>
+          <span
+            style={{
+              fontFamily: 'var(--font-pixel)',
+              fontSize: 10,
+              color: fanData.fan_growth_rate >= 0 ? '#35C46B' : '#E23A2E',
+            }}
+          >
             {fanData.fan_growth_rate >= 0 ? '+' : ''}{fanData.fan_growth_rate.toFixed(1)}%
           </span>
         </div>
 
         <div className="flex justify-between items-center">
-          <span className="text-xs uppercase tracking-wide text-zinc-500">Hype Factor</span>
-          <span className="font-black text-sm text-zinc-300">
+          <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-zinc-500">Hype Factor</span>
+          <span style={{ fontFamily: 'var(--font-pixel)', fontSize: 10, color: '#F4F4F6' }}>
             {(fanData.avg_hype_multiplier * 100).toFixed(0)}%
           </span>
         </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import Image from 'next/image';
+import { portraitFillStyle } from '@/lib/sprite-crops';
 import Icon from '@/components/ui/Icon';
 
 type Props = {
@@ -54,17 +54,12 @@ export default function WelcomeScreen({ onQuickStart, onCustomBuild }: Props) {
           {PREVIEW_FACES.map((src, i) => (
             <div
               key={src}
-              className={`w-16 h-16 sm:w-20 sm:h-20 bg-[#0a0a0a] border-2 overflow-hidden ${
+              className={`relative w-16 h-16 sm:w-20 sm:h-20 bg-[#0a0a0a] border-2 overflow-hidden ${
                 i === 2 ? 'border-[#ff8c42] shadow-[0_0_18px_-4px_rgba(255,140,66,0.7)]' : 'border-[#3a3d44] opacity-70'
               }`}
             >
-              <Image
-                src={src}
-                alt=""
-                width={80}
-                height={80}
-                className="w-full h-full object-contain [image-rendering:pixelated]"
-              />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={src} alt="" style={portraitFillStyle(src)} />
             </div>
           ))}
         </div>

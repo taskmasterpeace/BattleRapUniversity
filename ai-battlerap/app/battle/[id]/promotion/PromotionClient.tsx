@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { SegGauge } from '@/components/ui/StatGauge';
 import { useRouter } from 'next/navigation';
 import { toast } from '@/components/ui/Toast';
 
@@ -346,11 +347,8 @@ export default function PromotionClient({
                 <div className="text-3xl font-black text-green-500 mb-2">
                   {playerCrowdPerception}/100
                 </div>
-                <div className="h-3 bg-zinc-800 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-gradient-to-r from-green-500 to-green-600"
-                    style={{ width: `${playerCrowdPerception}%` }}
-                  />
+                <div className="fs">
+                  <SegGauge v10={playerCrowdPerception / 10} grade="A" />
                 </div>
               </div>
               <div>
@@ -360,11 +358,8 @@ export default function PromotionClient({
                 <div className="text-3xl font-black text-red-500 mb-2">
                   {opponentCrowdPerception}/100
                 </div>
-                <div className="h-3 bg-zinc-800 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-gradient-to-r from-red-500 to-red-600"
-                    style={{ width: `${opponentCrowdPerception}%` }}
-                  />
+                <div className="fs">
+                  <SegGauge v10={opponentCrowdPerception / 10} grade="D" />
                 </div>
               </div>
             </div>

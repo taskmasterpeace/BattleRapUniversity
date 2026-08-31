@@ -8,6 +8,8 @@ import Icon from '@/components/ui/Icon';
 import GamingButton from '@/components/ui/GamingButton';
 import { toast } from '@/components/ui/Toast';
 import MatchupMasthead, { battleFace } from '@/components/battle/MatchupMasthead';
+import { GrudgeMeter } from '@/components/grudge/GrudgeMeter';
+import { RematchDemandBar } from '@/components/grudge/RematchDemandBar';
 
 type BattlerAttributes = {
   writing: {
@@ -249,32 +251,22 @@ export default function BattleOffersPage() {
                         )}
                       </div>
 
-                      {/* Intensity Meters */}
+                      {/* Intensity Meters — the app-wide cell gauge */}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div>
-                          <div className="text-xs font-display font-display font-black uppercase tracking-wider text-zinc-500 mb-2">
+                          <div className="text-xs font-display font-black uppercase tracking-wider text-zinc-500 mb-2">
                             GRUDGE INTENSITY
                           </div>
-                          <div className="h-3 bg-[#18191c] border-2 border-[#3a3d44] overflow-hidden">
-                            <div
-                              className="h-full bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500 transition-all"
-                              style={{ width: `${offer.grudge.intensity}%` }}
-                            />
-                          </div>
+                          <GrudgeMeter intensity={offer.grudge.intensity} showLabel={false} />
                           <div className="text-right text-sm font-display font-black text-[#ff8c42] mt-1">
                             {offer.grudge.intensity}%
                           </div>
                         </div>
                         <div>
-                          <div className="text-xs font-display font-display font-black uppercase tracking-wider text-zinc-500 mb-2">
+                          <div className="text-xs font-display font-black uppercase tracking-wider text-zinc-500 mb-2">
                             REMATCH DEMAND
                           </div>
-                          <div className="h-3 bg-[#18191c] border-2 border-[#3a3d44] overflow-hidden">
-                            <div
-                              className="h-full bg-gradient-to-r from-[#ff8c42] to-red-500 transition-all"
-                              style={{ width: `${offer.grudge.rematchDemand}%` }}
-                            />
-                          </div>
+                          <RematchDemandBar demand={offer.grudge.rematchDemand} showLabel={false} />
                           <div className="text-right text-sm font-display font-black text-[#ff8c42] mt-1">
                             {offer.grudge.rematchDemand}%
                           </div>

@@ -9,6 +9,7 @@ import Avatar from '@/components/ui/Avatar';
 import Icon from '@/components/ui/Icon';
 import StatCard from '@/components/ui/StatCard';
 import StatGauge from '@/components/ui/StatGauge';
+import { portraitFillStyle } from '@/lib/sprite-crops';
 import GamingButton from '@/components/ui/GamingButton';
 import StressIndicator from './StressIndicator';
 import ArchetypeDisplay from './ArchetypeDisplay';
@@ -784,11 +785,13 @@ export default function DashboardClient({
                           title={`${battle.ai_battler?.stage_name} — profile`}
                         >
                           {battle.ai_battler?.avatar_url && (
-                            <img
-                              src={battle.ai_battler.avatar_url}
-                              alt=""
-                              className="w-10 h-10 object-contain object-bottom [image-rendering:pixelated]"
-                            />
+                            <span className="relative w-10 h-10 inline-block overflow-hidden border-2 border-black bg-[#0a0a0a]">
+                              <img
+                                src={battle.ai_battler.avatar_url}
+                                alt=""
+                                style={portraitFillStyle(battle.ai_battler.avatar_url)}
+                              />
+                            </span>
                           )}
                           <span className="text-2xl font-display font-black uppercase tracking-tighter text-zinc-100 group-hover/opp:text-[#ff8c42] transition-colors">
                             VS {battle.ai_battler?.stage_name}

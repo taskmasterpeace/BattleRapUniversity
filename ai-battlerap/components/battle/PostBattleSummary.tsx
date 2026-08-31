@@ -1,5 +1,7 @@
 'use client';
 
+import { SegGauge, gradeOf } from '@/components/ui/StatGauge';
+
 type AttributeChange = {
   attribute: string;
   category: 'writing' | 'performance' | 'personal';
@@ -81,7 +83,10 @@ export default function PostBattleSummary({
   };
 
   return (
-    <div className="bg-[#2d2f35] border-2 border-[#3a3d44] rounded-lg p-8 space-y-6">
+    <div
+      className="fs bg-[#17181C] border-2 border-black p-8 space-y-6 shadow-[4px_4px_0_rgba(0,0,0,.45)]"
+      style={{ borderTop: '3px solid #F5731A' }}
+    >
       {/* Header */}
       <div className="border-b-2 border-[#3a3d44] pb-4">
         <h2 className="text-2xl font-black uppercase tracking-tight text-[#ff8c42] mb-2">
@@ -273,12 +278,8 @@ export default function PostBattleSummary({
                   <span className="text-green-500">→</span>
                   <span className="text-sm font-bold text-green-400">{change.newValue.toFixed(1)}</span>
                 </div>
-                {/* Progress bar */}
-                <div className="h-1.5 bg-zinc-800 rounded-full mt-2 overflow-hidden">
-                  <div
-                    className="h-full bg-gradient-to-r from-green-600 to-green-400 transition-all duration-500"
-                    style={{ width: `${(change.newValue / 10) * 100}%` }}
-                  />
+                <div className="fs mt-2">
+                  <SegGauge v10={change.newValue} grade={gradeOf(change.newValue)} />
                 </div>
               </div>
             ))}
@@ -308,11 +309,8 @@ export default function PostBattleSummary({
                   <span className="text-red-500">→</span>
                   <span className="text-sm font-bold text-red-400">{change.newValue.toFixed(1)}</span>
                 </div>
-                <div className="h-1.5 bg-zinc-800 rounded-full mt-2 overflow-hidden">
-                  <div
-                    className="h-full bg-gradient-to-r from-red-600 to-red-400 transition-all duration-500"
-                    style={{ width: `${(change.newValue / 10) * 100}%` }}
-                  />
+                <div className="fs mt-2">
+                  <SegGauge v10={change.newValue} grade={gradeOf(change.newValue)} />
                 </div>
               </div>
             ))}

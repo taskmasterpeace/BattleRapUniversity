@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import Image from 'next/image';
 import { getInitials, getTierColor } from '@/lib/services/imageUploadService';
+import { portraitFillStyle } from '@/lib/sprite-crops';
 
 type Size = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
 
@@ -26,16 +26,6 @@ const sizeClasses: Record<Size, string> = {
   '2xl': 'w-40 h-40 text-3xl',
 };
 
-// Convert size to pixel dimensions for Next.js Image
-const sizePx: Record<Size, number> = {
-  xs: 32,
-  sm: 48,
-  md: 64,
-  lg: 96,
-  xl: 128,
-  '2xl': 160,
-};
-
 export default function BattlerAvatar({
   battler,
   size = 'md',
@@ -49,31 +39,30 @@ export default function BattlerAvatar({
   const initials = getInitials(battler.stage_name);
   const tierColor = getTierColor(battler.tier || 'low');
   const sizeClass = sizeClasses[size];
-  const borderClass = showBorder ? 'ring-2 ring-orange-500 ring-offset-2 ring-offset-zinc-950' : '';
+  const borderClass = showBorder ? 'border-[#ff8c42]' : 'border-black';
 
   if (hasImage) {
+    // Square fill-frame portrait (Flyer System) — the face fills the whole box.
     return (
-      <div className={`relative ${sizeClass} ${className}`}>
-        {/* Tier-colored background circle */}
-        <div className={`absolute inset-0 rounded-full ${tierColor} ${loading ? 'flex items-center justify-center font-black text-white' : ''}`}>
-          {loading && initials}
-        </div>
-        {/* Character sprite displayed over background */}
-        <div className={`relative w-full h-full rounded-full overflow-hidden ${borderClass}`}>
-          <Image
-            src={battler.avatar_url!}
-            alt={battler.stage_name}
-            width={sizePx[size]}
-            height={sizePx[size]}
-            className={`object-contain ${loading ? 'opacity-0' : 'opacity-100'} transition-opacity`}
-            onLoad={() => setLoading(false)}
-            onError={() => {
-              setImageError(true);
-              setLoading(false);
-            }}
-            unoptimized // Character sprites are already optimized PNGs
-          />
-        </div>
+      <div
+        className={`relative ${sizeClass} ${className} border-2 ${borderClass} bg-[#0a0a0a] overflow-hidden`}
+      >
+        {loading && (
+          <div className={`absolute inset-0 ${tierColor} flex items-center justify-center font-black text-white`}>
+            {initials}
+          </div>
+        )}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={battler.avatar_url!}
+          alt={battler.stage_name}
+          style={{ ...portraitFillStyle(battler.avatar_url!), opacity: loading ? 0 : 1 }}
+          onLoad={() => setLoading(false)}
+          onError={() => {
+            setImageError(true);
+            setLoading(false);
+          }}
+        />
       </div>
     );
   }
@@ -81,7 +70,7 @@ export default function BattlerAvatar({
   // Fallback to initials (for backwards compatibility or if sprite fails to load)
   return (
     <div
-      className={`${sizeClass} ${tierColor} rounded-full flex items-center justify-center font-black text-white ${borderClass} ${className}`}
+      className={`${sizeClass} ${tierColor} border-2 ${borderClass} flex items-center justify-center font-black text-white ${className}`}
     >
       {initials}
     </div>

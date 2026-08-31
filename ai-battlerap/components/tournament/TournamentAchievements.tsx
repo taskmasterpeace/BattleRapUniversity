@@ -167,11 +167,20 @@ export default function TournamentAchievements({ stats }: TournamentAchievements
                     <span>Progress</span>
                     <span>{progress.current} / {progress.required}</span>
                   </div>
-                  <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-[#ff8c42] transition-all"
-                      style={{ width: `${progress.percentage}%` }}
-                    />
+                  <div className="fs">
+                    <div className="fs-seg">
+                      {Array.from({ length: 10 }).map((_, i) => (
+                        <i
+                          key={i}
+                          className={i === 2 || i === 5 || i === 8 ? 'notch' : undefined}
+                          style={
+                            i < Math.round(Math.min(100, progress.percentage) / 10)
+                              ? { background: 'linear-gradient(180deg,#ff9d5c,#c4560f)' }
+                              : undefined
+                          }
+                        />
+                      ))}
+                    </div>
                   </div>
                 </div>
               )}

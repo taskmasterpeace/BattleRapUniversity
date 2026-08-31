@@ -15,25 +15,25 @@ const stateColors = {
     bg: 'bg-green-500/10',
     text: 'text-green-500',
     border: 'border-green-500/20',
-    bar: 'from-green-500 to-emerald-500'
+    cell: 'linear-gradient(180deg,#3fd67e,#1c7a3f)'
   },
   focused: {
     bg: 'bg-yellow-500/10',
     text: 'text-yellow-500',
     border: 'border-yellow-500/20',
-    bar: 'from-yellow-500 to-amber-500'
+    cell: 'linear-gradient(180deg,#e8d454,#b89f1e)'
   },
   tense: {
     bg: 'bg-[#ff8c42]/10',
     text: 'text-[#ff8c42]',
     border: 'border-[#ff8c42]/20',
-    bar: 'from-orange-500 to-red-500'
+    cell: 'linear-gradient(180deg,#ff9d5c,#c4560f)'
   },
   overwhelmed: {
     bg: 'bg-red-500/10',
     text: 'text-red-500',
     border: 'border-red-500/20',
-    bar: 'from-red-500 to-rose-600'
+    cell: 'linear-gradient(180deg,#e86458,#a5281e)'
   }
 };
 
@@ -49,24 +49,13 @@ export default function StressIndicator({
   const colors = stateColors[display.state];
 
   const sizeClasses = {
-    small: {
-      label: 'text-xs',
-      value: 'text-sm',
-      bar: 'h-1'
-    },
-    normal: {
-      label: 'text-xs',
-      value: 'text-base',
-      bar: 'h-1.5'
-    },
-    large: {
-      label: 'text-sm',
-      value: 'text-lg',
-      bar: 'h-2'
-    }
+    small: { label: 'text-xs', value: 'text-sm' },
+    normal: { label: 'text-xs', value: 'text-base' },
+    large: { label: 'text-sm', value: 'text-lg' }
   };
 
   const sizes = sizeClasses[size];
+  const filled = Math.round(Math.max(0, Math.min(100, stress)) / 10);
 
   return (
     <div className="space-y-2">
@@ -79,12 +68,17 @@ export default function StressIndicator({
         </span>
       </div>
 
-      {/* Stress bar */}
-      <div className="h-1.5 bg-zinc-800 rounded-sm overflow-hidden">
-        <div
-          className={`h-full bg-gradient-to-r ${colors.bar} transition-all duration-500`}
-          style={{ width: `${stress}%` }}
-        />
+      {/* Stress gauge — the notched cell meter, severity-colored */}
+      <div className="fs">
+        <div className="fs-seg">
+          {Array.from({ length: 10 }).map((_, i) => (
+            <i
+              key={i}
+              className={i === 2 || i === 5 || i === 8 ? 'notch' : undefined}
+              style={i < filled ? { background: colors.cell } : undefined}
+            />
+          ))}
+        </div>
       </div>
 
       {/* Description */}

@@ -7,6 +7,7 @@ import Icon from '@/components/ui/Icon';
 import Link from 'next/link';
 import { createClient } from '@supabase/supabase-js';
 import GameLoopDemo from '@/components/landing/GameLoopDemo';
+import { portraitFillStyle } from '@/lib/sprite-crops';
 
 export const revalidate = 300; // the world moves hourly; refresh the pulse every 5 min
 
@@ -296,9 +297,10 @@ export default async function LandingPage() {
                 <div className="space-y-3">
                   {pulse.upcoming.map((b) => (
                     <Link key={b.id} href={`/watch/${b.id}`} className="flex items-center gap-2 group">
-                      <span className="relative w-9 h-9 flex-shrink-0 bg-[#18191c] border border-[#3a3d44]">
+                      <span className="relative w-9 h-9 flex-shrink-0 bg-[#18191c] border border-[#3a3d44] overflow-hidden">
                         {b.a?.avatar_url && (
-                          <Image src={b.a.avatar_url} alt="" fill sizes="36px" className="object-contain [image-rendering:pixelated]" />
+                          /* eslint-disable-next-line @next/next/no-img-element */
+                          <img src={b.a.avatar_url} alt="" style={portraitFillStyle(b.a.avatar_url)} />
                         )}
                       </span>
                       <span className="min-w-0 flex-1">
@@ -309,9 +311,10 @@ export default async function LandingPage() {
                           {b.league?.name}
                         </span>
                       </span>
-                      <span className="relative w-9 h-9 flex-shrink-0 bg-[#18191c] border border-[#3a3d44]">
+                      <span className="relative w-9 h-9 flex-shrink-0 bg-[#18191c] border border-[#3a3d44] overflow-hidden">
                         {b.b?.avatar_url && (
-                          <Image src={b.b.avatar_url} alt="" fill sizes="36px" className="object-contain [image-rendering:pixelated]" />
+                          /* eslint-disable-next-line @next/next/no-img-element */
+                          <img src={b.b.avatar_url} alt="" style={portraitFillStyle(b.b.avatar_url)} />
                         )}
                       </span>
                     </Link>
@@ -328,9 +331,10 @@ export default async function LandingPage() {
                   {pulse.top.map((t: any, i: number) => (
                     <Link key={t.battler.id} href={`/battler/${t.battler.id}`} className="flex items-center gap-3 group">
                       <span className="font-bebas text-2xl text-[#ff8c42] w-7">#{i + 1}</span>
-                      <span className="relative w-9 h-9 flex-shrink-0 bg-[#18191c] border border-[#3a3d44]">
+                      <span className="relative w-9 h-9 flex-shrink-0 bg-[#18191c] border border-[#3a3d44] overflow-hidden">
                         {t.battler.avatar_url && (
-                          <Image src={t.battler.avatar_url} alt="" fill sizes="36px" className="object-contain [image-rendering:pixelated]" />
+                          /* eslint-disable-next-line @next/next/no-img-element */
+                          <img src={t.battler.avatar_url} alt="" style={portraitFillStyle(t.battler.avatar_url)} />
                         )}
                       </span>
                       <span className="min-w-0 flex-1">

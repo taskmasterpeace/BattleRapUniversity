@@ -4,7 +4,7 @@
 // haymaker/choke callouts, verdict stamp, share actions, run-it-back.
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
+import { portraitFillStyle } from '@/lib/sprite-crops';
 import Link from 'next/link';
 
 type Side = { id: string; stageName: string; avatarUrl: string | null; tier: string | null; isReal: boolean };
@@ -25,11 +25,16 @@ type Payload = {
 function Corner({ side, won, align }: { side: Side; won: boolean; align: 'left' | 'right' }) {
   return (
     <div className={`flex flex-col items-center ${align === 'left' ? 'md:items-start' : 'md:items-end'}`}>
-      <div className={`relative w-28 h-28 md:w-36 md:h-36 ${won ? 'drop-shadow-[0_0_30px_rgba(255,140,66,0.5)]' : 'opacity-75'}`}>
+      <div
+        className={`relative w-28 h-28 md:w-36 md:h-36 bg-[#0a0a0a] border-2 border-black overflow-hidden ${won ? 'shadow-[0_0_30px_rgba(255,140,66,0.5)]' : 'opacity-75'}`}
+      >
         {side.avatarUrl ? (
-          <Image src={side.avatarUrl} alt={side.stageName} fill sizes="144px" className="object-contain [image-rendering:pixelated]" />
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img src={side.avatarUrl} alt={side.stageName} style={portraitFillStyle(side.avatarUrl)} />
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-[#18191c] border-2 border-[#3a3d44] text-5xl">🎤</div>
+          <div className="w-full h-full flex items-center justify-center bg-[#18191c] font-display font-black text-4xl text-zinc-600">
+            {side.stageName.slice(0, 2).toUpperCase()}
+          </div>
         )}
       </div>
       <p className="font-display text-xl md:text-2xl font-black uppercase tracking-tight mt-3 text-center">

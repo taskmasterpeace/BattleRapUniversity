@@ -131,13 +131,20 @@ export default function TournamentStats({ stats }: TournamentStatsProps) {
               {((stats.championships / stats.totalTournaments) * 100).toFixed(1)}%
             </span>
           </div>
-          <div className="mt-2 h-2 bg-zinc-800 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-gradient-to-r from-orange-600 to-orange-400"
-              style={{
-                width: `${(stats.championships / stats.totalTournaments) * 100}%`,
-              }}
-            />
+          <div className="fs mt-2">
+            <div className="fs-seg">
+              {Array.from({ length: 10 }).map((_, i) => (
+                <i
+                  key={i}
+                  className={i === 2 || i === 5 || i === 8 ? 'notch' : undefined}
+                  style={
+                    i < Math.round(((stats.championships / stats.totalTournaments) * 100) / 10)
+                      ? { background: 'linear-gradient(180deg,#f2c94c,#b8860b)' }
+                      : undefined
+                  }
+                />
+              ))}
+            </div>
           </div>
         </div>
       )}

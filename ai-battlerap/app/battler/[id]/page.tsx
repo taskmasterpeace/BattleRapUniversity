@@ -219,119 +219,16 @@ export default function BattlerCareerPage({ params }: { params: Promise<{ id: st
                 { label: 'Resilience', value: Number(data.battler.attributes?.resilience ?? 5) },
               ]},
             ]}
+            sideStats={[
+              { k: 'Battles', v: String(data.careerStats.totalBattles), s: 'career total' },
+              { k: 'Win Rate', v: `${data.careerStats.winRate}%`, s: `${data.careerStats.wins}W · ${data.careerStats.losses}L`, color: '#35C46B' },
+              { k: 'Avg Crowd', v: `${data.careerStats.avgCrowdReaction}%`, s: 'room reaction' },
+            ]}
           />
-
-          <div className="mt-8 flex items-start justify-between gap-6 flex-wrap">
-            <div className="flex items-start gap-6">
-              <div>
-                <div className="flex items-center gap-3 flex-wrap mb-2">
-                  {data.battler.isReal && (
-                    <span className="px-3 py-1.5 bg-[#ff8c42] text-black font-mono text-xs font-bold uppercase tracking-widest shadow-[0_0_20px_-4px_rgba(255,140,66,0.8)]">
-                      VERIFIED BATTLER
-                    </span>
-                  )}
-                </div>
-                <div className="flex gap-4 text-zinc-400 mb-2 flex-wrap">
-                  <span className="text-[#ff8c42] font-display font-black uppercase tracking-wider">{data.battler.rating} Rating</span>
-                  {data.battler.rank && <span className="font-display font-black uppercase tracking-wide">#{data.battler.rank} Ranked</span>}
-                  {data.battler.tier && <span className="font-display font-black uppercase tracking-wide">{data.battler.tier} Tier</span>}
-                  {data.battler.hometown && (
-                    data.battler.hometown.id ? (
-                      <Link
-                        href={`/cities/${data.battler.hometown.id}`}
-                        className="font-display font-black uppercase tracking-wide text-zinc-300 hover:text-[#ff8c42] transition-colors border-b border-dashed border-zinc-600 hover:border-[#ff8c42]"
-                        title={`Visit the ${data.battler.hometown.name} scene`}
-                      >
-                        <Icon name="pin" size={12} className="mr-1 -mt-0.5" />{data.battler.hometown.name}{data.battler.hometown.state ? `, ${data.battler.hometown.state}` : ''}
-                      </Link>
-                    ) : (
-                      <span className="font-display font-black uppercase tracking-wide">
-                        <Icon name="pin" size={12} className="mr-1 -mt-0.5" />{data.battler.hometown.name}{data.battler.hometown.state ? `, ${data.battler.hometown.state}` : ''}
-                      </span>
-                    )
-                  )}
-                </div>
-                <div className="text-sm text-zinc-500 uppercase tracking-wide">
-                  {data.battler.isReal
-                    ? 'Licensed likeness — real career, real legacy'
-                    : `Joined ${formatDistanceToNow(new Date(data.battler.joinedAt), { addSuffix: true })}`}
-                </div>
-                {data.battler.isPlayer && !data.battler.isOwn && (
-                  <div className="mt-4 max-w-xs">
-                    <ChallengeButton
-                      opponentBattlerId={data.battler.id}
-                      stageName={data.battler.stageName}
-                      size="lg"
-                      label="CHALLENGE THIS PLAYER"
-                    />
-                    <p className="text-[10px] text-zinc-500 uppercase tracking-widest mt-2">
-                      Challenge this player — async PvP, prep on your own time
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Quick Stats */}
-            <div className="flex gap-6">
-              <div className="text-center bg-[#2d2f35] border-2 border-[#3a3d44] px-6 py-4">
-                <div className="text-3xl font-display font-black text-[#ff8c42]">{data.careerStats.totalBattles}</div>
-                <div className="text-xs text-zinc-400 uppercase tracking-wider font-bold mt-1">Battles</div>
-              </div>
-              <div className="text-center bg-[#2d2f35] border-2 border-[#3a3d44] px-6 py-4">
-                <div className="text-3xl font-display font-black text-green-500">{data.careerStats.winRate}%</div>
-                <div className="text-xs text-zinc-400 uppercase tracking-wider font-bold mt-1">Win Rate</div>
-              </div>
-              <div className="text-center bg-[#2d2f35] border-2 border-[#3a3d44] px-6 py-4">
-                <div className="text-3xl font-display font-black text-[#ff8c42]">{data.careerStats.avgCrowdReaction}%</div>
-                <div className="text-xs text-zinc-400 uppercase tracking-wider font-bold mt-1">Avg Crowd</div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 
-      {/* Bio + Accolades — the RapVerdict-killer section for verified battlers */}
-      {(data.battler.bio || (data.battler.accolades && data.battler.accolades.length > 0)) && (
-        <div className="container mx-auto px-6 py-8">
-          {data.battler.bio && (
-            <div className="bg-[#2d2f35] border-l-4 border-[#ff8c42] p-6 mb-6">
-              <p className="text-zinc-300 leading-relaxed italic">{data.battler.bio}</p>
-            </div>
-          )}
-          {data.battler.accolades && data.battler.accolades.length > 0 && (
-            <div>
-              <h2 className="text-2xl font-display font-black uppercase tracking-tighter text-[#ff8c42] mb-4">
-                ACCOLADES
-              </h2>
-              <div className="grid sm:grid-cols-2 gap-2">
-                {data.battler.accolades.map((a, i) => (
-                  <div
-                    key={i}
-                    className="flex items-center gap-3 bg-[#2d2f35] border-2 border-[#3a3d44] px-4 py-3"
-                  >
-                    {a.rank ? (
-                      <span className="flex-shrink-0 w-10 h-10 flex items-center justify-center bg-[#ff8c42]/15 border border-[#ff8c42]/50 text-[#ff8c42] font-display font-black text-sm">
-                        {a.rank === 1 ? '1st' : a.rank === 2 ? '2nd' : a.rank === 3 ? '3rd' : `${a.rank}th`}
-                      </span>
-                    ) : (
-                      <span className="flex-shrink-0 w-10 h-10 flex items-center justify-center text-[#ff8c42]"><Icon name="medal" size={22} /></span>
-                    )}
-                    <div className="min-w-0">
-                      <p className="font-bold text-sm text-zinc-100 leading-snug">{a.title}</p>
-                      <p className="font-mono text-[10px] uppercase tracking-widest text-zinc-500">
-                        {[a.region, a.year, a.scope === 'real_world' ? 'REAL WORLD' : 'IN GAME'].filter(Boolean).join(' · ')}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Tab Navigation */}
+      {/* Tab Navigation — right under the masthead, no scroll hunt */}
       <div className="bg-[#2d2f35] border-b-2 border-[#3a3d44] sticky top-0 z-10">
         <div className="container mx-auto px-6">
           <div className="flex gap-1 overflow-x-auto">
@@ -359,6 +256,91 @@ export default function BattlerCareerPage({ params }: { params: Promise<{ id: st
 
       {/* Tab Content */}
       <div className="container mx-auto px-6 py-8">
+        {activeTab === 'overview' && (
+          <div className="mb-8 flex items-start justify-between gap-6 flex-wrap">
+            <div>
+              <div className="flex items-center gap-3 flex-wrap mb-2">
+                {data.battler.isReal && (
+                  <span className="px-3 py-1.5 bg-[#ff8c42] text-black font-mono text-xs font-bold uppercase tracking-widest shadow-[0_0_20px_-4px_rgba(255,140,66,0.8)]">
+                    VERIFIED BATTLER
+                  </span>
+                )}
+              </div>
+              <div className="flex gap-4 text-zinc-400 mb-2 flex-wrap">
+                <span className="text-[#ff8c42] font-display font-black uppercase tracking-wider">{data.battler.rating} Rating</span>
+                {data.battler.rank && <span className="font-display font-black uppercase tracking-wide">#{data.battler.rank} Ranked</span>}
+                {data.battler.tier && <span className="font-display font-black uppercase tracking-wide">{data.battler.tier} Tier</span>}
+                {data.battler.hometown && (
+                  data.battler.hometown.id ? (
+                    <Link
+                      href={`/cities/${data.battler.hometown.id}`}
+                      className="font-display font-black uppercase tracking-wide text-zinc-300 hover:text-[#ff8c42] transition-colors border-b border-dashed border-zinc-600 hover:border-[#ff8c42]"
+                      title={`Visit the ${data.battler.hometown.name} scene`}
+                    >
+                      <Icon name="pin" size={12} className="mr-1 -mt-0.5" />{data.battler.hometown.name}{data.battler.hometown.state ? `, ${data.battler.hometown.state}` : ''}
+                    </Link>
+                  ) : (
+                    <span className="font-display font-black uppercase tracking-wide">
+                      <Icon name="pin" size={12} className="mr-1 -mt-0.5" />{data.battler.hometown.name}{data.battler.hometown.state ? `, ${data.battler.hometown.state}` : ''}
+                    </span>
+                  )
+                )}
+              </div>
+              <div className="text-sm text-zinc-500 uppercase tracking-wide">
+                {data.battler.isReal
+                  ? 'Licensed likeness — real career, real legacy'
+                  : `Joined ${formatDistanceToNow(new Date(data.battler.joinedAt), { addSuffix: true })}`}
+              </div>
+              {data.battler.bio && (
+                <div className="mt-4 bg-[#17181C] border-l-4 border-[#ff8c42] p-5 max-w-3xl">
+                  <p className="text-zinc-300 leading-relaxed italic">{data.battler.bio}</p>
+                </div>
+              )}
+            </div>
+            {data.battler.isPlayer && !data.battler.isOwn && (
+              <div className="max-w-xs">
+                <ChallengeButton
+                  opponentBattlerId={data.battler.id}
+                  stageName={data.battler.stageName}
+                  size="lg"
+                  label="CHALLENGE THIS PLAYER"
+                />
+                <p className="text-[10px] text-zinc-500 uppercase tracking-widest mt-2">
+                  Challenge this player — async PvP, prep on your own time
+                </p>
+              </div>
+            )}
+            {data.battler.accolades && data.battler.accolades.length > 0 && (
+              <div className="w-full">
+                <h2 className="text-2xl font-display font-black uppercase tracking-tighter text-[#ff8c42] mb-4">
+                  ACCOLADES
+                </h2>
+                <div className="grid sm:grid-cols-2 gap-2">
+                  {data.battler.accolades.map((a, i) => (
+                    <div
+                      key={i}
+                      className="flex items-center gap-3 bg-[#17181C] border-2 border-black px-4 py-3 shadow-[3px_3px_0_rgba(0,0,0,.4)]"
+                    >
+                      {a.rank ? (
+                        <span className="flex-shrink-0 w-10 h-10 flex items-center justify-center bg-[#ff8c42]/15 border border-[#ff8c42]/50 text-[#ff8c42] font-display font-black text-sm">
+                          {a.rank === 1 ? '1st' : a.rank === 2 ? '2nd' : a.rank === 3 ? '3rd' : `${a.rank}th`}
+                        </span>
+                      ) : (
+                        <span className="flex-shrink-0 w-10 h-10 flex items-center justify-center text-[#ff8c42]"><Icon name="medal" size={22} /></span>
+                      )}
+                      <div className="min-w-0">
+                        <p className="font-bold text-sm text-zinc-100 leading-snug">{a.title}</p>
+                        <p className="font-mono text-[10px] uppercase tracking-widest text-zinc-500">
+                          {[a.region, a.year, a.scope === 'real_world' ? 'REAL WORLD' : 'IN GAME'].filter(Boolean).join(' · ')}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
         {activeTab === 'overview' && <OverviewTab data={data} />}
         {activeTab === 'battles' && <BattlesTab battles={data.battleHistory} />}
         {activeTab === 'rivalries' && <RivalriesTab rivalries={data.rivalries} battlerId={id} />}

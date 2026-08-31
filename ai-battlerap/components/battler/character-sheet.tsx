@@ -45,6 +45,14 @@ export interface LineageEntry {
   label?: string
 }
 
+export interface SideStat {
+  k: string
+  v: string
+  s?: string
+  /** left-edge accent, defaults to brand orange */
+  color?: string
+}
+
 interface CharacterSheetProps {
   name: string
   portrait: string
@@ -61,6 +69,8 @@ interface CharacterSheetProps {
   groups: AttrGroup[]
   badges?: BadgeInfo[]
   netEffects?: NetEffect[]
+  /** extra chips under RANGE/FLOOR in the radar rail (career stats etc.) */
+  sideStats?: SideStat[]
 }
 
 type Grade = "S" | "A" | "B" | "C" | "D"
@@ -167,6 +177,7 @@ export function CharacterSheet({
   groups,
   badges = [],
   netEffects = [],
+  sideStats = [],
 }: CharacterSheetProps) {
   const variants = portraits.length > 1 ? portraits : []
   const [activePortrait, setActivePortrait] = useState(0)
@@ -275,6 +286,13 @@ export function CharacterSheet({
                 <div className="v">{fmt10(worst?.v10 ?? 0)}</div>
                 <div className="s">lowest / {worst?.label.toLowerCase()}</div>
               </div>
+              {sideStats.map((st) => (
+                <div className="fs-statchip" key={st.k} style={st.color ? { borderLeftColor: st.color } : undefined}>
+                  <div className="k">{st.k}</div>
+                  <div className="v">{st.v}</div>
+                  {st.s && <div className="s">{st.s}</div>}
+                </div>
+              ))}
             </div>
           </div>
 
