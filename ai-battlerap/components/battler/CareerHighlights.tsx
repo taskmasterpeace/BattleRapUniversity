@@ -14,6 +14,7 @@ type Props = {
   ranking: { wins?: number; losses?: number; streak?: number } | null | undefined;
 };
 
+// Poster plate — the one stat-card look (Flyer System)
 const Stat = ({
   label,
   value,
@@ -24,19 +25,34 @@ const Stat = ({
   value: string;
   accent?: string;
   hint?: string;
-}) => (
-  <div className="bg-[#1a1b1e] border-2 border-[#3a3d44] p-4">
-    <div className="text-[10px] font-display font-black uppercase tracking-wider text-zinc-500 mb-2">
-      {label}
+}) => {
+  const edge = accent?.includes('ff8c42')
+    ? '#F5731A'
+    : accent?.includes('green')
+      ? '#35C46B'
+      : accent?.includes('red')
+        ? '#E23A2E'
+        : '#3E404A';
+  return (
+    <div
+      className="bg-[#101114] border-2 border-black p-4 shadow-[3px_3px_0_rgba(0,0,0,.4)]"
+      style={{ borderTop: `3px solid ${edge}` }}
+    >
+      <div className="font-mono text-[8px] uppercase tracking-[0.25em] text-zinc-500 mb-2">
+        {label}
+      </div>
+      <div
+        className={`leading-none ${accent || 'text-zinc-100'}`}
+        style={{ fontFamily: 'var(--font-poster)', fontSize: 24, textShadow: '2px 2px 0 #000' }}
+      >
+        {value}
+      </div>
+      {hint && (
+        <div className="font-mono text-[8px] text-zinc-600 mt-2 uppercase tracking-[0.2em]">{hint}</div>
+      )}
     </div>
-    <div className={`text-2xl font-display font-black leading-none ${accent || 'text-zinc-100'}`}>
-      {value}
-    </div>
-    {hint && (
-      <div className="text-[10px] text-zinc-500 mt-2 uppercase tracking-wide">{hint}</div>
-    )}
-  </div>
-);
+  );
+};
 
 export default function CareerHighlights({ rounds, ranking }: Props) {
   const safe = rounds || [];
@@ -60,7 +76,7 @@ export default function CareerHighlights({ rounds, ranking }: Props) {
         <Icon name="chart" size={20} className="mr-2 -mt-1 inline-block" />CAREER HIGHLIGHTS
       </h2>
 
-      <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-6">
+      <div className="fs bg-[#17181C] border-2 border-black p-6 shadow-[4px_4px_0_rgba(0,0,0,.45)]">
         {!hasData ? (
           <div className="text-center py-6">
             <div className="flex justify-center mb-3 text-zinc-600"><Icon name="chart" size={40} /></div>

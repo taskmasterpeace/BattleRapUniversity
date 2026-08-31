@@ -1,6 +1,7 @@
 'use client';
 import Icon from '@/components/ui/Icon';
 
+// THE BAG plates — same poster-plate family as /finances (Flyer System).
 type Props = {
   battler: {
     current_balance?: number | null;
@@ -13,6 +14,44 @@ type Props = {
 const fmt = (n: number) =>
   n.toLocaleString('en-US', { maximumFractionDigits: 0 });
 
+function MoneyPlate({
+  label,
+  value,
+  sub,
+  edge = '#3E404A',
+  color = '#F4F4F6',
+  hotLabel = false,
+}: {
+  label: string;
+  value: string;
+  sub: string;
+  edge?: string;
+  color?: string;
+  hotLabel?: boolean;
+}) {
+  return (
+    <div
+      className="bg-[#101114] border-2 border-black p-5 shadow-[4px_4px_0_rgba(0,0,0,.45)]"
+      style={{ borderTop: `3px solid ${edge}` }}
+    >
+      <p className={`font-mono text-[9px] uppercase tracking-[0.3em] mb-2 ${hotLabel ? 'text-[#E7B23C]' : 'text-zinc-500'}`}>
+        {label}
+      </p>
+      <p
+        style={{
+          fontFamily: 'var(--font-pixel)',
+          fontSize: 'clamp(16px,2.2vw,22px)',
+          color,
+          textShadow: '2px 2px 0 #000',
+        }}
+      >
+        {value}
+      </p>
+      <p className="font-mono text-[8px] uppercase tracking-[0.25em] text-zinc-600 mt-2">{sub}</p>
+    </div>
+  );
+}
+
 export default function EarningsWidget({ battler, leaguePayout }: Props) {
   const balance = Number(battler.current_balance ?? 0);
   const total = Number(battler.total_career_earnings ?? 0);
@@ -23,93 +62,61 @@ export default function EarningsWidget({ battler, leaguePayout }: Props) {
   const netPositive = netWorth >= 0;
 
   return (
-    <div className="mb-8">
+    <div className="fs mb-8">
       <h2 className="text-2xl font-display font-black uppercase tracking-tighter text-[#ff8c42] mb-4">
         <Icon name="cash" size={20} className="mr-2 -mt-1 inline-block" />EARNINGS
       </h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Current Balance */}
-        <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-5">
-          <div className="text-xs font-display font-black uppercase tracking-wider text-zinc-400 mb-2">
-            CURRENT BALANCE
-          </div>
-          <div className="text-3xl font-display font-black text-[#ff8c42] leading-none">
-            ${fmt(balance)}
-          </div>
-          <div className="text-xs text-zinc-500 mt-2 uppercase tracking-wide">
-            Available cash
-          </div>
-        </div>
-
-        {/* Total Career Earnings */}
-        <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-5">
-          <div className="text-xs font-display font-black uppercase tracking-wider text-zinc-400 mb-2">
-            CAREER EARNINGS
-          </div>
-          <div className="text-3xl font-display font-black text-zinc-100 leading-none">
-            ${fmt(total)}
-          </div>
-          <div className="text-xs text-zinc-500 mt-2 uppercase tracking-wide">
-            Lifetime gross
-          </div>
-        </div>
-
-        {/* Debt */}
-        <div
-          className={`bg-[#2d2f35] border-2 p-5 ${
-            debt > 0 ? 'border-red-500/50' : 'border-[#3a3d44]'
-          }`}
-        >
-          <div className="text-xs font-display font-black uppercase tracking-wider text-zinc-400 mb-2">
-            DEBT
-          </div>
-          <div
-            className={`text-3xl font-display font-black leading-none ${
-              debt > 0 ? 'text-red-400' : 'text-zinc-300'
-            }`}
-          >
-            ${fmt(debt)}
-          </div>
-          <div className="text-xs text-zinc-500 mt-2 uppercase tracking-wide">
-            {debt > 0 ? 'Owed to creditors' : 'Clean books'}
-          </div>
-        </div>
-
-        {/* Next Battle Payout */}
-        <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-5">
-          <div className="text-xs font-display font-black uppercase tracking-wider text-zinc-400 mb-2">
-            NEXT PAYOUT
-          </div>
-          <div className="text-3xl font-display font-black text-green-400 leading-none">
-            ${fmt(nextPayout)}
-          </div>
-          <div className="text-xs text-zinc-500 mt-2 uppercase tracking-wide">
-            Per league battle
-          </div>
-        </div>
+        <MoneyPlate
+          label="◤ THE BAG"
+          value={`$${fmt(balance)}`}
+          sub="AVAILABLE CASH"
+          edge="#E7B23C"
+          color="#E7B23C"
+          hotLabel
+        />
+        <MoneyPlate label="CAREER EARNINGS" value={`$${fmt(total)}`} sub="LIFETIME GROSS" />
+        <MoneyPlate
+          label="DEBT"
+          value={`$${fmt(debt)}`}
+          sub={debt > 0 ? 'OWED TO CREDITORS' : 'CLEAN BOOKS'}
+          edge={debt > 0 ? '#E23A2E' : '#3E404A'}
+          color={debt > 0 ? '#E23A2E' : '#A6A8B0'}
+        />
+        <MoneyPlate
+          label="NEXT PAYOUT"
+          value={`$${fmt(nextPayout)}`}
+          sub="FLAT · PER LEAGUE BATTLE"
+          edge="#35C46B"
+          color="#35C46B"
+        />
       </div>
 
-      {/* Net Worth bar */}
-      <div className="mt-4 bg-[#2d2f35] border-2 border-[#3a3d44] p-4">
-        <div className="flex items-center justify-between">
+      {/* Net Worth strip */}
+      <div
+        className="mt-4 bg-[#101114] border-2 border-black p-4 shadow-[4px_4px_0_rgba(0,0,0,.45)]"
+        style={{ borderTop: `3px solid ${netPositive ? '#3E404A' : '#E23A2E'}` }}
+      >
+        <div className="flex items-center justify-between gap-4">
           <div>
-            <div className="text-xs font-display font-black uppercase tracking-wider text-zinc-400 mb-1">
-              NET WORTH
-            </div>
-            <div
-              className={`text-2xl font-display font-black ${
-                netPositive ? 'text-zinc-100' : 'text-red-400'
-              }`}
+            <p className="font-mono text-[9px] uppercase tracking-[0.3em] text-zinc-500 mb-1.5">NET WORTH</p>
+            <p
+              style={{
+                fontFamily: 'var(--font-pixel)',
+                fontSize: 18,
+                color: netPositive ? '#F4F4F6' : '#E23A2E',
+                textShadow: '2px 2px 0 #000',
+              }}
             >
               {netPositive ? '' : '-'}${fmt(Math.abs(netWorth))}
-            </div>
+            </p>
           </div>
-          <div className="text-xs text-zinc-500 text-right uppercase tracking-wide max-w-[12rem]">
+          <p className="font-mono text-[9px] text-zinc-500 text-right uppercase tracking-[0.2em] max-w-[14rem]">
             {netPositive
-              ? 'You can afford to take principled L\'s'
+              ? "You can afford to take principled L's"
               : 'The streets call when bills do'}
-          </div>
+          </p>
         </div>
       </div>
     </div>

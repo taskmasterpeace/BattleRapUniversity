@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import Icon from '@/components/ui/Icon';
+import StatGauge from '@/components/ui/StatGauge';
 
 type Props = {
   league: any;
@@ -24,22 +25,10 @@ const prestigeColor = (level: number | null | undefined) => {
   return 'text-[#ff8c42] border-[#ff8c42]/60 bg-[#ff8c42]/20';
 };
 
+// League weights use THE meter (the dossier gauge) like everything else.
 const StatBar = ({ label, value, max = 1 }: { label: string; value: number; max?: number }) => {
   const pct = Math.min(100, Math.max(0, (value / max) * 100));
-  return (
-    <div>
-      <div className="flex justify-between text-xs font-display font-black uppercase tracking-wider text-zinc-400 mb-1">
-        <span>{label}</span>
-        <span className="text-[#ff8c42]">{Math.round(pct)}%</span>
-      </div>
-      <div className="w-full bg-[#18191c] border-2 border-[#3a3d44] h-2 overflow-hidden">
-        <div
-          className="h-full bg-gradient-to-r from-[#ff8c42] to-[#ffb366]"
-          style={{ width: `${pct}%` }}
-        />
-      </div>
-    </div>
-  );
+  return <StatGauge label={label} v10={pct / 10} valueText={`${Math.round(pct)}%`} noGrade />;
 };
 
 export default function LeagueOverview({ league, rating }: Props) {
@@ -66,7 +55,7 @@ export default function LeagueOverview({ league, rating }: Props) {
         </Link>
       </div>
 
-      <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-6">
+      <div className="fs bg-[#101114] border-2 border-black p-6 shadow-[4px_4px_0_rgba(0,0,0,.45)]" style={{ borderTop: '3px solid #E7B23C' }}>
         {/* Header row */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-6 border-b-2 border-[#3a3d44]">
           <div>

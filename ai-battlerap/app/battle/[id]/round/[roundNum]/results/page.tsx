@@ -273,6 +273,7 @@ export default function RoundResultsPage() {
             score={Math.max(playerRound.crowd_reaction ?? 0, aiRound.crowd_reaction ?? 0)}
             seed={`${battleId}-r${roundNum}`}
             venue={venueForLeague(battle.league?.name)}
+            broadcast={battle.context === 'ppv' || battle.context === 'on_cam' ? battle.context : null}
             label={`THE ROOM · YOU ${Math.round(playerRound.crowd_reaction ?? 0)}% — ${(battle.ai_battler?.stage_name || 'THEM').toUpperCase()} ${Math.round(aiRound.crowd_reaction ?? 0)}%`}
           />
         </div>

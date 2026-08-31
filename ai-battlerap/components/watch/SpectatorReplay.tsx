@@ -28,6 +28,7 @@ export default function SpectatorReplay({
   winnerId,
   decision,
   venue = 'urban',
+  broadcast = null,
 }: {
   a: SpectatorSide;
   b: SpectatorSide;
@@ -35,6 +36,7 @@ export default function SpectatorReplay({
   winnerId: string | null;
   decision: string;
   venue?: Venue;
+  broadcast?: 'ppv' | 'on_cam' | null;
 }) {
   const aWon = winnerId === a.id;
   const bWon = !aWon && !!winnerId;
@@ -143,6 +145,7 @@ export default function SpectatorReplay({
                   score={Math.max(r.a.crowd ?? 0, r.b.crowd ?? 0)}
                   seed={`${a.id}-${b.id}-r${r.roundIndex}`}
                   venue={venue}
+                  broadcast={r.roundIndex === 1 ? broadcast : null}
                   height={84}
                   perRow={8}
                 />

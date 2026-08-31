@@ -228,6 +228,7 @@ export default async function SpectatorPage({
           winnerId={battle.winner_battler_id}
           decision={decisionLabel(battle.verdict, battle.decision_type)}
           venue={venueForLeague(battle.league?.name)}
+          broadcast={battle.context === 'ppv' || battle.context === 'on_cam' ? battle.context : null}
         />
 
         {/* THE ROOM vs THE TAPE — battle rap's two audiences. The room reacted

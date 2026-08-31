@@ -14,12 +14,44 @@ const FAMILY = familyRaw as Member[];
 export type { Venue };
 export { venueForLeague } from '@/lib/crowd-venue';
 
-/** Pool of moods drawn per head, weighted by the crowd score. */
-function poolFor(score: number): string[] {
-  if (score >= 70) return ['hype', 'hype', 'hype', 'hype', 'watch'];
-  if (score >= 45) return ['watch', 'watch', 'hype', 'watch', 'unimpressed'];
-  if (score >= 25) return ['unimpressed', 'watch', 'unimpressed', 'watch', 'boo'];
-  return ['boo', 'boo', 'unimpressed', 'boo', 'watch'];
+/**
+ * Continuous mood mix — the room IS the performance meter. Weights slide with
+ * the crowd score so a player can literally read how they're doing:
+ *   85+  the room explodes (hype + OOOH hands-on-head)
+ *   ~70  bars landing (oooh, nods, laughs, scattered hype)
+ *   ~50  engaged but split (nods, side-talk, some crossed arms)
+ *   ~35  losing them (unimpressed, dismissive waves)
+ *   <25  hostile (boos, waved off)
+ * Arms-crossed "watch" is deliberately capped so no room reads as a wall of
+ * folded arms (owner note, 2026-08-31).
+ */
+function moodWeights(score: number): Record<string, number> {
+  const s = Math.max(0, Math.min(100, score));
+  const up = (a: number, b: number) => Math.max(0, Math.min(1, (s - a) / (b - a)));
+  const down = (a: number, b: number) => 1 - up(a, b);
+  const bell = (a: number, m: number, b: number) => (s <= m ? up(a, m) : down(m, b));
+  return {
+    hype: 2.2 * up(55, 90),
+    oooh: 1.9 * up(45, 85),
+    laugh: 0.8 * up(40, 80),
+    nod: 1.6 * bell(35, 60, 85),
+    talk: 1.0 * bell(20, 45, 70),
+    watch: 0.9 * bell(15, 45, 75) + 0.15,
+    unimpressed: 1.4 * down(20, 55),
+    dismiss: 1.2 * down(10, 45),
+    boo: 2.0 * down(5, 30),
+  };
+}
+
+function pickWeighted(weights: Record<string, number>, r: number): string {
+  let total = 0;
+  for (const w of Object.values(weights)) total += w;
+  let acc = 0;
+  for (const [mood, w] of Object.entries(weights)) {
+    acc += w / total;
+    if (r <= acc) return mood;
+  }
+  return 'watch';
 }
 
 /** Tiny deterministic PRNG (mulberry32 over an FNV-1a seed hash). */
@@ -46,6 +78,8 @@ interface CrowdStripProps {
   seed: string;
   /** which crowd shows up — pass venueForLeague(league.name) */
   venue?: Venue;
+  /** streamed-online framing: battle.context 'ppv' | 'on_cam' adds a live chip */
+  broadcast?: 'ppv' | 'on_cam' | null;
   label?: string;
   height?: number;
   /** heads in the FRONT row (other rows derive) */
@@ -56,12 +90,13 @@ export default function CrowdStrip({
   score,
   seed,
   venue = 'urban',
+  broadcast = null,
   label,
   height = 150,
   perRow = 7,
 }: CrowdStripProps) {
   const rand = rng(`${seed}|${Math.round(score / 5)}|${venue}`);
-  const pool = poolFor(score);
+  const weights = moodWeights(score);
   const mix = VENUE_MIX[venue] ?? VENUE_MIX.urban;
 
   const pickDemo = (): string => {
@@ -74,8 +109,13 @@ export default function CrowdStrip({
     return 'urban';
   };
 
-  const pick = (): string => {
-    const mood = pool[Math.floor(rand() * pool.length)];
+  /** Front row telegraphs hardest: sharpen weights so its moods read decisive. */
+  const pick = (sharpen = 1): string => {
+    const w =
+      sharpen === 1
+        ? weights
+        : Object.fromEntries(Object.entries(weights).map(([k, v]) => [k, Math.pow(v, sharpen)]));
+    const mood = pickWeighted(w, rand());
     const demo = pickDemo();
     let candidates = FAMILY.filter((m) => m.mood === mood && m.demo === demo);
     if (candidates.length === 0) candidates = FAMILY.filter((m) => m.mood === mood);
@@ -110,7 +150,7 @@ export default function CrowdStrip({
         {rows.map((row, ri) => {
           const step = 100 / row.count;
           return Array.from({ length: row.count + 1 }, (_, i) => {
-            const src = pick();
+            const src = pick(row.z === 3 ? 1.6 : 1);
             const flip = rand() < 0.45;
             const jitter = (rand() - 0.5) * 5; // % of height
             return (
@@ -138,6 +178,18 @@ export default function CrowdStrip({
           className="absolute inset-x-0 top-0 pointer-events-none"
           style={{ height: 30, background: 'linear-gradient(180deg, rgba(245,115,26,.12), transparent)', zIndex: 4 }}
         />
+        {/* streamed-online framing — the second audience is watching */}
+        {broadcast && (
+          <span
+            className="absolute top-1.5 right-1.5 flex items-center gap-1.5 px-2 py-1"
+            style={{ zIndex: 5, background: 'rgba(8,9,12,.85)', border: '1px solid #2E2F35' }}
+          >
+            <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#E23A2E] animate-pulse" />
+            <span style={{ fontFamily: 'var(--font-pixel)', fontSize: 7, color: '#F4F4F6' }}>
+              {broadcast === 'ppv' ? 'LIVE PPV' : 'ON CAM'}
+            </span>
+          </span>
+        )}
       </div>
     </div>
   );

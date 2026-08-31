@@ -8,6 +8,7 @@ import { toast } from '@/components/ui/Toast';
 import Avatar from '@/components/ui/Avatar';
 import Icon from '@/components/ui/Icon';
 import StatCard from '@/components/ui/StatCard';
+import StatGauge from '@/components/ui/StatGauge';
 import GamingButton from '@/components/ui/GamingButton';
 import StressIndicator from './StressIndicator';
 import ArchetypeDisplay from './ArchetypeDisplay';
@@ -633,51 +634,49 @@ export default function DashboardClient({
           <h2 className="text-2xl font-display font-black uppercase tracking-tighter text-[#ff8c42] mb-4">
             BATTLER ATTRIBUTES
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="fs grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Writing */}
-            <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-6">
-              <h3 className="text-sm font-display font-black uppercase tracking-wider text-zinc-400 mb-4">WRITING</h3>
+            <div className="bg-[#101114] border-2 border-black p-6 shadow-[4px_4px_0_rgba(0,0,0,.45)]" style={{ borderTop: '3px solid #F5731A' }}>
+              <h3 className="font-mono text-[10px] uppercase tracking-[0.3em] text-[#F5731A] mb-4">01 · WRITING & RAPPING</h3>
               <div className="space-y-3">
-                <StatBar label="LYRICISM" value={attributes?.writing.lyricism} />
-                <StatBar label="WORDPLAY" value={attributes?.writing.wordplay} />
-                <StatBar label="CREATIVITY" value={attributes?.writing.creativity} />
-                <StatBar label="FLOW" value={attributes?.writing.flow} />
+                <StatGauge label="LYRICISM" v10={attributes?.writing.lyricism} />
+                <StatGauge label="WORDPLAY" v10={attributes?.writing.wordplay} />
+                <StatGauge label="CREATIVITY" v10={attributes?.writing.creativity} />
               </div>
             </div>
 
             {/* Performance */}
-            <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-6">
-              <h3 className="text-sm font-display font-black uppercase tracking-wider text-zinc-400 mb-4">PERFORMANCE</h3>
+            <div className="bg-[#101114] border-2 border-black p-6 shadow-[4px_4px_0_rgba(0,0,0,.45)]" style={{ borderTop: '3px solid #E23A2E' }}>
+              <h3 className="font-mono text-[10px] uppercase tracking-[0.3em] text-[#E23A2E] mb-4">02 · PERFORMANCE</h3>
               <div className="space-y-3">
-                <StatBar label="STAGE PRESENCE" value={attributes?.performance.stage_presence} />
-                <StatBar label="CROWD CONTROL" value={attributes?.performance.crowd_control} />
-                <StatBar label="DELIVERY" value={attributes?.performance.delivery} />
+                <StatGauge label="STAGE PRESENCE" v10={attributes?.performance.stage_presence} />
+                <StatGauge label="CROWD CONTROL" v10={attributes?.performance.crowd_control} />
+                <StatGauge label="DELIVERY" v10={attributes?.performance.delivery} />
               </div>
             </div>
 
             {/* Personal */}
-            <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-6">
-              <h3 className="text-sm font-display font-black uppercase tracking-wider text-zinc-400 mb-4">PERSONAL</h3>
+            <div className="bg-[#101114] border-2 border-black p-6 shadow-[4px_4px_0_rgba(0,0,0,.45)]" style={{ borderTop: '3px solid #2F7DD1' }}>
+              <h3 className="font-mono text-[10px] uppercase tracking-[0.3em] text-[#5da2e8] mb-4">03 · PERSONAL</h3>
               <div className="space-y-3">
-                <StatBar label="RESILIENCE" value={attributes?.resilience} />
-                <StatBar label="REPUTATION" value={attributes?.personal.reputation} />
-                <StatBar label="FINANCIAL" value={attributes?.personal.financial_stability} />
-                <StatBar label="FAMILY BOND" value={attributes?.personal.family_bond} />
+                <StatGauge label="RESILIENCE" v10={attributes?.resilience} />
+                <StatGauge label="REPUTATION" v10={attributes?.personal.reputation} />
+                <StatGauge label="FINANCIAL" v10={attributes?.personal.financial_stability} />
+                <StatGauge label="FAMILY BOND" v10={attributes?.personal.family_bond} />
               </div>
             </div>
 
             {/* Mental State */}
-            <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-6">
-              <h3 className="text-sm font-display font-black uppercase tracking-wider text-zinc-400 mb-4">MENTAL STATE</h3>
+            <div className="bg-[#101114] border-2 border-black p-6 shadow-[4px_4px_0_rgba(0,0,0,.45)]" style={{ borderTop: '3px solid #E7B23C' }}>
+              <h3 className="font-mono text-[10px] uppercase tracking-[0.3em] text-[#E7B23C] mb-4">04 · MENTAL STATE</h3>
               <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-zinc-400 font-display font-display font-black uppercase text-xs tracking-wide">PUBLIC KNOWLEDGE</span>
-                  <span className="font-display font-black text-[#ff8c42]">{attributes?.public_knowledge}%</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-zinc-400 font-display font-display font-black uppercase text-xs tracking-wide">PREPARATION</span>
-                  <span className="font-display font-black text-[#ff8c42]">{attributes?.preparation || 0}/10</span>
-                </div>
+                <StatGauge
+                  label="PUBLIC KNOWLEDGE"
+                  v10={(attributes?.public_knowledge ?? 0) / 10}
+                  valueText={`${attributes?.public_knowledge ?? 0}%`}
+                  noGrade
+                />
+                <StatGauge label="PREPARATION" v10={attributes?.personal?.preparation ?? 5} />
                 <div className="pt-2 border-t-2 border-[#3a3d44]">
                   <StressIndicator
                     stress={attributes?.stress || 0}
@@ -951,19 +950,4 @@ export default function DashboardClient({
   );
 }
 
-function StatBar({ label, value }: { label: string; value: number }) {
-  return (
-    <div>
-      <div className="flex justify-between items-center mb-2">
-        <span className="text-zinc-400 font-display font-display font-black uppercase text-xs tracking-wider">{label}</span>
-        <span className="font-display font-black text-[#ff8c42]">{value}/10</span>
-      </div>
-      <div className="h-2 bg-[#18191c] border-2 border-[#3a3d44]">
-        <div
-          className="h-full bg-gradient-to-r from-[#ff8c42] to-[#ffb366]"
-          style={{ width: `${(value / 10) * 100}%` }}
-        />
-      </div>
-    </div>
-  );
-}
+// StatBar retired — StatGauge (the dossier meter) is THE meter everywhere.
