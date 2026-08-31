@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
 import { GrudgeMeter, RematchDemandBar } from '@/components/grudge';
 import ChallengeButton from '@/components/battlers/ChallengeButton';
+import { CharacterSheet } from '@/components/battler/character-sheet';
 
 /**
  * Relative time for a COMPLETED battle. Battles finished early through the
@@ -41,8 +42,15 @@ interface CareerData {
     isReal?: boolean;
     bio?: string | null;
     avatarUrl?: string | null;
+    portraits?: string[];
     region?: string | null;
-    hometown?: { id?: string | null; name: string; state: string | null } | null;
+    hometown?: {
+      id?: string | null;
+      name: string;
+      state: string | null;
+      background_url?: string | null;
+      skyline_url?: string | null;
+    } | null;
     accolades?: Array<{
       rank: number | null;
       title: string;
@@ -180,18 +188,43 @@ export default function BattlerCareerPage({ params }: { params: Promise<{ id: st
       {/* Hero Section */}
       <div className="bg-gradient-to-br from-[#2d2f35] via-[#2d2f35] to-[#ff8c42]/20 border-b-2 border-[#3a3d44]">
         <div className="container mx-auto px-6 py-12">
-          <div className="flex items-start justify-between gap-6 flex-wrap">
+          {/* Flyer System dossier masthead — big face over the origin city, graded stat matrix */}
+          <CharacterSheet
+            name={data.battler.stageName}
+            portrait={data.battler.avatarUrl || '/sprites/characters/sprite_569.png'}
+            portraits={data.battler.portraits || []}
+            cityName={data.battler.hometown?.name}
+            cityBackdrop={data.battler.hometown?.background_url || data.battler.hometown?.skyline_url || undefined}
+            tierLabel={data.battler.tier ? `${data.battler.tier} TIER` : undefined}
+            record={`${data.careerStats.wins}W · ${data.careerStats.losses}L`}
+            elo={data.battler.rating}
+            groups={[
+              { title: 'Writing & Rapping', scale10: true, rows: [
+                { label: 'Lyricism', value: Number(data.battler.attributes?.writing?.lyricism ?? 5) },
+                { label: 'Wordplay', value: Number(data.battler.attributes?.writing?.wordplay ?? 5) },
+                { label: 'Creativity', value: Number(data.battler.attributes?.writing?.creativity ?? 5) },
+                { label: 'Flow', value: Number(data.battler.attributes?.writing?.flow ?? 5) },
+              ]},
+              { title: 'Performance', scale10: true, rows: [
+                { label: 'Stage Presence', value: Number(data.battler.attributes?.performance?.stage_presence ?? 5) },
+                { label: 'Crowd Control', value: Number(data.battler.attributes?.performance?.crowd_control ?? 5) },
+                { label: 'Delivery', value: Number(data.battler.attributes?.performance?.delivery ?? 5) },
+              ]},
+              { title: 'Personal', scale10: true, rows: [
+                { label: 'Financial Stab.', value: Number(data.battler.attributes?.personal?.financial_stability ?? 5) },
+                { label: 'Reputation', value: Number(data.battler.attributes?.personal?.reputation ?? 5) },
+                { label: 'Family Bond', value: Number(data.battler.attributes?.personal?.family_bond ?? 5) },
+              ]},
+              { title: 'Mental', scale10: true, rows: [
+                { label: 'Resilience', value: Number(data.battler.attributes?.resilience ?? 5) },
+              ]},
+            ]}
+          />
+
+          <div className="mt-8 flex items-start justify-between gap-6 flex-wrap">
             <div className="flex items-start gap-6">
-              {data.battler.avatarUrl && (
-                <img
-                  src={data.battler.avatarUrl}
-                  alt={data.battler.stageName}
-                  className="w-28 h-28 md:w-36 md:h-36 object-contain [image-rendering:pixelated] border-2 border-[#3a3d44] bg-[#18191c]"
-                />
-              )}
               <div>
                 <div className="flex items-center gap-3 flex-wrap mb-2">
-                  <h1 className="text-5xl font-display font-black uppercase tracking-tighter">{data.battler.stageName}</h1>
                   {data.battler.isReal && (
                     <span className="px-3 py-1.5 bg-[#ff8c42] text-black font-mono text-xs font-bold uppercase tracking-widest shadow-[0_0_20px_-4px_rgba(255,140,66,0.8)]">
                       VERIFIED BATTLER

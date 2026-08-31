@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Rajdhani, Inter, JetBrains_Mono, Bebas_Neue, Anton } from 'next/font/google';
+import { Rajdhani, Inter, JetBrains_Mono, Bebas_Neue, Anton, Press_Start_2P } from 'next/font/google';
 import "./globals.css";
 import GlobalNav from '@/components/nav/GlobalNav';
 import QueryProvider from '@/components/providers/QueryProvider';
@@ -39,6 +39,14 @@ const jetbrainsMono = JetBrains_Mono({
   display: 'swap',
 });
 
+// Flyer System pixel accent (VS glyphs, ELO, stat numbers)
+const pressStart = Press_Start_2P({
+  subsets: ['latin'],
+  weight: ['400'],
+  variable: '--font-press',
+  display: 'swap',
+});
+
 export const metadata: Metadata = {
   title: "Battle Rap University",
   description: "Battle rap career simulation — build your battler, prep your bars, take the stage.",
@@ -50,7 +58,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`dark ${bebasNeue.variable} ${anton.variable} ${rajdhani.variable} ${inter.variable} ${jetbrainsMono.variable}`}>
+    <html lang="en" className={`dark ${bebasNeue.variable} ${anton.variable} ${rajdhani.variable} ${inter.variable} ${jetbrainsMono.variable} ${pressStart.variable}`}>
       <body className="antialiased bg-[#0a0a0a] text-zinc-100">
         <QueryProvider>
           <GlobalNav />

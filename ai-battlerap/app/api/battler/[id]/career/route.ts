@@ -38,9 +38,10 @@ export async function GET(
         is_real,
         bio,
         avatar_url,
+        sprite_set,
         region,
         created_at,
-        hometown:hometown_city_id (id, name, state),
+        hometown:hometown_city_id (id, name, state, background_url, skyline_url),
         battler_attributes (
           writing,
           performance,
@@ -132,6 +133,10 @@ export async function GET(
         isReal: !!battler.is_real,
         bio: battler.bio ?? null,
         avatarUrl: battler.avatar_url ?? null,
+        // Flyer System: portrait variants + city backdrop for the dossier masthead
+        portraits: Array.isArray(battler.sprite_set) && battler.sprite_set.length > 0
+          ? battler.sprite_set
+          : [battler.avatar_url].filter(Boolean),
         region: battler.region ?? null,
         hometown: battler.hometown ?? null,
         accolades: accolades ?? [],
