@@ -83,11 +83,14 @@ export default function CrowdStrip({
     return candidates[Math.floor(rand() * candidates.length)].src;
   };
 
-  // Three rows: background (dark, small, dense) → middle (dimmed) → front (full).
+  // Three PACKED rows — a camera frame of a crowd, not people on a shelf.
+  // Width-percent sizing guarantees shoulders OVERLAP at any container width
+  // (img width > horizontal step), and the frame crops waists at the bottom
+  // and the back row at the top, so bodies fill the frame edge to edge.
   const rows = [
-    { headH: Math.round(height * 0.5), y: 0, bright: 0.22, z: 1, count: perRow + 3, offset: 0.25 },
-    { headH: Math.round(height * 0.58), y: Math.round(height * 0.16), bright: 0.55, z: 2, count: perRow + 1, offset: 0.5 },
-    { headH: Math.round(height * 0.68), y: Math.round(height * 0.32), bright: 1, z: 3, count: perRow, offset: 0 },
+    { count: perRow + 4, width: 12.5, bottom: 44, bright: 0.22, z: 1, offset: 0.5 },
+    { count: perRow + 2, width: 14.5, bottom: 20, bright: 0.55, z: 2, offset: 0 },
+    { count: perRow, width: 17, bottom: -16, bright: 1, z: 3, offset: 0.4 },
   ];
 
   return (
@@ -106,10 +109,10 @@ export default function CrowdStrip({
       >
         {rows.map((row, ri) => {
           const step = 100 / row.count;
-          return Array.from({ length: row.count }, (_, i) => {
+          return Array.from({ length: row.count + 1 }, (_, i) => {
             const src = pick();
             const flip = rand() < 0.45;
-            const jitter = Math.round((rand() - 0.5) * 10);
+            const jitter = (rand() - 0.5) * 5; // % of height
             return (
               <img
                 key={`${ri}-${i}`}
@@ -117,10 +120,10 @@ export default function CrowdStrip({
                 alt=""
                 className="absolute"
                 style={{
-                  height: row.headH,
-                  width: 'auto',
-                  left: `calc(${(i + row.offset) * step}% - ${Math.round(row.headH * 0.44)}px)`,
-                  top: row.y + jitter,
+                  width: `${row.width}%`,
+                  height: 'auto',
+                  left: `${((i + row.offset) * step - row.width / 2).toFixed(2)}%`,
+                  bottom: `${(row.bottom + jitter).toFixed(1)}%`,
                   zIndex: row.z,
                   imageRendering: 'pixelated',
                   filter: `brightness(${row.bright})`,

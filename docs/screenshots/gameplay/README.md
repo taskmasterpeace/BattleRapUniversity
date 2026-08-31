@@ -16,6 +16,7 @@
 | 11 | the-wire-scene-talks | THE WIRE: faces on the feed, heat bars, the newsroom sitting on stories |
 | 12 | power-rankings-podium | Power Rankings podium with fill-frame faces |
 | 13 | calendar-fight-nights | Calendar + FIGHT NIGHTS rail (next bouts with faces) |
-| 14 | replay-mixed-room-tape | Spectator replay: MIXED-venue crowd demographics (London room), ROOM vs TAPE panel |
+| 14 | replay-mixed-room-tape | Spectator replay: PACKED mixed-venue crowd (London room), ROOM vs TAPE panel |
+| 15 | packed-room-multimaster | The packed room at watch-mode density — shoulders overlapping, frame-filling |
 
 Refresh recipe: dev server (`ai-battlerap-dev`, port 3009) → dev quick login → Playwright `browser_take_screenshot` at 1600px, `fullPage` for long pages.
