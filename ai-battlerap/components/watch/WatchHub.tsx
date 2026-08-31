@@ -6,6 +6,7 @@ import { useMemo, useState } from 'react';
 import Icon from '@/components/ui/Icon';
 import Image from 'next/image';
 import Link from 'next/link';
+import { BattleFlyer } from '@/components/battle/BattleFlyer';
 
 export type CardSide = {
   id: string;
@@ -185,8 +186,31 @@ export default function WatchHub({
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {shownUpcoming.map((card) => (
+          <>
+            {/* Headliner — the top booked bout gets the full event-poster flyer */}
+            {(() => {
+              const head = shownUpcoming[0];
+              const under = shownUpcoming.slice(1, 4);
+              return (
+                <Link href={`/watch/${head.id}`} className="block mb-6 hover:opacity-95 transition-opacity">
+                  <BattleFlyer
+                    eventTitle={head.timeLabel === 'TONIGHT' ? "TONIGHT'S HEADLINER" : 'THE HEADLINER'}
+                    leagueLine={`${head.leagueName.toUpperCase()} · ${head.timeLabel}`}
+                    a={{ name: head.a.name, portrait: head.a.avatarUrl ?? undefined }}
+                    b={{ name: head.b.name, portrait: head.b.avatarUrl ?? undefined }}
+                    undercard={under.map((u) => ({
+                      a: u.a.name,
+                      b: u.b.name,
+                      aPortrait: u.a.avatarUrl ?? undefined,
+                      bPortrait: u.b.avatarUrl ?? undefined,
+                    }))}
+                    footerLine="▸ TALE OF THE TAPE"
+                  />
+                </Link>
+              );
+            })()}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {shownUpcoming.slice(1).map((card) => (
               <div key={card.id} className="bg-[#101114] border-2 border-[#3a3d44] hover:border-[#ff8c42]/60 transition-colors">
                 <div className="flex items-center justify-between px-4 pt-3">
                   <span className="font-mono text-[9px] uppercase tracking-[0.25em] text-zinc-500 truncate">
@@ -211,7 +235,8 @@ export default function WatchHub({
                 </div>
               </div>
             ))}
-          </div>
+            </div>
+          </>
         )}
       </section>
 
