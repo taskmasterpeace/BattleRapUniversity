@@ -24,6 +24,7 @@ import {
   type BadgeEffects,
 } from './badges';
 import { SIMULATION_CONFIG as CONFIG } from './config';
+import { facetsOf, getOrDiscoverAngles } from './angleDiscovery';
 import { type ContentSelection } from './roundContentSelection';
 import { calculateEffectivenessForecast } from './roundContentSelection';
 import { distributeContentAcrossSegments } from './segmentContentDistribution';
@@ -32,13 +33,24 @@ import { distributeContentAcrossSegments } from './segmentContentDistribution';
  * Simulate a single round for locked-in mode
  * Returns round and segment data for the player
  */
+/** Per-round modifiers produced by pressure moves (talk-overs, bumps). */
+export type PressureModifiers = {
+  playerStumbleDelta: number;
+  aiStumbleDelta: number;
+  playerStressDelta: number;
+  aiStressDelta: number;
+  playerCrowdDelta: number;
+  aiCrowdDelta: number;
+};
+
 export async function simulateSingleRound(
   supabase: any,
   battleId: string,
   roundIndex: number,
   context: ScoringContext,
   playerBattler: Battler,
-  aiBattler: Battler
+  aiBattler: Battler,
+  pressure?: PressureModifiers
 ): Promise<{
   playerRound: BattleRound;
   aiRound: BattleRound;
@@ -104,6 +116,25 @@ export async function simulateSingleRound(
   const playerPrepProfile = buildPrepProfile(playerData.prepBlocks);
   const aiPrepProfile = buildPrepProfile(aiData.prepBlocks);
 
+  // ANGLES — round-stable: the research dig happens once per battle (round 1
+  // rolls + persists to battle_intelligence, later rounds read it back).
+  playerPrepProfile.angleFacets = await getOrDiscoverAngles(
+    supabase,
+    battleId,
+    battle.battler_player_id,
+    battle.battler_ai_id,
+    playerPrepProfile.researchDays,
+    facetsOf(aiBattler)
+  );
+  aiPrepProfile.angleFacets = await getOrDiscoverAngles(
+    supabase,
+    battleId,
+    battle.battler_ai_id,
+    battle.battler_player_id,
+    aiPrepProfile.researchDays,
+    facetsOf(playerBattler)
+  );
+
   // Apply prep modifiers to attributes
   const playerModified = applyPrepModifiers(
     playerData.attributes,
@@ -119,6 +150,18 @@ export async function simulateSingleRound(
     aiBadgeEffects,
     league
   );
+
+  // PRESSURE MOVES — talk-overs and bumps land as round-scoped stress and
+  // stumble risk (stress already feeds choke/stumble math; the stumble delta
+  // rides through the badge stumbleReduction channel with inverted sign).
+  if (pressure) {
+    playerModified.stress = Math.min(100, playerModified.stress + pressure.playerStressDelta);
+    aiModified.stress = Math.min(100, aiModified.stress + pressure.aiStressDelta);
+    playerBadgeEffects.stumbleReduction =
+      (playerBadgeEffects.stumbleReduction || 0) - pressure.playerStumbleDelta;
+    aiBadgeEffects.stumbleReduction =
+      (aiBadgeEffects.stumbleReduction || 0) - pressure.aiStumbleDelta;
+  }
 
   // Determine segments per round based on league
   const segmentsPerRound = league.round_length_minutes === 2 ? 4 : 6;
@@ -330,6 +373,18 @@ export async function simulateSingleRound(
     aiForecast.finalMultiplier
   );
 
+  // PRESSURE — room heat and backfired moves land directly on the crowd.
+  if (pressure) {
+    playerRound.crowd_reaction = Math.min(
+      100,
+      Math.max(0, playerRound.crowd_reaction + Math.round(pressure.playerCrowdDelta))
+    );
+    aiRound.crowd_reaction = Math.min(
+      100,
+      Math.max(0, aiRound.crowd_reaction + Math.round(pressure.aiCrowdDelta))
+    );
+  }
+
   // Determine round winner
   const playerWon =
     playerRound.average_score > aiRound.average_score ||
@@ -503,6 +558,14 @@ function applyPrepModifiers(
   modified.writing.creativity = Math.min(10, modified.writing.creativity + researchBoost * 0.5);
   modified.writing.lyricism = Math.min(10, modified.writing.lyricism + researchBoost * 0.3);
 
+  // ANGLES — personal material found on the opponent lands harder.
+  const angleCount = prep.angleFacets?.length ?? 0;
+  if (angleCount > 0) {
+    const angleEdge = angleCount * CONFIG.ANGLE_FACET_WRITING_BONUS;
+    modified.writing.lyricism = Math.min(10, modified.writing.lyricism + angleEdge);
+    modified.writing.creativity = Math.min(10, modified.writing.creativity + angleEdge);
+  }
+
   const resilienceBoost = prep.restDays * effectivePrepMultiplier * badgeEffects.restEfficiency;
   modified.resilience = Math.min(10, attributes.resilience + resilienceBoost);
 
@@ -623,7 +686,9 @@ function simulateSegment(
   let finalScore = baseScore * gapMultiplier * (1 + variance);
 
   // Peak chance
-  const peakChance = prep.researchDays > 0 ? CONFIG.PEAK_PROBABILITY : CONFIG.PEAK_PROBABILITY * 0.5;
+  const peakChance =
+    (prep.researchDays > 0 ? CONFIG.PEAK_PROBABILITY : CONFIG.PEAK_PROBABILITY * 0.5) *
+    (1 + (prep.angleFacets?.length ?? 0) * CONFIG.ANGLE_FACET_PEAK_MULT);
   if (Math.random() < peakChance) {
     finalScore *= 1.2 + badgeEffects.peakBonus;
     events.push('haymaker');

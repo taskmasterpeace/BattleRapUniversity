@@ -17,6 +17,7 @@ import {
   type BadgeEffects,
 } from './badges';
 import { SIMULATION_CONFIG as CONFIG } from './config';
+import { discoverAngles, facetsOf, persistIntel } from './angleDiscovery';
 import {
   autoSelectContent,
   calculateEffectivenessForecast,
@@ -105,6 +106,24 @@ export async function simulateBattle(
   // 3. Build prep profiles
   const playerPrepProfile = buildPrepProfile(playerData.prepBlocks);
   const aiPrepProfile = buildPrepProfile(aiData.prepBlocks);
+
+  // 3b. ANGLES — research days roll against the opponent's persona facets.
+  // What you dig up sharpens your pen and can detonate a haymaker; the paper
+  // trail lands in battle_intelligence for the blogs to find.
+  const playerDiscovery = discoverAngles(playerPrepProfile.researchDays, facetsOf(aiBattler));
+  const aiDiscovery = discoverAngles(aiPrepProfile.researchDays, facetsOf(playerBattler));
+  playerPrepProfile.angleFacets = playerDiscovery.found;
+  aiPrepProfile.angleFacets = aiDiscovery.found;
+  await Promise.all([
+    persistIntel(supabase, battleId, battle.battler_player_id, battle.battler_ai_id, playerDiscovery),
+    persistIntel(supabase, battleId, battle.battler_ai_id, battle.battler_player_id, aiDiscovery),
+  ]);
+  if (playerDiscovery.found.length > 0) {
+    console.log(`[ANGLES] ${playerBattler?.stage_name} dug up: ${playerDiscovery.found.join(', ')}`);
+  }
+  if (aiDiscovery.found.length > 0) {
+    console.log(`[ANGLES] ${aiBattler?.stage_name} dug up: ${aiDiscovery.found.join(', ')}`);
+  }
 
   // 4. Apply prep modifiers to attributes (now with badge effects)
   const playerModified = applyPrepModifiers(
@@ -739,6 +758,15 @@ export function applyPrepModifiers(
     modified.writing.lyricism + researchBoost * 0.3
   );
 
+  // ANGLES — personal material found on the opponent lands harder than
+  // generic bars: each discovered facet sharpens lyricism + creativity.
+  const angleCount = prep.angleFacets?.length ?? 0;
+  if (angleCount > 0) {
+    const angleEdge = angleCount * CONFIG.ANGLE_FACET_WRITING_BONUS;
+    modified.writing.lyricism = Math.min(10, modified.writing.lyricism + angleEdge);
+    modified.writing.creativity = Math.min(10, modified.writing.creativity + angleEdge);
+  }
+
   // Resilience boost from rest (affected by restEfficiency)
   const resilienceBoost = prep.restDays * effectivePrepMultiplier * badgeEffects.restEfficiency;
   modified.resilience = Math.min(10, attributes.resilience + resilienceBoost);
@@ -1197,7 +1225,13 @@ export function simulateSegment(
   let finalScore = baseScore * gapMultiplier * (1 + variance);
 
   // Check for peak segment (research/angles bonus + badge peak bonus)
-  const peakChance = prep.researchDays > 0 ? CONFIG.PEAK_PROBABILITY : CONFIG.PEAK_PROBABILITY * 0.5;
+  // Personal angles detonate: each facet dug up on the opponent multiplies
+  // the shot at a haymaker moment (culture truth — the personal bar is the
+  // one the room remembers).
+  const angleFacetCount = prep.angleFacets?.length ?? 0;
+  const peakChance =
+    (prep.researchDays > 0 ? CONFIG.PEAK_PROBABILITY : CONFIG.PEAK_PROBABILITY * 0.5) *
+    (1 + angleFacetCount * CONFIG.ANGLE_FACET_PEAK_MULT);
   const isPeak = Math.random() < peakChance;
   if (isPeak) {
     const peakMultiplier = 1.2 + badgeEffects.peakBonus;

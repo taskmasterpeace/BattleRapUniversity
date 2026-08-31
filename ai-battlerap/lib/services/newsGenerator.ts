@@ -51,6 +51,8 @@ export interface BattleRecapSummary {
     who: 'player' | 'ai';
     event: 'haymaker' | 'choke' | 'stumble';
   }[];
+  /** Angles dug up in camp — research prep uncovered these opponent facets. */
+  angles?: { researcher: string; target: string; facets: string[] }[];
 }
 
 /**
@@ -109,6 +111,30 @@ export async function createBattleRecapAndEvents(battleId: string, supabaseClien
     segments,
     rankings
   );
+
+  // 2b. ANGLES — what research turned up (battle_intelligence paper trail).
+  // Bloggers write about the personal material that came out in the room.
+  try {
+    const { data: intel } = await supabase
+      .from('battle_intelligence')
+      .select('researcher_battler_id, target_battler_id, discovery_rolls')
+      .eq('battle_id', battleId);
+    const nameOf = (id: string) =>
+      id === battle.battler_player_id
+        ? battle.player_battler?.stage_name ?? 'Unknown'
+        : battle.ai_battler?.stage_name ?? 'Unknown';
+    summary.angles = (intel ?? [])
+      .map((row: any) => ({
+        researcher: nameOf(row.researcher_battler_id),
+        target: nameOf(row.target_battler_id),
+        facets: (Array.isArray(row.discovery_rolls) ? row.discovery_rolls : [])
+          .filter((r: any) => r?.success)
+          .map((r: any) => r.facet),
+      }))
+      .filter((a: any) => a.facets.length > 0);
+  } catch {
+    // intel is optional narrative flavor
+  }
 
   // 3. GRUDGE SYSTEM: Update head-to-head record (optional - gracefully skip if table doesn't exist)
   let rivalryContext = { hasGrudge: false, grudge: null };
@@ -257,6 +283,11 @@ async function createRivalryRecapArticle(
     if (m.event === 'choke') return `${who} choked in R${m.round}`;
     return `${who} stumbled in R${m.round}`;
   });
+
+  // ANGLES read as key moments in a rivalry write-up — the homework IS the story.
+  for (const a of summary.angles ?? []) {
+    keyMoments.push(`${a.researcher} came armed — research turned up ${a.target}'s ${a.facets.join(' and ')} angle`);
+  }
 
   // Use rivalry article generator
   const articleId = await generateRivalryArticleForBattle(
@@ -485,6 +516,7 @@ async function createRecapArticle(supabase: any, summary: BattleRecapSummary): P
       decision: summary.decision,
       isUpset: summary.isUpset,
       blogger: blogger,
+      angles: summary.angles ?? [],
     },
     published_at: new Date().toISOString(),
   }).select().single();
@@ -657,9 +689,18 @@ async function generateArticleContent(summary: BattleRecapSummary, bloggerKey: s
 
     const crowdReaction = `Player: ${summary.player.crowdAverage}%, AI: ${summary.ai.crowdAverage}%`;
 
-    const dramaNotes = summary.isUpset
-      ? `Major upset! ${winner} was rated ${summary.winnerId === summary.player.id ? summary.player.ratingBefore : summary.ai.ratingBefore} vs ${loser}'s ${summary.loserId === summary.player.id ? summary.player.ratingBefore : summary.ai.ratingBefore}`
-      : 'No major drama';
+    const angleNotes = (summary.angles ?? [])
+      .map((a) => `${a.researcher} did the homework — research turned up ${a.target}'s ${a.facets.join(' and ')} angle, and ${a.researcher} walked in armed with it`)
+      .join('. ');
+
+    const dramaNotes = [
+      summary.isUpset
+        ? `Major upset! ${winner} was rated ${summary.winnerId === summary.player.id ? summary.player.ratingBefore : summary.ai.ratingBefore} vs ${loser}'s ${summary.loserId === summary.player.id ? summary.player.ratingBefore : summary.ai.ratingBefore}`
+        : '',
+      angleNotes,
+    ]
+      .filter(Boolean)
+      .join('. ') || 'No major drama';
 
     // Get blogger prompt with decision type
     const { systemPrompt, userPrompt } = getBloggerPrompt(bloggerKey, {
@@ -735,7 +776,20 @@ function buildMarkdownBody(summary: BattleRecapSummary, bloggerId?: string): str
     leagueName: summary.leagueName,
   };
 
-  return generateNarrativeArticleBody(narrativeInput);
+  let body = generateNarrativeArticleBody(narrativeInput);
+
+  // ANGLES — the research paper trail makes the recap (mock path too).
+  if (summary.angles && summary.angles.length > 0) {
+    const angleLines = summary.angles
+      .map(
+        (a) =>
+          `**The homework showed.** ${a.researcher} clearly studied the tape — the ${a.facets.join(' and ')} material aimed at ${a.target} didn't come from nowhere, and the room knew it.`
+      )
+      .join('\n\n');
+    body = `${body}\n\n${angleLines}`;
+  }
+
+  return body;
 }
 
 /**

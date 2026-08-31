@@ -48,7 +48,7 @@ type Battle = {
 
 // Brand palette only — warm hues + neutrals. No purple, no stray blue.
 const FOCUS_OPTIONS = [
-  { value: 'research', label: 'RESEARCH', icon: 'search' as const, color: 'bg-amber-500/15 text-amber-400 border-amber-500/60', chipBg: 'bg-amber-500/25 border-amber-400', description: 'Study their tape — angles + scouting intel' },
+  { value: 'research', label: 'RESEARCH', icon: 'search' as const, color: 'bg-amber-500/15 text-amber-400 border-amber-500/60', chipBg: 'bg-amber-500/25 border-amber-400', description: 'Dig into their life — find a facet, own an ANGLE (+peak shot)' },
   { value: 'writing', label: 'WRITE', icon: 'pen' as const, color: 'bg-[#ff8c42]/15 text-[#ff8c42] border-[#ff8c42]/60', chipBg: 'bg-[#ff8c42]/25 border-[#ff8c42]', description: 'Pen + memorize the rounds — cuts choke risk' },
   { value: 'performance', label: 'REHEARSE', icon: 'stage' as const, color: 'bg-red-500/15 text-red-400 border-red-500/60', chipBg: 'bg-red-500/25 border-red-400', description: 'Practice the delivery — cuts stumbles' },
   { value: 'life', label: 'LIFE', icon: 'home' as const, color: 'bg-green-500/15 text-green-400 border-green-500/60', chipBg: 'bg-green-500/25 border-green-400', description: 'Handle business at home' },

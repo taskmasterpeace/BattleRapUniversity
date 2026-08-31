@@ -127,6 +127,43 @@ export async function GET(
     }
   }
 
+  // ANGLES — what research dug up before the battle (round-stable; shown
+  // once the round is simulated so scouting isn't spoiled pre-reveal).
+  const { data: intel } = await supabase
+    .from('battle_intelligence')
+    .select('researcher_battler_id, target_battler_id, discovery_rolls')
+    .eq('battle_id', battleId);
+  const nameOf = (bid: string) =>
+    bid === battle.battler_player_id ? battle.player_battler.stage_name : battle.ai_battler.stage_name;
+  const angles = (intel ?? [])
+    .map((row: any) => ({
+      researcher: nameOf(row.researcher_battler_id),
+      researcherIsPlayer: row.researcher_battler_id === battle.battler_player_id,
+      target: nameOf(row.target_battler_id),
+      facets: (Array.isArray(row.discovery_rolls) ? row.discovery_rolls : [])
+        .filter((r: any) => r?.success)
+        .map((r: any) => r.facet),
+    }))
+    .filter((a: any) => a.facets.length > 0);
+
+  // PRESSURE EVENTS — the physical chess told back (talk-overs, bumps, who
+  // laughed who off) for this round.
+  const { data: decisions } = await supabase
+    .from('battle_decisions')
+    .select('battler_id, decision_label')
+    .eq('battle_id', battleId)
+    .eq('round_number', roundIndex)
+    .eq('decision_type', 'pressure_move');
+  const pressureEvents = (decisions ?? []).map((d: any) => {
+    const [move, outcome] = String(d.decision_label).split(':');
+    return {
+      by: d.battler_id === battle.battler_player_id ? 'player' : 'ai',
+      actor: nameOf(d.battler_id),
+      move,
+      outcome: outcome ?? '',
+    };
+  });
+
   return NextResponse.json({
     simulated: true,
     playerRound: {
@@ -140,5 +177,7 @@ export async function GET(
     playerSegments,
     aiSegments,
     winner,
+    angles,
+    pressureEvents,
   });
 }

@@ -32,6 +32,10 @@ export interface Battler {
   is_ai: boolean;
   avatar_url?: string | null;
   banner_url?: string | null;
+  /** male | female — set by worldgen/editor, matches the sprite */
+  gender?: string | null;
+  /** appearance lock + coding + persona facets (see roster editor) */
+  identity?: Record<string, any> | null;
   current_balance?: number | null;
   total_career_earnings?: number | null;
   level?: number | null;
@@ -228,6 +232,8 @@ export interface PrepProfile {
   performanceDays: number;
   lifeDays: number;
   restDays: number;
+  /** Opponent persona facets uncovered by research — each one is an ANGLE. */
+  angleFacets?: string[];
 }
 
 export interface ModifiedAttributes {

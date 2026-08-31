@@ -29,6 +29,15 @@ export default function RoundResultsPage() {
   } | null>(null);
   const [loading, setLoading] = useState(true);
   const [simulating, setSimulating] = useState(false);
+  const [angles, setAngles] = useState<
+    Array<{ researcher: string; researcherIsPlayer: boolean; target: string; facets: string[] }>
+  >([]);
+  const [pressureMove, setPressureMove] = useState<'none' | 'talk_over' | 'bump'>('none');
+  const [bumpPrompt, setBumpPrompt] = useState(false);
+  const [fightBroke, setFightBroke] = useState<null | { swungBy: string }>(null);
+  const [pressureEvents, setPressureEvents] = useState<
+    Array<{ by: 'player' | 'ai'; actor: string; move: string; outcome: string }>
+  >([]);
 
   useEffect(() => {
     fetchRoundData();
@@ -52,6 +61,8 @@ export default function RoundResultsPage() {
         setAiRound(roundData.aiRound);
         setPlayerSegments(roundData.playerSegments || []);
         setAiSegments(roundData.aiSegments || []);
+        setAngles(roundData.angles || []);
+        setPressureEvents(roundData.pressureEvents || []);
       }
       // Pre-battle: the player's own locked content, echoed back so we can show
       // what they're walking in with on the "about to perform" screen.
@@ -62,18 +73,31 @@ export default function RoundResultsPage() {
     setLoading(false);
   };
 
-  const handleSimulateRound = async () => {
+  const handleSimulateRound = async (bumpResponse?: 'laugh_off' | 'bump_back' | 'swing') => {
     setSimulating(true);
+    setBumpPrompt(false);
     try {
       const response = await fetch(`/api/battles/${battleId}/rounds/${roundNum}/simulate`, {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pressureMove, bumpResponse }),
       });
+      const data = await response.json();
 
       if (response.ok) {
-        // Refresh round data
+        // The opponent walked through your space — the room is waiting on YOU.
+        if (data.needsResponse) {
+          setBumpPrompt(true);
+          setSimulating(false);
+          return;
+        }
+        if (data.fightBroke) {
+          setFightBroke({ swungBy: data.swungBy });
+          setSimulating(false);
+          return;
+        }
         await fetchRoundData();
       } else {
-        const data = await response.json();
         toast(data.error || 'Failed to simulate round', 'error');
       }
     } catch (error) {
@@ -205,9 +229,42 @@ export default function RoundResultsPage() {
             </div>
           )}
 
+          {/* PRESSURE MOVE — the physical chess match before the bars */}
+          <div className="fs bg-[#101114] border-2 border-black p-5 mb-8 shadow-[3px_3px_0_rgba(0,0,0,.4)]" style={{ borderTop: '3px solid #E23A2E' }}>
+            <div className="font-mono text-[9px] uppercase tracking-[0.25em] text-zinc-500 mb-3">
+              PRESSURE MOVE · HOW YOU CARRY IT IN THE ROOM
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              {(
+                [
+                  { v: 'none', label: 'STAY PRO', hint: 'Let the pen talk' },
+                  { v: 'talk_over', label: 'TALK OVER', hint: 'Jaw at them mid-round — rattle or look thirsty' },
+                  { v: 'bump', label: 'BUMP', hint: 'Walk through their space — they WILL answer' },
+                ] as const
+              ).map((opt) => (
+                <button
+                  key={opt.v}
+                  onClick={() => setPressureMove(opt.v)}
+                  className={`p-3 border-2 text-left transition-all ${
+                    pressureMove === opt.v
+                      ? 'border-[#E23A2E] bg-[#E23A2E]/10'
+                      : 'border-[#3a3d44] hover:border-zinc-500'
+                  }`}
+                >
+                  <div className="font-display font-black uppercase tracking-wider text-sm text-zinc-100">
+                    {opt.label}
+                  </div>
+                  <div className="font-mono text-[8px] uppercase tracking-wide text-zinc-500 mt-1 leading-relaxed">
+                    {opt.hint}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Perform it */}
           <button
-            onClick={handleSimulateRound}
+            onClick={() => handleSimulateRound()}
             disabled={simulating}
             className="w-full py-5 bg-[#ff8c42] hover:bg-[#ff9d5c] text-black font-display font-black uppercase tracking-widest text-lg md:text-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
@@ -217,6 +274,78 @@ export default function RoundResultsPage() {
             Once it's performed, there's no taking it back.
           </p>
         </div>
+
+        {/* THE BUMP — they walked through YOUR space. The room is watching. */}
+        {bumpPrompt && (
+          <div className="fixed inset-0 z-50 bg-black/85 flex items-center justify-center p-4">
+            <div className="fs max-w-lg w-full bg-[#101114] border-2 border-black p-8 shadow-[6px_6px_0_rgba(0,0,0,.6)]" style={{ borderTop: '4px solid #E23A2E' }}>
+              <div
+                className="uppercase text-[#E23A2E] leading-none mb-2"
+                style={{ fontFamily: 'var(--font-poster)', fontSize: 34, textShadow: '2px 2px 0 #000' }}
+              >
+                {battle.ai_battler?.stage_name} BUMPED YOU
+              </div>
+              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-zinc-400 mb-6">
+                Walked straight through your space mid-setup. The whole room saw it. What are you doing?
+              </p>
+              <div className="space-y-3">
+                <button
+                  onClick={() => handleSimulateRound('laugh_off')}
+                  className="w-full p-4 border-2 border-[#35C46B]/60 hover:border-[#35C46B] bg-[#35C46B]/5 text-left transition-all"
+                >
+                  <div className="font-display font-black uppercase tracking-wider text-zinc-100">LAUGH IT OFF</div>
+                  <div className="font-mono text-[8px] uppercase tracking-wide text-zinc-500 mt-1">
+                    Composure wins the room — they look pressed, you look untouchable
+                  </div>
+                </button>
+                <button
+                  onClick={() => handleSimulateRound('bump_back')}
+                  className="w-full p-4 border-2 border-[#E7B23C]/60 hover:border-[#E7B23C] bg-[#E7B23C]/5 text-left transition-all"
+                >
+                  <div className="font-display font-black uppercase tracking-wider text-zinc-100">BUMP BACK</div>
+                  <div className="font-mono text-[8px] uppercase tracking-wide text-zinc-500 mt-1">
+                    Meet the energy — both of you tense up, and the room EATS IT UP
+                  </div>
+                </button>
+                <button
+                  onClick={() => handleSimulateRound('swing')}
+                  className="w-full p-4 border-2 border-[#E23A2E]/60 hover:border-[#E23A2E] bg-[#E23A2E]/5 text-left transition-all"
+                >
+                  <div className="font-display font-black uppercase tracking-wider text-[#E23A2E]">SWING</div>
+                  <div className="font-mono text-[8px] uppercase tracking-wide text-zinc-500 mt-1">
+                    Battle OVER. No contest. Your rep craters — leagues stop calling people who turn card nights into brawls
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* IT GOT PHYSICAL — the battle is void */}
+        {fightBroke && (
+          <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4">
+            <div className="fs max-w-lg w-full bg-[#101114] border-2 border-black p-8 text-center shadow-[6px_6px_0_rgba(0,0,0,.6)]" style={{ borderTop: '4px solid #E23A2E' }}>
+              <div
+                className="uppercase text-[#E23A2E] leading-none mb-3 -rotate-2"
+                style={{ fontFamily: 'var(--font-poster)', fontSize: 44, textShadow: '3px 3px 0 #000' }}
+              >
+                IT GOT PHYSICAL
+              </div>
+              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-zinc-300 mb-2">
+                {fightBroke.swungBy === 'player' ? 'YOU SWUNG.' : `${battle.ai_battler?.stage_name?.toUpperCase()} SWUNG.`} SECURITY RUSHED THE STAGE.
+              </p>
+              <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-zinc-500 mb-6">
+                NO CONTEST · THE TAPE CUTS · THE BLOGS ALREADY KNOW
+              </p>
+              <Link
+                href={`/battle/${battleId}`}
+                className="inline-block px-8 py-3 bg-[#E23A2E] text-black font-display font-black uppercase tracking-widest border-2 border-black shadow-[3px_3px_0_rgba(0,0,0,.5)]"
+              >
+                FACE THE AFTERMATH →
+              </Link>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
@@ -277,6 +406,59 @@ export default function RoundResultsPage() {
             label={`THE ROOM · YOU ${Math.round(playerRound.crowd_reaction ?? 0)}% — ${(battle.ai_battler?.stage_name || 'THEM').toUpperCase()} ${Math.round(aiRound.crowd_reaction ?? 0)}%`}
           />
         </div>
+
+        {/* PRESSURE — what happened between the bars this round */}
+        {pressureEvents.length > 0 && (
+          <div className="fs mb-4 flex flex-wrap gap-2">
+            {pressureEvents.map((p, i) => {
+              const story =
+                p.move === 'talk_over'
+                  ? p.outcome === 'rattled'
+                    ? `${p.actor.toUpperCase()} TALKED OVER THE ROUND — IT LANDED, THEY LOOKED SHOOK`
+                    : `${p.actor.toUpperCase()} TRIED TO TALK OVER IT — GOT IGNORED, LOOKED THIRSTY`
+                  : p.outcome === 'laughed_off'
+                    ? `${p.actor.toUpperCase()} BUMPED — GOT LAUGHED OFF, ROOM SIDED WITH COMPOSURE`
+                    : p.outcome === 'bumped_back'
+                      ? `${p.actor.toUpperCase()} BUMPED — IT GOT MET. ROOM ON FIRE`
+                      : `${p.actor.toUpperCase()} BUMPED`;
+              return (
+                <span
+                  key={i}
+                  className="inline-flex items-center gap-2 px-3 py-1.5 border-2 border-black bg-[#170c0b] shadow-[2px_2px_0_rgba(0,0,0,.45)]"
+                  style={{ borderLeft: `3px solid ${p.by === 'player' ? '#E7B23C' : '#E23A2E'}` }}
+                >
+                  <span className="font-mono text-[8px] uppercase tracking-[0.18em] text-zinc-300">{story}</span>
+                </span>
+              );
+            })}
+          </div>
+        )}
+
+        {/* ANGLES — what the research dug up (facets weaponized in this battle) */}
+        {angles.length > 0 && (
+          <div className="fs mb-8 flex flex-wrap gap-2">
+            {angles.map((a, i) => (
+              <span
+                key={i}
+                className="inline-flex items-center gap-2 px-3 py-1.5 border-2 border-black bg-[#1c1409] shadow-[2px_2px_0_rgba(0,0,0,.45)]"
+                style={{ borderLeft: `3px solid ${a.researcherIsPlayer ? '#E7B23C' : '#E23A2E'}` }}
+              >
+                <span className="font-mono text-[8px] uppercase tracking-[0.2em] text-[#E7B23C]">
+                  {a.researcherIsPlayer ? 'YOUR RESEARCH FOUND' : `${a.researcher.toUpperCase()} DUG UP`}
+                </span>
+                <span
+                  className="uppercase text-zinc-100"
+                  style={{ fontFamily: 'var(--font-poster)', fontSize: 14, textShadow: '1px 1px 0 #000' }}
+                >
+                  {a.facets.join(' · ')}
+                </span>
+                <span className="font-mono text-[8px] uppercase tracking-[0.15em] text-zinc-500">
+                  ON {a.target.toUpperCase()}
+                </span>
+              </span>
+            ))}
+          </div>
+        )}
 
         {/* Results Breakdown */}
         <RoundResultsBreakdown

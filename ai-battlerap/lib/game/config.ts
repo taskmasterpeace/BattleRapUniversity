@@ -189,6 +189,60 @@ export const SIMULATION_CONFIG = {
   STRESS_REST_RELIEF: 6,
 
   // ============================================================================
+  // ANGLES FROM FACETS (2026-08-31 — research prep digs up persona facets)
+  // ============================================================================
+
+  /**
+   * Chance per research day of uncovering one of the opponent's persona
+   * facets (identity.facets — Christian, Ex-Con, LGBTQ, Veteran…). What you
+   * find becomes an ANGLE: personal material that sharpens your pen and can
+   * detonate a haymaker moment.
+   */
+  ANGLE_DISCOVERY_CHANCE: 0.45,
+
+  /** Max facets one battler can weaponize in a single battle. */
+  ANGLE_FACETS_MAX: 2,
+
+  /**
+   * Writing edge per discovered facet — the personal angle lands harder than
+   * generic bars (+lyricism/+creativity, applied in prep modifiers).
+   */
+  ANGLE_FACET_WRITING_BONUS: 0.35,
+
+  /**
+   * Peak-probability multiplier per discovered facet: peakChance *= 1 + n*THIS.
+   * Personal angles are how haymaker moments actually happen in the culture.
+   */
+  ANGLE_FACET_PEAK_MULT: 0.4,
+
+  // ============================================================================
+  // PRESSURE MOVES (2026-08-31 — the physical chess match in the room)
+  // ============================================================================
+
+  /** Base chance TALK OVER rattles the target before resilience discounts it. */
+  PRESSURE_TALK_RATTLE_BASE: 0.65,
+  /** Rattle chance lost per point of target resilience. */
+  PRESSURE_TALK_RESILIENCE_FACTOR: 0.05,
+  /** Stumble-probability added to a rattled target this round. */
+  PRESSURE_TALK_STUMBLE_DELTA: 0.08,
+  /** Battle-night stress added to a rattled target this round. */
+  PRESSURE_TALK_STRESS_DELTA: 8,
+  /** Crowd docked from the talker when the target doesn't flinch (reads thirsty). */
+  PRESSURE_TALK_BACKFIRE_CROWD: 4,
+
+  /** Stumble-probability a BUMP adds to the target when met with a bump back. */
+  PRESSURE_BUMP_STUMBLE_DELTA: 0.05,
+  /** Stress BOTH battlers take in a bump exchange. */
+  PRESSURE_BUMP_STRESS_DELTA: 10,
+  /** Crowd docked from a bumper who gets LAUGHED OFF (composure wins the room). */
+  PRESSURE_BUMP_LAUGHED_OFF_CROWD: 5,
+  /** Crowd-reaction bonus BOTH sides get when a bump gets met — tension sells. */
+  PRESSURE_BUMPBACK_ROOM_HEAT: 6,
+
+  /** Reputation hit for throwing hands (battle voided, leagues stop calling). */
+  PRESSURE_SWING_REPUTATION_HIT: 1.5,
+
+  // ============================================================================
   // PERSONAL FACTORS (NEW - PHASE 4 CHOKE EXPANSION)
   // ============================================================================
 
