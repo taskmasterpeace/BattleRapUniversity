@@ -712,13 +712,27 @@ if (require.main === module) {
   const battlesPerProfile = parseInt(process.argv[2]) || 30;
   const testAllPrepLevels = process.argv[3] === 'true';
 
+  const cleanup = async () => {
+    const { cleanupValidationResidue } = await import('./validationCleanup');
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      { auth: { autoRefreshToken: false, persistSession: false } }
+    );
+    await cleanupValidationResidue(supabase).catch((e) =>
+      console.error('cleanup failed:', e)
+    );
+  };
+
   runComprehensiveSystemValidation(battlesPerProfile, testAllPrepLevels)
-    .then(() => {
+    .then(async () => {
+      await cleanup();
       console.log('\nValidation complete!');
       process.exit(0);
     })
-    .catch((error) => {
+    .catch(async (error) => {
       console.error('Validation failed:', error);
+      await cleanup();
       process.exit(1);
     });
 }
