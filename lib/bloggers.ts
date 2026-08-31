@@ -26,6 +26,29 @@ export interface Blogger {
 
 export const BLOGGERS: Blogger[] = [
   {
+    id: "jesse-rican",
+    name: "Jesse Rican",
+    slug: "jesse-rican",
+    title: "The Predictions King",
+    icon: "🎯",
+    color: "#E23A2E", // corner red — the red polo
+    specialty: "Predictions, Card Previews, Culture Takes",
+    homeLeague: null, // covers every room
+    followers: 15600,
+    articleCount: 0,
+    bio: "Jesse Rican calls his shots before the battles do. Card-by-card predictions, zero hedging, receipts kept. And he's the only media man crazy enough to step in the ring himself — an active battler on the circuit, so when he grades your pen, he's graded his own first.",
+    notableTakes: [
+      "I don't do 'it could go either way.' Pick a side.",
+      "My prediction record IS my resume.",
+      "I battle too — that's why my breakdowns hit different.",
+      "If I call you winning 3-0 and you drop a round, we're both embarrassed.",
+    ],
+    writingStyle: ["Bold predictions", "Card previews", "Scorecard verdicts", "Accountability follow-ups"],
+    covers: ["Fight cards", "Predictions", "Upset watch", "His own battles (no bias, allegedly)"],
+    isActive: true, // ACTIVE — predictions and card previews (dual-lane: also a battler)
+    avatarId: "blogger_jesse_rican",
+  },
+  {
     id: "battle-eyez",
     name: "Battle Eyez",
     slug: "battle-eyez",

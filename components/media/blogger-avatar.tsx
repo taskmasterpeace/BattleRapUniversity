@@ -1,5 +1,6 @@
 "use client"
 import type { Blogger } from "@/lib/bloggers"
+import { portraitFillStyle } from "@/lib/sprite-crops"
 
 interface BloggerAvatarProps {
   blogger: Blogger
@@ -20,6 +21,7 @@ export function BloggerAvatar({ blogger, size, showBadge = false, onClick }: Blo
     .split(" ")
     .map((w) => w[0])
     .join("")
+  const avatarUrl = blogger.avatarId ? `/sprites/bloggers/${blogger.avatarId}.png` : undefined
 
   return (
     <div
@@ -28,8 +30,19 @@ export function BloggerAvatar({ blogger, size, showBadge = false, onClick }: Blo
       onClick={onClick}
     >
       <span>{initials}</span>
+      {avatarUrl && (
+        <img
+          src={avatarUrl}
+          alt={blogger.name}
+          style={portraitFillStyle(avatarUrl, { fit: "width", targetW: 1.18 })}
+          onError={(e) => {
+            // fall back to the initials underneath
+            ;(e.currentTarget as HTMLImageElement).style.display = "none"
+          }}
+        />
+      )}
       {showBadge && (
-        <span className="absolute -bottom-1 -right-1 text-xs bg-zinc-900 rounded-full w-5 h-5 flex items-center justify-center">
+        <span className="absolute -bottom-1 -right-1 text-xs bg-zinc-900 rounded-full w-5 h-5 flex items-center justify-center z-10">
           {blogger.icon}
         </span>
       )}
