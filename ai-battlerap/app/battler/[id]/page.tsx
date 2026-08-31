@@ -63,6 +63,9 @@ interface CareerData {
     rating: number;
     rank: number | null;
     tier: string | null;
+    styleTags?: string[];
+    balance?: number | null;
+    lastLeague?: { name: string; logo_url: string | null } | null;
     attributes: {
       writing: any;
       performance: any;
@@ -183,6 +186,29 @@ export default function BattlerCareerPage({ params }: { params: Promise<{ id: st
     );
   }
 
+  // Card-filler modules (Codex design collab, 2026-08-31): style DNA, form &
+  // danger, signature moment, rivalry file — what a fan scouts first.
+  const history = data.battleHistory;
+  const form = history.slice(0, 5).map((b) => b.result);
+  let bestPeak = 0;
+  let sigBattle: (typeof history)[number] | null = null;
+  for (const b of history) {
+    for (const r of b.rounds as Array<{ peakScore?: number }>) {
+      if ((r.peakScore ?? 0) > bestPeak) {
+        bestPeak = r.peakScore ?? 0;
+        sigBattle = b;
+      }
+    }
+  }
+  const haymakerRounds = history.reduce(
+    (n, b) => n + (b.rounds as Array<{ peakScore?: number }>).filter((r) => (r.peakScore ?? 0) >= 8.5).length,
+    0
+  );
+  const topRival = data.rivalries[0] ?? null;
+  const hometownLine = data.battler.hometown
+    ? `${data.battler.hometown.name}${data.battler.hometown.state ? `, ${data.battler.hometown.state}` : ''}`
+    : data.battler.region ?? undefined;
+
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-zinc-100">
       {/* Hero Section */}
@@ -224,6 +250,61 @@ export default function BattlerCareerPage({ params }: { params: Promise<{ id: st
               { k: 'Win Rate', v: `${data.careerStats.winRate}%`, s: `${data.careerStats.wins}W · ${data.careerStats.losses}L`, color: '#35C46B' },
               { k: 'Avg Crowd', v: `${data.careerStats.avgCrowdReaction}%`, s: 'room reaction' },
             ]}
+            styleTags={data.battler.styleTags ?? []}
+            homeLine={hometownLine}
+            wireHandle={data.wire?.handle}
+            bag={data.battler.balance ?? null}
+            form={form}
+            danger={
+              data.careerStats.totalBattles > 0
+                ? {
+                    bodies: data.careerStats.bodybags,
+                    roundWinRate: data.careerStats.roundWinRate,
+                    bestPeak: bestPeak > 0 ? Math.round(bestPeak * 10) / 10 : null,
+                    haymakers: haymakerRounds,
+                  }
+                : null
+            }
+            signature={
+              bestPeak > 0 && sigBattle
+                ? {
+                    title: `CAREER HIGH · ${bestPeak.toFixed(1)} PEAK${bestPeak >= 8.5 ? ' — HAYMAKER' : ''}`,
+                    detail: `VS ${sigBattle.opponentName} · ${sigBattle.result} ${sigBattle.score}`,
+                  }
+                : null
+            }
+            rival={
+              topRival
+                ? {
+                    name: topRival.opponentName,
+                    record: topRival.headToHead?.myRecord ?? null,
+                    intensity: topRival.intensity,
+                  }
+                : null
+            }
+            league={
+              data.battler.lastLeague
+                ? {
+                    name: data.battler.lastLeague.name,
+                    crest: data.battler.lastLeague.logo_url ?? undefined,
+                    subtitle: 'LAST FOUGHT HERE',
+                  }
+                : undefined
+            }
+            press={(data.press ?? []).map((p) => ({
+              name: p.blogger_name,
+              articles: p.total_articles,
+              pos: p.sentiment_positive,
+              neg: p.sentiment_negative,
+              narrative: p.recent_narrative,
+            }))}
+            outings={history.slice(0, 4).map((b) => ({
+              result: b.result,
+              opponent: b.opponentName,
+              opponentId: b.opponentId,
+              score: b.score,
+              battleId: b.battleId,
+            }))}
           />
         </div>
       </div>

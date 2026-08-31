@@ -53,6 +53,40 @@ export interface SideStat {
   color?: string
 }
 
+export interface RivalFile {
+  name: string
+  record: string | null
+  intensity: number
+}
+
+export interface DangerLine {
+  bodies: number
+  roundWinRate: number
+  bestPeak: number | null
+  haymakers: number
+}
+
+export interface SignatureMoment {
+  title: string
+  detail: string
+}
+
+export interface PressRow {
+  name: string
+  articles: number
+  pos: number
+  neg: number
+  narrative?: string | null
+}
+
+export interface Outing {
+  result: string
+  opponent: string
+  opponentId?: string
+  score: string
+  battleId?: string
+}
+
 interface CharacterSheetProps {
   name: string
   portrait: string
@@ -71,6 +105,24 @@ interface CharacterSheetProps {
   netEffects?: NetEffect[]
   /** extra chips under RANGE/FLOOR in the radar rail (career stats etc.) */
   sideStats?: SideStat[]
+  /** "FIGHTING OUT OF ..." line under the style tags */
+  homeLine?: string
+  /** wire (social) handle, shown with the home line */
+  wireHandle?: string
+  /** walking-around money — renders as a THE BAG id plate */
+  bag?: number | null
+  /** last-5 results, most recent first ('W' | 'L') — FORM strip under the radar */
+  form?: string[]
+  /** danger line under the radar: bodies / round win rate / career-best peak */
+  danger?: DangerLine | null
+  /** career-high ticket under the radar */
+  signature?: SignatureMoment | null
+  /** top rivalry file plate in the left column */
+  rival?: RivalFile | null
+  /** which bloggers cover them and how they lean — fills the league column */
+  press?: PressRow[]
+  /** last few battles — always-available filler for the league column */
+  outings?: Outing[]
 }
 
 type Grade = "S" | "A" | "B" | "C" | "D"
@@ -178,6 +230,15 @@ export function CharacterSheet({
   badges = [],
   netEffects = [],
   sideStats = [],
+  homeLine,
+  wireHandle,
+  bag = null,
+  form = [],
+  danger = null,
+  signature = null,
+  rival = null,
+  press = [],
+  outings = [],
 }: CharacterSheetProps) {
   const variants = portraits.length > 1 ? portraits : []
   const [activePortrait, setActivePortrait] = useState(0)
@@ -253,6 +314,14 @@ export function CharacterSheet({
                   <span className="v">{String(level).padStart(2, "0")}</span>
                 </span>
               )}
+              {bag != null && (
+                <span className="p">
+                  <span className="k">The Bag</span>
+                  <span className="v pix" style={{ color: "#E7B23C" }}>
+                    ${bag.toLocaleString()}
+                  </span>
+                </span>
+              )}
             </div>
             {styleTags.length > 0 && (
               <div className="fs-chips" style={{ marginTop: 10 }}>
@@ -263,17 +332,130 @@ export function CharacterSheet({
                 ))}
               </div>
             )}
+            {/* STYLE DNA — who they are, where they fight out of */}
+            {(homeLine || wireHandle) && (
+              <div style={{ marginTop: 10 }}>
+                {homeLine && (
+                  <p className="font-mono text-[9px] uppercase tracking-[0.22em] text-zinc-400">
+                    FIGHTING OUT OF <span className="text-zinc-100 font-bold">{homeLine}</span>
+                  </p>
+                )}
+                {wireHandle && (
+                  <p className="font-mono text-[9px] uppercase tracking-[0.22em] text-zinc-500 mt-1">
+                    ON THE WIRE <span className="text-[#F5731A]">@{wireHandle.replace(/^@/, "")}</span>
+                  </p>
+                )}
+              </div>
+            )}
+            {/* RIVALRY FILE — the beef a fan asks about first */}
+            {rival && (
+              <div
+                className="mt-3 p-3 bg-[#101114] border-2 border-black shadow-[3px_3px_0_rgba(0,0,0,.4)]"
+                style={{ borderTop: "3px solid #E23A2E" }}
+              >
+                <div className="flex items-baseline justify-between gap-2">
+                  <span className="font-mono text-[8px] uppercase tracking-[0.25em] text-zinc-500">
+                    Top Rival
+                  </span>
+                  {rival.record && (
+                    <span style={{ fontFamily: "var(--font-pixel)", fontSize: 8, color: "#F4F4F6" }}>
+                      H2H {rival.record}
+                    </span>
+                  )}
+                </div>
+                <div
+                  className="text-zinc-100 uppercase leading-none mt-1"
+                  style={{ fontFamily: "var(--font-poster)", fontSize: 20, textShadow: "2px 2px 0 #000" }}
+                >
+                  {rival.name}
+                </div>
+                <div className="fs-seg" style={{ marginTop: 8 }}>
+                  {Array.from({ length: 10 }).map((_, i) => (
+                    <i
+                      key={i}
+                      className={i === 2 || i === 5 || i === 8 ? "notch" : undefined}
+                      style={
+                        i < Math.round(Math.max(0, Math.min(100, rival.intensity)) / 10)
+                          ? { background: "linear-gradient(180deg,#e86458,#a5281e)" }
+                          : undefined
+                      }
+                    />
+                  ))}
+                </div>
+                <p className="font-mono text-[8px] uppercase tracking-[0.2em] text-zinc-600 mt-1">
+                  HOSTILITY {rival.intensity}/100
+                </p>
+              </div>
+            )}
         </div>
       </div>
 
       <div>
         <div className="fs-sheet2-top">
           <div className="fs-radarwrap">
-            <div>
+            <div className="flex flex-col min-w-0">
               <div className="hd">
                 Fight Shape <span className="sub">// SIGNATURE</span>
               </div>
               {axes.length >= 3 ? <FightShape axes={axes} /> : null}
+              {/* FORM & DANGER — how dangerous they are right now */}
+              {form.length > 0 && (
+                <div className="mt-2">
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-[8px] uppercase tracking-[0.25em] text-zinc-500 shrink-0">
+                      Last {form.length}
+                    </span>
+                    <div className="flex gap-1.5">
+                      {form.map((r, i) => (
+                        <span
+                          key={i}
+                          className="w-6 h-6 grid place-items-center border-2 border-black shadow-[2px_2px_0_rgba(0,0,0,.45)]"
+                          style={{
+                            fontFamily: "var(--font-poster)",
+                            fontSize: 13,
+                            color: "#0F0F12",
+                            background:
+                              r === "W"
+                                ? "linear-gradient(180deg,#3fd67e,#1c7a3f)"
+                                : "linear-gradient(180deg,#e86458,#a5281e)",
+                            opacity: i === 0 ? 1 : 0.82,
+                          }}
+                          title={i === 0 ? "Most recent" : undefined}
+                        >
+                          {r}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+              {danger && (
+                <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-zinc-400 mt-2">
+                  <span className="text-[#F5731A] font-bold">{danger.bodies}</span> {danger.bodies === 1 ? "BODY" : "BODIES"}
+                  {" · "}
+                  <span className="text-zinc-100 font-bold">{danger.roundWinRate}%</span> ROUNDS
+                  {danger.haymakers > 0 && (
+                    <>
+                      {" · "}
+                      <span className="text-[#E7B23C] font-bold">{danger.haymakers}</span> HAYMAKER{danger.haymakers === 1 ? "" : "S"}
+                    </>
+                  )}
+                </p>
+              )}
+              {/* SIGNATURE MOMENT — the career-high ticket */}
+              {signature && (
+                <div
+                  className="mt-2 px-3 py-2 bg-[#1c1409] border border-[#E7B23C]/40"
+                  style={{ borderLeft: "3px solid #E7B23C" }}
+                >
+                  <p className="font-mono text-[8px] uppercase tracking-[0.25em] text-[#E7B23C]">
+                    {signature.title}
+                  </p>
+                  <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-zinc-300 mt-0.5">
+                    {signature.detail}
+                  </p>
+                </div>
+              )}
             </div>
             <div className="fs-radar-side">
               <div className="fs-statchip">
@@ -296,37 +478,131 @@ export function CharacterSheet({
             </div>
           </div>
 
-          {league && (
-            <div className="fs-league">
-              <div className="hd">
-                <span className="t">League Affiliation</span>
-                <span className="cur">CURRENT</span>
-              </div>
-              <div className="main">
-                {league.crest && (
-                  <span className="crest">
-                    <img
-                      src={league.crest}
-                      alt={league.name}
-                      onError={(e) => {
-                        ;(e.currentTarget as HTMLImageElement).style.visibility = "hidden"
-                      }}
-                    />
-                  </span>
-                )}
-                <div>
-                  <div className="nm">{league.name}</div>
-                  <div className="sub">{league.subtitle ?? "Current affiliation"}</div>
+          {(league || press.length > 0 || outings.length > 0) && (
+            <div className="flex flex-col gap-3 min-w-0">
+              {league && (
+                <div className="fs-league" style={{ flex: "0 0 auto" }}>
+                  <div className="hd">
+                    <span className="t">League Affiliation</span>
+                    <span className="cur">CURRENT</span>
+                  </div>
+                  <div className="main">
+                    {league.crest && (
+                      <span className="crest">
+                        <img
+                          src={league.crest}
+                          alt={league.name}
+                          onError={(e) => {
+                            ;(e.currentTarget as HTMLImageElement).style.visibility = "hidden"
+                          }}
+                        />
+                      </span>
+                    )}
+                    <div>
+                      <div className="nm">{league.name}</div>
+                      <div className="sub">{league.subtitle ?? "Current affiliation"}</div>
+                    </div>
+                  </div>
+                  {lineage.length > 0 && (
+                    <div className="lineage">
+                      <span className="lab">Career lineage</span>
+                      {lineage.map((l, i) => (
+                        <span className="mini" key={i} title={l.label}>
+                          {l.crest && <img src={l.crest} alt={l.label ?? ""} />}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              </div>
-              {lineage.length > 0 && (
-                <div className="lineage">
-                  <span className="lab">Career lineage</span>
-                  {lineage.map((l, i) => (
-                    <span className="mini" key={i} title={l.label}>
-                      {l.crest && <img src={l.crest} alt={l.label ?? ""} />}
-                    </span>
-                  ))}
+              )}
+              {/* PRESS HEAT — how the blogs lean on this battler */}
+              {press.length > 0 && (
+                <div className="fs-league" style={{ flex: "1 1 auto" }}>
+                  <div className="hd">
+                    <span className="t">Press Heat</span>
+                    <span className="cur">THE BLOGS</span>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    {press.slice(0, 4).map((p) => {
+                      const lean = p.pos - p.neg
+                      return (
+                        <div key={p.name} className="flex items-center gap-2 min-w-0">
+                          <span
+                            className="flex-1 min-w-0 truncate font-mono text-[9px] uppercase tracking-[0.14em] text-zinc-300"
+                            title={p.narrative ?? undefined}
+                          >
+                            {p.name}
+                          </span>
+                          <span className="shrink-0 font-mono text-[8px] uppercase tracking-[0.14em] text-zinc-600">
+                            {p.articles} {p.articles === 1 ? "STORY" : "STORIES"}
+                          </span>
+                          <span
+                            className="shrink-0 px-1.5 py-0.5 border border-black"
+                            style={{
+                              fontFamily: "var(--font-pixel)",
+                              fontSize: 7,
+                              color: "#0F0F12",
+                              background: lean > 0 ? "#35C46B" : lean < 0 ? "#E23A2E" : "#9CA3AF",
+                            }}
+                          >
+                            {lean > 0 ? "RIDES" : lean < 0 ? "HATES" : "NEUTRAL"}
+                          </span>
+                        </div>
+                      )
+                    })}
+                    {press[0]?.narrative && (
+                      <p className="font-mono text-[8px] uppercase tracking-[0.16em] text-zinc-500 mt-1 border-t border-[#2E2F35] pt-2">
+                        LATEST ANGLE: <span className="text-zinc-300">{press[0].narrative}</span>
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
+              {/* RECENT OUTINGS — last results, faces drill down */}
+              {outings.length > 0 && (
+                <div className="fs-league" style={{ flex: "0 0 auto" }}>
+                  <div className="hd">
+                    <span className="t">Recent Outings</span>
+                    <span className="cur">THE LEDGER</span>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    {outings.slice(0, press.length > 0 ? 3 : 4).map((o, i) => (
+                      <div key={i} className="flex items-center gap-2 min-w-0">
+                        <span
+                          className="w-5 h-5 shrink-0 grid place-items-center border border-black"
+                          style={{
+                            fontFamily: "var(--font-poster)",
+                            fontSize: 11,
+                            color: "#0F0F12",
+                            background:
+                              o.result === "W"
+                                ? "linear-gradient(180deg,#3fd67e,#1c7a3f)"
+                                : "linear-gradient(180deg,#e86458,#a5281e)",
+                          }}
+                        >
+                          {o.result}
+                        </span>
+                        {o.opponentId ? (
+                          <a
+                            href={`/battler/${o.opponentId}`}
+                            className="flex-1 min-w-0 truncate font-mono text-[9px] uppercase tracking-[0.14em] text-zinc-300 hover:text-[#F5731A] transition-colors"
+                          >
+                            VS {o.opponent}
+                          </a>
+                        ) : (
+                          <span className="flex-1 min-w-0 truncate font-mono text-[9px] uppercase tracking-[0.14em] text-zinc-300">
+                            VS {o.opponent}
+                          </span>
+                        )}
+                        <span
+                          className="shrink-0"
+                          style={{ fontFamily: "var(--font-pixel)", fontSize: 8, color: "#F4F4F6" }}
+                        >
+                          {o.score}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>

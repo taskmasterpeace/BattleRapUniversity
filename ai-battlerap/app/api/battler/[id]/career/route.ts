@@ -39,6 +39,8 @@ export async function GET(
         bio,
         avatar_url,
         sprite_set,
+        style_tags,
+        current_balance,
         region,
         created_at,
         hometown:hometown_city_id (id, name, state, background_url, skyline_url),
@@ -72,8 +74,8 @@ export async function GET(
     const mediaMentions = await getMediaMentions(supabase, battlerId);
 
     // 6. Load current ranking + accolades (real-world honors for verified battlers,
-    //    in-game records for everyone)
-    const [{ data: ranking }, { data: accolades }] = await Promise.all([
+    //    in-game records for everyone) + the league they last fought in
+    const [{ data: ranking }, { data: accolades }, { data: lastBattle }] = await Promise.all([
       supabase.from('rankings').select('*').eq('battler_id', battlerId).single(),
       supabase
         .from('battler_accolades')
@@ -81,6 +83,14 @@ export async function GET(
         .eq('battler_id', battlerId)
         .order('scope', { ascending: false }) // real_world first
         .order('year', { ascending: false }),
+      supabase
+        .from('battles')
+        .select('league:league_id(name, logo_url)')
+        .or(`battler_player_id.eq.${battlerId},battler_ai_id.eq.${battlerId}`)
+        .eq('status', 'completed')
+        .order('completed_at', { ascending: false })
+        .limit(1)
+        .maybeSingle(),
     ]);
 
     // 7. Public life: Wire handle + how the press leans on this battler +
@@ -139,6 +149,9 @@ export async function GET(
           : [battler.avatar_url].filter(Boolean),
         region: battler.region ?? null,
         hometown: battler.hometown ?? null,
+        styleTags: Array.isArray(battler.style_tags) ? battler.style_tags : [],
+        balance: typeof battler.current_balance === 'number' ? battler.current_balance : null,
+        lastLeague: (lastBattle as any)?.league ?? null,
         accolades: accolades ?? [],
         joinedAt: battler.created_at,
         attributes: battler.battler_attributes,
