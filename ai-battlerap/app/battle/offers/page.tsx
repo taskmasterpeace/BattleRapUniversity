@@ -3,11 +3,11 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import Avatar from '@/components/ui/Avatar';
 import StatCard from '@/components/ui/StatCard';
 import Icon from '@/components/ui/Icon';
 import GamingButton from '@/components/ui/GamingButton';
 import { toast } from '@/components/ui/Toast';
+import MatchupMasthead, { battleFace } from '@/components/battle/MatchupMasthead';
 
 type BattlerAttributes = {
   writing: {
@@ -63,9 +63,18 @@ type BattleOffer = {
   difficulty: 'easy' | 'medium' | 'hard' | 'extreme';
 };
 
+type Me = {
+  id: string;
+  stage_name: string;
+  avatar_url: string | null;
+  sprite_set: string[] | null;
+  tier: string | null;
+};
+
 export default function BattleOffersPage() {
   const router = useRouter();
   const [offers, setOffers] = useState<BattleOffer[]>([]);
+  const [me, setMe] = useState<Me | null>(null);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
@@ -75,6 +84,7 @@ export default function BattleOffersPage() {
       const response = await fetch('/api/battles/offers');
       const data = await response.json();
       setOffers(data.offers || []);
+      if (data.me) setMe(data.me);
     } catch (error) {
       console.error('Error fetching offers:', error);
     }
@@ -291,63 +301,44 @@ export default function BattleOffersPage() {
 
                   {/* Main Battle Info */}
                   <div className="flex flex-col lg:flex-row gap-6">
-                    {/* Left: Opponent Info */}
+                    {/* Left: the offer as a fight poster — you vs them */}
                     <div className="flex-1">
-                      <div className="flex items-start gap-6 mb-6">
-                        {/* Opponent Sprite */}
-                        <Avatar
-                          url={offer.ai_battler.avatar_url}
-                          size={120}
-                          showBorder={true}
-                          alt={offer.ai_battler.stage_name}
+                      <div className="mb-6">
+                        <MatchupMasthead
+                          a={{
+                            id: me?.id,
+                            name: me?.stage_name || 'YOU',
+                            portrait: me ? battleFace(me) : undefined,
+                            tier: me?.tier,
+                          }}
+                          b={{
+                            id: offer.ai_battler.id,
+                            name: offer.ai_battler.stage_name,
+                            portrait: battleFace(offer.ai_battler as any) ?? offer.ai_battler.avatar_url,
+                            tier: offer.ai_battler.tier,
+                          }}
+                          subLine={`${offer.league.name.toUpperCase()}${offer.grudge ? ' · GRUDGE MATCH' : ''}`}
                         />
-
-                        {/* Opponent Details */}
-                        <div className="flex-1">
-                          <h3 className="text-3xl font-display font-black uppercase tracking-tighter text-white mb-2">
-                            VS {offer.ai_battler.stage_name}
-                            {offer.grudge && (
-                              <span className="text-lg text-red-400 ml-2">(RIVAL)</span>
+                        {/* Tags under the poster */}
+                        <div className="flex flex-wrap gap-2 mt-4 justify-center">
+                          <span className={`px-3 py-1 border-2 font-display font-black uppercase text-xs tracking-wider ${getDifficultyColor(offer.difficulty)}`}>
+                            {offer.difficulty}
+                          </span>
+                          {offer.h2hRecord &&
+                            (offer.h2hRecord.myWins ?? 0) + (offer.h2hRecord.myLosses ?? 0) > 0 &&
+                            !offer.grudge && (
+                              <span className="px-3 py-1 bg-[#18191c] text-zinc-300 border-2 border-[#3a3d44] font-display font-black uppercase text-xs tracking-wider">
+                                H2H {offer.h2hRecord.myWins ?? 0}-{offer.h2hRecord.myLosses ?? 0}
+                              </span>
                             )}
-                          </h3>
-
-                          {/* Tags */}
-                          <div className="flex flex-wrap gap-2 mb-4">
-                            <span className="px-3 py-1 bg-[#ff8c42]/20 text-[#ff8c42] border-2 border-[#ff8c42]/50 font-display font-display font-black uppercase text-xs tracking-wider">
-                              {offer.league.name}
+                          {offer.ai_battler.style_tags?.slice(0, 3).map((tag, idx) => (
+                            <span
+                              key={idx}
+                              className="px-2 py-1 bg-[#18191c] text-zinc-500 border-2 border-[#3a3d44] text-xs font-display font-black uppercase tracking-wider"
+                            >
+                              {tag}
                             </span>
-                            <span className="px-3 py-1 bg-[#18191c] text-zinc-400 border-2 border-[#3a3d44] font-display font-display font-black uppercase text-xs tracking-wider">
-                              {offer.ai_battler.tier} TIER
-                            </span>
-                            <span className={`px-3 py-1 border-2 font-display font-display font-black uppercase text-xs tracking-wider ${getDifficultyColor(offer.difficulty)}`}>
-                              {offer.difficulty}
-                            </span>
-                            {/* Head-to-head record — relevant for any rematch, not
-                                just grudges. The grudge block already shows H2H for
-                                rivalries, so only surface it here when there's no
-                                grudge, to avoid double-showing. */}
-                            {offer.h2hRecord &&
-                              (offer.h2hRecord.myWins ?? 0) + (offer.h2hRecord.myLosses ?? 0) > 0 &&
-                              !offer.grudge && (
-                                <span className="px-3 py-1 bg-[#18191c] text-zinc-300 border-2 border-[#3a3d44] font-display font-black uppercase text-xs tracking-wider">
-                                  H2H {offer.h2hRecord.myWins ?? 0}-{offer.h2hRecord.myLosses ?? 0}
-                                </span>
-                              )}
-                          </div>
-
-                          {/* Style Tags */}
-                          {offer.ai_battler.style_tags && offer.ai_battler.style_tags.length > 0 && (
-                            <div className="flex flex-wrap gap-2">
-                              {offer.ai_battler.style_tags.slice(0, 3).map((tag, idx) => (
-                                <span
-                                  key={idx}
-                                  className="px-2 py-1 bg-[#18191c] text-zinc-500 border-2 border-[#3a3d44] text-xs font-display font-display font-black uppercase tracking-wider"
-                                >
-                                  {tag}
-                                </span>
-                              ))}
-                            </div>
-                          )}
+                          ))}
                         </div>
                       </div>
 

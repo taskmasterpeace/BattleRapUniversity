@@ -18,10 +18,10 @@ export async function GET() {
 
   const supabase = await createServerSupabaseClient();
 
-  // Get player's battler
+  // Get player's battler (portrait fields feed the offer fight-poster masthead)
   const { data: battler } = await supabase
     .from('battlers')
-    .select('id')
+    .select('id, stage_name, avatar_url, sprite_set, tier')
     .eq('user_id', user.id)
     .eq('is_ai', false)
     .single();
@@ -155,7 +155,16 @@ export async function GET() {
   offers = [...pvpOffers, ...offers];
 
   if (offers.length === 0) {
-    return NextResponse.json({ offers: [] });
+    return NextResponse.json({
+      offers: [],
+      me: {
+        id: battler.id,
+        stage_name: (battler as any).stage_name,
+        avatar_url: (battler as any).avatar_url ?? null,
+        sprite_set: (battler as any).sprite_set ?? null,
+        tier: (battler as any).tier ?? null,
+      },
+    });
   }
 
   // GRUDGE SYSTEM: Batch fetch all rivalries, H2H records, and rankings for performance
@@ -268,5 +277,14 @@ export async function GET() {
     return new Date(a.scheduled_at).getTime() - new Date(b.scheduled_at).getTime();
   });
 
-  return NextResponse.json({ offers: sortedOffers });
+  return NextResponse.json({
+    offers: sortedOffers,
+    me: {
+      id: battler.id,
+      stage_name: (battler as any).stage_name,
+      avatar_url: (battler as any).avatar_url ?? null,
+      sprite_set: (battler as any).sprite_set ?? null,
+      tier: (battler as any).tier ?? null,
+    },
+  });
 }
