@@ -57,7 +57,7 @@ export default async function DashboardPage() {
       .select(`
         *,
         league:leagues(*),
-        ai_battler:battler_ai_id(id, stage_name, tier)
+        ai_battler:battler_ai_id(id, stage_name, tier, avatar_url)
       `)
       .eq('battler_player_id', battler.id)
       .in('status', ['accepted', 'locked'])
@@ -79,7 +79,7 @@ export default async function DashboardPage() {
         verdict,
         decision_type,
         league:leagues(name),
-        ai_battler:battler_ai_id(id, stage_name, tier)
+        ai_battler:battler_ai_id(id, stage_name, tier, avatar_url)
       `)
       .eq('battler_player_id', battler.id)
       .eq('status', 'completed')
@@ -120,6 +120,17 @@ export default async function DashboardPage() {
       .eq('id', battler.current_city_id)
       .single();
     currentCity = cityRow ?? null;
+  }
+
+  // Hometown (Flyer System hero: the city NAME crowns the portrait + skyline backdrop)
+  let hometownCity: { name: string; background_url?: string | null; skyline_url?: string | null } | null = null;
+  if (battler.hometown_city_id) {
+    const { data: homeRow } = await supabase
+      .from('cities')
+      .select('name, background_url, skyline_url')
+      .eq('id', battler.hometown_city_id)
+      .single();
+    hometownCity = homeRow ?? null;
   }
 
   // Compute "badges in reach" — top 3 badges the player is closest to earning.
@@ -260,6 +271,7 @@ export default async function DashboardPage() {
       badgeProgress={badgeProgress}
       badgeIcons={badgeIcons}
       currentCity={currentCity}
+      hometownCity={hometownCity}
     />
   );
 }

@@ -13,6 +13,7 @@ import StressIndicator from './StressIndicator';
 import ArchetypeDisplay from './ArchetypeDisplay';
 import BadgeTooltip from '../ui/BadgeTooltip';
 import BadgeShowcase from './BadgeShowcase';
+import BattlerHero from './BattlerHero';
 import LeagueOverview from './LeagueOverview';
 import EarningsWidget from './EarningsWidget';
 import CareerHighlights from './CareerHighlights';
@@ -53,6 +54,7 @@ type Props = {
   badgeProgress?: Array<{ code: string; label: string; pct: number; detail: string }>;
   badgeIcons?: Record<string, { url: string | null; tier: string | null }>;
   currentCity?: { id: string; name: string } | null;
+  hometownCity?: { name: string; background_url?: string | null; skyline_url?: string | null } | null;
 };
 
 type NewsArticle = {
@@ -78,6 +80,7 @@ export default function DashboardClient({
   badgeProgress = [],
   badgeIcons = {},
   currentCity = null,
+  hometownCity = null,
 }: Props) {
   const nextBattle = activeBattles && activeBattles.length > 0 ? activeBattles[0] : null;
   const router = useRouter();
@@ -281,100 +284,52 @@ export default function DashboardClient({
           </div>
         </div>
 
-        {/* Battler Profile Header */}
-        <div className="mb-8 bg-[#2d2f35] border-2 border-[#3a3d44] p-8">
-          <div className="flex flex-col md:flex-row items-center md:items-start gap-8 mb-6">
-            {/* Large Sprite */}
-            <div className="flex-shrink-0">
-              <Avatar url={battler.avatar_url} size={128} showBorder={true} alt={battler.stage_name} />
-            </div>
-
-            {/* Battler Info */}
-            <div className="flex-1 text-center md:text-left">
-              <h1 className="text-5xl font-display font-black uppercase tracking-tighter text-zinc-100 mb-2">
-                {battler.stage_name}
-              </h1>
-              <div className="flex flex-wrap gap-3 justify-center md:justify-start mb-4">
-                <span className="px-4 py-2 bg-[#ff8c42]/20 text-[#ff8c42] border-2 border-[#ff8c42]/50 font-display font-display font-black uppercase tracking-wider text-sm">
-                  {league?.name}
-                </span>
-                <span className="px-4 py-2 bg-[#3a3d44] text-zinc-400 border-2 border-[#3a3d44] font-display font-display font-black uppercase tracking-wider text-sm">
-                  {battler.tier} TIER
-                </span>
-                {battler.region && (
-                  <span className="px-4 py-2 bg-[#3a3d44] text-zinc-400 border-2 border-[#3a3d44] font-display font-display font-black uppercase tracking-wider text-sm">
-                    {battler.region}
-                  </span>
-                )}
-                {currentCity && (
-                  <Link
-                    href={`/cities/${currentCity.id}`}
-                    className="px-4 py-2 bg-[#ff8c42]/10 text-[#ff8c42] border-2 border-[#ff8c42]/40 hover:border-[#ff8c42] font-display font-black uppercase tracking-wider text-sm transition-colors"
-                    title="Your current city — recruit and battle the local scene"
-                  >
-                    <Icon name="pin" size={12} className="mr-1" />IN {currentCity.name}
-                  </Link>
-                )}
-              </div>
-
-              {/* Level Display */}
-              <div className="inline-block px-6 py-3 bg-[#ff8c42]/10 border-2 border-[#ff8c42]/30">
-                <div className="flex items-center gap-3">
-                  <span className="text-xs text-zinc-500 font-display font-display font-black uppercase tracking-wider">
-                    {(() => {
-                      const level = battler.level || 1;
-                      if (level <= 5) return 'ROOKIE';
-                      if (level <= 10) return 'UP-AND-COMER';
-                      if (level <= 15) return 'ESTABLISHED';
-                      if (level <= 20) return 'ELITE';
-                      if (level <= 25) return 'LEGEND';
-                      return 'GOAT';
-                    })()}
-                  </span>
-                  <span className="text-3xl font-display font-black text-[#ff8c42]">
-                    LEVEL {battler.level || 1}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Rating Display */}
-            <div className="flex-shrink-0 text-center">
-              <div className="text-6xl font-display font-black text-[#ff8c42] mb-2">
-                {ranking?.rating}
-              </div>
-              <div className="text-xs text-zinc-500 font-display font-display font-black uppercase tracking-wider">
-                ELO RATING
-              </div>
-            </div>
-          </div>
-
-          {/* XP Progress Bar */}
-          <div className="space-y-2">
-            <div className="flex justify-between text-xs text-zinc-400 font-display font-display font-black uppercase">
-              <span>XP PROGRESS</span>
-              <span>{battler.current_level_xp || 0} / {(() => {
-                const level = battler.level || 1;
-                if (level >= 30) return 0;
-                return Math.floor(500 * Math.pow(level + 1, 1.5));
-              })()} XP</span>
-            </div>
-            <div className="w-full bg-[#18191c] border-2 border-[#3a3d44] h-4 overflow-hidden">
-              <div
-                className="h-full bg-gradient-to-r from-[#ff8c42] to-[#ffb366] transition-all duration-500"
-                style={{
-                  width: `${(() => {
-                    const level = battler.level || 1;
-                    if (level >= 30) return 100;
-                    const nextLevelXP = Math.floor(500 * Math.pow(level + 1, 1.5));
-                    const currentXP = battler.current_level_xp || 0;
-                    return Math.min(100, (currentXP / nextLevelXP) * 100);
-                  })()}%`
-                }}
-              />
-            </div>
-          </div>
-        </div>
+        {/* Flyer System command hero — replaces the old profile header (dead-coded below, delete after bake-in) */}
+        <BattlerHero
+          name={battler.stage_name}
+          portrait={battler.avatar_url || '/sprites/characters/real/tru-foe-placeholder.png'}
+          cityName={hometownCity?.name || currentCity?.name}
+          cityBackdrop={hometownCity?.background_url || hometownCity?.skyline_url || undefined}
+          league={league?.name}
+          tierLabel={battler.tier ? `${battler.tier} TIER` : undefined}
+          region={battler.region}
+          level={battler.level || 1}
+          levelLabel={(() => {
+            const l = battler.level || 1;
+            if (l <= 5) return 'ROOKIE';
+            if (l <= 10) return 'UP-AND-COMER';
+            if (l <= 15) return 'ESTABLISHED';
+            if (l <= 20) return 'ELITE';
+            if (l <= 25) return 'LEGEND';
+            return 'GOAT';
+          })()}
+          elo={ranking?.rating}
+          xp={{
+            current: battler.current_level_xp || 0,
+            needed:
+              (battler.level || 1) >= 30
+                ? Math.max(1, battler.current_level_xp || 1)
+                : Math.floor(500 * Math.pow((battler.level || 1) + 1, 1.5)),
+          }}
+          nextBattle={
+            nextBattle
+              ? (() => {
+                  const prep = prepStatusByBattle[nextBattle.id] || { setDays: 0, totalDays: 1 };
+                  const daysUntil = Math.max(
+                    0,
+                    Math.ceil((new Date(nextBattle.scheduled_at).getTime() - Date.now()) / 86400000)
+                  );
+                  return {
+                    opponentName: nextBattle.ai_battler?.stage_name,
+                    opponentAvatar: nextBattle.ai_battler?.avatar_url,
+                    league: nextBattle.league?.name,
+                    dateLabel: `${daysUntil} days left`,
+                    prepPct: prep.totalDays > 0 ? Math.round((prep.setDays / prep.totalDays) * 100) : 0,
+                  };
+                })()
+              : null
+          }
+        />
 
         {/* Next Battle Section — top of dashboard, most important active CTA */}
         {activeBattles && activeBattles.length > 0 && (

@@ -3,9 +3,9 @@
   "configurations": [
     {
       "name": "ai-battlerap-dev",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev", "--prefix", "D:/git/battlerapuniversity/ai-battlerap"],
-      "port": 3000
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["--prefix", "D:/git/battlerapuniversity/ai-battlerap", "next", "dev", "D:/git/battlerapuniversity/ai-battlerap", "--port", "3009"],
+      "port": 3009
     }
   ]
 }
