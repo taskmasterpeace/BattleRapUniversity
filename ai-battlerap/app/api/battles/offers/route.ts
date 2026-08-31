@@ -55,12 +55,13 @@ export async function GET() {
     .from('battles')
     .select(`
       *,
-      league:leagues(*),
+      league:leagues(*, city:city_id(name, state, background_url, skyline_url)),
       ai_battler:battler_ai_id(
         id,
         stage_name,
         tier,
         style_tags,
+        identity,
         avatar_url,
         battler_attributes!inner(writing, performance, resilience)
       )
@@ -83,12 +84,13 @@ export async function GET() {
     .from('battles')
     .select(`
       *,
-      league:leagues(*),
+      league:leagues(*, city:city_id(name, state, background_url, skyline_url)),
       challenger:battler_player_id(
         id,
         stage_name,
         tier,
         style_tags,
+        identity,
         avatar_url,
         battler_attributes!inner(writing, performance, resilience)
       )
@@ -127,7 +129,7 @@ export async function GET() {
             .from('battles')
             .select(`
               *,
-              league:leagues(*),
+              league:leagues(*, city:city_id(name, state, background_url, skyline_url)),
               ai_battler:battler_ai_id(
                 id,
                 stage_name,

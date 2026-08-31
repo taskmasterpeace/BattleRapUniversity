@@ -10,6 +10,7 @@ import { toast } from '@/components/ui/Toast';
 import MatchupMasthead, { battleFace } from '@/components/battle/MatchupMasthead';
 import { GrudgeMeter } from '@/components/grudge/GrudgeMeter';
 import { RematchDemandBar } from '@/components/grudge/RematchDemandBar';
+import { venueForLeagueName } from '@/lib/game/venueForLeague';
 
 type BattlerAttributes = {
   writing: {
@@ -35,12 +36,20 @@ type BattleOffer = {
     name: string;
     round_length_minutes: number;
     base_payout?: number | null;
+    logo_url?: string | null;
+    city?: {
+      name: string;
+      state: string | null;
+      background_url: string | null;
+      skyline_url: string | null;
+    } | null;
   };
   ai_battler: {
     id: string;
     stage_name: string;
     tier: string;
     style_tags: string[];
+    identity?: { coding?: string; facets?: string[] } | null;
     avatar_url: string | null;
     battler_attributes: BattlerAttributes;
   };
@@ -205,88 +214,132 @@ export default function BattleOffersPage() {
             {offers.map((offer) => {
               const isGrudgeMatch = offer.grudge && offer.grudge.intensity > 70;
 
+              const city = offer.league.city;
+              const room = venueForLeagueName(offer.league.name);
+              // The ROOM is the venue; the city skyline is the backup while
+              // venue art rolls out type by type.
+              const venueArt = room.art || city?.background_url || city?.skyline_url || null;
+              const coding = offer.ai_battler.identity?.coding;
+              const CODING_CHIP: Record<string, { label: string; color: string }> = {
+                street: { label: 'STREET-CODED', color: '#E23A2E' },
+                craft: { label: 'CRAFT-CODED', color: '#2F7DD1' },
+                crossover: { label: 'CROSSOVER', color: '#E7B23C' },
+                overseas: { label: 'OVERSEAS', color: '#35C46B' },
+              };
+
               return (
                 <div
                   key={offer.id}
-                  className={`bg-[#2d2f35] border-2 p-6 transition-all ${
+                  className={`fs bg-[#101114] border-2 overflow-hidden shadow-[5px_5px_0_rgba(0,0,0,.5)] transition-all ${
                     offer.is_pvp
-                      ? 'border-[#ff8c42] shadow-[0_0_30px_rgba(255,140,66,0.25)]'
+                      ? 'border-[#ff8c42]'
                       : isGrudgeMatch
-                      ? 'border-[#ff8c42] shadow-[0_0_30px_rgba(255,140,66,0.3)]'
-                      : 'border-[#3a3d44] hover:border-[#ff8c42]/30'
+                      ? 'border-[#ff8c42]'
+                      : 'border-black hover:border-[#ff8c42]/40'
                   }`}
                 >
-                  {/* PvP Player Challenge Banner */}
-                  {offer.is_pvp && (
-                    <div className="mb-6 pb-6 border-b-2 border-[#ff8c42]/30">
-                      <div className="flex items-center gap-4">
-                        <div className="px-4 py-2 bg-[#ff8c42] text-black font-display font-black uppercase tracking-wider text-sm">
-                          PLAYER CHALLENGE
+                  {/* THE VENUE — where this one's going down (city skyline band) */}
+                  <div
+                    className="relative h-44 overflow-hidden border-b-2 border-black"
+                    style={{ background: '#0B0C10' }}
+                  >
+                    {venueArt && (
+                      /* eslint-disable-next-line @next/next/no-img-element */
+                      <img
+                        src={venueArt}
+                        alt=""
+                        className="absolute inset-0 w-full h-full object-cover"
+                        style={{ imageRendering: 'pixelated', objectPosition: 'center 30%' }}
+                      />
+                    )}
+                    <div
+                      className="absolute inset-0"
+                      style={{ background: 'linear-gradient(180deg, rgba(8,9,12,.15) 30%, rgba(8,9,12,.92) 100%)' }}
+                    />
+                    <div className="absolute bottom-0 left-0 right-0 px-6 py-4 flex items-end justify-between gap-4">
+                      <div className="flex items-center gap-4 min-w-0">
+                        {offer.league.logo_url && (
+                          /* eslint-disable-next-line @next/next/no-img-element */
+                          <img
+                            src={offer.league.logo_url}
+                            alt=""
+                            className="w-16 h-16 shrink-0 object-contain [image-rendering:pixelated] drop-shadow-[0_3px_6px_rgba(0,0,0,.8)]"
+                          />
+                        )}
+                        <div className="min-w-0">
+                          <p className="font-mono text-[12px] uppercase tracking-[0.3em] text-[#ff8c42]">
+                            LIVE FROM {room.name.toUpperCase()}
+                            {city ? ` · ${city.name.toUpperCase()}${city.state ? `, ${city.state}` : ''}` : ''}
+                          </p>
+                          <p
+                            className="uppercase text-zinc-100 truncate leading-none mt-1"
+                            style={{ fontFamily: 'var(--font-poster)', fontSize: 30, textShadow: '2px 2px 0 #000' }}
+                          >
+                            {offer.league.name}
+                          </p>
                         </div>
-                        <p className="text-zinc-400 font-display font-black uppercase tracking-wider text-xs">
-                          A real player called you out — accept, prep, and lock in
+                      </div>
+                      <div className="shrink-0 text-right">
+                        {(isGrudgeMatch || offer.is_pvp) && (
+                          <span className="inline-block px-3 py-1.5 mb-2 bg-[#ff8c42] text-black font-display font-black uppercase tracking-wider text-sm border-2 border-black shadow-[2px_2px_0_rgba(0,0,0,.5)]">
+                            {offer.is_pvp ? 'PLAYER CHALLENGE' : 'GRUDGE MATCH'}
+                          </span>
+                        )}
+                        <p className="font-mono text-[12px] uppercase tracking-[0.25em] text-zinc-300">
+                          {new Date(offer.scheduled_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                          {' · '}
+                          {offer.league.round_length_minutes}-MIN ROUNDS
                         </p>
                       </div>
                     </div>
+                  </div>
+
+                  <div className="p-6">
+                  {/* PvP explainer — the band already wears the chip */}
+                  {offer.is_pvp && (
+                    <p className="mb-5 text-zinc-400 font-display font-black uppercase tracking-wider text-sm">
+                      A real player called you out — accept, prep, and lock in
+                    </p>
                   )}
 
-                  {/* Grudge Match Banner */}
+                  {/* THE BEEF — history, heat, and how it started */}
                   {offer.grudge && (
-                    <div className={`mb-6 pb-6 border-b-2 ${isGrudgeMatch ? 'border-[#ff8c42]/30' : 'border-[#3a3d44]'}`}>
-                      <div className="flex items-center gap-4 mb-4">
-                        <div className={`px-4 py-2 font-display font-black uppercase tracking-wider text-sm ${
-                          isGrudgeMatch
-                            ? 'bg-[#ff8c42] text-black animate-pulse'
-                            : 'bg-red-500/20 text-red-400 border-2 border-red-500/30'
-                        }`}>
-                          {isGrudgeMatch ? 'GRUDGE MATCH' : 'RIVALRY'}
-                        </div>
+                    <div
+                      className="mb-6 p-5 bg-[#17181C] border-2 border-black shadow-[3px_3px_0_rgba(0,0,0,.4)]"
+                      style={{ borderLeft: '4px solid #E23A2E' }}
+                    >
+                      <div className="flex items-center justify-between gap-3 flex-wrap mb-3">
+                        <span className={`font-display font-black uppercase tracking-wider text-base ${isGrudgeMatch ? 'text-[#ff8c42]' : 'text-red-400'}`}>
+                          {isGrudgeMatch ? '🔥 THE BEEF' : 'THE HISTORY'}
+                        </span>
                         {offer.h2hRecord && (
-                          <div className="text-zinc-400 font-display font-display font-black uppercase tracking-wider text-sm">
-                            H2H RECORD:{' '}
-                            <span className="text-[#ff8c42]">
-                              {offer.h2hRecord.myWins ?? 0}-{offer.h2hRecord.myLosses ?? 0}
-                            </span>
-                          </div>
+                          <span style={{ fontFamily: 'var(--font-pixel)', fontSize: 12, color: '#F4F4F6' }}>
+                            H2H {offer.h2hRecord.myWins ?? 0}-{offer.h2hRecord.myLosses ?? 0}
+                          </span>
                         )}
                       </div>
-
-                      {/* Intensity Meters — the app-wide cell gauge */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                      <p className="text-base text-zinc-300 leading-relaxed mb-4">
+                        {offer.grudge.originStory}
+                      </p>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
                         <div>
-                          <div className="text-xs font-display font-black uppercase tracking-wider text-zinc-500 mb-2">
-                            GRUDGE INTENSITY
+                          <div className="flex justify-between items-baseline mb-1.5">
+                            <span className="font-mono text-[12px] uppercase tracking-[0.2em] text-zinc-500">
+                              GRUDGE INTENSITY
+                            </span>
+                            <span className="font-display font-black text-[#ff8c42]">{offer.grudge.intensity}%</span>
                           </div>
                           <GrudgeMeter intensity={offer.grudge.intensity} showLabel={false} />
-                          <div className="text-right text-sm font-display font-black text-[#ff8c42] mt-1">
-                            {offer.grudge.intensity}%
-                          </div>
                         </div>
                         <div>
-                          <div className="text-xs font-display font-black uppercase tracking-wider text-zinc-500 mb-2">
-                            REMATCH DEMAND
+                          <div className="flex justify-between items-baseline mb-1.5">
+                            <span className="font-mono text-[12px] uppercase tracking-[0.2em] text-zinc-500">
+                              REMATCH DEMAND
+                            </span>
+                            <span className="font-display font-black text-[#2F7DD1]">{offer.grudge.rematchDemand}%</span>
                           </div>
                           <RematchDemandBar demand={offer.grudge.rematchDemand} showLabel={false} />
-                          <div className="text-right text-sm font-display font-black text-[#ff8c42] mt-1">
-                            {offer.grudge.rematchDemand}%
-                          </div>
                         </div>
-                      </div>
-
-                      {/* Origin Story */}
-                      <div className={`p-4 border-2 ${
-                        isGrudgeMatch
-                          ? 'bg-[#ff8c42]/10 border-[#ff8c42]/30'
-                          : 'bg-[#18191c] border-[#3a3d44]'
-                      }`}>
-                        <div className={`text-xs font-display font-black uppercase tracking-wider mb-2 ${
-                          isGrudgeMatch ? 'text-[#ff8c42]' : 'text-red-400'
-                        }`}>
-                          ORIGIN STORY
-                        </div>
-                        <p className="text-sm text-zinc-300 leading-relaxed">
-                          {offer.grudge.originStory}
-                        </p>
                       </div>
                     </div>
                   )}
@@ -316,6 +369,15 @@ export default function BattleOffersPage() {
                           <span className={`px-3 py-1 border-2 font-display font-black uppercase text-xs tracking-wider ${getDifficultyColor(offer.difficulty)}`}>
                             {offer.difficulty}
                           </span>
+                          {coding && CODING_CHIP[coding] && (
+                            <span
+                              className="px-3 py-1 border-2 border-black font-display font-black uppercase text-xs tracking-wider text-black shadow-[2px_2px_0_rgba(0,0,0,.4)]"
+                              style={{ background: CODING_CHIP[coding].color }}
+                              title="Which room claims them — personality, not race"
+                            >
+                              {CODING_CHIP[coding].label}
+                            </span>
+                          )}
                           {offer.h2hRecord &&
                             (offer.h2hRecord.myWins ?? 0) + (offer.h2hRecord.myLosses ?? 0) > 0 &&
                             !offer.grudge && (
@@ -360,43 +422,19 @@ export default function BattleOffersPage() {
                         />
                       </div>
 
-                      {/* Battle Details */}
-                      <div className="mt-6 space-y-3">
-                        <div className="flex items-center justify-between py-2 border-b-2 border-[#3a3d44]">
-                          <span className="text-xs font-display font-display font-black uppercase tracking-wider text-zinc-500">
-                            SCHEDULED
-                          </span>
-                          <span className="text-sm font-display font-bold text-zinc-300">
-                            {new Date(offer.scheduled_at).toLocaleString('en-US', {
-                              month: 'short',
-                              day: 'numeric',
-                              year: 'numeric',
-                              hour: 'numeric',
-                              minute: '2-digit'
-                            })}
-                          </span>
+                      {/* When it goes down */}
+                      <div className="mt-5 grid grid-cols-2 gap-3">
+                        <div className="bg-[#17181C] border border-black px-4 py-3" style={{ borderTop: '2px solid #F5731A' }}>
+                          <div className="font-mono text-[11px] uppercase tracking-[0.25em] text-zinc-500 mb-1">FIGHT NIGHT</div>
+                          <div className="font-display font-black uppercase text-zinc-100">
+                            {new Date(offer.scheduled_at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
+                          </div>
                         </div>
-                        <div className="flex items-center justify-between py-2 border-b-2 border-[#3a3d44]">
-                          <span className="text-xs font-display font-display font-black uppercase tracking-wider text-zinc-500">
-                            PREP ENDS
-                          </span>
-                          <span className="text-sm font-display font-bold text-zinc-300">
-                            {new Date(offer.lock_prep_at).toLocaleString('en-US', {
-                              month: 'short',
-                              day: 'numeric',
-                              year: 'numeric',
-                              hour: 'numeric',
-                              minute: '2-digit'
-                            })}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between py-2 border-b-2 border-[#3a3d44]">
-                          <span className="text-xs font-display font-display font-black uppercase tracking-wider text-zinc-500">
-                            FORMAT
-                          </span>
-                          <span className="text-sm font-display font-bold text-zinc-300">
-                            {offer.league.round_length_minutes}-MINUTE ROUNDS
-                          </span>
+                        <div className="bg-[#17181C] border border-black px-4 py-3" style={{ borderTop: '2px solid #E7B23C' }}>
+                          <div className="font-mono text-[11px] uppercase tracking-[0.25em] text-zinc-500 mb-1">PREP LOCKS</div>
+                          <div className="font-display font-black uppercase text-zinc-100">
+                            {new Date(offer.lock_prep_at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -422,6 +460,7 @@ export default function BattleOffersPage() {
                         {actionLoading === offer.id ? 'DECLINING...' : 'DECLINE'}
                       </GamingButton>
                     </div>
+                  </div>
                   </div>
                 </div>
               );
