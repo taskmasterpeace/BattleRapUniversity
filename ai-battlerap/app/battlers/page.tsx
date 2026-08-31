@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { createServerSupabaseClient, getUser } from '@/lib/db/server';
 import ChallengeButton from '@/components/battlers/ChallengeButton';
+import { portraitFillStyle } from '@/lib/sprite-crops';
 
 type Battler = {
   id: string;
@@ -24,6 +25,14 @@ const TIER_COLOR: Record<string, string> = {
   mid: 'text-emerald-300 border-emerald-500/50',
   top: 'text-amber-300 border-amber-500/50',
   god: 'text-[#ff8c42] border-[#ff8c42]',
+};
+
+// Tier accent for each fighter card's top rule (Flyer System roster language)
+const TIER_EDGE: Record<string, string> = {
+  low: '#3E404A',
+  mid: '#2FA46B',
+  top: '#E7B23C',
+  god: '#F5731A',
 };
 
 export default async function BattlersRosterPage({
@@ -150,28 +159,34 @@ export default async function BattlersRosterPage({
               : 'No battlers match this filter.'}
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+          <div className="fs grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
             {list.map((b) => {
               const league = b.primary_league_id ? leagueMap.get(b.primary_league_id) : undefined;
               const rank = rankMap.get(b.id);
               const tierKey = (b.tier || '').toLowerCase();
               const tierClass = TIER_COLOR[tierKey] || 'text-zinc-400 border-zinc-600';
+              const edge = TIER_EDGE[tierKey] || '#3E404A';
               return (
                 <div
                   key={b.id}
-                  className="group bg-[#18191c] border-2 border-[#3a3d44] hover:border-[#ff8c42] hover:-translate-y-[2px] hover:shadow-[0_10px_30px_-15px_rgba(255,140,66,0.6)] transition-all duration-200 overflow-hidden flex flex-col"
+                  className="group bg-[#17181C] border-2 border-black hover:border-[#F5731A] hover:-translate-y-[2px] hover:shadow-[0_10px_30px_-15px_rgba(245,115,26,0.6)] transition-all duration-200 overflow-hidden flex flex-col shadow-[4px_4px_0_rgba(0,0,0,.45)]"
                 >
                   <Link href={`/battler/${b.id}`} className="block">
-                    {/* Avatar — object-contain so portraits are never cropped
-                        (hair/hats were getting cut off with bg-cover) and the
-                        sprite fills as much of the tile as possible. */}
-                    <div className="aspect-square bg-[#2d2f35] overflow-hidden">
+                    {/* Fighter-card frame — portrait FILLS it, anchored bottom (never floating) */}
+                    <div
+                      className="relative aspect-square overflow-hidden"
+                      style={{
+                        background: 'linear-gradient(170deg, #1F2024 0%, #101114 78%)',
+                        borderTop: `3px solid ${edge}`,
+                      }}
+                    >
                       {b.avatar_url ? (
                         <img
                           src={b.avatar_url}
                           alt={b.stage_name}
                           loading="lazy"
-                          className="w-full h-full object-contain object-bottom [image-rendering:pixelated] transition-transform duration-300 group-hover:scale-[1.04]"
+                          style={portraitFillStyle(b.avatar_url, { targetH: 0.94 })}
+                          className="transition-transform duration-300 group-hover:scale-[1.03]"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-zinc-700 text-3xl">
@@ -181,7 +196,16 @@ export default async function BattlersRosterPage({
                     </div>
 
                     <div className="p-3 space-y-2">
-                      <h3 className="font-black uppercase tracking-tight text-sm text-zinc-100 group-hover:text-[#ff8c42] transition line-clamp-2 leading-tight min-h-[2.5rem]">
+                      <h3
+                        className="uppercase text-zinc-100 group-hover:text-[#F5731A] transition line-clamp-2 min-h-[2.4rem]"
+                        style={{
+                          fontFamily: 'var(--font-poster)',
+                          fontSize: '17px',
+                          lineHeight: 0.95,
+                          textShadow: '2px 2px 0 #000',
+                          letterSpacing: '.01em',
+                        }}
+                      >
                         {b.stage_name}
                       </h3>
                       <div className="flex items-center justify-between text-[10px] uppercase tracking-widest font-bold">
@@ -189,7 +213,9 @@ export default async function BattlersRosterPage({
                           {b.tier || 'unranked'}
                         </span>
                         {rank && (
-                          <span className="text-zinc-300">{rank.rating}</span>
+                          <span style={{ fontFamily: 'var(--font-pixel)', fontSize: '9px', color: '#E7B23C' }}>
+                            {rank.rating}
+                          </span>
                         )}
                       </div>
                       {league && (
