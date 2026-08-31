@@ -33,7 +33,7 @@ export async function GET() {
     admin
       .from('wire_posts')
       .select(
-        'id, body, category, feed_hint, battle_id, target_battler_id, crowd_tag, props, boosts, replies, actionable, created_at, account:social_accounts(handle, display_name, kind, stamped)'
+        'id, body, category, feed_hint, battle_id, target_battler_id, crowd_tag, props, boosts, replies, actionable, created_at, account:social_accounts(handle, display_name, kind, stamped, battler_id)'
       )
       .order('created_at', { ascending: false })
       .limit(80),
@@ -56,7 +56,9 @@ export async function GET() {
       .limit(12),
   ]);
 
-  // Resolve battler names for developing stories.
+  // Resolve battler names + faces in ONE lookup: developing-story subjects,
+  // post TARGETS (who a drop is about), and dual-lane authors (accounts with a
+  // battler_id, e.g. battler-bloggers) — faces make the feed legible.
   const devRows = developing ?? [];
   const nameIds = new Set<string>();
   for (const d of devRows as any[]) {
@@ -64,11 +66,40 @@ export async function GET() {
     if (lead?.subject_battler_id) nameIds.add(lead.subject_battler_id);
     if (lead?.secondary_battler_id) nameIds.add(lead.secondary_battler_id);
   }
-  const nameMap = new Map<string, string>();
-  if (nameIds.size > 0) {
-    const { data: names } = await admin.from('battlers').select('id, stage_name').in('id', [...nameIds]);
-    for (const n of names ?? []) nameMap.set(n.id, n.stage_name);
+  for (const p of (posts ?? []) as any[]) {
+    if (p.target_battler_id) nameIds.add(p.target_battler_id);
+    const account = Array.isArray(p.account) ? p.account[0] : p.account;
+    if (account?.battler_id) nameIds.add(account.battler_id);
   }
+  const nameMap = new Map<string, string>();
+  const faceMap = new Map<string, string | null>();
+  if (nameIds.size > 0) {
+    const { data: names } = await admin
+      .from('battlers')
+      .select('id, stage_name, avatar_url')
+      .in('id', [...nameIds]);
+    for (const n of names ?? []) {
+      nameMap.set(n.id, n.stage_name);
+      faceMap.set(n.id, (n as any).avatar_url ?? null);
+    }
+  }
+
+  const postsOut = ((posts ?? []) as any[]).map((p) => {
+    const account = Array.isArray(p.account) ? p.account[0] : p.account;
+    return {
+      ...p,
+      account: account
+        ? { ...account, avatar_url: account.battler_id ? faceMap.get(account.battler_id) ?? null : null }
+        : null,
+      target: p.target_battler_id
+        ? {
+            id: p.target_battler_id,
+            stage_name: nameMap.get(p.target_battler_id) ?? null,
+            avatar_url: faceMap.get(p.target_battler_id) ?? null,
+          }
+        : null,
+    };
+  });
   const developingStories = (devRows as any[]).map((d) => {
     const lead = Array.isArray(d.lead) ? d.lead[0] : d.lead;
     const account = Array.isArray(d.account) ? d.account[0] : d.account;
@@ -88,7 +119,7 @@ export async function GET() {
   });
 
   return NextResponse.json({
-    posts: posts ?? [],
+    posts: postsOut,
     heatingUp,
     myBattlerId: battler?.id ?? null,
     myStageName: battler?.stage_name ?? null,

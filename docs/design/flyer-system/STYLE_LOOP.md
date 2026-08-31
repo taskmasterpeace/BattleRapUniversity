@@ -40,6 +40,7 @@
 |---|---|---|
 | /cities | **A-** | pixel skylines per city, league chips — already in language, leave |
 | /matchup | B → **A-** | corner slots get red/blue-edged fill-frame portraits; all 1000 roster buttons get fill-frame face chips (were floaty object-contain) |
+| /wire | B+ → **A** | poster-font masthead + LIVE pulse; author tiles (REAL faces for accounts with battler_id via feed API join, kind-colored pixel monograms otherwise); target battler's face on the right of drops about them (drill-down); kind-colored left card edges + hard shadows; emoji verbs → Icon set with pixel-font counts; HEATING UP gets gold pixel ranks + red→orange heat bars; newsroom rail iconized |
 
 ## Not yet swept (next loop iterations)
 /crew · /notifications · /life-events (recently overhauled — likely B+) · /onboarding (needs a fresh account to view) · /guide · /settings · /battle/[id]/promotion · /verified · article detail pages · prep day-calendar fs pass · /tournaments list poster treatment

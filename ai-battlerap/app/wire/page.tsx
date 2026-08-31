@@ -11,12 +11,22 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import Icon from '@/components/ui/Icon';
+import { portraitFillStyle } from '@/lib/sprite-crops';
 
 type WireAccount = {
   handle: string;
   display_name: string;
   kind: string;
   stamped: boolean;
+  battler_id?: string | null;
+  avatar_url?: string | null;
+};
+
+type WireTarget = {
+  id: string;
+  stage_name: string | null;
+  avatar_url: string | null;
 };
 
 type WirePost = {
@@ -33,6 +43,7 @@ type WirePost = {
   actionable: string | null;
   created_at: string;
   account: WireAccount | null;
+  target?: WireTarget | null;
 };
 
 type HeatingTag = { tag: string; score: number; posts: number };
@@ -67,16 +78,53 @@ function dropsIn(iso: string): string {
   return `${Math.round(h / 24)}d`;
 }
 
-const KIND_CHIPS: Record<string, { label: string; tone: string }> = {
-  league: { label: 'LEAGUE', tone: 'bg-amber-500/15 text-amber-400 border-amber-500/40' },
-  blogger: { label: 'MEDIA', tone: 'bg-[#ff8c42]/15 text-[#ff8c42] border-[#ff8c42]/40' },
-  battler: { label: 'BATTLER', tone: 'bg-red-500/15 text-red-400 border-red-500/40' },
-  meme_page: { label: 'MEMES', tone: 'bg-yellow-500/15 text-yellow-300 border-yellow-500/40' },
-  promoter: { label: 'PROMOTER', tone: 'bg-green-500/15 text-green-400 border-green-500/40' },
-  scout: { label: 'SCOUT', tone: 'bg-blue-500/15 text-blue-400 border-blue-500/40' },
-  manager: { label: 'CAMP', tone: 'bg-zinc-500/15 text-zinc-300 border-zinc-500/40' },
-  fan: { label: 'FAN', tone: 'bg-zinc-600/15 text-zinc-400 border-zinc-600/40' },
+const KIND_CHIPS: Record<string, { label: string; tone: string; edge: string }> = {
+  league: { label: 'LEAGUE', tone: 'bg-amber-500/15 text-amber-400 border-amber-500/40', edge: '#E7B23C' },
+  blogger: { label: 'MEDIA', tone: 'bg-[#ff8c42]/15 text-[#ff8c42] border-[#ff8c42]/40', edge: '#F5731A' },
+  battler: { label: 'BATTLER', tone: 'bg-red-500/15 text-red-400 border-red-500/40', edge: '#E23A2E' },
+  meme_page: { label: 'MEMES', tone: 'bg-yellow-500/15 text-yellow-300 border-yellow-500/40', edge: '#EAC54F' },
+  promoter: { label: 'PROMOTER', tone: 'bg-green-500/15 text-green-400 border-green-500/40', edge: '#35C46B' },
+  scout: { label: 'SCOUT', tone: 'bg-blue-500/15 text-blue-400 border-blue-500/40', edge: '#2F7DD1' },
+  manager: { label: 'CAMP', tone: 'bg-zinc-500/15 text-zinc-300 border-zinc-500/40', edge: '#A6A8B0' },
+  fan: { label: 'FAN', tone: 'bg-zinc-600/15 text-zinc-400 border-zinc-600/40', edge: '#3E404A' },
 };
+
+/** Author tile: real face for dual-lane accounts, styled monogram otherwise. */
+function AuthorTile({ account }: { account: WireAccount | null }) {
+  const edge = (KIND_CHIPS[account?.kind ?? 'fan'] ?? KIND_CHIPS.fan).edge;
+  const body = account?.avatar_url ? (
+    <span
+      className="relative overflow-hidden block"
+      style={{ width: 38, height: 38, borderRadius: 5, background: '#17181C', borderTop: `2px solid ${edge}` }}
+    >
+      <img src={account.avatar_url} alt="" style={portraitFillStyle(account.avatar_url, { targetH: 1.25 })} />
+    </span>
+  ) : (
+    <span
+      className="flex items-center justify-center shrink-0"
+      style={{
+        width: 38,
+        height: 38,
+        borderRadius: 5,
+        background: `linear-gradient(160deg, ${edge}26, #17181C 75%)`,
+        borderTop: `2px solid ${edge}`,
+        fontFamily: 'var(--font-pixel)',
+        fontSize: 13,
+        color: edge,
+        textShadow: '1px 1px 0 #000',
+      }}
+    >
+      {(account?.display_name ?? account?.handle ?? '?').replace('@', '').charAt(0).toUpperCase()}
+    </span>
+  );
+  return account?.battler_id ? (
+    <Link href={`/battler/${account.battler_id}`} className="shrink-0 hover:opacity-85 transition-opacity">
+      {body}
+    </Link>
+  ) : (
+    <span className="shrink-0">{body}</span>
+  );
+}
 
 const FILTERS = [
   { key: 'all', label: 'FOR YOU' },
@@ -225,9 +273,9 @@ export default function WirePage() {
   });
 
   return (
-    <div className="min-h-screen bg-[#0b0c0e] text-zinc-100">
+    <div className="fs min-h-screen bg-[#0b0c0e] text-zinc-100">
       <main className="max-w-5xl mx-auto px-4 sm:px-6 py-6">
-        {/* Header */}
+        {/* Header — poster masthead with a live signal strip */}
         <div className="flex items-end justify-between mb-4">
           <div>
             <Link
@@ -236,11 +284,15 @@ export default function WirePage() {
             >
               ← DASHBOARD
             </Link>
-            <h1 className="text-4xl sm:text-5xl font-display font-black uppercase tracking-tighter text-zinc-100 leading-none mt-1">
+            <h1
+              className="uppercase leading-none mt-1"
+              style={{ fontFamily: 'var(--font-poster)', fontSize: 'clamp(38px,7vw,58px)', textShadow: '3px 3px 0 #000' }}
+            >
               THE <span className="text-[#ff8c42]">WIRE</span>
             </h1>
-            <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 mt-1">
-              THE SCENE TALKS. ALL OF IT.
+            <p className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.3em] text-zinc-500 mt-1.5">
+              <span className="inline-block w-2 h-2 rounded-full bg-[#35C46B] animate-pulse" />
+              LIVE · THE SCENE TALKS. ALL OF IT.
             </p>
           </div>
           {myStageName && (
@@ -332,40 +384,77 @@ export default function WirePage() {
                   const chip = KIND_CHIPS[post.account?.kind ?? 'fan'] ?? KIND_CHIPS.fan;
                   const canAct = !!post.actionable && !actedPostIds.has(post.id);
                   return (
-                    <article key={post.id} className="bg-[#101114] border-2 border-[#3a3d44] p-3">
-                      <div className="flex items-center justify-between gap-2 mb-1">
-                        <div className="flex items-center gap-2 min-w-0">
-                          <span className="text-xs font-mono text-[#ff8c42] truncate">
-                            {post.account?.handle ?? '@unknown'}
-                          </span>
-                          {post.account?.stamped && (
-                            <span
-                              title="Stamped"
-                              className="text-[9px] font-mono text-amber-400 border border-amber-500/40 px-1"
-                            >
-                              ✓
+                    <article
+                      key={post.id}
+                      className="bg-[#101114] border-2 border-black p-3 shadow-[3px_3px_0_rgba(0,0,0,.4)]"
+                      style={{ borderLeft: `3px solid ${chip.edge}` }}
+                    >
+                      <div className="flex items-start gap-2.5">
+                        <AuthorTile account={post.account} />
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center justify-between gap-2 mb-1">
+                            <div className="flex items-center gap-2 min-w-0">
+                              <span className="text-xs font-mono text-[#ff8c42] truncate">
+                                {post.account?.handle ?? '@unknown'}
+                              </span>
+                              {post.account?.stamped && (
+                                <span
+                                  title="Stamped"
+                                  className="text-[9px] font-mono text-amber-400 border border-amber-500/40 px-1"
+                                >
+                                  ✓
+                                </span>
+                              )}
+                              <span
+                                className={`text-[9px] font-mono uppercase tracking-widest border px-1.5 py-0.5 ${chip.tone}`}
+                              >
+                                {chip.label}
+                              </span>
+                            </div>
+                            <span className="text-[10px] font-mono text-zinc-600 shrink-0">
+                              {timeAgo(post.created_at)}
                             </span>
-                          )}
-                          <span
-                            className={`text-[9px] font-mono uppercase tracking-widest border px-1.5 py-0.5 ${chip.tone}`}
-                          >
-                            {chip.label}
-                          </span>
+                          </div>
+
+                          <p className="text-sm text-zinc-200 leading-snug break-words">{post.body}</p>
                         </div>
-                        <span className="text-[10px] font-mono text-zinc-600 shrink-0">
-                          {timeAgo(post.created_at)}
-                        </span>
+                        {/* Who the drop is ABOUT — face on the post, drill-down law */}
+                        {post.target?.avatar_url && (
+                          <Link
+                            href={`/battler/${post.target.id}`}
+                            title={`${post.target.stage_name ?? 'Battler'} — profile`}
+                            className="shrink-0 hover:opacity-85 transition-opacity hidden sm:block"
+                          >
+                            <span
+                              className="relative overflow-hidden block"
+                              style={{ width: 46, height: 46, borderRadius: 5, background: '#17181C', border: '1px solid #2E2F35' }}
+                            >
+                              <img
+                                src={post.target.avatar_url}
+                                alt=""
+                                style={portraitFillStyle(post.target.avatar_url, { targetH: 1.25 })}
+                              />
+                            </span>
+                          </Link>
+                        )}
                       </div>
 
-                      <p className="text-sm text-zinc-200 leading-snug break-words">{post.body}</p>
-
-                      <div className="flex items-center justify-between gap-2 mt-2 min-w-0">
-                        <div className="flex items-center gap-3 text-[10px] font-mono text-zinc-500 min-w-0">
-                          <span title="Props" className="shrink-0">👊 {fmt(post.props)}</span>
-                          <span title="Boosts" className="shrink-0">📡 {fmt(post.boosts)}</span>
-                          <span title="Replies" className="shrink-0">💬 {fmt(post.replies)}</span>
+                      <div className="flex items-center justify-between gap-2 mt-2 min-w-0 pl-[48px]">
+                        <div className="flex items-center gap-3.5 min-w-0">
+                          <span title="Props" className="shrink-0 flex items-center gap-1 text-zinc-500">
+                            <Icon name="flame" size={11} />
+                            <span style={{ fontFamily: 'var(--font-pixel)', fontSize: 8 }}>{fmt(post.props)}</span>
+                          </span>
+                          <span title="Boosts" className="shrink-0 flex items-center gap-1 text-zinc-500">
+                            <Icon name="bolt" size={11} />
+                            <span style={{ fontFamily: 'var(--font-pixel)', fontSize: 8 }}>{fmt(post.boosts)}</span>
+                          </span>
+                          <span title="Replies" className="shrink-0 flex items-center gap-1 text-zinc-500">
+                            <Icon name="users" size={11} />
+                            <span style={{ fontFamily: 'var(--font-pixel)', fontSize: 8 }}>{fmt(post.replies)}</span>
+                          </span>
                           {post.crowd_tag && (
-                            <span className="text-[#ff8c42]/80 truncate max-w-[9rem] sm:max-w-[14rem]">
+                            <span className="text-[10px] font-mono text-[#ff8c42]/80 truncate max-w-[9rem] sm:max-w-[14rem]">
                               {post.crowd_tag}
                             </span>
                           )}
@@ -373,9 +462,9 @@ export default function WirePage() {
                         {post.battle_id && (
                           <Link
                             href={`/battle/${post.battle_id}`}
-                            className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 hover:text-[#ff8c42]"
+                            className="text-[10px] font-mono uppercase tracking-widest text-[#E7B23C]/80 hover:text-[#E7B23C] shrink-0"
                           >
-                            THE TAPE →
+                            ▸ THE TAPE
                           </Link>
                         )}
                       </div>
@@ -383,10 +472,11 @@ export default function WirePage() {
                       {/* Callout / controversy — the player can answer or stay silent */}
                       {canAct && (
                         <div className="mt-3 pt-3 border-t-2 border-[#3a3d44]">
-                          <p className="text-[9px] font-mono uppercase tracking-widest text-red-400 mb-2">
+                          <p className="flex items-center gap-1.5 text-[9px] font-mono uppercase tracking-widest text-red-400 mb-2">
+                            <Icon name={post.actionable === 'callout' ? 'target' : 'flame'} size={11} />
                             {post.actionable === 'callout'
-                              ? '🎯 THEY\'RE TALKING ABOUT YOU'
-                              : '🔥 CONTROVERSY BREWING'}
+                              ? 'THEY\'RE TALKING ABOUT YOU'
+                              : 'CONTROVERSY BREWING'}
                           </p>
                           <div className="flex flex-wrap gap-2">
                             <button
@@ -422,36 +512,52 @@ export default function WirePage() {
 
           {/* Heating Up rail */}
           <aside className="order-first lg:order-none">
-            <div className="bg-[#101114] border-2 border-[#3a3d44] p-3 lg:sticky lg:top-4">
-              <h2 className="text-sm font-display font-black uppercase tracking-tighter text-[#ff8c42] mb-2">
-                🔥 HEATING UP
+            <div className="bg-[#101114] border-2 border-black p-3 lg:sticky lg:top-4 shadow-[3px_3px_0_rgba(0,0,0,.4)]" style={{ borderTop: '3px solid #E23A2E' }}>
+              <h2 className="flex items-center gap-1.5 text-sm font-display font-black uppercase tracking-tighter text-[#ff8c42] mb-2.5">
+                <Icon name="flame" size={14} /> HEATING UP
               </h2>
               {heating.length === 0 ? (
                 <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-600">
                   NOTHING BUZZING YET
                 </p>
               ) : (
-                <ol className="space-y-2">
-                  {heating.map((h, i) => (
-                    <li key={h.tag} className="flex items-baseline justify-between gap-2">
-                      <span className="text-xs font-mono text-zinc-200 truncate">
-                        <span className="text-zinc-600 mr-1.5">{i + 1}</span>
-                        {h.tag}
-                      </span>
-                      <span className="text-[9px] font-mono text-zinc-500 shrink-0">
-                        {h.posts} DROPS
-                      </span>
-                    </li>
-                  ))}
+                <ol className="space-y-2.5">
+                  {heating.map((h, i) => {
+                    const maxScore = Math.max(...heating.map((x) => x.score), 1);
+                    return (
+                      <li key={h.tag}>
+                        <div className="flex items-baseline justify-between gap-2">
+                          <span className="text-xs font-mono text-zinc-200 truncate">
+                            <span style={{ fontFamily: 'var(--font-pixel)', fontSize: 8, color: '#E7B23C' }} className="mr-1.5">
+                              {i + 1}
+                            </span>
+                            {h.tag}
+                          </span>
+                          <span className="text-[9px] font-mono text-zinc-500 shrink-0">
+                            {h.posts} DROPS
+                          </span>
+                        </div>
+                        <div className="h-1 mt-1 bg-[#17181C] overflow-hidden">
+                          <div
+                            className="h-full"
+                            style={{
+                              width: `${Math.max(8, Math.round((h.score / maxScore) * 100))}%`,
+                              background: 'linear-gradient(90deg, #E23A2E, #F5731A)',
+                            }}
+                          />
+                        </div>
+                      </li>
+                    );
+                  })}
                 </ol>
               )}
             </div>
 
             {/* THE NEWSROOM — stories the blogs have landed and are sitting on. */}
-            <div className="bg-[#101114] border-2 border-[#3a3d44] p-3 mt-4 lg:sticky lg:top-[calc(1rem+180px)]">
+            <div className="bg-[#101114] border-2 border-black p-3 mt-4 lg:sticky lg:top-[calc(1rem+200px)] shadow-[3px_3px_0_rgba(0,0,0,.4)]" style={{ borderTop: '3px solid #F5731A' }}>
               <Link href="/newsroom" className="group flex items-center justify-between mb-1">
-                <h2 className="text-sm font-display font-black uppercase tracking-tighter text-[#ff8c42] group-hover:text-[#ff9d5c] transition">
-                  📰 THE NEWSROOM
+                <h2 className="flex items-center gap-1.5 text-sm font-display font-black uppercase tracking-tighter text-[#ff8c42] group-hover:text-[#ff9d5c] transition">
+                  <Icon name="news" size={14} /> THE NEWSROOM
                 </h2>
                 <span className="text-[9px] font-mono text-zinc-600 group-hover:text-[#ff8c42] transition">THE DESK →</span>
               </Link>
