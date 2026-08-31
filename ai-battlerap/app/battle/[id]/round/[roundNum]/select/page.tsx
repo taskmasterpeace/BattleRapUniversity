@@ -6,6 +6,7 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { Battle, BattleWithDetails, BattleStatus, ScoringContext } from '@/lib/models';
 import { RoundContentSelector, ContentSelection } from '@/components/battle/RoundContentSelector';
+import MatchupMasthead, { battleFace } from '@/components/battle/MatchupMasthead';
 import { EffectivenessForecast } from '@/components/battle/EffectivenessForecast';
 import { predictOpponentContent } from '@/lib/game/roundContentSelection';
 import { validateContentSelection } from '@/lib/game/roundContentSelection';
@@ -205,24 +206,36 @@ export default function RoundSelectPage() {
 
   return (
     <div className="min-h-screen bg-[#18191c]">
-      {/* Header */}
-      <div className="bg-[#2d2f35] border-b-2 border-[#3a3d44]">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <Link href="/dashboard" className="text-[#ff8c42] hover:text-[#ff9d5c] text-sm">
-            ← Back to Dashboard
-          </Link>
-          <div className="flex items-center justify-between mt-2">
-            <div>
-              <h1 className="text-3xl md:text-4xl font-display font-black uppercase tracking-tighter text-white">ROUND {roundNum} — CALL YOUR SHOT</h1>
-              <p className="text-zinc-400 text-sm mt-1">
-                vs {battle.ai_battler?.stage_name} • {battle.league?.name}
-              </p>
-            </div>
-            <div className="text-right">
-              <div className="text-sm text-zinc-400">Round Progress</div>
-              <div className="text-xl font-bold text-[#ff8c42]">{roundNum} / 3</div>
-            </div>
+      {/* Header — battle-night masthead: you in the red corner, them in the blue */}
+      <div className="bg-[#101114] border-b-2 border-[#3a3d44]">
+        <div className="max-w-5xl mx-auto px-4 pt-4 pb-6">
+          <div className="flex items-center justify-between mb-3">
+            <Link href="/dashboard" className="text-[#ff8c42] hover:text-[#ff9d5c] font-mono text-[10px] uppercase tracking-[0.3em]">
+              ← DASHBOARD
+            </Link>
+            <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-zinc-500">
+              ROUND <span className="text-[#ff8c42]">{roundNum}</span> / 3
+            </span>
           </div>
+          <h1 className="text-center text-2xl md:text-3xl font-display font-black uppercase tracking-tighter text-white mb-4">
+            ROUND {roundNum} — CALL YOUR SHOT
+          </h1>
+          <MatchupMasthead
+            a={{
+              id: battle.player_battler?.id,
+              name: battle.player_battler?.stage_name || 'YOU',
+              portrait: battleFace(battle.player_battler),
+              tier: battle.player_battler?.tier,
+            }}
+            b={{
+              id: battle.ai_battler?.id,
+              name: battle.ai_battler?.stage_name || 'OPPONENT',
+              portrait: battleFace(battle.ai_battler),
+              tier: battle.ai_battler?.tier,
+            }}
+            subLine={battle.league?.name ? battle.league.name.toUpperCase() : undefined}
+            linkProfiles={false}
+          />
         </div>
       </div>
 

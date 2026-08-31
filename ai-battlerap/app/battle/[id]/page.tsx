@@ -2,7 +2,7 @@
 
 import { useState, useEffect, use, type ReactNode } from 'react';
 import Link from 'next/link';
-import Avatar from '@/components/ui/Avatar';
+import MatchupMasthead, { battleFace } from '@/components/battle/MatchupMasthead';
 import GamingButton from '@/components/ui/GamingButton';
 import PostBattleSummary from '@/components/battle/PostBattleSummary';
 import JudgeScorecard from '@/components/battle/JudgeScorecard';
@@ -615,79 +615,23 @@ export default function BattleViewerPage({
               </span>
             </div>
 
-            <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 md:gap-4">
-              {/* Player */}
-              <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4 min-w-0 text-center md:text-left">
-                <div className="w-[60px] md:w-[88px] aspect-square shrink-0">
-                  <Avatar
-                    url={playerAvatarUrl}
-                    size={88}
-                    className="!w-full !h-full shadow-[0_0_20px_rgba(255,140,66,0.25)]"
-                    alt={battle.player_battler.stage_name}
-                  />
-                </div>
-                <div className="min-w-0 w-full">
-                  <h2 className="text-sm md:text-2xl font-display font-black uppercase tracking-tight truncate">
-                    {battle.player_battler.stage_name}
-                  </h2>
-                  <p className="text-[9px] md:text-[10px] font-mono uppercase tracking-widest text-zinc-500">YOU</p>
-                </div>
-              </div>
-
-              {/* Score / VS */}
-              <div className="text-center px-1 md:px-2">
-                {isCompleted ? (
-                  <>
-                    <div className="flex items-center gap-1.5 md:gap-3 justify-center">
-                      <span className={`text-3xl md:text-5xl font-display font-black ${playerWon ? 'text-[#ff8c42]' : 'text-zinc-500'}`}>
-                        {playerRoundsWon}
-                      </span>
-                      <span className="text-base md:text-xl font-display font-black text-zinc-600">—</span>
-                      <span className={`text-3xl md:text-5xl font-display font-black ${!playerWon ? 'text-[#ff8c42]' : 'text-zinc-500'}`}>
-                        {aiRoundsWon}
-                      </span>
-                    </div>
-                    <div className="mt-1.5 md:mt-2">
-                      {playerWon ? (
-                        <span className="inline-block px-2 md:px-4 py-0.5 md:py-1 bg-green-500/20 text-green-400 border-2 border-green-500/50 font-display font-black text-[11px] md:text-sm uppercase tracking-wider">
-                          {verdictLabel(battle.decision_type, battle.verdict, true)}
-                        </span>
-                      ) : (
-                        <span className="inline-block px-2 md:px-4 py-0.5 md:py-1 bg-red-500/20 text-red-400 border-2 border-red-500/50 font-display font-black text-[11px] md:text-sm uppercase tracking-wider">
-                          {verdictLabel(battle.decision_type, battle.verdict, false)}
-                        </span>
-                      )}
-                    </div>
-                  </>
-                ) : (
-                  <div className="text-2xl md:text-4xl font-display font-black uppercase tracking-wider text-[#ff8c42]">VS</div>
-                )}
-              </div>
-
-              {/* Opponent */}
-              <Link
-                href={`/battler/${battle.ai_battler.id}`}
-                className="flex flex-col-reverse md:flex-row items-center gap-2 md:gap-4 md:justify-end min-w-0 text-center md:text-right group"
-                title={`View ${battle.ai_battler.stage_name}'s career`}
-              >
-                <div className="min-w-0 w-full">
-                  <h2 className="text-sm md:text-2xl font-display font-black uppercase tracking-tight truncate group-hover:text-[#ff8c42] transition-colors">
-                    {battle.ai_battler.stage_name}
-                  </h2>
-                  <p className="text-[9px] md:text-[10px] font-mono uppercase tracking-widest text-zinc-500">
-                    {battle.ai_battler.tier} TIER
-                  </p>
-                </div>
-                <div className="w-[60px] md:w-[88px] aspect-square shrink-0">
-                  <Avatar
-                    url={aiAvatarUrl}
-                    size={88}
-                    className="!w-full !h-full shadow-[0_0_20px_rgba(100,100,100,0.25)] transition-transform duration-200 group-hover:scale-[1.04]"
-                    alt={battle.ai_battler.stage_name}
-                  />
-                </div>
-              </Link>
-            </div>
+            <MatchupMasthead
+              a={{
+                id: battle.player_battler.id,
+                name: battle.player_battler.stage_name,
+                portrait: battleFace(battle.player_battler) ?? playerAvatarUrl,
+                won: isCompleted && playerWon,
+              }}
+              b={{
+                id: battle.ai_battler.id,
+                name: battle.ai_battler.stage_name,
+                portrait: battleFace(battle.ai_battler) ?? aiAvatarUrl,
+                tier: battle.ai_battler.tier,
+                won: isCompleted && !playerWon,
+              }}
+              score={isCompleted ? `${playerRoundsWon}–${aiRoundsWon}` : undefined}
+              stamp={isCompleted ? verdictLabel(battle.decision_type, battle.verdict, playerWon) : undefined}
+            />
 
             {/* Warnings */}
             {battle.no_show_player && (

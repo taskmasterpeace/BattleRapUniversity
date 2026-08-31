@@ -3,8 +3,7 @@
 // Adapted from the matchup replay patterns (animate-bar-fill / animate-stamp-in)
 // but with zero "YOU" framing: this is for the crowd, not a competitor.
 // Pure CSS animations → renders fine as a server component.
-import Image from 'next/image';
-import Link from 'next/link';
+import MatchupMasthead from '@/components/battle/MatchupMasthead';
 
 export type SpectatorSide = {
   id: string;
@@ -21,51 +20,6 @@ export type ReplayRound = {
   winner: 'a' | 'b';
 };
 
-function Corner({ side, won, align }: { side: SpectatorSide; won: boolean; align: 'left' | 'right' }) {
-  return (
-    <div className={`flex flex-col items-center ${align === 'left' ? 'md:items-start' : 'md:items-end'}`}>
-      <div
-        className={`relative w-24 h-24 md:w-36 md:h-36 ${won ? 'drop-shadow-[0_0_30px_rgba(255,140,66,0.5)]' : 'opacity-75'}`}
-      >
-        {side.avatarUrl ? (
-          <Image
-            src={side.avatarUrl}
-            alt={side.name}
-            fill
-            sizes="144px"
-            className="object-contain [image-rendering:pixelated]"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center bg-[#18191c] border-2 border-[#3a3d44] text-5xl">
-            🎤
-          </div>
-        )}
-      </div>
-      <Link
-        href={`/battler/${side.id}`}
-        className="font-display text-lg md:text-2xl font-black uppercase tracking-tight mt-3 text-center hover:text-[#ff8c42] transition-colors"
-      >
-        {side.name}
-      </Link>
-      <div className="flex items-center gap-2 mt-1 flex-wrap justify-center">
-        {side.isReal && (
-          <span className="px-1.5 py-0.5 bg-[#ff8c42] text-black font-mono text-[8px] font-bold uppercase tracking-widest">
-            ✓ VERIFIED
-          </span>
-        )}
-        {side.tier && (
-          <span className="font-mono text-[10px] uppercase tracking-widest text-zinc-500">{side.tier} TIER</span>
-        )}
-      </div>
-      {won && (
-        <span className="mt-2 px-3 py-1 bg-green-500/20 border-2 border-green-500/50 text-green-400 font-display font-black text-xs uppercase tracking-wider">
-          WINNER
-        </span>
-      )}
-    </div>
-  );
-}
-
 export default function SpectatorReplay({
   a,
   b,
@@ -80,30 +34,19 @@ export default function SpectatorReplay({
   decision: string;
 }) {
   const aWon = winnerId === a.id;
+  const bWon = !aWon && !!winnerId;
   const aRounds = rounds.filter((r) => r.winner === 'a').length;
   const bRounds = rounds.length - aRounds;
-  const stampDelay = rounds.length * 1500 + 700;
 
   return (
     <div className="bg-[#101114] border-2 border-[#3a3d44] p-5 md:p-10">
-      {/* VS header */}
-      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 md:gap-8">
-        <Corner side={a} won={aWon} align="left" />
-        <div className="text-center">
-          <p className="font-bebas text-5xl md:text-7xl text-[#ff8c42] drop-shadow-[0_0_25px_rgba(255,140,66,0.5)]">
-            {aRounds}–{bRounds}
-          </p>
-          <div
-            className="animate-stamp-in inline-block border-4 border-[#ff8c42] px-3 py-1 mt-2"
-            style={{ animationDelay: `${stampDelay}ms` }}
-          >
-            <p className="font-display text-xs md:text-lg font-black uppercase tracking-wide text-[#ff8c42]">
-              {decision}
-            </p>
-          </div>
-        </div>
-        <Corner side={b} won={!aWon && !!winnerId} align="right" />
-      </div>
+      {/* VS header — red corner vs blue corner with the scoreline + verdict stamp */}
+      <MatchupMasthead
+        a={{ id: a.id, name: a.name, portrait: a.avatarUrl, tier: a.tier, isReal: a.isReal, won: aWon }}
+        b={{ id: b.id, name: b.name, portrait: b.avatarUrl, tier: b.tier, isReal: b.isReal, won: bWon }}
+        score={`${aRounds}–${bRounds}`}
+        stamp={decision}
+      />
 
       {/* round-by-round */}
       <div className="mt-10 space-y-5">
@@ -144,10 +87,10 @@ export default function SpectatorReplay({
                 </div>
               </div>
               <div className="flex items-center gap-2 mb-1">
-                <span className="w-20 md:w-28 font-mono text-[10px] uppercase truncate text-[#ff8c42]">{a.name}</span>
+                <span className="w-20 md:w-28 font-mono text-[10px] uppercase truncate text-[#ff6a5e]">{a.name}</span>
                 <div className="flex-1 h-4 bg-[#18191c] border border-[#3a3d44] relative">
                   <div
-                    className={`h-full animate-bar-fill ${r.a.choke ? 'bg-red-500/70' : r.winner === 'a' ? 'bg-[#ff8c42]' : 'bg-[#ff8c42]/40'}`}
+                    className={`h-full animate-bar-fill ${r.a.choke ? 'bg-[#E23A2E]/25' : r.winner === 'a' ? 'bg-[#E23A2E]' : 'bg-[#E23A2E]/40'}`}
                     style={{
                       ['--bar-w' as string]: `${(r.a.avg / max) * 100}%`,
                       animationDelay: `${i * 1500 + 250}ms`,
@@ -164,10 +107,10 @@ export default function SpectatorReplay({
                 <span className="w-10 font-mono text-xs text-zinc-300 text-right">{r.a.avg.toFixed(1)}</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="w-20 md:w-28 font-mono text-[10px] uppercase truncate text-zinc-300">{b.name}</span>
+                <span className="w-20 md:w-28 font-mono text-[10px] uppercase truncate text-[#5da2e8]">{b.name}</span>
                 <div className="flex-1 h-4 bg-[#18191c] border border-[#3a3d44] relative">
                   <div
-                    className={`h-full animate-bar-fill ${r.b.choke ? 'bg-red-500/70' : r.winner === 'b' ? 'bg-zinc-300' : 'bg-zinc-300/40'}`}
+                    className={`h-full animate-bar-fill ${r.b.choke ? 'bg-[#2F7DD1]/25' : r.winner === 'b' ? 'bg-[#2F7DD1]' : 'bg-[#2F7DD1]/40'}`}
                     style={{
                       ['--bar-w' as string]: `${(r.b.avg / max) * 100}%`,
                       animationDelay: `${i * 1500 + 250}ms`,

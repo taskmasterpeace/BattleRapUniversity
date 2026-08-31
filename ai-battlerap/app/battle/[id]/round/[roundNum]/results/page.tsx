@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { Battle, BattleWithDetails, BattleRound, BattleSegment } from '@/lib/models';
 import { RoundResultsBreakdown } from '@/components/battle/RoundResultsBreakdown';
 import { toast } from '@/components/ui/Toast';
-import Avatar from '@/components/ui/Avatar';
+import MatchupMasthead, { battleFace } from '@/components/battle/MatchupMasthead';
 
 export default function RoundResultsPage() {
   const router = useRouter();
@@ -135,7 +135,7 @@ export default function RoundResultsPage() {
     return (
       <div className="min-h-screen bg-[#18191c]">
         {/* Header */}
-        <div className="bg-[#2d2f35] border-b-2 border-[#3a3d44]">
+        <div className="bg-[#101114] border-b-2 border-[#3a3d44]">
           <div className="max-w-7xl mx-auto px-4 py-5 md:py-6">
             <Link
               href="/dashboard"
@@ -153,37 +153,22 @@ export default function RoundResultsPage() {
         </div>
 
         <div className="max-w-2xl mx-auto px-4 py-10 md:py-14">
-          {/* Matchup */}
-          <div className="flex items-center justify-center gap-5 md:gap-10 mb-10">
-            <div className="text-center">
-              <Avatar
-                url={battle.player_battler?.avatar_url}
-                size={88}
-                alt={battle.player_battler?.stage_name || 'You'}
-                className="mx-auto mb-2"
-              />
-              <div className="font-display font-black uppercase tracking-tight text-white text-sm md:text-base">
-                {battle.player_battler?.stage_name || 'You'}
-              </div>
-              <div className="text-[10px] text-[#ff8c42] font-display font-bold uppercase tracking-widest">
-                YOU
-              </div>
-            </div>
-            <div className="font-display font-black text-2xl md:text-3xl text-zinc-600">VS</div>
-            <div className="text-center">
-              <Avatar
-                url={battle.ai_battler?.avatar_url}
-                size={88}
-                alt={battle.ai_battler?.stage_name || 'Opponent'}
-                className="mx-auto mb-2"
-              />
-              <div className="font-display font-black uppercase tracking-tight text-white text-sm md:text-base">
-                {battle.ai_battler?.stage_name}
-              </div>
-              <div className="text-[10px] text-zinc-500 font-display font-bold uppercase tracking-widest">
-                OPPONENT
-              </div>
-            </div>
+          {/* Matchup — the lights-down moment, faces big in their corners */}
+          <div className="mb-10">
+            <MatchupMasthead
+              a={{
+                name: battle.player_battler?.stage_name || 'YOU',
+                portrait: battleFace(battle.player_battler),
+                tier: battle.player_battler?.tier,
+              }}
+              b={{
+                name: battle.ai_battler?.stage_name || 'OPPONENT',
+                portrait: battleFace(battle.ai_battler),
+                tier: battle.ai_battler?.tier,
+              }}
+              subLine={battle.league?.name ? `${battle.league.name.toUpperCase()} · ROUND ${roundNum}` : `ROUND ${roundNum}`}
+              linkProfiles={false}
+            />
           </div>
 
           {/* What you locked in */}
@@ -238,7 +223,7 @@ export default function RoundResultsPage() {
   return (
     <div className="min-h-screen bg-[#18191c]">
       {/* Header */}
-      <div className="bg-[#2d2f35] border-b-2 border-[#3a3d44]">
+      <div className="bg-[#101114] border-b-2 border-[#3a3d44]">
         <div className="max-w-7xl mx-auto px-4 py-5 md:py-6">
           <Link href="/dashboard" className="text-[#ff8c42] hover:text-[#ff9d5c] text-sm font-display font-black uppercase tracking-wider">
             ← Back to Dashboard
@@ -259,6 +244,25 @@ export default function RoundResultsPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-8">
+        {/* Round verdict masthead — corner faces + this round's scoreline */}
+        <div className="mb-8">
+          <MatchupMasthead
+            a={{
+              name: battle.player_battler?.stage_name || 'YOU',
+              portrait: battleFace(battle.player_battler),
+              won: winner === 'player',
+            }}
+            b={{
+              name: battle.ai_battler?.stage_name || 'OPPONENT',
+              portrait: battleFace(battle.ai_battler),
+              won: winner === 'ai',
+            }}
+            score={`${Number(playerRound.average_score ?? 0).toFixed(1)}–${Number(aiRound.average_score ?? 0).toFixed(1)}`}
+            subLine={battle.league?.name ? battle.league.name.toUpperCase() : undefined}
+            linkProfiles={false}
+          />
+        </div>
+
         {/* Results Breakdown */}
         <RoundResultsBreakdown
           playerRound={playerRound}
