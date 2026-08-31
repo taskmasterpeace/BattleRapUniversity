@@ -68,6 +68,12 @@ Proof artifacts in this folder: `pipeline-source-photo.jpg` → `pipeline-faithf
 Same pipeline, plus: `is_real=true`, `real_name`, `likeness_status='verified'` after consent.
 This is the Tru Foe lane — real battlers enter the game with their own face, done respectfully.
 
+**PROVEN ON REAL PEOPLE (2026-08-30):** ran the pipeline on actual photos —
+- **Tru Foe** (video frame, black beanie/beard/puffer): 4 on-model house-style candidates → `trufoe-strip.png`, candidates `trufoe-housestyle-{0..3}.png`
+- **Jesse Rican** (RapGrid frame, red polo): `jesserican-strip.png`, candidates `jesserican-housestyle-{0..3}.png`
+Recipe notes that mattered: sharp `position: attention` auto-crops the face reliably from a video frame;
+keep the likeness JPEG ≤ ~8K base64 chars (192-256px, q60-72) or the MCP argument gets truncated.
+
 ## Build order (when we implement)
 1. API: `POST /api/battler/likeness` (upload → runs passes 2–3, returns preview + 4 candidates).
 2. Rebuild `/onboarding` as the seven beats (reuses BattlerHero/CharacterSheet/BattleFlyer/crest helpers).
