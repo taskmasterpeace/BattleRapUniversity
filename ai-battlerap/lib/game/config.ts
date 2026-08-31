@@ -449,6 +449,14 @@ export const SIMULATION_CONFIG = {
    *
    * NEW: 3.0 point average margin = bodybag
    */
+  /**
+   * THE TAPE — internet re-judge weights (see lib/game/tapeVerdict.ts).
+   * No crowd term: the tape can't feel the room. Peak weighs heavier than
+   * the room's 0.35 because replayable moments get clipped and argued.
+   */
+  TAPE_JUDGING_AVERAGE_WEIGHT: 0.55,
+  TAPE_JUDGING_PEAK_WEIGHT: 0.45,
+
   DECISION_BODYBAG_THRESHOLD: 3.0,  // Score margin for 3-0 bodybag
 
   /**

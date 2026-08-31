@@ -31,6 +31,7 @@ async function loadBattle(supabase: ReturnType<typeof serviceClient>, battleId: 
     .from('battles')
     .select(
       `id, status, scheduled_at, verdict, decision_type, winner_battler_id, league_id,
+       tape_verdict, tape_winner_battler_id, context,
        league:leagues(id, name, writing_weight, performance_weight),
        a:battlers!battles_battler_player_id_fkey(${battlerJoin}),
        b:battlers!battles_battler_ai_id_fkey(${battlerJoin})`
@@ -142,7 +143,7 @@ export default async function SpectatorPage({
   const [{ data: rounds }, { data: judgeScores }, { data: article }] = await Promise.all([
     supabase
       .from('battle_rounds')
-      .select('round_index, battler_id, average_score, peak_score, crowd_reaction, choked, summary_text')
+      .select('round_index, battler_id, average_score, peak_score, crowd_reaction, choked, won, summary_text')
       .eq('battle_id', battleId)
       .order('round_index', { ascending: true }),
     supabase
@@ -185,7 +186,17 @@ export default async function SpectatorPage({
         choke: !!e.b.choked,
         haymaker: Number(e.b.peak_score) >= HAYMAKER_PEAK,
       },
-      winner: Number(e.a.average_score) >= Number(e.b.average_score) ? ('a' as const) : ('b' as const),
+      // Official round call when the finalizer persisted `won`; avg-comparison
+      // fallback for legacy rows. A local re-judge here can contradict the
+      // battle's stored verdict (composite judging ≠ raw averages).
+      winner:
+        typeof e.a.won === 'boolean'
+          ? e.a.won
+            ? ('a' as const)
+            : ('b' as const)
+          : Number(e.a.average_score) >= Number(e.b.average_score)
+            ? ('a' as const)
+            : ('b' as const),
     }));
 
   return (
@@ -216,6 +227,61 @@ export default async function SpectatorPage({
           winnerId={battle.winner_battler_id}
           decision={decisionLabel(battle.verdict, battle.decision_type)}
         />
+
+        {/* THE ROOM vs THE TAPE — battle rap's two audiences. The room reacted
+            live; the internet re-judged the tape (no crowd term). When they
+            disagree, the battle is officially DEBATABLE. */}
+        {battle.tape_verdict && (() => {
+          const roomWinner = battle.winner_battler_id === sideA.id ? sideA : sideB;
+          const tapeWinner = battle.tape_winner_battler_id === sideA.id ? sideA : sideB;
+          const diverges = battle.winner_battler_id !== battle.tape_winner_battler_id;
+          const ctxLabel =
+            battle.context === 'ppv' ? 'LIVE PPV — BOTH AUDIENCES AT ONCE'
+            : battle.context === 'on_cam' ? 'ON CAM — THE TAPE LEADS'
+            : 'IN THE BUILDING — THE ROOM CALLED IT FIRST';
+          return (
+            <div className="fs mt-8 bg-[#101114] border-2 border-[#3a3d44] p-5 md:p-6">
+              <p className="text-center font-mono text-[9px] uppercase tracking-[0.35em] text-zinc-500 mb-4">
+                {ctxLabel}
+              </p>
+              <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 md:gap-6">
+                <div className="text-center">
+                  <p className="font-mono text-[9px] uppercase tracking-[0.3em] text-[#ff6a5e] mb-1.5">THE ROOM SAYS</p>
+                  <p className="font-display text-lg md:text-2xl font-black uppercase tracking-tight text-zinc-100">
+                    {roomWinner.name}
+                  </p>
+                  <p style={{ fontFamily: 'var(--font-pixel)', fontSize: 11, color: '#E23A2E' }} className="mt-1">
+                    {battle.verdict}
+                  </p>
+                </div>
+                <div
+                  className="px-3 py-1.5 font-display font-black text-xs md:text-base uppercase tracking-wider"
+                  style={
+                    diverges
+                      ? { border: '3px solid #E7B23C', color: '#E7B23C', transform: 'rotate(-4deg)' }
+                      : { border: '2px solid #3E404A', color: '#A6A8B0' }
+                  }
+                >
+                  {diverges ? 'DEBATABLE' : 'NO DEBATE'}
+                </div>
+                <div className="text-center">
+                  <p className="font-mono text-[9px] uppercase tracking-[0.3em] text-[#5da2e8] mb-1.5">THE TAPE SAYS</p>
+                  <p className="font-display text-lg md:text-2xl font-black uppercase tracking-tight text-zinc-100">
+                    {tapeWinner.name}
+                  </p>
+                  <p style={{ fontFamily: 'var(--font-pixel)', fontSize: 11, color: '#2F7DD1' }} className="mt-1">
+                    {battle.tape_verdict}
+                  </p>
+                </div>
+              </div>
+              {diverges && (
+                <p className="text-center font-mono text-[9px] uppercase tracking-[0.25em] text-zinc-500 mt-4">
+                  THE ROOM FELT {roomWinner.name.toUpperCase()} — THE INTERNET REWOUND IT FOR {tapeWinner.name.toUpperCase()}. LET THEM ARGUE.
+                </p>
+              )}
+            </div>
+          );
+        })()}
 
         {judgeScores && judgeScores.length > 0 && (
           <div className="mt-8">

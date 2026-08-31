@@ -133,6 +133,15 @@ export async function finalizeInteractiveBattle(
     isTournament: isTournamentBattle,
   });
 
+  // THE TAPE — internet re-judge of the same rounds (no crowd term); diverging
+  // from the room verdict is what makes a battle "debatable".
+  const { computeTapeVerdict } = await import('./tapeVerdict');
+  const tape = computeTapeVerdict(
+    allRounds as any,
+    battle.battler_player_id,
+    battle.battler_ai_id
+  );
+
   await supabase
     .from('battles')
     .update({
@@ -142,6 +151,8 @@ export async function finalizeInteractiveBattle(
       ai_payout: aiPayout,
       verdict,
       decision_type: decisionType,
+      tape_verdict: tape?.tapeVerdict ?? null,
+      tape_winner_battler_id: tape?.tapeWinnerId ?? null,
       completed_at: new Date().toISOString(),
     })
     .eq('id', battleId);

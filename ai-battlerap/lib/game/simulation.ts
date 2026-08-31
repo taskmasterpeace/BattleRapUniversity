@@ -1507,6 +1507,17 @@ async function saveBattleResults(
     isTournament: isTournamentBattle,
   });
 
+  // THE TAPE — the internet's re-judge of the same rounds (no crowd term).
+  // Diverging from the room verdict is what makes a battle "debatable".
+  const { computeTapeVerdict } = await import('./tapeVerdict');
+  const { data: verdictRounds } = await supabase
+    .from('battle_rounds')
+    .select('round_index, battler_id, average_score, peak_score')
+    .eq('battle_id', battleId);
+  const tape = verdictRounds
+    ? computeTapeVerdict(verdictRounds, playerBattlerId, aiBattlerId)
+    : null;
+
   // Update battle status, winner, payouts, and verdict data
   await supabase
     .from('battles')
@@ -1517,6 +1528,8 @@ async function saveBattleResults(
       ai_payout: aiPayout,
       verdict: verdict,
       decision_type: decisionType,
+      tape_verdict: tape?.tapeVerdict ?? null,
+      tape_winner_battler_id: tape?.tapeWinnerId ?? null,
       completed_at: new Date().toISOString(),
     })
     .eq('id', battleId);
