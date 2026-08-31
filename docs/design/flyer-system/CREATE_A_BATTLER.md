@@ -43,20 +43,27 @@ moment. CTA: "ENTER THE CIRCUIT". (Flyer engine: `components/battle/battle-flyer
 
 ---
 
-## The Likeness Pipeline (proven, repeatable)
+## The Likeness Pipeline — THE STANDARD (v3, owner-approved "I LOVE these")
 
-Input: one head-and-shoulders photo. Output: transparent-bg house-style pixel bust (128px, upscale-safe).
+Input: one head-and-shoulders photo. Output: a transparent-bg house-style **portrait set**.
 
-1. **Prep** — crop/resize to 256–512px square JPEG (sharp).
-2. **(Preview) Faithful pass** — PixelLab `image_to_pixelart` `faithful=true, init_image_strength≈200`,
-   128px out → instant "you, in pixels" preview (~30s, 1 gen).
+1. **Prep** — face-crop via sharp `position: attention`, ≤256px JPEG q60–72 (keep base64 ≤~8K chars).
+2. **(Preview) Faithful pass** — PixelLab `image_to_pixelart` `faithful=true, init_image_strength≈200` → instant "you, in pixels".
 3. **House-style pass** — PixelLab `create_image_pro`:
-   - `reference_images=[{photo, usage:"character likeness — match this exact person's face, hair, skin tone, outfit"}]`
-   - `style_image` = an existing roster bust (e.g. `public/images/sprite-536.png`, small quantized copy)
-   - `description` = neutral bust prompt + "transparent background", `no_background=true`, 128×128
-   - → **4 candidates** (~2–5 min, ~20 gens, $0 on subscription).
-4. **Finish** — player picks a candidate; store at `public/sprites/characters/` scale conventions;
-   run `scripts/audit-portrait-crops.ts` (or measure the one sprite) so the crop map frames it.
+   - **size 112×112** — the measured house density (roster grid elbow ≈96–128; 80px kills the eyes, 128 reads fine-grained)
+   - `description` MUST include **"clear well-defined eyes with dark irises and visible pupils"** + "transparent background"
+   - `reference_images=[{photo, usage:"character likeness — match this exact person's …"}]`
+   - `style_image` = quantized roster bust (≤96px, ≤12 colors)
+   - → 4 candidates (~2–5 min, $0 on subscription)
+4. **Display/scale law** — pixel art scales by **INTEGER factors only** (112 → 448 @4×; pad transparently to the 512 canvas). Non-integer nearest = wobble.
+5. **Install the SET** — `node scripts/set-real-battler-portrait.mjs <battler> <primary.png> [alts...]`:
+   writes `public/sprites/characters/real/<slug>[-N].png`, registers crop boxes, sets `avatar_url`
+   (primary) + **`sprite_set` (all variants)**.
+
+### Multiple profiles (variety)
+Every battler can carry a **portrait set** (`battlers.sprite_set`), not one face: primary for identity
+surfaces, alternates for variety — battle screens, flyers, feed moments. The Character Sheet shows a
+clickable **PROFILE 1/N** variant strip. First real set: Tru Foe ×4 (1 = primary, 3 = battle face).
 
 Gotchas already paid for: MCP truncates big base64 args → keep payloads small (photo ≤256px q70,
 style image ≤96px palette-quantized) or call the HTTP API from a script (`scripts/pixellab-gen.mjs`

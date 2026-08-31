@@ -20,8 +20,11 @@ export function getSpriteBox(url?: string): SpriteBox | null {
  * The frame element must be `position:relative; overflow:hidden`. Works off the
  * measured content box; falls back to a sane bottom-anchored scale when unmeasured.
  */
-export function portraitFillStyle(url?: string, opts: { targetH?: number; maxScale?: number } = {}): CSSProperties {
-  const { targetH = 1.0, maxScale = 1.9 } = opts
+export function portraitFillStyle(
+  url?: string,
+  opts: { targetH?: number; maxScale?: number; fit?: "height" | "width"; targetW?: number } = {},
+): CSSProperties {
+  const { targetH = 1.0, maxScale = 1.9, fit = "height", targetW = 0.94 } = opts
   const box = getSpriteBox(url)
 
   if (!box) {
@@ -38,10 +41,26 @@ export function portraitFillStyle(url?: string, opts: { targetH?: number; maxSca
   }
 
   const cx = box.x + box.w / 2 // content centre x (fraction)
-  const scale = Math.min(maxScale, targetH / Math.max(0.15, box.h)) // fill content to targetH of frame
-  const ty = (1 - (box.y + box.h)) * 100 // push content bottom down to the frame bottom
   const tx = -(cx - 0.5) * 100 // re-centre content horizontally
+  const ty = (1 - (box.y + box.h)) * 100 // push content bottom down to the frame bottom
 
+  if (fit === "width") {
+    // width-driven: content spans targetW of the frame width regardless of frame height —
+    // right choice for tall portrait columns where height-driven fill would blow up the face
+    const widthPct = Math.min(maxScale, targetW / Math.max(0.15, box.w)) * 100
+    return {
+      position: "absolute",
+      left: "50%",
+      bottom: 0,
+      width: `${widthPct.toFixed(1)}%`,
+      height: "auto",
+      maxWidth: "none",
+      transform: `translateX(-50%) translateX(${tx.toFixed(2)}%) translateY(${ty.toFixed(2)}%)`,
+      imageRendering: "pixelated",
+    }
+  }
+
+  const scale = Math.min(maxScale, targetH / Math.max(0.15, box.h)) // fill content to targetH of frame
   return {
     position: "absolute",
     left: "50%",

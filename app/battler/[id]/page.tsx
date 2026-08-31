@@ -130,6 +130,7 @@ export default function BattlerCareerPage() {
           <CharacterSheet
             name={battler.stageName}
             portrait={battler.portrait?.spriteUrl || "/sprites/characters/sprite_661.png"}
+            portraits={(battler as any).portraits || []}
             cityName={(battler as any).city?.name}
             cityBackdrop={(battler as any).city?.backdrop}
             tierLabel={battler.tier}

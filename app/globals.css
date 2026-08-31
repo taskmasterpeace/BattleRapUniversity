@@ -256,7 +256,8 @@
 /* --- character sheet --- */
 .fs-sheet{display:grid;grid-template-columns:clamp(300px,34%,420px) 1fr;gap:16px}
 @media(max-width:880px){.fs-sheet{grid-template-columns:1fr}}
-.fs-bigport{position:relative;border-radius:14px;overflow:hidden;border:1px solid var(--fs-line);min-height:540px;height:100%;background:#0D0D10}
+.fs-bigport{position:relative;border-radius:14px;overflow:hidden;border:1px solid var(--fs-line);height:min(76vh,720px);min-height:540px;align-self:start;position:sticky;top:16px;background:#0D0D10}
+@media(max-width:880px){.fs-bigport{position:relative;top:0;height:min(70vh,640px)}}
 .fs-bigport .fs-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;transform:scale(1.5);transform-origin:center 28%;image-rendering:pixelated;opacity:.46;z-index:0}
 .fs-bigport::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,15,18,.1) 40%,rgba(15,15,18,.92));z-index:1}
 .fs-bigport .fs-pf{z-index:3}
@@ -392,5 +393,11 @@
 .fs-idplates .p .k{font-family:var(--font-display);font-weight:700;font-size:8px;letter-spacing:.12em;color:var(--fs-mut);text-transform:uppercase}
 .fs-idplates .p .v{font-family:var(--font-poster);font-size:16px;color:var(--fs-ink);text-transform:uppercase;margin-top:2px}
 .fs-idplates .p .v.pix{font-family:var(--font-pixel);font-size:12px;color:var(--fs-gold)}
+.fs-variants{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.fs-variants .vt{width:52px;height:52px;padding:0;border-radius:9px;border:2px solid var(--fs-line2);background:#0D0D10;position:relative;overflow:hidden;cursor:pointer;flex:0 0 auto;transition:border-color .15s}
+.fs-variants .vt img{image-rendering:pixelated}
+.fs-variants .vt:hover{border-color:var(--fs-mut)}
+.fs-variants .vt.on{border-color:var(--fs-brand);box-shadow:0 0 0 2px rgba(245,115,26,.35)}
+.fs-variants .lab{font-family:var(--font-pixel);font-size:8px;color:var(--fs-mut);margin-left:4px}
 .fs-sheet2-top{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
 @media(max-width:720px){.fs-sheet2-top{grid-template-columns:1fr}.fs-radarwrap{grid-template-columns:1fr}.fs-radar-side{flex-direction:row}}

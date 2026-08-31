@@ -77,7 +77,13 @@ export default function FlyerPreviewPage() {
       </h2>
       <CharacterSheet
         name="Tru Foe"
-        portrait="/sprites/characters/image_1764146494580/sprite_841.png"
+        portrait="/sprites/characters/real/tru-foe.png"
+        portraits={[
+          "/sprites/characters/real/tru-foe.png",
+          "/sprites/characters/real/tru-foe-2.png",
+          "/sprites/characters/real/tru-foe-3.png",
+          "/sprites/characters/real/tru-foe-4.png",
+        ]}
         cityName="Atlanta"
         cityBackdrop="/sprites/cities/atlanta-dusk.png"
         tierLabel="MID TIER"

@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import { portraitFillStyle } from "@/lib/sprite-crops"
 
 export interface AttrRow {
@@ -47,6 +48,7 @@ export interface LineageEntry {
 interface CharacterSheetProps {
   name: string
   portrait: string
+  portraits?: string[] // multiple profiles — variant strip, click to swap
   cityName?: string
   cityBackdrop?: string
   tierLabel?: string
@@ -152,6 +154,7 @@ const RADAR_PICKS = ["Lyricism", "Wordplay", "Flow", "Stage Presence", "Crowd Co
 export function CharacterSheet({
   name,
   portrait,
+  portraits = [],
   cityName,
   cityBackdrop,
   tierLabel,
@@ -165,6 +168,9 @@ export function CharacterSheet({
   badges = [],
   netEffects = [],
 }: CharacterSheetProps) {
+  const variants = portraits.length > 1 ? portraits : []
+  const [activePortrait, setActivePortrait] = useState(0)
+  const shownPortrait = variants.length > 0 ? variants[activePortrait] ?? variants[0] : portrait
   // radar axes + range/floor from all rows
   const all: { label: string; v10: number }[] = groups.flatMap((g) =>
     g.rows.map((r) => ({ label: r.label, v10: to10(r, g.scale10) })),
@@ -189,8 +195,25 @@ export function CharacterSheet({
             />
           )}
           {cityName && <span className="fs-cityback">{cityName}</span>}
-          <img className="fs-pf" src={portrait} alt={name} style={portraitFillStyle(portrait, { targetH: 0.78 })} />
+          <img className="fs-pf" src={shownPortrait} alt={name} style={portraitFillStyle(shownPortrait, { fit: "width", targetW: 0.96 })} />
           <div className="fs-cap">
+            {variants.length > 0 && (
+              <div className="fs-variants">
+                {variants.map((v, i) => (
+                  <button
+                    key={v}
+                    className={`vt${i === activePortrait ? " on" : ""}`}
+                    onClick={() => setActivePortrait(i)}
+                    title={i === 0 ? "Primary" : `Profile ${i + 1}`}
+                  >
+                    <img src={v} alt="" style={portraitFillStyle(v, { targetH: 1.15 })} />
+                  </button>
+                ))}
+                <span className="lab">
+                  PROFILE {activePortrait + 1}/{variants.length}
+                </span>
+              </div>
+            )}
             <h2 className="nm">{name}</h2>
             <div className="fs-idplates">
               {tierLabel && (

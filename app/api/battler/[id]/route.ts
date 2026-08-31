@@ -17,6 +17,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
         region,
         style_tags,
         avatar_url,
+        sprite_set,
         primary_league_id,
         is_ai,
         level,
@@ -148,6 +149,10 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
         spriteUrl: battler.avatar_url || '/sprites/characters/sprite_661.png',
         crop: { scale: 1, offsetX: 0, offsetY: 0 },
       },
+      // multiple profiles — portrait variants for variety across surfaces
+      portraits: Array.isArray(battler.sprite_set) && battler.sprite_set.length > 0
+        ? battler.sprite_set
+        : [battler.avatar_url].filter(Boolean),
       // Flyer System: city-as-identity + progression
       city: battler.hometown
         ? {
