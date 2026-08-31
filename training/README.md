@@ -22,3 +22,6 @@
 |---|---|---|
 | 2026-08-31 | 6 (Tru Foe, Jesse Rican, Nia Nightmare, Ink Empress, Peach Fire, Trigger Rose) | 24 |
 | 2026-08-31 (wave 1) | 18 (+Throne Talker, The Architect, Tsunami Wave, Bar God Bishop, King Karver, Compton Kingpin, The Comedian, The Nitro Puncher, Immortal Ink, Baltimore Rocker, Forever Foe, Royal Rage) | 72 |
+| 2026-08-31 (wave 2) | **30 — THRESHOLD REACHED** (+Crown Calvin, Pavement Poet, Hustle Hayes, Cream City Killer, Frontline Fury, Grind Mode, Smoke Out, Spotlight Sage, Scheme Genius, Crowd Conductor, Bag Em Up, Velocity Vinny) | 120 |
+
+**Threshold hit 2026-08-31 (wave 2).** The set is LoRA-ready per the plan above. Wave 2 also proved the zero-base64 generation path: `reference_images` as prod sprite URLs + `style_image_url` = `/sprites/style-ref-house-96.png` (deployed anchor). ~71 legacy battlers remain for post-LoRA batch regeneration.

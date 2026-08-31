@@ -51,3 +51,14 @@
 3. Grade against docs/design/flyer-system/DESIGN_LANGUAGE.md — portraits fill frames, Anton names, pixel accents, corner colors, drill-down law (every battler face/name links to their profile).
 4. Restyle the worst using the shared kit: MatchupMasthead / BattleFlyer / CrowdStrip / BattlerHero / fighter-card pattern / .fs CSS layer.
 5. `npm run build` in ai-battlerap → verify in Playwright → commit → push `feat/flyer-system:master` → update this ledger.
+
+## Iteration 5 — 2026-08-31 day 2 (ONE METER + portrait fill + card fillers)
+| Surface | Grade | Notes |
+|---|---|---|
+| ALL meters app-wide | → **unified** | StatGauge (dossier cell gauge) is THE meter: dashboard attrs, onboarding review/success, tale of the tape + battle StatRow + MatchupPreview (mirrored), PostBattleSummary, badge progress, stress/grudge/rematch (severity cells), fan split, crowd perception (green YOU vs red THEM). Deleted dead: StatBar, IntensityMeter, CareerStatsPanel. Replay avg+peak bars stay (different instrument). |
+| portrait squares app-wide | → **fill-frame** | BattlerAvatar rebuilt square+fill; onboarding face grid/review/success/welcome; dashboard recent rows; landing tiles; MatchupResult corners (mic-emoji placeholder killed — no-mics law). |
+| /battler/[id] card | A- → **A+** | Codex-collab modules: THE BAG plate, style tags + FIGHTING OUT OF + wire handle, RIVALRY FILE (hostility cells), FORM last-5 tiles + bodies/rounds/haymakers + CAREER HIGH ticket under the radar, league column = league plate + PRESS HEAT (RIDES/HATES lean + latest angle) + RECENT OUTINGS ledger (drill-down). Tabs moved under masthead; identity/bio/accolades folded into OVERVIEW; career chips fill radar rail. |
+
+## Port/dev truth (2026-08-31)
+- localhost:3000 now serves ai-battlerap (the ROOT tree's stale server was squatting it — killed). Next dev-lock: one server per dir; kill the PID in the "Another next dev server is already running" banner before rebinding.
+- PixelLab likeness generation is now URL-based: reference_images accepts prod sprite URLs + style_image_url = /sprites/style-ref-house-96.png (deployed anchor). No more hand-carried base64.
