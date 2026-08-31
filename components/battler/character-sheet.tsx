@@ -184,18 +184,20 @@ export function CharacterSheet({
   return (
     <div className="fs fs-sheet">
       <div className="fs-bigport fs-ticks">
-          {cityBackdrop && (
-            <img
-              className="fs-bg"
-              src={cityBackdrop}
-              alt=""
-              onError={(e) => {
-                ;(e.currentTarget as HTMLImageElement).style.display = "none"
-              }}
-            />
-          )}
-          {cityName && <span className="fs-cityback">{cityName}</span>}
-          <img className="fs-pf" src={shownPortrait} alt={name} style={portraitFillStyle(shownPortrait, { fit: "width", targetW: 0.96 })} />
+          <div className="fs-portwrap">
+            {cityBackdrop && (
+              <img
+                className="fs-bg"
+                src={cityBackdrop}
+                alt=""
+                onError={(e) => {
+                  ;(e.currentTarget as HTMLImageElement).style.display = "none"
+                }}
+              />
+            )}
+            {cityName && <span className="fs-cityback">{cityName}</span>}
+            <img className="fs-pf" src={shownPortrait} alt={name} style={portraitFillStyle(shownPortrait, { fit: "width", targetW: 0.96 })} />
+          </div>
           <div className="fs-cap">
             {variants.length > 0 && (
               <div className="fs-variants">

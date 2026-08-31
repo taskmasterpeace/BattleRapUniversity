@@ -195,7 +195,7 @@
 }
 
 /* ============================================================
-   THE FLYER SYSTEM — component layer (v1.3)
+   THE FLYER SYSTEM — component layer (v1.4)
    Spec: docs/design/flyer-system/DESIGN_LANGUAGE.md
    ============================================================ */
 .fs {
@@ -256,12 +256,17 @@
 /* --- character sheet --- */
 .fs-sheet{display:grid;grid-template-columns:clamp(300px,34%,420px) 1fr;gap:16px}
 @media(max-width:880px){.fs-sheet{grid-template-columns:1fr}}
-.fs-bigport{position:relative;border-radius:14px;overflow:hidden;border:1px solid var(--fs-line);height:min(76vh,720px);min-height:540px;align-self:start;position:sticky;top:16px;background:#0D0D10}
+.fs-bigport{position:relative;border-radius:14px;overflow:hidden;border:1px solid var(--fs-line);height:min(76vh,720px);min-height:540px;align-self:start;position:sticky;top:16px;background:#0D0D10;display:flex;flex-direction:column}
 @media(max-width:880px){.fs-bigport{position:relative;top:0;height:min(70vh,640px)}}
+.fs-bigport::after{content:none} /* superseded by .fs-portwrap::after (cap is in-flow now) */
+.fs-portwrap{position:relative;flex:1;min-height:0;overflow:hidden}
+.fs-portwrap::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,15,18,.08) 45%,rgba(15,15,18,.55));pointer-events:none;z-index:2}
+.fs-portwrap .fs-pf{z-index:1}
+.fs-bigport .fs-cap{position:static;padding:14px 16px 16px;background:#101014;border-top:1px solid var(--fs-line)}
 .fs-bigport .fs-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;transform:scale(1.5);transform-origin:center 28%;image-rendering:pixelated;opacity:.46;z-index:0}
 .fs-bigport::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,15,18,.1) 40%,rgba(15,15,18,.92));z-index:1}
 .fs-bigport .fs-pf{z-index:3}
-.fs-bigport .fs-cap{position:absolute;left:0;right:0;bottom:0;padding:16px;z-index:4}
+/* cap is in normal flow below the art area (see .fs-portwrap) */
 .fs-bigport .fs-cap .nm{font-family:var(--font-poster);font-size:clamp(32px,3.6vw,50px);line-height:.9;text-transform:uppercase;color:var(--fs-ink);text-shadow:0 3px 12px rgba(0,0,0,.9),0 1px 2px rgba(0,0,0,.85);overflow-wrap:anywhere;margin:0}
 .fs-bigport .fs-cap .r{display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap}
 .fs-bigport .fs-cap .t{font-family:var(--font-display);font-weight:700;font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--fs-mut);border:1px solid var(--fs-line2);padding:5px 9px;border-radius:6px;background:rgba(15,15,18,.5)}
