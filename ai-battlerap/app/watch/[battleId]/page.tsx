@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import SpectatorReplay, { type ReplayRound, type SpectatorSide } from '@/components/watch/SpectatorReplay';
+import { venueForLeague } from '@/lib/crowd-venue';
 import TaleOfTheTape from '@/components/watch/TaleOfTheTape';
 import JudgeScorecard from '@/components/battle/JudgeScorecard';
 
@@ -226,6 +227,7 @@ export default async function SpectatorPage({
           rounds={replayRounds}
           winnerId={battle.winner_battler_id}
           decision={decisionLabel(battle.verdict, battle.decision_type)}
+          venue={venueForLeague(battle.league?.name)}
         />
 
         {/* THE ROOM vs THE TAPE — battle rap's two audiences. The room reacted

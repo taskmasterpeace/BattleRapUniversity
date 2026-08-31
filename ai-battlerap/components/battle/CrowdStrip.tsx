@@ -1,17 +1,21 @@
 'use client';
 
-// THE ROOM — three rows deep, exactly as the owner drew it up (2026-08-31):
-// a front row, a row behind them, and a dark row in the background. Faces come
-// from the chunky house crowd family (public/sprites/crowd/{hype,watch,
-// unimpressed,boo}) generated to match the owner's reference: overlapping
-// shoulders, arms up, screaming — or dead silent, depending on the score.
-// Deterministic per seed so SSR/CSR agree and a round always shows its room.
-import family from '@/lib/crowd-family.json';
+// THE ROOM — three rows deep (owner's layout: front row / row behind /
+// background row), drawn from the tagged audience family. Every member
+// carries mood + demo (urban / non_urban / foreign) + gender, so different
+// venues pull different crowds — an URL-coded room doesn't look like a
+// KOTD-coded room. Deterministic per seed so SSR/CSR agree.
+import familyRaw from '@/lib/crowd-family.json';
+import { VENUE_MIX, type Venue } from '@/lib/crowd-venue';
 
-type Mood = keyof typeof family;
+type Member = { src: string; mood: string; demo: string; gender: string };
+const FAMILY = familyRaw as Member[];
+
+export type { Venue };
+export { venueForLeague } from '@/lib/crowd-venue';
 
 /** Pool of moods drawn per head, weighted by the crowd score. */
-function poolFor(score: number): Mood[] {
+function poolFor(score: number): string[] {
   if (score >= 70) return ['hype', 'hype', 'hype', 'hype', 'watch'];
   if (score >= 45) return ['watch', 'watch', 'hype', 'watch', 'unimpressed'];
   if (score >= 25) return ['unimpressed', 'watch', 'unimpressed', 'watch', 'boo'];
@@ -40,21 +44,43 @@ interface CrowdStripProps {
   score: number;
   /** stable seed (battleId + round) so the same room shows every visit */
   seed: string;
+  /** which crowd shows up — pass venueForLeague(league.name) */
+  venue?: Venue;
   label?: string;
-  /** px height of the strip */
   height?: number;
   /** heads in the FRONT row (other rows derive) */
   perRow?: number;
 }
 
-export default function CrowdStrip({ score, seed, label, height = 150, perRow = 7 }: CrowdStripProps) {
-  const rand = rng(`${seed}|${Math.round(score / 5)}`);
+export default function CrowdStrip({
+  score,
+  seed,
+  venue = 'urban',
+  label,
+  height = 150,
+  perRow = 7,
+}: CrowdStripProps) {
+  const rand = rng(`${seed}|${Math.round(score / 5)}|${venue}`);
   const pool = poolFor(score);
+  const mix = VENUE_MIX[venue] ?? VENUE_MIX.urban;
+
+  const pickDemo = (): string => {
+    const r = rand();
+    let acc = 0;
+    for (const [demo, w] of Object.entries(mix)) {
+      acc += w;
+      if (r <= acc) return demo;
+    }
+    return 'urban';
+  };
 
   const pick = (): string => {
     const mood = pool[Math.floor(rand() * pool.length)];
-    const files = (family as Record<string, string[]>)[mood] ?? (family as Record<string, string[]>).watch;
-    return files[Math.floor(rand() * files.length)];
+    const demo = pickDemo();
+    let candidates = FAMILY.filter((m) => m.mood === mood && m.demo === demo);
+    if (candidates.length === 0) candidates = FAMILY.filter((m) => m.mood === mood);
+    if (candidates.length === 0) candidates = FAMILY;
+    return candidates[Math.floor(rand() * candidates.length)].src;
   };
 
   // Three rows: background (dark, small, dense) → middle (dimmed) → front (full).

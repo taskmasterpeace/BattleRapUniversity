@@ -9,6 +9,7 @@ import { RoundResultsBreakdown } from '@/components/battle/RoundResultsBreakdown
 import { toast } from '@/components/ui/Toast';
 import MatchupMasthead, { battleFace } from '@/components/battle/MatchupMasthead';
 import CrowdStrip from '@/components/battle/CrowdStrip';
+import { venueForLeague } from '@/lib/crowd-venue';
 
 export default function RoundResultsPage() {
   const router = useRouter();
@@ -271,6 +272,7 @@ export default function RoundResultsPage() {
           <CrowdStrip
             score={Math.max(playerRound.crowd_reaction ?? 0, aiRound.crowd_reaction ?? 0)}
             seed={`${battleId}-r${roundNum}`}
+            venue={venueForLeague(battle.league?.name)}
             label={`THE ROOM · YOU ${Math.round(playerRound.crowd_reaction ?? 0)}% — ${(battle.ai_battler?.stage_name || 'THEM').toUpperCase()} ${Math.round(aiRound.crowd_reaction ?? 0)}%`}
           />
         </div>
