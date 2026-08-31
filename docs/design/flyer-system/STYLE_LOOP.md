@@ -62,3 +62,11 @@
 ## Port/dev truth (2026-08-31)
 - localhost:3000 now serves ai-battlerap (the ROOT tree's stale server was squatting it — killed). Next dev-lock: one server per dir; kill the PID in the "Another next dev server is already running" banner before rebinding.
 - PixelLab likeness generation is now URL-based: reference_images accepts prod sprite URLs + style_image_url = /sprites/style-ref-house-96.png (deployed anchor). No more hand-carried base64.
+
+## Iteration 6 — 2026-08-31 (AI Roster Editor + culture taxonomy)
+| Surface | Grade | Notes |
+|---|---|---|
+| /admin/roster | NEW → **A-** | AI roster editor: search/filters (gender, coding, missing-data), per-row drawer editing stage name (w/ collision 409), gender, CODING, appearance identity, persona FACETS, style tags, all attributes, ELO. Missing-data counters drive the cleanup work. 150-row render cap. |
+
+**CODING taxonomy (researched, replaces "urban/non-urban" for battlers):** which room claims them — STREET (raw/believability-first, URL-coded) · CRAFT (technical/backpack, KOTD-coded) · CROSSOVER · OVERSEAS (foreign-language/international). Personality, not race. Stored at `battlers.identity.coding`. Crowd demo tags (urban/non_urban/foreign) stay as VENUE visuals — different axis.
+**FACETS:** `identity.facets` string[] — real-culture persona lanes (Christian, LGBTQ, Ex-Con, Veteran, Sober…) for angles/storylines. Owner-curated in the editor.

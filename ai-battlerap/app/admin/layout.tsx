@@ -24,6 +24,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             >
               Real Battlers
             </Link>
+            <Link
+              href="/admin/roster"
+              className="text-zinc-400 hover:text-[#ff8c42] transition-colors"
+            >
+              AI Roster
+            </Link>
             <Link href="/admin/roles" className="text-zinc-400 hover:text-[#ff8c42] transition-colors">
               Roles
             </Link>
