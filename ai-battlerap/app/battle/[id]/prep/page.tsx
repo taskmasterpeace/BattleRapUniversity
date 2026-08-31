@@ -48,11 +48,11 @@ type Battle = {
 
 // Brand palette only — warm hues + neutrals. No purple, no stray blue.
 const FOCUS_OPTIONS = [
-  { value: 'research', label: 'RESEARCH', icon: 'search' as const, color: 'bg-amber-500/15 text-amber-400 border-amber-500/60', chipBg: 'bg-amber-500/25 border-amber-400', description: 'Angles + unlock scouting intel' },
-  { value: 'writing', label: 'WRITING', icon: 'pen' as const, color: 'bg-[#ff8c42]/15 text-[#ff8c42] border-[#ff8c42]/60', chipBg: 'bg-[#ff8c42]/25 border-[#ff8c42]', description: 'Bars & wordplay' },
-  { value: 'performance', label: 'PERFORMANCE', icon: 'stage' as const, color: 'bg-red-500/15 text-red-400 border-red-500/60', chipBg: 'bg-red-500/25 border-red-400', description: 'Delivery & presence' },
-  { value: 'life', label: 'LIFE', icon: 'home' as const, color: 'bg-green-500/15 text-green-400 border-green-500/60', chipBg: 'bg-green-500/25 border-green-400', description: 'Handle personal' },
-  { value: 'rest', label: 'REST', icon: 'rest' as const, color: 'bg-zinc-700/50 text-zinc-400 border-zinc-500', chipBg: 'bg-zinc-600/40 border-zinc-400', description: 'Recover & reset' },
+  { value: 'research', label: 'RESEARCH', icon: 'search' as const, color: 'bg-amber-500/15 text-amber-400 border-amber-500/60', chipBg: 'bg-amber-500/25 border-amber-400', description: 'Study their tape — angles + scouting intel' },
+  { value: 'writing', label: 'WRITE', icon: 'pen' as const, color: 'bg-[#ff8c42]/15 text-[#ff8c42] border-[#ff8c42]/60', chipBg: 'bg-[#ff8c42]/25 border-[#ff8c42]', description: 'Pen + memorize the rounds — cuts choke risk' },
+  { value: 'performance', label: 'REHEARSE', icon: 'stage' as const, color: 'bg-red-500/15 text-red-400 border-red-500/60', chipBg: 'bg-red-500/25 border-red-400', description: 'Practice the delivery — cuts stumbles' },
+  { value: 'life', label: 'LIFE', icon: 'home' as const, color: 'bg-green-500/15 text-green-400 border-green-500/60', chipBg: 'bg-green-500/25 border-green-400', description: 'Handle business at home' },
+  { value: 'rest', label: 'REST', icon: 'rest' as const, color: 'bg-zinc-700/50 text-zinc-400 border-zinc-500', chipBg: 'bg-zinc-600/40 border-zinc-400', description: 'Reset — walk in lighter' },
 ];
 
 export default function PrepPage({ params }: { params: Promise<{ id: string }> }) {
@@ -438,6 +438,53 @@ export default function PrepPage({ params }: { params: Promise<{ id: string }> }
 
         {/* Scouting Report — research days unlock opponent intel */}
         <ScoutingReport battleId={id} refreshKey={scoutRefresh} />
+
+        {/* THE CAMP PIPELINE — how a battle actually gets built (research →
+            write → memorize → practice), with the real mechanics under each
+            phase. The calendar below paints days into these phases. */}
+        <div className="bg-[#101114] border-2 border-[#3a3d44] p-5 md:p-6 mb-6 md:mb-8">
+          <h3 className="font-display font-black text-sm uppercase tracking-[0.25em] text-zinc-500 mb-4">
+            ◤ THE CAMP — HOW A BATTLE GETS BUILT
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
+            {[
+              {
+                n: '01', name: 'RESEARCH', c: 'text-amber-400 border-amber-500/50',
+                what: 'Study their tape. Unlocks scouting intel + sharpens your angles (creativity/lyricism spillover).',
+                note: 'Some battlers skip this lane and pull from their own life instead — realness over research.',
+                days: prepBlocks.filter((b) => b.focus === 'research').length,
+              },
+              {
+                n: '02', name: 'WRITE', c: 'text-[#ff8c42] border-[#ff8c42]/50',
+                what: 'Pen the rounds, then get them IN YOUR BODY. Boosts writing attributes and every written day cuts choke risk (memorization).',
+                note: 'Walking in with nothing written is how chokes happen.',
+                days: prepBlocks.filter((b) => b.focus === 'writing').length,
+              },
+              {
+                n: '03', name: 'REHEARSE', c: 'text-red-400 border-red-500/50',
+                what: 'Run-throughs. Boosts stage presence/delivery and cuts stumble risk — polish the performance.',
+                note: 'REST relieves stress before battle night; LIFE keeps home steady.',
+                days: prepBlocks.filter((b) => b.focus === 'performance').length,
+              },
+            ].map((p) => (
+              <div key={p.n} className={`border-2 ${p.c.split(' ')[1]} bg-[#17181C] p-4 relative`}>
+                <div className="flex items-baseline justify-between mb-1.5">
+                  <span className={`font-mono text-[9px] tracking-[0.3em] ${p.c.split(' ')[0]}`}>
+                    {p.n} · {p.name}
+                  </span>
+                  <span className={`font-display font-black text-lg ${p.c.split(' ')[0]}`}>
+                    {p.days}<span className="text-zinc-600 text-xs">d</span>
+                  </span>
+                </div>
+                <p className="text-[11px] text-zinc-300 leading-snug">{p.what}</p>
+                <p className="text-[10px] text-zinc-600 leading-snug mt-1.5 uppercase tracking-wide">{p.note}</p>
+              </div>
+            ))}
+          </div>
+          <p className="font-mono text-[9px] uppercase tracking-[0.25em] text-zinc-600">
+            RESEARCH → WRITE → MEMORIZE → PRACTICE — PAINT THE DAYS BELOW · REST {prepBlocks.filter((b) => b.focus === 'rest').length}d · LIFE {prepBlocks.filter((b) => b.focus === 'life').length}d
+          </p>
+        </div>
 
         {/* Prep Schedule — pick a focus, paint the days */}
         <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-6 md:p-8 mb-6 md:mb-8">
