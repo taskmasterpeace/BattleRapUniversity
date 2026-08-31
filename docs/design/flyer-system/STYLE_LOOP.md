@@ -70,3 +70,11 @@
 
 **CODING taxonomy (researched, replaces "urban/non-urban" for battlers):** which room claims them — STREET (raw/believability-first, URL-coded) · CRAFT (technical/backpack, KOTD-coded) · CROSSOVER · OVERSEAS (foreign-language/international). Personality, not race. Stored at `battlers.identity.coding`. Crowd demo tags (urban/non_urban/foreign) stay as VENUE visuals — different axis.
 **FACETS:** `identity.facets` string[] — real-culture persona lanes (Christian, LGBTQ, Ex-Con, Veteran, Sober…) for angles/storylines. Owner-curated in the editor.
+
+## Iteration 7 — 2026-08-31 (SYSTEM-WIDE TEXT SCALE + round page obsession)
+| Surface | Grade | Notes |
+|---|---|---|
+| ALL text | → **+2px / +12.5%** | Owner: "system wide the text is too small." html root 16→18px (all rem sizes), all 480 arbitrary micro classes +2px (8→10, 9→11, 10→12, 11→13) across 71 files, .fs CSS px sizes lifted, id plates widened (no THE BAG clip). New floor: nothing under 10px. |
+| /battle/[id]/round/N/results | B → **A** | Flyer rebuild: tilted Anton verdict stamp (win green/lose red/tie gold frames), THE SEGMENTS as red-corner vs blue-corner bars w/ Anton scores + corner legend, stat mini-plates (30px Anton values, per-stat edges), house content chips + pixel multipliers + 28px FINAL MULTIPLIER, pressure/angle chips upsized. |
+
+**TEXT LAW:** micro-labels never below 10px; mono meta 12-13px; the root is 18px — when adding new UI use the post-bump sizes, don't reintroduce 8-9px.
