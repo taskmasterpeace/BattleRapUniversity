@@ -1,8 +1,10 @@
 'use client';
 
+import Link from 'next/link';
 import { portraitFillStyle } from '@/lib/sprite-crops';
 
 interface NextBattleLite {
+  opponentId?: string;
   opponentName?: string;
   opponentAvatar?: string | null;
   league?: string;
@@ -109,13 +111,29 @@ export default function BattlerHero({
               <img src={portrait} alt="" style={portraitFillStyle(portrait, { targetH: 1.08 })} />
             </span>
             <span className="vs">VS</span>
-            <span className="f b">
-              {nextBattle.opponentAvatar && (
-                <img src={nextBattle.opponentAvatar} alt="" style={portraitFillStyle(nextBattle.opponentAvatar, { targetH: 1.08 })} />
-              )}
-            </span>
+            {nextBattle.opponentId ? (
+              <Link href={`/battler/${nextBattle.opponentId}`} className="f b hover:opacity-85 transition-opacity" title={`${nextBattle.opponentName} — profile`}>
+                {nextBattle.opponentAvatar && (
+                  <img src={nextBattle.opponentAvatar} alt="" style={portraitFillStyle(nextBattle.opponentAvatar, { targetH: 1.08 })} />
+                )}
+              </Link>
+            ) : (
+              <span className="f b">
+                {nextBattle.opponentAvatar && (
+                  <img src={nextBattle.opponentAvatar} alt="" style={portraitFillStyle(nextBattle.opponentAvatar, { targetH: 1.08 })} />
+                )}
+              </span>
+            )}
           </div>
-          <div className="opp">vs {nextBattle.opponentName || 'TBA'}</div>
+          <div className="opp">
+            {nextBattle.opponentId ? (
+              <Link href={`/battler/${nextBattle.opponentId}`} className="hover:text-[#E7B23C] transition-colors">
+                vs {nextBattle.opponentName || 'TBA'}
+              </Link>
+            ) : (
+              <>vs {nextBattle.opponentName || 'TBA'}</>
+            )}
+          </div>
           <div className="meta">{[nextBattle.league, nextBattle.dateLabel].filter(Boolean).join(' · ')}</div>
           <div className="prep">
             <div className="t">

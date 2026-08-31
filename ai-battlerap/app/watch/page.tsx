@@ -81,7 +81,7 @@ export default async function WatchPage() {
       .from('battles')
       .select(
         `id, league_id, scheduled_at, is_world,
-         league:leagues(id, name),
+         league:leagues(id, name, logo_url),
          a:battlers!battles_battler_player_id_fkey(${battlerJoin}),
          b:battlers!battles_battler_ai_id_fkey(${battlerJoin})`
       )
@@ -94,7 +94,7 @@ export default async function WatchPage() {
       .from('battles')
       .select(
         `id, league_id, scheduled_at, created_at, completed_at, is_world, verdict, decision_type, winner_battler_id,
-         league:leagues(id, name),
+         league:leagues(id, name, logo_url),
          a:battlers!battles_battler_player_id_fkey(${battlerJoin}),
          b:battlers!battles_battler_ai_id_fkey(${battlerJoin})`
       )
@@ -115,6 +115,7 @@ export default async function WatchPage() {
       id: row.id,
       leagueId: row.league?.id ?? row.league_id,
       leagueName: row.league?.name ?? 'UNKNOWN LEAGUE',
+      leagueLogo: row.league?.logo_url ?? null,
       scheduledAt: row.scheduled_at,
       timeLabel: upcomingLabel(row.scheduled_at, now),
       isWorld: row.is_world,
@@ -130,6 +131,7 @@ export default async function WatchPage() {
       id: row.id,
       leagueId: row.league?.id ?? row.league_id,
       leagueName: row.league?.name ?? 'UNKNOWN LEAGUE',
+      leagueLogo: row.league?.logo_url ?? null,
       verdict: row.verdict,
       agoLabel: agoLabel(row.completed_at ?? row.created_at, now),
       winnerId: row.winner_battler_id,
@@ -138,12 +140,15 @@ export default async function WatchPage() {
     }));
 
   // League filter options: every league that actually appears on the page.
-  const leagueMap = new Map<string, string>();
+  const leagueMap = new Map<string, { name: string; logo: string | null }>();
   for (const c of [...upcoming, ...completed]) {
-    leagueMap.set(c.leagueId, c.leagueName);
+    leagueMap.set(c.leagueId, {
+      name: c.leagueName,
+      logo: (c as any).leagueLogo ?? leagueMap.get(c.leagueId)?.logo ?? null,
+    });
   }
   const leagues = Array.from(leagueMap.entries())
-    .map(([id, name]) => ({ id, name }))
+    .map(([id, v]) => ({ id, name: v.name, logo: v.logo }))
     .sort((x, y) => x.name.localeCompare(y.name));
 
   return (

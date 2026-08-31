@@ -20,6 +20,7 @@ export type UpcomingCard = {
   id: string;
   leagueId: string;
   leagueName: string;
+  leagueLogo?: string | null;
   scheduledAt: string;
   timeLabel: string;
   isWorld: boolean;
@@ -31,6 +32,7 @@ export type CompletedCard = {
   id: string;
   leagueId: string;
   leagueName: string;
+  leagueLogo?: string | null;
   verdict: string | null;
   agoLabel: string;
   winnerId: string | null;
@@ -61,7 +63,9 @@ function Avatar({ side, size }: { side: CardSide; size: number }) {
 function FighterBlock({ side, align }: { side: CardSide; align: 'left' | 'right' }) {
   return (
     <div className={`flex flex-col items-center gap-1.5 min-w-0 ${align === 'left' ? 'sm:items-start' : 'sm:items-end'}`}>
-      <Avatar side={side} size={72} />
+      <Link href={`/battler/${side.id}`} className="hover:opacity-85 transition-opacity" title={`${side.name} — profile`}>
+        <Avatar side={side} size={72} />
+      </Link>
       <Link
         href={`/battler/${side.id}`}
         className={`font-display font-black uppercase tracking-tight text-sm md:text-base leading-tight hover:text-[#ff8c42] transition-colors max-w-full truncate text-center ${align === 'left' ? 'sm:text-left' : 'sm:text-right'}`}
@@ -112,9 +116,10 @@ export default function WatchHub({
 }: {
   upcoming: UpcomingCard[];
   completed: CompletedCard[];
-  leagues: { id: string; name: string }[];
+  leagues: { id: string; name: string; logo?: string | null }[];
 }) {
   const [filter, setFilter] = useState<string>('all');
+  const activeLeague = filter === 'all' ? null : leagues.find((l) => l.id === filter) ?? null;
 
   const shownUpcoming = useMemo(
     () => (filter === 'all' ? upcoming : upcoming.filter((c) => c.leagueId === filter)),
@@ -167,6 +172,30 @@ export default function WatchHub({
         </select>
       </div>
 
+      {/* Selected-league banner — the crest deserves the spotlight when you pick a room */}
+      {activeLeague && (
+        <div className="fs mb-8 flex items-center gap-4 bg-[#101114] border-2 border-[#3a3d44] px-5 py-4">
+          {activeLeague.logo && (
+            <img
+              src={activeLeague.logo}
+              alt=""
+              className="h-14 w-14 object-contain [image-rendering:pixelated] drop-shadow-[0_2px_6px_rgba(0,0,0,0.7)]"
+            />
+          )}
+          <div className="min-w-0">
+            <p
+              className="uppercase text-zinc-100 truncate"
+              style={{ fontFamily: 'var(--font-poster)', fontSize: 'clamp(20px,4vw,30px)', lineHeight: 0.95, textShadow: '2px 2px 0 #000' }}
+            >
+              {activeLeague.name}
+            </p>
+            <p className="font-mono text-[9px] uppercase tracking-[0.3em] text-zinc-500 mt-1">
+              LEAGUE CARD · {shownUpcoming.length} BOOKED · {shownCompleted.length} VERDICTS
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* ── UPCOMING ── */}
       <section className="mb-14">
         <div className="flex items-baseline justify-between mb-4">
@@ -187,26 +216,31 @@ export default function WatchHub({
           </div>
         ) : (
           <>
-            {/* Headliner — the top booked bout gets the full event-poster flyer */}
+            {/* Headliner — the top booked bout gets the full event-poster flyer.
+                Faces + names drill into battler profiles; the footer opens the tape. */}
             {(() => {
               const head = shownUpcoming[0];
               const under = shownUpcoming.slice(1, 4);
               return (
-                <Link href={`/watch/${head.id}`} className="block mb-6 hover:opacity-95 transition-opacity">
+                <div className="mb-6">
                   <BattleFlyer
                     eventTitle={head.timeLabel === 'TONIGHT' ? "TONIGHT'S HEADLINER" : 'THE HEADLINER'}
                     leagueLine={`${head.leagueName.toUpperCase()} · ${head.timeLabel}`}
-                    a={{ name: head.a.name, portrait: head.a.avatarUrl ?? undefined }}
-                    b={{ name: head.b.name, portrait: head.b.avatarUrl ?? undefined }}
+                    leagueLogo={head.leagueLogo ?? undefined}
+                    a={{ id: head.a.id, name: head.a.name, portrait: head.a.avatarUrl ?? undefined }}
+                    b={{ id: head.b.id, name: head.b.name, portrait: head.b.avatarUrl ?? undefined }}
                     undercard={under.map((u) => ({
                       a: u.a.name,
                       b: u.b.name,
+                      aId: u.a.id,
+                      bId: u.b.id,
                       aPortrait: u.a.avatarUrl ?? undefined,
                       bPortrait: u.b.avatarUrl ?? undefined,
                     }))}
                     footerLine="▸ TALE OF THE TAPE"
+                    footerHref={`/watch/${head.id}`}
                   />
-                </Link>
+                </div>
               );
             })()}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

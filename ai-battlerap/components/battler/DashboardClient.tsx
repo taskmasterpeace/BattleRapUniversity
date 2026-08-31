@@ -320,6 +320,7 @@ export default function DashboardClient({
                     Math.ceil((new Date(nextBattle.scheduled_at).getTime() - Date.now()) / 86400000)
                   );
                   return {
+                    opponentId: nextBattle.ai_battler?.id,
                     opponentName: nextBattle.ai_battler?.stage_name,
                     opponentAvatar: nextBattle.ai_battler?.avatar_url,
                     league: nextBattle.league?.name,
@@ -747,13 +748,12 @@ export default function DashboardClient({
               {recentBattles.map((battle: any) => {
                 const isWinner = battle.winner_battler_id === battler.id;
                 return (
-                  <Link
+                  <div
                     key={battle.id}
-                    href={`/battle/${battle.id}`}
-                    className="block p-6 bg-[#2d2f35] border-2 border-[#3a3d44] hover:border-[#ff8c42] transition"
+                    className="p-6 bg-[#2d2f35] border-2 border-[#3a3d44] hover:border-[#ff8c42] transition"
                   >
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-3 mb-3">
                           <span
                             className={`px-4 py-2 text-sm font-display font-black uppercase tracking-wider ${
@@ -778,18 +778,35 @@ export default function DashboardClient({
                             {battle.league?.name}
                           </span>
                         </div>
-                        <p className="text-2xl font-display font-black uppercase tracking-tighter text-zinc-100 mb-2">
-                          VS {battle.ai_battler?.stage_name}
-                        </p>
+                        {/* Opponent drills into THEIR profile; the row's VIEW opens the battle */}
+                        <Link
+                          href={battle.ai_battler?.id ? `/battler/${battle.ai_battler.id}` : `/battle/${battle.id}`}
+                          className="inline-flex items-center gap-3 group/opp mb-2"
+                          title={`${battle.ai_battler?.stage_name} — profile`}
+                        >
+                          {battle.ai_battler?.avatar_url && (
+                            <img
+                              src={battle.ai_battler.avatar_url}
+                              alt=""
+                              className="w-10 h-10 object-contain object-bottom [image-rendering:pixelated]"
+                            />
+                          )}
+                          <span className="text-2xl font-display font-black uppercase tracking-tighter text-zinc-100 group-hover/opp:text-[#ff8c42] transition-colors">
+                            VS {battle.ai_battler?.stage_name}
+                          </span>
+                        </Link>
                         <p className="text-xs text-zinc-500 font-display font-display font-black uppercase tracking-wide">
                           {new Date(battle.scheduled_at).toLocaleDateString()}
                         </p>
                       </div>
-                      <div className="text-[#ff8c42] text-sm font-display font-black uppercase tracking-wider">
+                      <Link
+                        href={`/battle/${battle.id}`}
+                        className="shrink-0 px-4 py-3 border-2 border-[#3a3d44] hover:border-[#ff8c42] text-[#ff8c42] text-sm font-display font-black uppercase tracking-wider transition-colors"
+                      >
                         VIEW →
-                      </div>
+                      </Link>
                     </div>
-                  </Link>
+                  </div>
                 );
               })}
             </div>

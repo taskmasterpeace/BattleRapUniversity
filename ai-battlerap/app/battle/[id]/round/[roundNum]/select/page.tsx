@@ -234,7 +234,6 @@ export default function RoundSelectPage() {
               tier: battle.ai_battler?.tier,
             }}
             subLine={battle.league?.name ? battle.league.name.toUpperCase() : undefined}
-            linkProfiles={false}
           />
         </div>
       </div>

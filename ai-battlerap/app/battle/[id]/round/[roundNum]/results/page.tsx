@@ -157,17 +157,18 @@ export default function RoundResultsPage() {
           <div className="mb-10">
             <MatchupMasthead
               a={{
+                id: battle.player_battler?.id,
                 name: battle.player_battler?.stage_name || 'YOU',
                 portrait: battleFace(battle.player_battler),
                 tier: battle.player_battler?.tier,
               }}
               b={{
+                id: battle.ai_battler?.id,
                 name: battle.ai_battler?.stage_name || 'OPPONENT',
                 portrait: battleFace(battle.ai_battler),
                 tier: battle.ai_battler?.tier,
               }}
               subLine={battle.league?.name ? `${battle.league.name.toUpperCase()} · ROUND ${roundNum}` : `ROUND ${roundNum}`}
-              linkProfiles={false}
             />
           </div>
 
@@ -248,18 +249,19 @@ export default function RoundResultsPage() {
         <div className="mb-8">
           <MatchupMasthead
             a={{
+              id: battle.player_battler?.id,
               name: battle.player_battler?.stage_name || 'YOU',
               portrait: battleFace(battle.player_battler),
               won: winner === 'player',
             }}
             b={{
+              id: battle.ai_battler?.id,
               name: battle.ai_battler?.stage_name || 'OPPONENT',
               portrait: battleFace(battle.ai_battler),
               won: winner === 'ai',
             }}
             score={`${Number(playerRound.average_score ?? 0).toFixed(1)}–${Number(aiRound.average_score ?? 0).toFixed(1)}`}
             subLine={battle.league?.name ? battle.league.name.toUpperCase() : undefined}
-            linkProfiles={false}
           />
         </div>
 

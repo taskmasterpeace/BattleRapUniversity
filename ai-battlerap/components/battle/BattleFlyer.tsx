@@ -1,8 +1,10 @@
 "use client"
 
+import Link from "next/link"
 import { portraitFillStyle } from "@/lib/sprite-crops"
 
 export interface FlyerFighter {
+  id?: string // battler id — face + name link to the profile (drill-down law)
   name: string
   portrait?: string
   silhouette?: boolean // unrevealed opponent — render blacked-out
@@ -12,6 +14,8 @@ export interface FlyerFighter {
 export interface UndercardBout {
   a: string
   b: string
+  aId?: string
+  bId?: string
   aPortrait?: string
   bPortrait?: string
 }
@@ -19,24 +23,46 @@ export interface UndercardBout {
 interface BattleFlyerProps {
   eventTitle: string
   leagueLine?: string // pixel strapline above the title
+  leagueLogo?: string // league crest sprite, shown above the strapline
   a: FlyerFighter
   b: FlyerFighter
   undercard?: UndercardBout[]
   footerLine?: string // "FRI · DEC 5 · 8PM | THE ANNEX, ATLANTA | PPV + TICKETS"
+  footerHref?: string // makes the footer line a link (e.g. the tale of the tape)
   sponsorLine?: string
   mono?: boolean // muted split for unannounced cards
 }
 
 function FighterCol({ f, tag }: { f: FlyerFighter; tag: string }) {
   const src = f.portrait || "/sprites/characters/image_1764146672519/sprite_569.png"
-  return (
-    <div className={`fs-fighter${f.silhouette ? " sil" : ""}`}>
+  const body = (
+    <>
       <div className="frame">
         <img src={src} alt={f.silhouette ? "???" : f.name} style={portraitFillStyle(src, { targetH: 0.98 })} />
       </div>
       <p className="nm">{f.silhouette ? "???" : f.name}</p>
+    </>
+  )
+  return (
+    <div className={`fs-fighter${f.silhouette ? " sil" : ""}`}>
+      {f.id && !f.silhouette ? (
+        <Link href={`/battler/${f.id}`} className="block hover:opacity-90 transition-opacity">
+          {body}
+        </Link>
+      ) : (
+        body
+      )}
       <div className="tag">{f.cornerTag ?? tag}</div>
     </div>
+  )
+}
+
+function UndercardName({ name, id }: { name: string; id?: string }) {
+  if (!id) return <>{name}</>
+  return (
+    <Link href={`/battler/${id}`} className="hover:text-[#E7B23C] transition-colors">
+      {name}
+    </Link>
   )
 }
 
@@ -49,10 +75,12 @@ function FighterCol({ f, tag }: { f: FlyerFighter; tag: string }) {
 export function BattleFlyer({
   eventTitle,
   leagueLine,
+  leagueLogo,
   a,
   b,
   undercard = [],
   footerLine,
+  footerHref,
   sponsorLine,
   mono = false,
 }: BattleFlyerProps) {
@@ -61,7 +89,12 @@ export function BattleFlyer({
       <div className={`split${mono ? " mono" : ""}`} />
       <div className="veil" />
       <div className="in">
-        {leagueLine && <div className="league">◈ {leagueLine} ◈</div>}
+        {(leagueLine || leagueLogo) && (
+          <div className="league" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+            {leagueLogo && <img className="fs-league-crest" src={leagueLogo} alt="" />}
+            {leagueLine && <span>◈ {leagueLine} ◈</span>}
+          </div>
+        )}
         <h2 className="title">{eventTitle}</h2>
         <div className="fs-matchup">
           <FighterCol f={a} tag="RED CORNER" />
@@ -73,13 +106,27 @@ export function BattleFlyer({
             {undercard.map((u, i) => (
               <div className="fs-urow" key={i}>
                 <span className="sil">
-                  {u.aPortrait && <img src={u.aPortrait} alt="" style={portraitFillStyle(u.aPortrait, { targetH: 1.3 })} />}
+                  {u.aPortrait &&
+                    (u.aId ? (
+                      <Link href={`/battler/${u.aId}`} className="absolute inset-0">
+                        <img src={u.aPortrait} alt={u.a} style={portraitFillStyle(u.aPortrait, { targetH: 1.3 })} />
+                      </Link>
+                    ) : (
+                      <img src={u.aPortrait} alt="" style={portraitFillStyle(u.aPortrait, { targetH: 1.3 })} />
+                    ))}
                 </span>
                 <span className="mm">
-                  {u.a} <em>VS</em> {u.b}
+                  <UndercardName name={u.a} id={u.aId} /> <em>VS</em> <UndercardName name={u.b} id={u.bId} />
                 </span>
                 <span className="sil">
-                  {u.bPortrait && <img src={u.bPortrait} alt="" style={portraitFillStyle(u.bPortrait, { targetH: 1.3 })} />}
+                  {u.bPortrait &&
+                    (u.bId ? (
+                      <Link href={`/battler/${u.bId}`} className="absolute inset-0">
+                        <img src={u.bPortrait} alt={u.b} style={portraitFillStyle(u.bPortrait, { targetH: 1.3 })} />
+                      </Link>
+                    ) : (
+                      <img src={u.bPortrait} alt="" style={portraitFillStyle(u.bPortrait, { targetH: 1.3 })} />
+                    ))}
                 </span>
               </div>
             ))}
@@ -88,7 +135,14 @@ export function BattleFlyer({
       </div>
       {(footerLine || sponsorLine) && (
         <div className="foot">
-          {footerLine && <div className="d">{footerLine}</div>}
+          {footerLine &&
+            (footerHref ? (
+              <Link href={footerHref} className="d block hover:text-[#E7B23C] transition-colors">
+                {footerLine}
+              </Link>
+            ) : (
+              <div className="d">{footerLine}</div>
+            ))}
           {sponsorLine && <div className="sp">{sponsorLine}</div>}
         </div>
       )}

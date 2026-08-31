@@ -61,6 +61,11 @@ export default function SpectatorReplay({
           // (peak) is the whole point — it shows who landed a haymaker vs. who was
           // steady-but-flat, the core of the segment-based sim.
           const max = Math.max(r.a.avg, r.b.avg, r.a.peak, r.b.peak, 1) * 1.05;
+          // Haymaker-landed rule: the sim's haymaker flag is a peak ROLL, not proof
+          // of a big moment. Only call it out when it WON the round — a peak that
+          // got topped didn't land. (Chokes show for either battler regardless.)
+          const landedHaymaker =
+            r.a.haymaker && r.winner === 'a' ? a.name : r.b.haymaker && r.winner === 'b' ? b.name : null;
           return (
             <div key={r.roundIndex} className="animate-fade-in" style={{ animationDelay: `${i * 1500}ms` }}>
               <div className="flex justify-between items-center mb-1 gap-2 flex-wrap">
@@ -68,12 +73,12 @@ export default function SpectatorReplay({
                   ROUND {r.roundIndex}
                 </p>
                 <div className="flex gap-3 flex-wrap">
-                  {(r.a.haymaker || r.b.haymaker) && (
+                  {landedHaymaker && (
                     <span
-                      className="font-display font-black text-xs uppercase text-[#ff8c42] animate-haymaker"
+                      className="font-display font-black text-xs uppercase text-[#E7B23C] animate-haymaker"
                       style={{ animationDelay: `${i * 1500 + 600}ms` }}
                     >
-                      💥 HAYMAKER — {r.a.haymaker ? a.name : b.name}
+                      💥 HAYMAKER — {landedHaymaker}
                     </span>
                   )}
                   {(r.a.choke || r.b.choke) && (
