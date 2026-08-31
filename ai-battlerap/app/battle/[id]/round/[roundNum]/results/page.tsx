@@ -8,6 +8,7 @@ import { Battle, BattleWithDetails, BattleRound, BattleSegment } from '@/lib/mod
 import { RoundResultsBreakdown } from '@/components/battle/RoundResultsBreakdown';
 import { toast } from '@/components/ui/Toast';
 import MatchupMasthead, { battleFace } from '@/components/battle/MatchupMasthead';
+import CrowdStrip from '@/components/battle/CrowdStrip';
 
 export default function RoundResultsPage() {
   const router = useRouter();
@@ -262,6 +263,15 @@ export default function RoundResultsPage() {
             }}
             score={`${Number(playerRound.average_score ?? 0).toFixed(1)}–${Number(aiRound.average_score ?? 0).toFixed(1)}`}
             subLine={battle.league?.name ? battle.league.name.toUpperCase() : undefined}
+          />
+        </div>
+
+        {/* THE ROOM — the crowd IS the per-round feedback */}
+        <div className="mb-8">
+          <CrowdStrip
+            score={Math.max(playerRound.crowd_reaction ?? 0, aiRound.crowd_reaction ?? 0)}
+            seed={`${battleId}-r${roundNum}`}
+            label={`THE ROOM · YOU ${Math.round(playerRound.crowd_reaction ?? 0)}% — ${(battle.ai_battler?.stage_name || 'THEM').toUpperCase()} ${Math.round(aiRound.crowd_reaction ?? 0)}%`}
           />
         </div>
 

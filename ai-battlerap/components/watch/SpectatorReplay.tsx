@@ -4,6 +4,7 @@
 // but with zero "YOU" framing: this is for the crowd, not a competitor.
 // Pure CSS animations → renders fine as a server component.
 import MatchupMasthead from '@/components/battle/MatchupMasthead';
+import CrowdStrip from '@/components/battle/CrowdStrip';
 
 export type SpectatorSide = {
   id: string;
@@ -134,6 +135,15 @@ export default function SpectatorReplay({
               <p className="font-mono text-[9px] uppercase tracking-widest text-zinc-600 mt-1">
                 CROWD {r.a.crowd}% / {r.b.crowd}% · PEAKS {r.a.peak.toFixed(1)} / {r.b.peak.toFixed(1)}
               </p>
+              {/* THE ROOM — what the crowd was doing during this round */}
+              <div className="mt-2">
+                <CrowdStrip
+                  score={Math.max(r.a.crowd ?? 0, r.b.crowd ?? 0)}
+                  seed={`${a.id}-${b.id}-r${r.roundIndex}`}
+                  height={84}
+                  perRow={8}
+                />
+              </div>
             </div>
           );
         })}
