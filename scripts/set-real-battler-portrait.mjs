@@ -39,11 +39,25 @@ if (rows.length > 1) {
 const battler = rows[0]
 const slug = battler.stage_name.toLowerCase().replace(/[^a-z0-9]+/g, '-')
 
-// 2. upscale nearest to 512 and save
+// 2. upscale nearest by an INTEGER factor (non-integer scaling wobbles pixel art),
+//    then pad with transparency to the 512px roster canvas
 const outDir = 'public/sprites/characters/real'
 fs.mkdirSync(outDir, { recursive: true })
 const outPath = path.posix.join(outDir, `${slug}.png`)
-await sharp(candidatePath).resize(512, 512, { kernel: 'nearest' }).png().toFile(outPath)
+const srcMeta = await sharp(candidatePath).metadata()
+const factor = Math.max(1, Math.floor(512 / Math.max(srcMeta.width, srcMeta.height)))
+const scaled = { w: srcMeta.width * factor, h: srcMeta.height * factor }
+await sharp(candidatePath)
+  .resize(scaled.w, scaled.h, { kernel: 'nearest' })
+  .extend({
+    top: Math.floor((512 - scaled.h) / 2),
+    bottom: Math.ceil((512 - scaled.h) / 2),
+    left: Math.floor((512 - scaled.w) / 2),
+    right: Math.ceil((512 - scaled.w) / 2),
+    background: { r: 0, g: 0, b: 0, alpha: 0 },
+  })
+  .png()
+  .toFile(outPath)
 
 // 3. register content box in the crop map (measure non-transparent bounds)
 const meta = await sharp(outPath).metadata()
