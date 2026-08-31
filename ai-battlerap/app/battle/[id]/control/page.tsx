@@ -160,7 +160,7 @@ export default function BattleControlPage() {
           />
           {/* Camp readout */}
           <div className="fs mt-5 bg-[#17181C] border-2 border-black px-5 py-4">
-            <p className="font-mono text-[9px] text-zinc-500 uppercase tracking-[0.3em] mb-2.5">
+            <p className="font-mono text-[11px] text-zinc-500 uppercase tracking-[0.3em] mb-2.5">
               ◤ CAMP YOU'RE WALKING IN WITH
             </p>
             <div className="flex gap-5 flex-wrap">
@@ -176,7 +176,7 @@ export default function BattleControlPage() {
                   >
                     {prepSummary[focus] || 0}
                   </div>
-                  <div className="text-[9px] text-zinc-500 font-display font-bold uppercase tracking-wider mt-1">
+                  <div className="text-[11px] text-zinc-500 font-display font-bold uppercase tracking-wider mt-1">
                     {focus === 'writing' ? 'write' : focus === 'performance' ? 'rehearse' : focus}
                   </div>
                 </div>

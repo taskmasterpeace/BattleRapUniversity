@@ -39,7 +39,7 @@ function BattlerSlot({
   const text = corner === 'a' ? 'text-[#ff8c42]' : 'text-blue-400';
   return (
     <div className={`border-2 ${selected ? accent : 'border-dashed border-[#3a3d44]'} bg-[#101114] p-5 min-h-[180px] flex flex-col items-center justify-center relative`}>
-      <p className={`absolute top-2 left-3 font-mono text-[10px] uppercase tracking-widest ${text}`}>{label}</p>
+      <p className={`absolute top-2 left-3 font-mono text-[12px] uppercase tracking-widest ${text}`}>{label}</p>
       {selected ? (
         <>
           <div
@@ -60,11 +60,11 @@ function BattlerSlot({
           </p>
           <div className="flex items-center gap-2 mt-1">
             {selected.is_real && (
-              <span className="px-1.5 py-0.5 bg-[#ff8c42] text-black font-mono text-[8px] font-bold uppercase tracking-widest">✓ VERIFIED</span>
+              <span className="px-1.5 py-0.5 bg-[#ff8c42] text-black font-mono text-[10px] font-bold uppercase tracking-widest">✓ VERIFIED</span>
             )}
-            <span className="font-mono text-[10px] uppercase tracking-widest text-zinc-500">{selected.tier} TIER</span>
+            <span className="font-mono text-[12px] uppercase tracking-widest text-zinc-500">{selected.tier} TIER</span>
           </div>
-          <button onClick={onClear} className="mt-3 text-[10px] font-mono uppercase tracking-widest text-zinc-600 hover:text-red-400 transition">
+          <button onClick={onClear} className="mt-3 text-[12px] font-mono uppercase tracking-widest text-zinc-600 hover:text-red-400 transition">
             ✕ CHANGE
           </button>
         </>
@@ -193,7 +193,7 @@ export default function MatchupPicker({
                 <p className="font-bold uppercase tracking-tight text-xs text-zinc-200 group-hover:text-[#ff8c42] truncate transition-colors">
                   {x.stage_name}
                 </p>
-                <p className="font-mono text-[9px] uppercase tracking-widest text-zinc-600">
+                <p className="font-mono text-[11px] uppercase tracking-widest text-zinc-600">
                   {x.is_real ? <span className="text-[#ff8c42]">✓ VERIFIED</span> : `${x.tier ?? '—'} TIER`}
                 </p>
               </div>

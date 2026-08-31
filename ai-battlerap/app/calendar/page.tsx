@@ -52,7 +52,7 @@ function EventChip({ e }: { e: Event }) {
     <Link
       href={e.href}
       title={e.title}
-      className={`block text-[10px] px-1.5 py-1 leading-tight line-clamp-2 hover:translate-x-[1px] transition-all duration-150 ${
+      className={`block text-[12px] px-1.5 py-1 leading-tight line-clamp-2 hover:translate-x-[1px] transition-all duration-150 ${
         e.mine
           ? 'bg-[#ff8c42] border-l-2 border-[#ff8c42] text-black font-black hover:bg-[#ff9d5c]'
           : `${KIND_STYLE[e.kind]} hover:bg-[#2d2f35]`
@@ -344,7 +344,7 @@ export default async function CalendarPage({
         </div>
 
         {/* Weekday header */}
-        <div className="grid grid-cols-7 gap-1 mb-1 text-[10px] uppercase tracking-widest font-bold text-zinc-500">
+        <div className="grid grid-cols-7 gap-1 mb-1 text-[12px] uppercase tracking-widest font-bold text-zinc-500">
           {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((d) => (
             <div key={d} className="px-2 py-2 text-center">{d}</div>
           ))}
@@ -378,7 +378,7 @@ export default async function CalendarPage({
                     // old "+N more" was a dead label, hiding every event past the
                     // fourth on a busy day. Expanding grows the week's row.
                     <details className="group">
-                      <summary className="text-[10px] text-zinc-500 px-1 cursor-pointer list-none hover:text-[#ff8c42] [&::-webkit-details-marker]:hidden">
+                      <summary className="text-[12px] text-zinc-500 px-1 cursor-pointer list-none hover:text-[#ff8c42] [&::-webkit-details-marker]:hidden">
                         <span className="group-open:hidden">+{dayEvents.length - 4} more</span>
                         <span className="hidden group-open:inline">show less</span>
                       </summary>
@@ -408,7 +408,7 @@ export default async function CalendarPage({
         <aside className="fs mt-8 lg:mt-0">
           <div className="bg-[#101114] border-2 border-black shadow-[4px_4px_0_rgba(0,0,0,.45)]">
             <div className="px-4 pt-4 pb-3 border-b border-[#2E2F35]">
-              <p className="font-mono text-[9px] uppercase tracking-[0.3em] text-[#F5731A]">◤ FIGHT NIGHTS</p>
+              <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-[#F5731A]">◤ FIGHT NIGHTS</p>
               <p
                 className="uppercase text-zinc-100 mt-1"
                 style={{ fontFamily: 'var(--font-poster)', fontSize: 22, lineHeight: 0.95, textShadow: '2px 2px 0 #000' }}
@@ -417,7 +417,7 @@ export default async function CalendarPage({
               </p>
             </div>
             {upcomingBouts.length === 0 ? (
-              <p className="p-4 font-mono text-[10px] uppercase tracking-widest text-zinc-600">
+              <p className="p-4 font-mono text-[12px] uppercase tracking-widest text-zinc-600">
                 NOTHING ON THE BOOKS — THE MATCHMAKERS ARE WORKING
               </p>
             ) : (
@@ -439,11 +439,11 @@ export default async function CalendarPage({
                       )}
                     </span>
                     <span className="min-w-0 flex-1">
-                      <span className="block font-display font-black uppercase text-[11px] leading-tight text-zinc-100 truncate">
+                      <span className="block font-display font-black uppercase text-[13px] leading-tight text-zinc-100 truncate">
                         {bout.mine && <span className="text-[#F5731A]">★ </span>}
-                        {bout.a?.stage_name} <em className="not-italic" style={{ fontFamily: 'var(--font-pixel)', fontSize: 7, color: '#E7B23C' }}>VS</em> {bout.o?.stage_name}
+                        {bout.a?.stage_name} <em className="not-italic" style={{ fontFamily: 'var(--font-pixel)', fontSize: 9, color: '#E7B23C' }}>VS</em> {bout.o?.stage_name}
                       </span>
-                      <span className="block font-mono text-[8px] uppercase tracking-[0.2em] text-zinc-500 mt-0.5 truncate">
+                      <span className="block font-mono text-[10px] uppercase tracking-[0.2em] text-zinc-500 mt-0.5 truncate">
                         {bout.league?.short_code ? `${bout.league.short_code} · ` : ''}{bout.dateLabel}
                       </span>
                     </span>
@@ -461,7 +461,7 @@ export default async function CalendarPage({
             )}
             <Link
               href="/watch"
-              className="block text-center py-2.5 border-t-2 border-black font-display font-black text-[10px] uppercase tracking-[0.25em] text-[#E7B23C] hover:bg-[#E7B23C] hover:text-black transition-colors"
+              className="block text-center py-2.5 border-t-2 border-black font-display font-black text-[12px] uppercase tracking-[0.25em] text-[#E7B23C] hover:bg-[#E7B23C] hover:text-black transition-colors"
             >
               ▸ TONIGHT'S CARD
             </Link>

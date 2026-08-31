@@ -336,7 +336,7 @@ export default function PromotionClient({
             <h2 className="text-lg font-black uppercase tracking-wider mb-6 text-[#ff8c42]">
               📊 CURRENT STANDINGS
               {!relationship && (
-                <span className="ml-2 text-[10px] font-mono text-zinc-500 tracking-widest">NO HISTORY — EVEN FOOTING</span>
+                <span className="ml-2 text-[12px] font-mono text-zinc-500 tracking-widest">NO HISTORY — EVEN FOOTING</span>
               )}
             </h2>
             <div className="grid grid-cols-2 gap-6 mb-6">

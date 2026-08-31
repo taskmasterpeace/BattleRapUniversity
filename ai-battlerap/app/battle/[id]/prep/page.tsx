@@ -469,19 +469,19 @@ export default function PrepPage({ params }: { params: Promise<{ id: string }> }
             ].map((p) => (
               <div key={p.n} className={`border-2 ${p.c.split(' ')[1]} bg-[#17181C] p-4 relative`}>
                 <div className="flex items-baseline justify-between mb-1.5">
-                  <span className={`font-mono text-[9px] tracking-[0.3em] ${p.c.split(' ')[0]}`}>
+                  <span className={`font-mono text-[11px] tracking-[0.3em] ${p.c.split(' ')[0]}`}>
                     {p.n} · {p.name}
                   </span>
                   <span className={`font-display font-black text-lg ${p.c.split(' ')[0]}`}>
                     {p.days}<span className="text-zinc-600 text-xs">d</span>
                   </span>
                 </div>
-                <p className="text-[11px] text-zinc-300 leading-snug">{p.what}</p>
-                <p className="text-[10px] text-zinc-600 leading-snug mt-1.5 uppercase tracking-wide">{p.note}</p>
+                <p className="text-[13px] text-zinc-300 leading-snug">{p.what}</p>
+                <p className="text-[12px] text-zinc-600 leading-snug mt-1.5 uppercase tracking-wide">{p.note}</p>
               </div>
             ))}
           </div>
-          <p className="font-mono text-[9px] uppercase tracking-[0.25em] text-zinc-600">
+          <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-zinc-600">
             RESEARCH → WRITE → MEMORIZE → PRACTICE — PAINT THE DAYS BELOW · REST {prepBlocks.filter((b) => b.focus === 'rest').length}d · LIFE {prepBlocks.filter((b) => b.focus === 'life').length}d
           </p>
         </div>
@@ -524,7 +524,7 @@ export default function PrepPage({ params }: { params: Promise<{ id: string }> }
                   >
                     <Icon name={option.icon} size={18} />
                     <span>{option.label}</span>
-                    <span className="text-[10px] font-normal normal-case tracking-normal text-zinc-500">
+                    <span className="text-[12px] font-normal normal-case tracking-normal text-zinc-500">
                       {option.description}
                     </span>
                   </button>
@@ -554,7 +554,7 @@ export default function PrepPage({ params }: { params: Promise<{ id: string }> }
                       : 'border-dashed border-[#3a3d44] bg-[#18191c] hover:border-[#ff8c42]/60'
                   }`}
                 >
-                  <span className="text-[10px] font-display font-black uppercase tracking-wider text-zinc-500">
+                  <span className="text-[12px] font-display font-black uppercase tracking-wider text-zinc-500">
                     DAY {dayIndex}
                   </span>
                   {focusOption ? (
@@ -566,7 +566,7 @@ export default function PrepPage({ params }: { params: Promise<{ id: string }> }
               );
             })}
           </div>
-          <p className="text-[11px] text-zinc-600 uppercase tracking-wider font-display font-bold mb-8">
+          <p className="text-[13px] text-zinc-600 uppercase tracking-wider font-display font-bold mb-8">
             {!isLocked && (allDaysSelected
               ? 'Every day planned — full-camp bonus: +1 battle slot if you take the W'
               : 'Unplanned days become REST when the battle runs')}

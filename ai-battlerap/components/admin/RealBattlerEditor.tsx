@@ -49,7 +49,7 @@ type AttributeRow = {
 
 const inputClass =
   'w-full px-3 py-2.5 bg-[#0a0a0a] border-2 border-[#3a3d44] text-zinc-100 text-sm placeholder-zinc-600 focus:border-[#ff8c42] focus:outline-none';
-const labelClass = 'block font-mono text-[10px] uppercase tracking-widest text-zinc-500 mb-1.5';
+const labelClass = 'block font-mono text-[12px] uppercase tracking-widest text-zinc-500 mb-1.5';
 const sectionTitle = 'font-display font-black uppercase tracking-tighter text-xl text-zinc-100';
 
 export default function RealBattlerEditor({
@@ -114,7 +114,7 @@ export default function RealBattlerEditor({
         <div className="flex items-center justify-between mb-6">
           <h2 className={sectionTitle}>PROFILE</h2>
           {saved && (
-            <span className="font-mono text-[10px] uppercase tracking-widest text-green-400">
+            <span className="font-mono text-[12px] uppercase tracking-widest text-green-400">
               ✓ Saved
             </span>
           )}
@@ -188,7 +188,7 @@ function AccoladesManager({
   return (
     <section className="bg-[#18191c] border-2 border-[#3a3d44] p-6">
       <h2 className={`${sectionTitle} mb-1`}>ACCOLADES</h2>
-      <p className="font-mono text-[10px] uppercase tracking-widest text-zinc-500 mb-5">
+      <p className="font-mono text-[12px] uppercase tracking-widest text-zinc-500 mb-5">
         Real-world resume + in-game records
       </p>
 
@@ -203,7 +203,7 @@ function AccoladesManager({
             </span>
             <div className="min-w-0 flex-1">
               <div className="text-sm font-bold text-zinc-100">{a.title}</div>
-              <div className="font-mono text-[10px] uppercase tracking-widest text-zinc-500">
+              <div className="font-mono text-[12px] uppercase tracking-widest text-zinc-500">
                 {a.scope === 'real_world' ? 'Real World' : 'In Game'}
                 {a.region ? ` · ${a.region}` : ''}
                 {a.year ? ` · ${a.year}` : ''}
@@ -213,7 +213,7 @@ function AccoladesManager({
             <button
               type="button"
               onClick={() => deleteAccolade(a.id)}
-              className="font-mono text-[10px] uppercase tracking-widest text-zinc-500 hover:text-red-400 transition-colors px-2 py-1 border border-transparent hover:border-red-500/30"
+              className="font-mono text-[12px] uppercase tracking-widest text-zinc-500 hover:text-red-400 transition-colors px-2 py-1 border border-transparent hover:border-red-500/30"
             >
               Delete
             </button>
@@ -359,7 +359,7 @@ function ClaimCodePanel({
   return (
     <section className="bg-[#18191c] border-2 border-[#3a3d44] p-6">
       <h2 className={`${sectionTitle} mb-1`}>CLAIM CODES</h2>
-      <p className="font-mono text-[10px] uppercase tracking-widest text-zinc-500 mb-5">
+      <p className="font-mono text-[12px] uppercase tracking-widest text-zinc-500 mb-5">
         One-time codes that let {stageName} verify and take over this profile
       </p>
 
@@ -380,7 +380,7 @@ function ClaimCodePanel({
 
       {freshCode && (
         <div className="border-2 border-[#ff8c42] bg-[#101114] p-5 mb-5">
-          <div className="font-mono text-[10px] uppercase tracking-widest text-zinc-500 mb-2">
+          <div className="font-mono text-[12px] uppercase tracking-widest text-zinc-500 mb-2">
             New claim code — send this to the battler
           </div>
           <div className="flex items-center gap-4 flex-wrap">
@@ -411,7 +411,7 @@ function ClaimCodePanel({
             <div key={c.id} className="flex items-center gap-3 bg-[#101114] border border-[#3a3d44] px-4 py-3">
               <span className="font-mono text-sm text-zinc-300 tracking-widest">{c.code}</span>
               <span
-                className={`ml-auto px-2 py-1 border font-mono text-[10px] uppercase tracking-widest ${
+                className={`ml-auto px-2 py-1 border font-mono text-[12px] uppercase tracking-widest ${
                   c.claimed_by
                     ? 'bg-green-500/15 text-green-400 border-green-500/30'
                     : 'bg-yellow-500/15 text-yellow-400 border-yellow-500/30'
@@ -466,7 +466,7 @@ function DangerZone({
       <h2 className="font-display font-black uppercase tracking-tighter text-xl text-red-400 mb-1">
         DANGER ZONE
       </h2>
-      <p className="font-mono text-[10px] uppercase tracking-widest text-zinc-500 mb-4">
+      <p className="font-mono text-[12px] uppercase tracking-widest text-zinc-500 mb-4">
         Removes {stageName}, their attributes, accolades, and claim codes
       </p>
       {claimed ? (

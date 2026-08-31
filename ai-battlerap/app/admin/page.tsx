@@ -64,13 +64,13 @@ export default async function AdminDashboardPage() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
         {stats.map((s) => (
           <div key={s.label} className="bg-[#18191c] border-2 border-[#3a3d44] p-5">
-            <div className="font-mono text-[10px] uppercase tracking-widest text-zinc-500 mb-2">
+            <div className="font-mono text-[12px] uppercase tracking-widest text-zinc-500 mb-2">
               {s.label}
             </div>
             <div className="text-4xl font-display font-black text-[#ff8c42] leading-none">
               {s.value}
             </div>
-            <div className="font-mono text-[10px] uppercase tracking-widest text-zinc-600 mt-2">
+            <div className="font-mono text-[12px] uppercase tracking-widest text-zinc-600 mt-2">
               {s.sub}
             </div>
           </div>
@@ -92,7 +92,7 @@ export default async function AdminDashboardPage() {
               {t.title}
             </div>
             <p className="text-sm text-zinc-400">{t.desc}</p>
-            <div className="font-mono text-[10px] uppercase tracking-widest text-zinc-600 mt-4 group-hover:text-[#ff8c42] transition-colors">
+            <div className="font-mono text-[12px] uppercase tracking-widest text-zinc-600 mt-4 group-hover:text-[#ff8c42] transition-colors">
               Open →
             </div>
           </Link>

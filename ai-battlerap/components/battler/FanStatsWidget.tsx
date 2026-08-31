@@ -59,7 +59,7 @@ export default function FanStatsWidget({ fanData }: FanStatsProps) {
           className="px-2.5 py-1 border-2 border-black shadow-[2px_2px_0_rgba(0,0,0,.4)]"
           style={{
             fontFamily: 'var(--font-pixel)',
-            fontSize: 8,
+            fontSize: 10,
             color: '#0F0F12',
             background: trending.color,
           }}
@@ -70,7 +70,7 @@ export default function FanStatsWidget({ fanData }: FanStatsProps) {
 
       {/* Total Fans */}
       <div className="mb-5">
-        <div className="font-mono text-[8px] uppercase tracking-[0.25em] text-zinc-500 mb-1.5">
+        <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-zinc-500 mb-1.5">
           TOTAL FANS
         </div>
         <div
@@ -94,34 +94,34 @@ export default function FanStatsWidget({ fanData }: FanStatsProps) {
         </div>
       </div>
       <div className="flex justify-between gap-3 mb-5">
-        <span className="font-mono text-[9px] uppercase tracking-wide">
+        <span className="font-mono text-[11px] uppercase tracking-wide">
           <span className="text-green-400 font-bold">■ HARDCORE</span>{' '}
           <span className="text-zinc-400">{formatNumber(fanData.hardcore_fans)} · {hardcorePercent}%</span>
         </span>
-        <span className="font-mono text-[9px] uppercase tracking-wide text-right">
+        <span className="font-mono text-[11px] uppercase tracking-wide text-right">
           <span className="text-[#5b9fe3] font-bold">■ CASUAL</span>{' '}
           <span className="text-zinc-400">{formatNumber(fanData.casual_fans)} · {casualPercent}%</span>
         </span>
       </div>
-      <p className="font-mono text-[8px] uppercase tracking-[0.2em] text-zinc-600 -mt-3 mb-5">
+      <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-zinc-600 -mt-3 mb-5">
         HARDCORE ALWAYS PULL UP · CASUALS WATCH WHEN YOU'RE TRENDING
       </p>
 
       {/* Growth stats */}
       <div className="pt-4 border-t-2 border-black space-y-2.5">
         <div className="flex justify-between items-center">
-          <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-zinc-500">Trending Score</span>
-          <span style={{ fontFamily: 'var(--font-pixel)', fontSize: 11, color: trending.color }}>
+          <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-500">Trending Score</span>
+          <span style={{ fontFamily: 'var(--font-pixel)', fontSize: 13, color: trending.color }}>
             {fanData.trending_score.toFixed(0)}/100
           </span>
         </div>
 
         <div className="flex justify-between items-center">
-          <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-zinc-500">Growth Rate</span>
+          <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-500">Growth Rate</span>
           <span
             style={{
               fontFamily: 'var(--font-pixel)',
-              fontSize: 10,
+              fontSize: 12,
               color: fanData.fan_growth_rate >= 0 ? '#35C46B' : '#E23A2E',
             }}
           >
@@ -130,8 +130,8 @@ export default function FanStatsWidget({ fanData }: FanStatsProps) {
         </div>
 
         <div className="flex justify-between items-center">
-          <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-zinc-500">Hype Factor</span>
-          <span style={{ fontFamily: 'var(--font-pixel)', fontSize: 10, color: '#F4F4F6' }}>
+          <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-500">Hype Factor</span>
+          <span style={{ fontFamily: 'var(--font-pixel)', fontSize: 12, color: '#F4F4F6' }}>
             {(fanData.avg_hype_multiplier * 100).toFixed(0)}%
           </span>
         </div>

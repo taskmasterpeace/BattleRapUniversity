@@ -61,7 +61,7 @@ export default function WirePanel() {
         </h2>
         <Link
           href="/wire"
-          className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 hover:text-[#ff8c42] transition-colors"
+          className="text-[12px] font-mono uppercase tracking-widest text-zinc-500 hover:text-[#ff8c42] transition-colors"
         >
           {needsResponse > 0 ? (
             <span className="text-red-400">
@@ -81,21 +81,21 @@ export default function WirePanel() {
           >
             <div className="flex items-center justify-between gap-2 mb-0.5 min-w-0">
               <span className="flex items-center gap-1.5 min-w-0">
-                <span className="text-[11px] font-mono text-[#ff8c42] truncate">
+                <span className="text-[13px] font-mono text-[#ff8c42] truncate">
                   {post.account?.handle ?? '@unknown'}
                 </span>
                 {post.account?.stamped && (
-                  <span className="text-[8px] font-mono text-amber-400 border border-amber-500/40 px-0.5 shrink-0">
+                  <span className="text-[10px] font-mono text-amber-400 border border-amber-500/40 px-0.5 shrink-0">
                     ✓
                   </span>
                 )}
                 {post.actionable && (
-                  <span className="text-[8px] font-mono uppercase tracking-widest text-red-400 border border-red-500/40 px-1 shrink-0">
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-red-400 border border-red-500/40 px-1 shrink-0">
                     {post.actionable === 'callout' ? '🎯 CALLOUT' : '🔥 HOT'}
                   </span>
                 )}
               </span>
-              <span className="text-[9px] font-mono text-zinc-600 shrink-0">
+              <span className="text-[11px] font-mono text-zinc-600 shrink-0">
                 {timeAgo(post.created_at)}
               </span>
             </div>

@@ -173,7 +173,7 @@ export default function RoundSelectPage() {
       <div className="min-h-screen bg-[#18191c] flex items-center justify-center px-4">
         <div className="max-w-md w-full bg-[#2d2f35] border-2 border-[#3a3d44] p-8 text-center">
           <div
-            className={`inline-block px-3 py-1 mb-5 text-[11px] font-display font-black uppercase tracking-widest ${
+            className={`inline-block px-3 py-1 mb-5 text-[13px] font-display font-black uppercase tracking-widest ${
               locked ? 'bg-[#ff8c42]/15 text-[#ff8c42]' : 'bg-zinc-700/40 text-zinc-300'
             }`}
           >
@@ -210,10 +210,10 @@ export default function RoundSelectPage() {
       <div className="bg-[#101114] border-b-2 border-[#3a3d44]">
         <div className="max-w-5xl mx-auto px-4 pt-4 pb-6">
           <div className="flex items-center justify-between mb-3">
-            <Link href="/dashboard" className="text-[#ff8c42] hover:text-[#ff9d5c] font-mono text-[10px] uppercase tracking-[0.3em]">
+            <Link href="/dashboard" className="text-[#ff8c42] hover:text-[#ff9d5c] font-mono text-[12px] uppercase tracking-[0.3em]">
               ← DASHBOARD
             </Link>
-            <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-zinc-500">
+            <span className="font-mono text-[12px] uppercase tracking-[0.3em] text-zinc-500">
               ROUND <span className="text-[#ff8c42]">{roundNum}</span> / 3
             </span>
           </div>

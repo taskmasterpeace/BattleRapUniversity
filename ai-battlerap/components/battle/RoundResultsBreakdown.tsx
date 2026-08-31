@@ -1,5 +1,8 @@
 'use client';
 
+// Round breakdown in the Flyer System language: red corner vs blue corner
+// segment bars, poster-plate stat cards, house chips. (Owner 2026-08-31:
+// "obsess over the visuals... text is too small" — everything here sized up.)
 import { BattleRound, BattleSegment } from '@/lib/models';
 import {
   ContentType,
@@ -9,6 +12,9 @@ import {
   getDeliveryType,
   getPerformanceType,
 } from '@/lib/game/contentTypes';
+
+const RED = '#E23A2E';
+const BLUE = '#2F7DD1';
 
 interface RoundResultsBreakdownProps {
   playerRound: BattleRound & {
@@ -41,115 +47,250 @@ export function RoundResultsBreakdown({
   playerName,
   aiName,
 }: RoundResultsBreakdownProps) {
-  const getWinnerColor = () => {
-    if (winner === 'player') return 'text-green-500';
-    if (winner === 'ai') return 'text-red-500';
-    return 'text-yellow-500';
-  };
-
-  const getWinnerBg = () => {
-    if (winner === 'player') return 'bg-green-900/30 border-green-600';
-    if (winner === 'ai') return 'bg-red-900/30 border-red-600';
-    return 'bg-yellow-900/30 border-yellow-600';
-  };
-
-  const getWinnerText = () => {
-    if (winner === 'player') return `${playerName} WINS`;
-    if (winner === 'ai') return `${aiName} WINS`;
-    return 'TIE ROUND';
-  };
-
   const getMultiplierColor = (value?: number) => {
-    if (!value) return 'text-zinc-400';
-    if (value >= 1.5) return 'text-green-500';
-    if (value >= 1.2) return 'text-green-400';
-    if (value >= 0.9) return 'text-zinc-300';
-    if (value >= 0.7) return 'text-orange-400';
-    return 'text-red-500';
+    if (!value) return '#A6A8B0';
+    if (value >= 1.2) return '#35C46B';
+    if (value >= 0.9) return '#F4F4F6';
+    if (value >= 0.7) return '#F5731A';
+    return RED;
   };
 
   const formatTypeName = (typeId: string): string => {
-    // Try each type getter
     try {
       const contentDef = getContentType(typeId as ContentType);
       if (contentDef) return contentDef.name;
     } catch {}
-
     try {
       const deliveryDef = getDeliveryType(typeId as DeliveryType);
       if (deliveryDef) return deliveryDef.name;
     } catch {}
-
     try {
       const performanceDef = getPerformanceType(typeId as PerformanceType);
       if (performanceDef) return performanceDef.name;
     } catch {}
-
     return typeId.replace(/_/g, ' ');
   };
 
-  // Segment scores live on a ~0-15 scale, NOT 0-100. Scale the bars to the round's
-  // actual top score (with a little headroom) so they read as real bars instead of
-  // the tiny stubs you get from dividing a 6 by 100.
+  // Segment scores live on a ~0-15 scale, NOT 0-100. Scale bars to the round's
+  // actual top score (with headroom) so they read as real bars.
   const allScores = [
     ...playerSegments.map((s) => s.segment_score),
     ...aiSegments.map((s) => s.segment_score),
   ];
   const maxScore = Math.max(...allScores, 1) * 1.05;
 
-  // The headline moment of a segment (haymaker > choke > stumble). A haymaker only
-  // gets the badge if it landed on the segment WINNER: the sim's "haymaker" flag is
-  // a peak ROLL (a ~1.2x boost), not proof the moment was big — on a low-tier
-  // battler it can lift a 3.3 to a 4.0 that still loses to the opponent's 7.1.
-  // Badging that as "★ NAME HAYMAKER" next to the bar that actually won reads as a
-  // bug. A peak that got topped didn't land, so it shows no badge. Choke/stumble
-  // still show for either battler — those land regardless of who won the segment.
+  // Headline moment of a segment (haymaker > choke > stumble). Haymaker only
+  // badges on the segment WINNER — a peak that got topped didn't land.
   const segEvent = (
     pFlags: string[] = [],
     aFlags: string[] = [],
     playerWon = true
   ): { label: string; cls: string } | null => {
-    const winner = playerWon
+    const segWinner = playerWon
       ? { flags: pFlags, name: playerName }
       : { flags: aFlags, name: aiName };
-    if (winner.flags.includes('haymaker')) {
-      return { label: `★ ${winner.name} HAYMAKER`, cls: 'bg-yellow-300 text-black' };
+    if (segWinner.flags.includes('haymaker')) {
+      return { label: `★ ${segWinner.name} HAYMAKER`, cls: 'bg-[#E7B23C] text-black' };
     }
     const ordered: { flags: string[]; name: string }[] = playerWon
       ? [{ flags: pFlags, name: playerName }, { flags: aFlags, name: aiName }]
       : [{ flags: aFlags, name: aiName }, { flags: pFlags, name: playerName }];
     for (const { flags, name } of ordered) {
-      if (flags.includes('choke')) return { label: `✗ ${name} CHOKED`, cls: 'bg-red-600 text-white' };
+      if (flags.includes('choke')) return { label: `✗ ${name} CHOKED`, cls: 'bg-[#E23A2E] text-white' };
     }
-    if (pFlags.includes('stumble') || aFlags.includes('stumble')) return { label: 'STUMBLE', cls: 'bg-zinc-700 text-zinc-300' };
+    if (pFlags.includes('stumble') || aFlags.includes('stumble'))
+      return { label: 'STUMBLE', cls: 'bg-zinc-700 text-zinc-200' };
     return null;
   };
 
-  return (
-    <div className="space-y-6">
-      {/* Winner Banner */}
-      <div className={`p-6 border-2 ${getWinnerBg()} text-center`}>
-        <div className={`text-4xl font-display font-black uppercase tracking-tighter ${getWinnerColor()} mb-1`}>
-          {getWinnerText()}
+  /** One battler's stat plate — poster numbers over a corner-colored edge. */
+  const StatPlate = ({
+    name,
+    round,
+    corner,
+  }: {
+    name: string;
+    round: RoundResultsBreakdownProps['playerRound'];
+    corner: string;
+  }) => (
+    <div
+      className="fs bg-[#101114] border-2 border-black p-6 shadow-[4px_4px_0_rgba(0,0,0,.45)]"
+      style={{ borderTop: `4px solid ${corner}` }}
+    >
+      <h3
+        className="uppercase leading-none mb-5 truncate"
+        style={{ fontFamily: 'var(--font-poster)', fontSize: 26, color: '#F4F4F6', textShadow: '2px 2px 0 #000' }}
+      >
+        {name}
+      </h3>
+      <div className="grid grid-cols-2 gap-4">
+        {(
+          [
+            { k: 'ROUND AVG', v: round.average_score.toFixed(1), c: '#F5731A' },
+            { k: 'PEAK', v: round.peak_score.toFixed(1), c: '#E7B23C' },
+            { k: 'CONSISTENCY', v: round.consistency_score.toFixed(1), c: '#35C46B' },
+            { k: 'CROWD', v: `${round.crowd_reaction.toFixed(0)}%`, c: corner },
+          ] as const
+        ).map((s) => (
+          <div key={s.k} className="bg-[#17181C] border border-black px-3 py-2.5" style={{ borderTop: `2px solid ${s.c}` }}>
+            <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-500 mb-1">{s.k}</div>
+            <div
+              className="leading-none"
+              style={{ fontFamily: 'var(--font-poster)', fontSize: 30, color: s.c, textShadow: '2px 2px 0 #000' }}
+            >
+              {s.v}
+            </div>
+          </div>
+        ))}
+      </div>
+      {round.choked && (
+        <div className="mt-4 py-2 bg-[#E23A2E] border-2 border-black text-center shadow-[2px_2px_0_rgba(0,0,0,.5)]">
+          <span
+            className="uppercase text-black"
+            style={{ fontFamily: 'var(--font-poster)', fontSize: 18 }}
+          >
+            ✗ CHOKED
+          </span>
         </div>
-        <div className="text-zinc-400 text-sm font-display font-bold uppercase tracking-wider">
-          {winner === 'player' && 'You took this round'}
-          {winner === 'ai' && 'Your opponent took this round'}
-          {winner === 'tie' && 'Neither battler could secure the round'}
+      )}
+    </div>
+  );
+
+  /** House chip — hard borders, display type. */
+  const Chip = ({ label, edge }: { label: string; edge: string }) => (
+    <span
+      className="px-2.5 py-1.5 bg-[#17181C] border border-black text-zinc-200 text-sm font-display font-bold uppercase tracking-wide shadow-[2px_2px_0_rgba(0,0,0,.35)]"
+      style={{ borderLeft: `3px solid ${edge}` }}
+    >
+      {label}
+    </span>
+  );
+
+  /** One side's content-effectiveness plate. */
+  const ContentPlate = ({
+    title,
+    round,
+    corner,
+  }: {
+    title: string;
+    round: RoundResultsBreakdownProps['playerRound'];
+    corner: string;
+  }) => (
+    <div
+      className="fs bg-[#101114] border-2 border-black p-6 shadow-[4px_4px_0_rgba(0,0,0,.45)]"
+      style={{ borderTop: `4px solid ${corner}` }}
+    >
+      <h3 className="text-lg font-display font-black uppercase tracking-tighter text-[#ff8c42] mb-5">{title}</h3>
+      {round.contentSelection ? (
+        <div className="space-y-4">
+          {(
+            [
+              { label: 'CONTENT', items: round.contentSelection.content_types },
+              { label: 'DELIVERY', items: round.contentSelection.delivery_types },
+              { label: 'PERFORMANCE', items: round.contentSelection.performance_types },
+            ] as const
+          ).map(
+            (row) =>
+              row.items &&
+              row.items.length > 0 && (
+                <div key={row.label}>
+                  <div className="font-mono text-[11px] uppercase tracking-[0.25em] text-zinc-500 mb-2">
+                    {row.label}
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {row.items.map((type) => (
+                      <Chip key={type} label={formatTypeName(type)} edge={corner} />
+                    ))}
+                  </div>
+                </div>
+              )
+          )}
+
+          <div className="pt-4 border-t-2 border-black space-y-2.5">
+            {(
+              [
+                { k: 'EFFECTIVENESS', v: round.effectiveness_multiplier },
+                { k: 'CROWD PREFERENCE', v: round.crowd_preference_multiplier },
+                { k: 'CONTEXT MODIFIER', v: round.context_modifier },
+              ] as const
+            ).map((m) => (
+              <div key={m.k} className="flex justify-between items-center">
+                <span className="font-mono text-[12px] uppercase tracking-[0.2em] text-zinc-500">{m.k}</span>
+                <span
+                  style={{ fontFamily: 'var(--font-pixel)', fontSize: 13, color: getMultiplierColor(m.v) }}
+                >
+                  {m.v?.toFixed(2)}x
+                </span>
+              </div>
+            ))}
+            <div className="flex justify-between items-center pt-3 border-t border-[#2E2F35]">
+              <span className="font-display font-black uppercase tracking-wider text-zinc-100">
+                FINAL MULTIPLIER
+              </span>
+              <span
+                className="leading-none"
+                style={{
+                  fontFamily: 'var(--font-poster)',
+                  fontSize: 28,
+                  color: getMultiplierColor(round.final_multiplier),
+                  textShadow: '2px 2px 0 #000',
+                }}
+              >
+                {round.final_multiplier?.toFixed(2)}x
+              </span>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="text-base text-zinc-400 text-center py-4">No content data available</div>
+      )}
+    </div>
+  );
+
+  const playerWonRound = winner === 'player';
+
+  return (
+    <div className="fs space-y-8">
+      {/* Verdict stamp */}
+      <div
+        className="p-8 border-4 text-center bg-[#101114] shadow-[6px_6px_0_rgba(0,0,0,.5)]"
+        style={{ borderColor: winner === 'tie' ? '#E7B23C' : playerWonRound ? '#35C46B' : RED }}
+      >
+        <div
+          className={`uppercase leading-none ${winner === 'tie' ? '' : '-rotate-1'}`}
+          style={{
+            fontFamily: 'var(--font-poster)',
+            fontSize: 52,
+            color: winner === 'tie' ? '#E7B23C' : playerWonRound ? '#35C46B' : RED,
+            textShadow: '3px 3px 0 #000',
+          }}
+        >
+          {winner === 'tie' ? 'TIE ROUND' : winner === 'player' ? `${playerName} WINS` : `${aiName} WINS`}
+        </div>
+        <div className="font-mono text-[13px] uppercase tracking-[0.3em] text-zinc-400 mt-3">
+          {winner === 'player' && 'YOU TOOK THIS ROUND'}
+          {winner === 'ai' && 'YOUR OPPONENT TOOK THIS ROUND'}
+          {winner === 'tie' && 'NEITHER BATTLER COULD SECURE IT'}
         </div>
       </div>
 
-      {/* Segment Timeline */}
-      <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-6">
-        <h3 className="text-lg font-display font-black uppercase tracking-wider text-white mb-4">
-          The Segments
-        </h3>
+      {/* Segment timeline — red corner vs blue corner */}
+      <div className="bg-[#101114] border-2 border-black p-6 shadow-[4px_4px_0_rgba(0,0,0,.45)]" style={{ borderTop: '4px solid #F5731A' }}>
+        <div className="flex items-baseline justify-between mb-5">
+          <h3 className="text-2xl font-display font-black uppercase tracking-tighter text-[#ff8c42]">
+            The Segments
+          </h3>
+          <span className="font-mono text-[12px] uppercase tracking-[0.25em] text-zinc-500">
+            <span style={{ color: RED }}>■ {playerName}</span>
+            <span className="mx-2">·</span>
+            <span style={{ color: BLUE }}>■ {aiName}</span>
+          </span>
+        </div>
 
-        <div className="space-y-4">
+        <div className="space-y-5">
           {playerSegments.map((playerSeg, idx) => {
             const aiSeg = aiSegments[idx];
             const aiScore = aiSeg?.segment_score ?? 0;
-            // min 4% so even a low score shows a visible nub
             const playerWidth = Math.max(4, (playerSeg.segment_score / maxScore) * 100);
             const aiWidth = aiSeg ? Math.max(4, (aiScore / maxScore) * 100) : 0;
             const playerWon = playerSeg.segment_score >= aiScore;
@@ -158,48 +299,76 @@ export function RoundResultsBreakdown({
             return (
               <div key={idx} className="space-y-1.5">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-[11px] font-display font-black uppercase tracking-widest text-zinc-500">
+                  <span className="text-sm font-display font-black uppercase tracking-widest text-zinc-400">
                     Segment {idx + 1}
                   </span>
                   {event && (
-                    <span className={`px-2 py-0.5 text-[9px] font-display font-black uppercase tracking-widest ${event.cls}`}>
+                    <span
+                      className={`px-2.5 py-1 text-sm font-display font-black uppercase tracking-widest border-2 border-black shadow-[2px_2px_0_rgba(0,0,0,.4)] ${event.cls}`}
+                    >
                       {event.label}
                     </span>
                   )}
-                  <span className="text-[11px] font-display font-bold uppercase tracking-wider text-zinc-500 tabular-nums">
+                  <span className="text-sm font-display font-bold uppercase tracking-wider text-zinc-500 tabular-nums">
                     {playerSeg.segment_score.toFixed(1)} · {aiScore.toFixed(1)}
                   </span>
                 </div>
 
-                {/* Player bar */}
-                <div className="flex items-center gap-2">
-                  <span className="text-[11px] font-display font-bold uppercase tracking-wide text-zinc-400 w-20 shrink-0 truncate">
+                {/* Player bar — red corner */}
+                <div className="flex items-center gap-3">
+                  <span className="text-sm font-display font-bold uppercase tracking-wide text-zinc-300 w-24 shrink-0 truncate">
                     {playerName}
                   </span>
-                  <div className="flex-1 bg-[#18191c] h-7 border border-[#3a3d44] overflow-hidden">
+                  <div className="flex-1 bg-[#0F0F12] h-8 border-2 border-black overflow-hidden">
                     <div
-                      className={`h-full transition-all ${playerWon ? 'bg-[#ff8c42]' : 'bg-[#ff8c42]/30'}`}
-                      style={{ width: `${playerWidth}%` }}
+                      className="h-full transition-all"
+                      style={{
+                        width: `${playerWidth}%`,
+                        background: playerWon
+                          ? `linear-gradient(180deg, #ff6a5e, ${RED})`
+                          : 'rgba(226,58,46,.45)',
+                      }}
                     />
                   </div>
-                  <span className={`w-11 text-right text-sm font-display font-black tabular-nums ${playerWon ? 'text-[#ff8c42]' : 'text-zinc-500'}`}>
+                  <span
+                    className="w-14 text-right tabular-nums leading-none"
+                    style={{
+                      fontFamily: 'var(--font-poster)',
+                      fontSize: 22,
+                      color: playerWon ? RED : '#6b6d76',
+                      textShadow: '1px 1px 0 #000',
+                    }}
+                  >
                     {playerSeg.segment_score.toFixed(1)}
                   </span>
                 </div>
 
-                {/* AI bar */}
+                {/* AI bar — blue corner */}
                 {aiSeg && (
-                  <div className="flex items-center gap-2">
-                    <span className="text-[11px] font-display font-bold uppercase tracking-wide text-zinc-400 w-20 shrink-0 truncate">
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm font-display font-bold uppercase tracking-wide text-zinc-300 w-24 shrink-0 truncate">
                       {aiName}
                     </span>
-                    <div className="flex-1 bg-[#18191c] h-7 border border-[#3a3d44] overflow-hidden">
+                    <div className="flex-1 bg-[#0F0F12] h-8 border-2 border-black overflow-hidden">
                       <div
-                        className={`h-full transition-all ${!playerWon ? 'bg-zinc-300' : 'bg-zinc-600'}`}
-                        style={{ width: `${aiWidth}%` }}
+                        className="h-full transition-all"
+                        style={{
+                          width: `${aiWidth}%`,
+                          background: !playerWon
+                            ? `linear-gradient(180deg, #5b9fe3, ${BLUE})`
+                            : 'rgba(47,125,209,.45)',
+                        }}
                       />
                     </div>
-                    <span className={`w-11 text-right text-sm font-display font-black tabular-nums ${!playerWon ? 'text-zinc-200' : 'text-zinc-500'}`}>
+                    <span
+                      className="w-14 text-right tabular-nums leading-none"
+                      style={{
+                        fontFamily: 'var(--font-poster)',
+                        fontSize: 22,
+                        color: !playerWon ? BLUE : '#6b6d76',
+                        textShadow: '1px 1px 0 #000',
+                      }}
+                    >
                       {aiScore.toFixed(1)}
                     </span>
                   </div>
@@ -210,286 +379,16 @@ export function RoundResultsBreakdown({
         </div>
       </div>
 
-      {/* Score Comparison */}
+      {/* Stat plates */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Player Stats */}
-        <div className="bg-[#2d2f35] border-2 border-[#3a3d44] rounded-lg p-6">
-          <h3 className="text-lg font-display font-black uppercase tracking-wider text-white mb-4">{playerName}</h3>
-          <div className="space-y-3">
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-zinc-400">Average Score</span>
-              <span className="text-xl font-bold text-[#ff8c42]">
-                {playerRound.average_score.toFixed(1)}
-              </span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-zinc-400">Peak Score</span>
-              <span className="text-xl font-bold text-green-400">
-                {playerRound.peak_score.toFixed(1)}
-              </span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-zinc-400">Consistency</span>
-              <span className="text-xl font-bold text-amber-400">
-                {playerRound.consistency_score.toFixed(1)}
-              </span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-zinc-400">Crowd Reaction</span>
-              <span className="text-xl font-bold text-orange-400">
-                {playerRound.crowd_reaction.toFixed(0)}
-              </span>
-            </div>
-            {playerRound.choked && (
-              <div className="mt-2 p-2 bg-red-900/30 border-2 border-red-700 rounded text-center">
-                <span className="text-xs text-red-400 font-semibold">CHOKED</span>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* AI Stats */}
-        <div className="bg-[#2d2f35] border-2 border-[#3a3d44] rounded-lg p-6">
-          <h3 className="text-lg font-display font-black uppercase tracking-wider text-white mb-4">{aiName}</h3>
-          <div className="space-y-3">
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-zinc-400">Average Score</span>
-              <span className="text-xl font-bold text-[#ff8c42]">
-                {aiRound.average_score.toFixed(1)}
-              </span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-zinc-400">Peak Score</span>
-              <span className="text-xl font-bold text-green-400">
-                {aiRound.peak_score.toFixed(1)}
-              </span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-zinc-400">Consistency</span>
-              <span className="text-xl font-bold text-amber-400">
-                {aiRound.consistency_score.toFixed(1)}
-              </span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-zinc-400">Crowd Reaction</span>
-              <span className="text-xl font-bold text-orange-400">
-                {aiRound.crowd_reaction.toFixed(0)}
-              </span>
-            </div>
-            {aiRound.choked && (
-              <div className="mt-2 p-2 bg-red-900/30 border-2 border-red-700 rounded text-center">
-                <span className="text-xs text-red-400 font-semibold">CHOKED</span>
-              </div>
-            )}
-          </div>
-        </div>
+        <StatPlate name={playerName} round={playerRound} corner={RED} />
+        <StatPlate name={aiName} round={aiRound} corner={BLUE} />
       </div>
 
-      {/* Content Effectiveness Breakdown */}
+      {/* Content effectiveness */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Player Content */}
-        <div className="bg-[#2d2f35] border-2 border-[#3a3d44] rounded-lg p-6">
-          <h3 className="text-lg font-display font-black uppercase tracking-wider text-white mb-4">Your Content Effectiveness</h3>
-
-          {playerRound.contentSelection && (
-            <div className="space-y-4">
-              {/* Content Types */}
-              <div>
-                <div className="text-xs text-zinc-400 mb-2">Content Types</div>
-                <div className="flex flex-wrap gap-1">
-                  {playerRound.contentSelection.content_types?.map((type) => (
-                    <span
-                      key={type}
-                      className="px-2 py-1 bg-zinc-800 text-zinc-300 text-xs rounded"
-                    >
-                      {formatTypeName(type)}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Delivery Types */}
-              <div>
-                <div className="text-xs text-zinc-400 mb-2">Delivery Types</div>
-                <div className="flex flex-wrap gap-1">
-                  {playerRound.contentSelection.delivery_types?.map((type) => (
-                    <span
-                      key={type}
-                      className="px-2 py-1 bg-zinc-800 text-zinc-300 text-xs rounded"
-                    >
-                      {formatTypeName(type)}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Performance Types */}
-              <div>
-                <div className="text-xs text-zinc-400 mb-2">Performance Types</div>
-                <div className="flex flex-wrap gap-1">
-                  {playerRound.contentSelection.performance_types?.map((type) => (
-                    <span
-                      key={type}
-                      className="px-2 py-1 bg-zinc-800 text-zinc-300 text-xs rounded"
-                    >
-                      {formatTypeName(type)}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Multipliers */}
-              <div className="pt-4 border-t-2 border-[#3a3d44] space-y-2">
-                <div className="flex justify-between items-center">
-                  <span className="text-xs text-zinc-400">Effectiveness</span>
-                  <span
-                    className={`text-sm font-bold ${getMultiplierColor(
-                      playerRound.effectiveness_multiplier
-                    )}`}
-                  >
-                    {playerRound.effectiveness_multiplier?.toFixed(2)}x
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-xs text-zinc-400">Crowd Preference</span>
-                  <span
-                    className={`text-sm font-bold ${getMultiplierColor(
-                      playerRound.crowd_preference_multiplier
-                    )}`}
-                  >
-                    {playerRound.crowd_preference_multiplier?.toFixed(2)}x
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-xs text-zinc-400">Context Modifier</span>
-                  <span
-                    className={`text-sm font-bold ${getMultiplierColor(
-                      playerRound.context_modifier
-                    )}`}
-                  >
-                    {playerRound.context_modifier?.toFixed(2)}x
-                  </span>
-                </div>
-                <div className="flex justify-between items-center pt-2 border-t-2 border-[#3a3d44]">
-                  <span className="text-sm text-white font-semibold">Final Multiplier</span>
-                  <span
-                    className={`text-lg font-bold ${getMultiplierColor(
-                      playerRound.final_multiplier
-                    )}`}
-                  >
-                    {playerRound.final_multiplier?.toFixed(2)}x
-                  </span>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {!playerRound.contentSelection && (
-            <div className="text-sm text-zinc-400 text-center py-4">
-              No content data available
-            </div>
-          )}
-        </div>
-
-        {/* AI Content */}
-        <div className="bg-[#2d2f35] border-2 border-[#3a3d44] rounded-lg p-6">
-          <h3 className="text-lg font-display font-black uppercase tracking-wider text-white mb-4">Opponent's Content Effectiveness</h3>
-
-          {aiRound.contentSelection && (
-            <div className="space-y-4">
-              {/* Content Types */}
-              <div>
-                <div className="text-xs text-zinc-400 mb-2">Content Types</div>
-                <div className="flex flex-wrap gap-1">
-                  {aiRound.contentSelection.content_types?.map((type) => (
-                    <span
-                      key={type}
-                      className="px-2 py-1 bg-zinc-800 text-zinc-300 text-xs rounded"
-                    >
-                      {formatTypeName(type)}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Delivery Types */}
-              <div>
-                <div className="text-xs text-zinc-400 mb-2">Delivery Types</div>
-                <div className="flex flex-wrap gap-1">
-                  {aiRound.contentSelection.delivery_types?.map((type) => (
-                    <span
-                      key={type}
-                      className="px-2 py-1 bg-zinc-800 text-zinc-300 text-xs rounded"
-                    >
-                      {formatTypeName(type)}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Performance Types */}
-              <div>
-                <div className="text-xs text-zinc-400 mb-2">Performance Types</div>
-                <div className="flex flex-wrap gap-1">
-                  {aiRound.contentSelection.performance_types?.map((type) => (
-                    <span
-                      key={type}
-                      className="px-2 py-1 bg-zinc-800 text-zinc-300 text-xs rounded"
-                    >
-                      {formatTypeName(type)}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Multipliers */}
-              <div className="pt-4 border-t-2 border-[#3a3d44] space-y-2">
-                <div className="flex justify-between items-center">
-                  <span className="text-xs text-zinc-400">Effectiveness</span>
-                  <span
-                    className={`text-sm font-bold ${getMultiplierColor(
-                      aiRound.effectiveness_multiplier
-                    )}`}
-                  >
-                    {aiRound.effectiveness_multiplier?.toFixed(2)}x
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-xs text-zinc-400">Crowd Preference</span>
-                  <span
-                    className={`text-sm font-bold ${getMultiplierColor(
-                      aiRound.crowd_preference_multiplier
-                    )}`}
-                  >
-                    {aiRound.crowd_preference_multiplier?.toFixed(2)}x
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-xs text-zinc-400">Context Modifier</span>
-                  <span
-                    className={`text-sm font-bold ${getMultiplierColor(aiRound.context_modifier)}`}
-                  >
-                    {aiRound.context_modifier?.toFixed(2)}x
-                  </span>
-                </div>
-                <div className="flex justify-between items-center pt-2 border-t-2 border-[#3a3d44]">
-                  <span className="text-sm text-white font-semibold">Final Multiplier</span>
-                  <span
-                    className={`text-lg font-bold ${getMultiplierColor(aiRound.final_multiplier)}`}
-                  >
-                    {aiRound.final_multiplier?.toFixed(2)}x
-                  </span>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {!aiRound.contentSelection && (
-            <div className="text-sm text-zinc-400 text-center py-4">
-              No content data available
-            </div>
-          )}
-        </div>
+        <ContentPlate title="YOUR CONTENT" round={playerRound} corner={RED} />
+        <ContentPlate title="THEIR CONTENT" round={aiRound} corner={BLUE} />
       </div>
     </div>
   );

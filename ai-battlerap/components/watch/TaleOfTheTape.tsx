@@ -61,7 +61,7 @@ export default function TaleOfTheTape({
       <div className="text-center mb-8">
         <Link
           href="/watch"
-          className="font-mono text-[10px] uppercase tracking-[0.3em] text-[#ff8c42] hover:text-[#ff9d5c]"
+          className="font-mono text-[12px] uppercase tracking-[0.3em] text-[#ff8c42] hover:text-[#ff9d5c]"
         >
           ← TONIGHT&apos;S CARD
         </Link>
@@ -77,7 +77,7 @@ export default function TaleOfTheTape({
 
         {/* tale of the tape */}
         <div className="mt-10">
-          <p className="text-center font-mono text-[10px] uppercase tracking-[0.35em] text-zinc-500 mb-5">
+          <p className="text-center font-mono text-[12px] uppercase tracking-[0.35em] text-zinc-500 mb-5">
             — TALE OF THE TAPE —
           </p>
           <div className="space-y-3">
@@ -98,7 +98,7 @@ export default function TaleOfTheTape({
                         style={{ ['--bar-w' as string]: `${(av / 10) * 100}%`, animationDelay: `${i * 90 + 150}ms` }}
                       />
                     </div>
-                    <span className="font-mono text-[9px] md:text-[10px] uppercase tracking-widest text-zinc-500 text-center w-24 md:w-36">
+                    <span className="font-mono text-[11px] md:text-[12px] uppercase tracking-widest text-zinc-500 text-center w-24 md:w-36">
                       {row.label}
                     </span>
                     <div className="h-3 bg-[#18191c] border border-[#3a3d44]">
@@ -118,7 +118,7 @@ export default function TaleOfTheTape({
         </div>
       </div>
 
-      <p className="text-center font-mono text-[10px] uppercase tracking-[0.3em] text-zinc-600 mt-10">
+      <p className="text-center font-mono text-[12px] uppercase tracking-[0.3em] text-zinc-600 mt-10">
         THE VERDICT DROPS WHEN THE CLOCK HITS —{' '}
         <Link href="/watch" className="text-[#ff8c42] hover:underline">
           BACK TO THE CARD

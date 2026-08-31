@@ -61,7 +61,7 @@ export default function FightProjection({
         <h3 className="font-display font-black text-lg uppercase tracking-wider text-zinc-300">
           FIGHT PROJECTION
         </h3>
-        <span className="text-[10px] text-zinc-500 font-display font-black uppercase tracking-wider">
+        <span className="text-[12px] text-zinc-500 font-display font-black uppercase tracking-wider">
           {projection.totalDaysAssigned}/{totalPrepDays} DAYS ASSIGNED • LIVE
         </span>
       </div>
@@ -237,7 +237,7 @@ function ProjectionTile({
         active ? 'bg-[#18191c] border-[#3a3d44]' : 'bg-[#101114] border-[#3a3d44]/60'
       }`}
     >
-      <p className="text-[10px] text-zinc-500 font-display font-black uppercase tracking-wider mb-1">
+      <p className="text-[12px] text-zinc-500 font-display font-black uppercase tracking-wider mb-1">
         <Icon name={icon} size={12} className="mr-1 -mt-0.5" /> {label}
       </p>
       <p
@@ -247,12 +247,12 @@ function ProjectionTile({
       >
         {value}
       </p>
-      <p className="text-[10px] text-zinc-600 font-display font-bold uppercase tracking-wide mt-1 leading-relaxed">
+      <p className="text-[12px] text-zinc-600 font-display font-bold uppercase tracking-wide mt-1 leading-relaxed">
         {sub}
       </p>
       {pill && (
         <span
-          className={`inline-block mt-2 px-2 py-0.5 border text-[10px] font-display font-black uppercase tracking-wide ${pill.className}`}
+          className={`inline-block mt-2 px-2 py-0.5 border text-[12px] font-display font-black uppercase tracking-wide ${pill.className}`}
         >
           {pill.text}
         </span>

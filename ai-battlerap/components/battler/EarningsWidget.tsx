@@ -34,7 +34,7 @@ function MoneyPlate({
       className="bg-[#101114] border-2 border-black p-5 shadow-[4px_4px_0_rgba(0,0,0,.45)]"
       style={{ borderTop: `3px solid ${edge}` }}
     >
-      <p className={`font-mono text-[9px] uppercase tracking-[0.3em] mb-2 ${hotLabel ? 'text-[#E7B23C]' : 'text-zinc-500'}`}>
+      <p className={`font-mono text-[11px] uppercase tracking-[0.3em] mb-2 ${hotLabel ? 'text-[#E7B23C]' : 'text-zinc-500'}`}>
         {label}
       </p>
       <p
@@ -47,7 +47,7 @@ function MoneyPlate({
       >
         {value}
       </p>
-      <p className="font-mono text-[8px] uppercase tracking-[0.25em] text-zinc-600 mt-2">{sub}</p>
+      <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-zinc-600 mt-2">{sub}</p>
     </div>
   );
 }
@@ -100,7 +100,7 @@ export default function EarningsWidget({ battler, leaguePayout }: Props) {
       >
         <div className="flex items-center justify-between gap-4">
           <div>
-            <p className="font-mono text-[9px] uppercase tracking-[0.3em] text-zinc-500 mb-1.5">NET WORTH</p>
+            <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-zinc-500 mb-1.5">NET WORTH</p>
             <p
               style={{
                 fontFamily: 'var(--font-pixel)',
@@ -112,7 +112,7 @@ export default function EarningsWidget({ battler, leaguePayout }: Props) {
               {netPositive ? '' : '-'}${fmt(Math.abs(netWorth))}
             </p>
           </div>
-          <p className="font-mono text-[9px] text-zinc-500 text-right uppercase tracking-[0.2em] max-w-[14rem]">
+          <p className="font-mono text-[11px] text-zinc-500 text-right uppercase tracking-[0.2em] max-w-[14rem]">
             {netPositive
               ? "You can afford to take principled L's"
               : 'The streets call when bills do'}

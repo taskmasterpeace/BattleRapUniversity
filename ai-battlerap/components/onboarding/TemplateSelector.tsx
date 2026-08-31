@@ -79,7 +79,7 @@ export default function TemplateSelector({ onSelect, onBack }: Props) {
                   <h3 className="font-display font-black uppercase tracking-tight text-sm text-zinc-100 truncate">
                     {template.name}
                   </h3>
-                  <p className="text-[10px] text-zinc-500 uppercase tracking-wider truncate">
+                  <p className="text-[12px] text-zinc-500 uppercase tracking-wider truncate">
                     {template.tagline}
                   </p>
                 </div>
@@ -92,14 +92,14 @@ export default function TemplateSelector({ onSelect, onBack }: Props) {
                       <div className="text-lg font-display font-black text-[#ff8c42] leading-none">
                         {t.value}
                       </div>
-                      <div className="text-[9px] text-zinc-600 font-bold uppercase tracking-wider truncate">
+                      <div className="text-[11px] text-zinc-600 font-bold uppercase tracking-wider truncate">
                         {t.label}
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-[10px] text-zinc-500 uppercase tracking-wider mt-3">
+                <p className="text-[12px] text-zinc-500 uppercase tracking-wider mt-3">
                   Allocate every point yourself
                 </p>
               )}
@@ -124,7 +124,7 @@ export default function TemplateSelector({ onSelect, onBack }: Props) {
             {/* Full spread */}
             {selected.attributes && (
               <div>
-                <p className="text-[10px] font-display font-black uppercase tracking-wider text-zinc-500 mb-2">
+                <p className="text-[12px] font-display font-black uppercase tracking-wider text-zinc-500 mb-2">
                   THE SPREAD
                 </p>
                 <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
@@ -148,7 +148,7 @@ export default function TemplateSelector({ onSelect, onBack }: Props) {
             )}
 
             <div>
-              <p className="text-[10px] font-display font-black uppercase tracking-wider text-green-500 mb-2">
+              <p className="text-[12px] font-display font-black uppercase tracking-wider text-green-500 mb-2">
                 STRENGTHS
               </p>
               <ul className="space-y-1">
@@ -162,7 +162,7 @@ export default function TemplateSelector({ onSelect, onBack }: Props) {
             </div>
 
             <div>
-              <p className="text-[10px] font-display font-black uppercase tracking-wider text-red-500 mb-2">
+              <p className="text-[12px] font-display font-black uppercase tracking-wider text-red-500 mb-2">
                 WEAKNESSES
               </p>
               <ul className="space-y-1">

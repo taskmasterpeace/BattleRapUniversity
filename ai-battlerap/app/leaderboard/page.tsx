@@ -112,7 +112,7 @@ export async function generateMetadata({
 
 // ── tiny presentational pieces (server-rendered) ───────────────────────────
 function StreakChip({ streak, size = 'sm' }: { streak: number; size?: 'sm' | 'lg' }) {
-  const pad = size === 'lg' ? 'px-2.5 py-1 text-xs' : 'px-1.5 py-0.5 text-[10px]';
+  const pad = size === 'lg' ? 'px-2.5 py-1 text-xs' : 'px-1.5 py-0.5 text-[12px]';
   if (streak > 0) {
     return (
       <span
@@ -137,8 +137,8 @@ function StreakChip({ streak, size = 'sm' }: { streak: number; size?: 'sm' | 'lg
 function VerifiedTag({ size = 'sm' }: { size?: 'sm' | 'lg' }) {
   const cls =
     size === 'lg'
-      ? 'px-2.5 py-1 text-[11px]'
-      : 'px-1.5 py-0.5 text-[9px]';
+      ? 'px-2.5 py-1 text-[13px]'
+      : 'px-1.5 py-0.5 text-[11px]';
   return (
     <span
       className={`${cls} inline-flex items-center gap-1 bg-[#ff8c42] text-black font-mono font-bold uppercase tracking-widest`}
@@ -151,7 +151,7 @@ function VerifiedTag({ size = 'sm' }: { size?: 'sm' | 'lg' }) {
 
 function PlayerChip() {
   return (
-    <span className="px-1.5 py-0.5 text-[9px] inline-flex items-center border border-green-500/50 bg-green-500/10 text-green-400 font-mono font-bold uppercase tracking-widest">
+    <span className="px-1.5 py-0.5 text-[11px] inline-flex items-center border border-green-500/50 bg-green-500/10 text-green-400 font-mono font-bold uppercase tracking-widest">
       PLAYER
     </span>
   );
@@ -247,7 +247,7 @@ function PodiumCard({ b, place }: { b: RankedBattler; place: 1 | 2 | 3 }) {
           </h3>
           <div className="flex items-end justify-between gap-2">
             <div>
-              <p className="font-mono text-[9px] uppercase tracking-[0.3em] text-zinc-500">
+              <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-zinc-500">
                 RATING
               </p>
               <p
@@ -267,11 +267,11 @@ function PodiumCard({ b, place }: { b: RankedBattler; place: 1 | 2 | 3 }) {
           </div>
           <div className="flex items-center justify-between pt-2 border-t border-[#2d2f35]">
             <span
-              className={`px-2 py-0.5 border text-[10px] font-bold uppercase tracking-widest ${tierClass}`}
+              className={`px-2 py-0.5 border text-[12px] font-bold uppercase tracking-widest ${tierClass}`}
             >
               {b.tier || 'unranked'}
             </span>
-            <span className="font-mono text-[10px] uppercase tracking-widest text-zinc-500 truncate max-w-[55%] text-right">
+            <span className="font-mono text-[12px] uppercase tracking-widest text-zinc-500 truncate max-w-[55%] text-right">
               {b.cityName || b.region || '—'}
             </span>
           </div>
@@ -387,7 +387,7 @@ export default async function LeaderboardPage({
 
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-10 pb-8 md:pt-16 md:pb-12">
           <div className="flex flex-wrap items-center gap-3 mb-4">
-            <span className="inline-flex items-center gap-2 px-3 py-1 border border-[#ff8c42]/50 bg-[#ff8c42]/5 font-mono text-[10px] sm:text-xs text-[#ff8c42] uppercase tracking-[0.25em]">
+            <span className="inline-flex items-center gap-2 px-3 py-1 border border-[#ff8c42]/50 bg-[#ff8c42]/5 font-mono text-[12px] sm:text-xs text-[#ff8c42] uppercase tracking-[0.25em]">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full bg-[#ff8c42] opacity-75" />
                 <span className="relative inline-flex h-2 w-2 bg-[#ff8c42]" />
@@ -406,12 +406,12 @@ export default async function LeaderboardPage({
           </h1>
 
           <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2">
-            <p className="font-mono text-[11px] sm:text-xs uppercase tracking-[0.25em] text-zinc-400">
+            <p className="font-mono text-[13px] sm:text-xs uppercase tracking-[0.25em] text-zinc-400">
               <span className="text-[#ff8c42] font-bold">{totalWorld}</span> BATTLERS IN THE
               CIRCUIT
             </p>
             {scopeName && (
-              <p className="font-mono text-[11px] sm:text-xs uppercase tracking-[0.25em] text-zinc-400">
+              <p className="font-mono text-[13px] sm:text-xs uppercase tracking-[0.25em] text-zinc-400">
                 SCOPE: <span className="text-white font-bold">{scopeName}</span> —{' '}
                 <span className="text-[#ff8c42] font-bold">{ranked.length}</span> RANKED
               </p>
@@ -452,7 +452,7 @@ export default async function LeaderboardPage({
                 <h2 className="font-display font-black uppercase tracking-tight text-xl sm:text-2xl text-white">
                   THE TOP <span className="text-[#ff8c42]">THREE</span>
                 </h2>
-                <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-zinc-600 hidden sm:block">
+                <p className="font-mono text-[12px] uppercase tracking-[0.3em] text-zinc-600 hidden sm:block">
                   RATED BY THE CULTURE
                 </p>
               </div>
@@ -483,7 +483,7 @@ export default async function LeaderboardPage({
                   <h2 className="font-display font-black uppercase tracking-tight text-xl sm:text-2xl text-white">
                     THE <span className="text-[#ff8c42]">LADDER</span>
                   </h2>
-                  <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-zinc-600">
+                  <p className="font-mono text-[12px] uppercase tracking-[0.3em] text-zinc-600">
                     #4 — #{top50.length}
                   </p>
                 </div>
@@ -495,7 +495,7 @@ export default async function LeaderboardPage({
                       (h, i) => (
                         <span
                           key={`${h}-${i}`}
-                          className={`font-mono text-[9px] uppercase tracking-[0.25em] text-zinc-600 ${
+                          className={`font-mono text-[11px] uppercase tracking-[0.25em] text-zinc-600 ${
                             i >= 4 ? 'text-right' : ''
                           }`}
                         >
@@ -540,14 +540,14 @@ export default async function LeaderboardPage({
                             {b.is_real && <VerifiedTag />}
                             {!b.is_ai && <PlayerChip />}
                             {/* mobile-only city */}
-                            <span className="sm:hidden font-mono text-[9px] uppercase tracking-widest text-zinc-600 truncate">
+                            <span className="sm:hidden font-mono text-[11px] uppercase tracking-widest text-zinc-600 truncate">
                               {b.cityName || b.region || ''}
                             </span>
                           </div>
                         </div>
 
                         {/* city (desktop) */}
-                        <span className="hidden sm:block font-mono text-[10px] uppercase tracking-widest text-zinc-500 truncate">
+                        <span className="hidden sm:block font-mono text-[12px] uppercase tracking-widest text-zinc-500 truncate">
                           {b.cityName || b.region || '—'}
                         </span>
 
@@ -566,7 +566,7 @@ export default async function LeaderboardPage({
                           <span className="font-mono font-bold text-sm sm:text-base text-zinc-100 tabular-nums">
                             {b.rating}
                           </span>
-                          <span className="block sm:hidden text-[10px]">
+                          <span className="block sm:hidden text-[12px]">
                             <Record wins={b.wins} losses={b.losses} />
                           </span>
                         </span>
@@ -592,7 +592,7 @@ export default async function LeaderboardPage({
               <br />
               ON <span className="text-[#ff8c42]">THIS LIST?</span>
             </h2>
-            <p className="mt-4 font-mono text-[11px] sm:text-xs uppercase tracking-[0.25em] text-zinc-500">
+            <p className="mt-4 font-mono text-[13px] sm:text-xs uppercase tracking-[0.25em] text-zinc-500">
               HUMANS RANK AMONG THE WORLD — NO HANDICAPS, NO EXCUSES
             </p>
             <Link

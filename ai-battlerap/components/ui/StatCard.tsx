@@ -21,7 +21,7 @@ export default function StatCard({ label, value, icon, subtext, variant = 'defau
       <div className="relative z-10">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-2 min-w-0">
           {icon && <span className={`${hot ? 'text-[#E7B23C]' : 'text-[#F5731A]'} flex items-center`}>{icon}</span>}
-          <span className={`font-mono text-[9px] uppercase tracking-[0.25em] ${hot ? 'text-[#E7B23C]' : 'text-zinc-500'}`}>
+          <span className={`font-mono text-[11px] uppercase tracking-[0.25em] ${hot ? 'text-[#E7B23C]' : 'text-zinc-500'}`}>
             {label}
           </span>
         </div>
@@ -37,7 +37,7 @@ export default function StatCard({ label, value, icon, subtext, variant = 'defau
           {value}
         </div>
         {subtext && (
-          <p className="font-mono text-[8px] text-zinc-500 uppercase tracking-[0.2em]">{subtext}</p>
+          <p className="font-mono text-[10px] text-zinc-500 uppercase tracking-[0.2em]">{subtext}</p>
         )}
       </div>
     </div>

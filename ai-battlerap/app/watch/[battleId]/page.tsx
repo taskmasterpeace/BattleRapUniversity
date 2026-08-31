@@ -206,7 +206,7 @@ export default async function SpectatorPage({
         <div className="text-center mb-8">
           <Link
             href="/watch"
-            className="font-mono text-[10px] uppercase tracking-[0.3em] text-[#ff8c42] hover:text-[#ff9d5c]"
+            className="font-mono text-[12px] uppercase tracking-[0.3em] text-[#ff8c42] hover:text-[#ff9d5c]"
           >
             ← TONIGHT&apos;S CARD
           </Link>
@@ -244,16 +244,16 @@ export default async function SpectatorPage({
             : 'IN THE BUILDING — THE ROOM CALLED IT FIRST';
           return (
             <div className="fs mt-8 bg-[#101114] border-2 border-[#3a3d44] p-5 md:p-6">
-              <p className="text-center font-mono text-[9px] uppercase tracking-[0.35em] text-zinc-500 mb-4">
+              <p className="text-center font-mono text-[11px] uppercase tracking-[0.35em] text-zinc-500 mb-4">
                 {ctxLabel}
               </p>
               <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 md:gap-6">
                 <div className="text-center">
-                  <p className="font-mono text-[9px] uppercase tracking-[0.3em] text-[#ff6a5e] mb-1.5">THE ROOM SAYS</p>
+                  <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-[#ff6a5e] mb-1.5">THE ROOM SAYS</p>
                   <p className="font-display text-lg md:text-2xl font-black uppercase tracking-tight text-zinc-100">
                     {roomWinner.name}
                   </p>
-                  <p style={{ fontFamily: 'var(--font-pixel)', fontSize: 11, color: '#E23A2E' }} className="mt-1">
+                  <p style={{ fontFamily: 'var(--font-pixel)', fontSize: 13, color: '#E23A2E' }} className="mt-1">
                     {battle.verdict}
                   </p>
                 </div>
@@ -268,17 +268,17 @@ export default async function SpectatorPage({
                   {diverges ? 'DEBATABLE' : 'NO DEBATE'}
                 </div>
                 <div className="text-center">
-                  <p className="font-mono text-[9px] uppercase tracking-[0.3em] text-[#5da2e8] mb-1.5">THE TAPE SAYS</p>
+                  <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-[#5da2e8] mb-1.5">THE TAPE SAYS</p>
                   <p className="font-display text-lg md:text-2xl font-black uppercase tracking-tight text-zinc-100">
                     {tapeWinner.name}
                   </p>
-                  <p style={{ fontFamily: 'var(--font-pixel)', fontSize: 11, color: '#2F7DD1' }} className="mt-1">
+                  <p style={{ fontFamily: 'var(--font-pixel)', fontSize: 13, color: '#2F7DD1' }} className="mt-1">
                     {battle.tape_verdict}
                   </p>
                 </div>
               </div>
               {diverges && (
-                <p className="text-center font-mono text-[9px] uppercase tracking-[0.25em] text-zinc-500 mt-4">
+                <p className="text-center font-mono text-[11px] uppercase tracking-[0.25em] text-zinc-500 mt-4">
                   THE ROOM FELT {roomWinner.name.toUpperCase()} — THE INTERNET REWOUND IT FOR {tapeWinner.name.toUpperCase()}. LET THEM ARGUE.
                 </p>
               )}
@@ -303,7 +303,7 @@ export default async function SpectatorPage({
             href={`/media/${article.slug}`}
             className="mt-8 block bg-[#18191c] border-l-4 border-[#ff8c42] p-5 hover:bg-[#1d1e22] transition-colors"
           >
-            <p className="font-mono text-[10px] uppercase tracking-widest text-[#ff8c42] mb-2">
+            <p className="font-mono text-[12px] uppercase tracking-widest text-[#ff8c42] mb-2">
               📰 READ THE WRITE-UP
             </p>
             <h2 className="font-display text-lg md:text-2xl font-black uppercase tracking-tight text-zinc-100">
@@ -327,7 +327,7 @@ export default async function SpectatorPage({
           </Link>
         </div>
 
-        <p className="text-center font-mono text-[10px] uppercase tracking-[0.3em] text-zinc-600 mt-10">
+        <p className="text-center font-mono text-[12px] uppercase tracking-[0.3em] text-zinc-600 mt-10">
           SIMULATED ON THE BATTLE RAP UNIVERSITY ENGINE —{' '}
           <Link href="/watch" className="text-[#ff8c42] hover:underline">
             BACK TO THE CARD

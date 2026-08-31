@@ -95,7 +95,7 @@ export default async function CitiesIndexPage() {
 
                 {/* Meta */}
                 <div className="p-4 space-y-3">
-                  <div className="flex flex-wrap gap-2 text-[10px] uppercase tracking-widest font-bold">
+                  <div className="flex flex-wrap gap-2 text-[12px] uppercase tracking-widest font-bold">
                     {city.scene_size && (
                       <span className="px-2 py-1 border border-[#3a3d44] text-zinc-300">
                         {city.scene_size} scene
@@ -110,7 +110,7 @@ export default async function CitiesIndexPage() {
 
                   {cityLeagues.length > 0 ? (
                     <div>
-                      <div className="text-[10px] uppercase tracking-widest text-zinc-500 mb-1">
+                      <div className="text-[12px] uppercase tracking-widest text-zinc-500 mb-1">
                         {cityLeagues.length} {cityLeagues.length === 1 ? 'league' : 'leagues'} based here
                       </div>
                       <div className="flex flex-wrap gap-1">
@@ -136,7 +136,7 @@ export default async function CitiesIndexPage() {
 
                   <Link
                     href={`/cities/${city.id}`}
-                    className="inline-block text-[10px] font-black uppercase tracking-widest text-[#ff8c42] hover:underline"
+                    className="inline-block text-[12px] font-black uppercase tracking-widest text-[#ff8c42] hover:underline"
                   >
                     Enter the scene →
                   </Link>

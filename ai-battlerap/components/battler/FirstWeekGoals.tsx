@@ -112,7 +112,7 @@ export default function FirstWeekGoals({
               <span className={`block font-display font-black uppercase tracking-wide text-xs ${g.done ? 'text-green-400 line-through' : 'text-zinc-100'}`}>
                 {g.label}
               </span>
-              <span className="block text-[11px] text-zinc-500 leading-snug mt-0.5">{g.detail}</span>
+              <span className="block text-[13px] text-zinc-500 leading-snug mt-0.5">{g.detail}</span>
             </span>
           </Link>
         ))}

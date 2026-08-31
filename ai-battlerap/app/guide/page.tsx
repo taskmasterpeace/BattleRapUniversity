@@ -57,7 +57,7 @@ function Section({
       id={id}
       className="scroll-mt-24 bg-[#18191c] border-2 border-[#3a3d44] rounded-lg p-6 sm:p-8"
     >
-      <div className="font-mono text-[11px] uppercase tracking-[0.25em] text-[#ff8c42] mb-2">
+      <div className="font-mono text-[13px] uppercase tracking-[0.25em] text-[#ff8c42] mb-2">
         {num} / SYLLABUS
       </div>
       <h2 className="font-display font-black uppercase tracking-tighter text-2xl sm:text-3xl text-zinc-100 mb-1">
@@ -74,7 +74,7 @@ function Section({
 function ProTip({ children }: { children: ReactNode }) {
   return (
     <div className="mt-2 border-2 border-[#ff8c42]/50 bg-[#ff8c42]/10 rounded-lg p-4">
-      <div className="font-mono text-[11px] uppercase tracking-[0.25em] text-[#ff8c42] mb-2">
+      <div className="font-mono text-[13px] uppercase tracking-[0.25em] text-[#ff8c42] mb-2">
         ★ PRO TIP
       </div>
       <div className="text-sm text-zinc-200 leading-relaxed">{children}</div>
@@ -93,7 +93,7 @@ function Hl({ children }: { children: ReactNode }) {
 function StatRow({ label, value }: { label: string; value: ReactNode }) {
   return (
     <div className="flex items-baseline justify-between gap-3 border-b border-[#3a3d44]/60 py-1.5 last:border-b-0">
-      <span className="font-mono text-[11px] uppercase tracking-wider text-zinc-500">{label}</span>
+      <span className="font-mono text-[13px] uppercase tracking-wider text-zinc-500">{label}</span>
       <span className="text-sm font-bold text-zinc-200 text-right">{value}</span>
     </div>
   );
@@ -102,7 +102,7 @@ function StatRow({ label, value }: { label: string; value: ReactNode }) {
 function Card({ title, children }: { title: string; children: ReactNode }) {
   return (
     <div className="bg-[#0a0a0a] border-2 border-[#3a3d44] rounded-lg p-4">
-      <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-[#ff8c42] mb-2">
+      <div className="font-mono text-[13px] uppercase tracking-[0.2em] text-[#ff8c42] mb-2">
         {title}
       </div>
       <div className="text-sm text-zinc-300 leading-relaxed space-y-2">{children}</div>
@@ -133,7 +133,7 @@ export default function GameplayGuidePage() {
           >
             ← DASHBOARD
           </Link>
-          <div className="font-mono text-[11px] uppercase tracking-[0.3em] text-zinc-500 mb-2">
+          <div className="font-mono text-[13px] uppercase tracking-[0.3em] text-zinc-500 mb-2">
             OFFICIAL COURSE CATALOG · READ BEFORE YOU CATCH A BODY (OR BECOME ONE)
           </div>
           <h1 className="font-display font-black uppercase tracking-tighter text-4xl sm:text-5xl mb-2">
@@ -153,7 +153,7 @@ export default function GameplayGuidePage() {
             aria-label="Table of contents"
             className="bg-[#18191c] border-2 border-[#3a3d44] rounded-lg p-4"
           >
-            <div className="font-mono text-[11px] uppercase tracking-[0.25em] text-[#ff8c42] mb-3">
+            <div className="font-mono text-[13px] uppercase tracking-[0.25em] text-[#ff8c42] mb-3">
               COURSE INDEX
             </div>
             <ul className="space-y-1">
@@ -163,7 +163,7 @@ export default function GameplayGuidePage() {
                     href={`#${s.id}`}
                     className="flex items-baseline gap-2 px-2 py-1 rounded text-zinc-400 hover:text-[#ff8c42] hover:bg-[#ff8c42]/10 transition-colors"
                   >
-                    <span className="font-mono text-[10px] text-zinc-600">{s.num}</span>
+                    <span className="font-mono text-[12px] text-zinc-600">{s.num}</span>
                     <span className="text-xs font-bold uppercase tracking-wide">{s.label}</span>
                   </a>
                 </li>
@@ -178,7 +178,7 @@ export default function GameplayGuidePage() {
             aria-label="Table of contents"
             className="lg:hidden bg-[#18191c] border-2 border-[#3a3d44] rounded-lg p-4"
           >
-            <div className="font-mono text-[11px] uppercase tracking-[0.25em] text-[#ff8c42] mb-3">
+            <div className="font-mono text-[13px] uppercase tracking-[0.25em] text-[#ff8c42] mb-3">
               COURSE INDEX
             </div>
             <div className="grid grid-cols-2 gap-1">
@@ -186,9 +186,9 @@ export default function GameplayGuidePage() {
                 <a
                   key={s.id}
                   href={`#${s.id}`}
-                  className="px-2 py-1.5 rounded text-[11px] font-bold uppercase tracking-wide text-zinc-400 hover:text-[#ff8c42] hover:bg-[#ff8c42]/10 transition-colors"
+                  className="px-2 py-1.5 rounded text-[13px] font-bold uppercase tracking-wide text-zinc-400 hover:text-[#ff8c42] hover:bg-[#ff8c42]/10 transition-colors"
                 >
-                  <span className="font-mono text-[10px] text-zinc-600 mr-1.5">{s.num}</span>
+                  <span className="font-mono text-[12px] text-zinc-600 mr-1.5">{s.num}</span>
                   {s.label}
                 </a>
               ))}
@@ -638,19 +638,19 @@ export default function GameplayGuidePage() {
             <Card title="TRAVEL COSTS — PRICED BY DESTINATION SCENE SIZE">
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-1">
                 <div className="text-center bg-[#18191c] border border-[#3a3d44] rounded p-2">
-                  <div className="font-mono text-[10px] uppercase text-zinc-500">SMALL</div>
+                  <div className="font-mono text-[12px] uppercase text-zinc-500">SMALL</div>
                   <div className="font-display font-black text-[#ff8c42] text-lg">$100</div>
                 </div>
                 <div className="text-center bg-[#18191c] border border-[#3a3d44] rounded p-2">
-                  <div className="font-mono text-[10px] uppercase text-zinc-500">MEDIUM</div>
+                  <div className="font-mono text-[12px] uppercase text-zinc-500">MEDIUM</div>
                   <div className="font-display font-black text-[#ff8c42] text-lg">$200</div>
                 </div>
                 <div className="text-center bg-[#18191c] border border-[#3a3d44] rounded p-2">
-                  <div className="font-mono text-[10px] uppercase text-zinc-500">LARGE</div>
+                  <div className="font-mono text-[12px] uppercase text-zinc-500">LARGE</div>
                   <div className="font-display font-black text-[#ff8c42] text-lg">$350</div>
                 </div>
                 <div className="text-center bg-[#18191c] border border-[#3a3d44] rounded p-2">
-                  <div className="font-mono text-[10px] uppercase text-zinc-500">MAJOR</div>
+                  <div className="font-mono text-[12px] uppercase text-zinc-500">MAJOR</div>
                   <div className="font-display font-black text-[#ff8c42] text-lg">$500</div>
                 </div>
               </div>
@@ -684,19 +684,19 @@ export default function GameplayGuidePage() {
             <Card title="RECRUITING COSTS — BY TARGET TIER">
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-1">
                 <div className="text-center bg-[#18191c] border border-[#3a3d44] rounded p-2">
-                  <div className="font-mono text-[10px] uppercase text-zinc-500">LOW</div>
+                  <div className="font-mono text-[12px] uppercase text-zinc-500">LOW</div>
                   <div className="font-display font-black text-[#ff8c42] text-lg">$200</div>
                 </div>
                 <div className="text-center bg-[#18191c] border border-[#3a3d44] rounded p-2">
-                  <div className="font-mono text-[10px] uppercase text-zinc-500">MID</div>
+                  <div className="font-mono text-[12px] uppercase text-zinc-500">MID</div>
                   <div className="font-display font-black text-[#ff8c42] text-lg">$500</div>
                 </div>
                 <div className="text-center bg-[#18191c] border border-[#3a3d44] rounded p-2">
-                  <div className="font-mono text-[10px] uppercase text-zinc-500">TOP</div>
+                  <div className="font-mono text-[12px] uppercase text-zinc-500">TOP</div>
                   <div className="font-display font-black text-[#ff8c42] text-lg">$1,500</div>
                 </div>
                 <div className="text-center bg-[#18191c] border border-[#3a3d44] rounded p-2">
-                  <div className="font-mono text-[10px] uppercase text-zinc-500">GOD</div>
+                  <div className="font-mono text-[12px] uppercase text-zinc-500">GOD</div>
                   <div className="font-display font-black text-[#ff8c42] text-lg">$5,000</div>
                 </div>
               </div>
@@ -1071,7 +1071,7 @@ export default function GameplayGuidePage() {
 
           {/* Outro */}
           <div className="bg-gradient-to-br from-[#ff8c42]/15 to-[#18191c] border-2 border-[#ff8c42]/40 rounded-lg p-6 sm:p-8 text-center">
-            <div className="font-mono text-[11px] uppercase tracking-[0.3em] text-[#ff8c42] mb-3">
+            <div className="font-mono text-[13px] uppercase tracking-[0.3em] text-[#ff8c42] mb-3">
               CLASS DISMISSED
             </div>
             <h2 className="font-display font-black uppercase tracking-tighter text-2xl sm:text-3xl mb-3">

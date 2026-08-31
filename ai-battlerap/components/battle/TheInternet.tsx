@@ -164,7 +164,7 @@ export default function TheInternet(props: Props) {
         <h3 className="text-lg font-display font-black uppercase tracking-tighter text-[#ff8c42]">
           THE INTERNET
         </h3>
-        <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">
+        <span className="text-[12px] font-mono uppercase tracking-widest text-zinc-500">
           POST-BATTLE TIMELINE
         </span>
       </div>
@@ -177,27 +177,27 @@ export default function TheInternet(props: Props) {
               <span className="text-2xl font-display font-black tracking-tighter text-zinc-100">
                 {formatViews(views.total_views)}
               </span>
-              <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">VIEWS</span>
+              <span className="text-[12px] font-mono uppercase tracking-widest text-zinc-500">VIEWS</span>
               {views.viral_multiplier > 1.5 && (
-                <span className="text-[10px] font-mono uppercase tracking-widest text-amber-400">
+                <span className="text-[12px] font-mono uppercase tracking-widest text-amber-400">
                   🔥 VIRAL ×{views.viral_multiplier.toFixed(1)}
                 </span>
               )}
             </div>
             {isEarly ? (
-              <span className="text-[10px] font-mono uppercase tracking-widest text-yellow-400 border-2 border-yellow-500/40 px-2 py-1">
+              <span className="text-[12px] font-mono uppercase tracking-widest text-yellow-400 border-2 border-yellow-500/40 px-2 py-1">
                 EARLY NUMBERS — FULL RELEASE PENDING
               </span>
             ) : (
               <span
-                className={`text-[10px] font-mono uppercase tracking-widest border-2 px-2 py-1 ${TIER_TONE[views.view_tier]}`}
+                className={`text-[12px] font-mono uppercase tracking-widest border-2 px-2 py-1 ${TIER_TONE[views.view_tier]}`}
               >
                 {views.view_tier.toUpperCase()} TIER
               </span>
             )}
           </>
         ) : (
-          <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">
+          <span className="text-[12px] font-mono uppercase tracking-widest text-zinc-500">
             FOOTAGE PROCESSING — NUMBERS DROP WHEN THE TAPE GOES LIVE
           </span>
         )}
@@ -209,7 +209,7 @@ export default function TheInternet(props: Props) {
           href={`/media/${recapArticle.slug}`}
           className="block bg-[#18191c] border-2 border-[#3a3d44] px-3 py-2 mb-3 hover:border-[#ff8c42]/60 transition-colors group"
         >
-          <div className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-0.5">
+          <div className="text-[12px] font-mono uppercase tracking-widest text-zinc-500 mb-0.5">
             📰 BLOG RECAP
           </div>
           <div className="text-sm font-display font-black uppercase tracking-wide text-zinc-200 group-hover:text-[#ff8c42] transition-colors">
@@ -218,7 +218,7 @@ export default function TheInternet(props: Props) {
         </Link>
       ) : (
         <div className="bg-[#18191c] border-2 border-dashed border-[#3a3d44] px-3 py-2 mb-3">
-          <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">
+          <span className="text-[12px] font-mono uppercase tracking-widest text-zinc-500">
             📰 RECAP PENDING — THE BLOGGERS ARE TYPING…
           </span>
         </div>
@@ -230,7 +230,7 @@ export default function TheInternet(props: Props) {
           <div key={i} className="bg-[#18191c] border-2 border-[#3a3d44] px-3 py-2">
             <div className="flex items-center justify-between mb-0.5">
               <span className="text-xs font-mono text-[#ff8c42]">{take.handle}</span>
-              <span className="text-[10px] font-mono text-zinc-600">♥ {take.heat}</span>
+              <span className="text-[12px] font-mono text-zinc-600">♥ {take.heat}</span>
             </div>
             <p className="text-sm text-zinc-300 leading-snug">{take.text}</p>
           </div>

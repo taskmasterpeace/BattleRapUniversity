@@ -75,7 +75,7 @@ const ATTRIBUTE_LABELS: Record<(typeof ATTRIBUTE_KEYS)[number], string> = {
 const inputClass =
   'w-full px-3 py-2.5 bg-[#0a0a0a] border-2 border-[#3a3d44] text-zinc-100 text-sm placeholder-zinc-600 focus:border-[#ff8c42] focus:outline-none';
 const labelClass =
-  'block font-mono text-[10px] uppercase tracking-widest text-zinc-500 mb-1.5';
+  'block font-mono text-[12px] uppercase tracking-widest text-zinc-500 mb-1.5';
 
 export default function RealBattlerForm({
   cities,
@@ -215,12 +215,12 @@ export default function RealBattlerForm({
       {/* Attributes */}
       <div className="border-2 border-[#3a3d44] bg-[#101114] p-5">
         <div className="font-display font-black uppercase tracking-tighter text-sm text-zinc-100 mb-4">
-          ATTRIBUTES <span className="font-mono text-[10px] tracking-widest text-zinc-500 font-normal">1–10</span>
+          ATTRIBUTES <span className="font-mono text-[12px] tracking-widest text-zinc-500 font-normal">1–10</span>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
           {ATTRIBUTE_KEYS.map((key) => (
             <div key={key} className="flex items-center gap-3">
-              <span className="font-mono text-[10px] uppercase tracking-widest text-zinc-400 w-32 shrink-0">
+              <span className="font-mono text-[12px] uppercase tracking-widest text-zinc-400 w-32 shrink-0">
                 {ATTRIBUTE_LABELS[key]}
               </span>
               <input

@@ -125,7 +125,7 @@ export default async function LeaguesIndexPage() {
                     }`}
                   >
                     {isCurrent && (
-                      <div className="mb-3 inline-flex items-center gap-1.5 bg-[#ff8c42] text-black px-2.5 py-0.5 text-[10px] font-display font-black uppercase tracking-widest">
+                      <div className="mb-3 inline-flex items-center gap-1.5 bg-[#ff8c42] text-black px-2.5 py-0.5 text-[12px] font-display font-black uppercase tracking-widest">
                         ● Your Scene
                       </div>
                     )}

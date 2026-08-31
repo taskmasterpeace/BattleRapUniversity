@@ -280,7 +280,7 @@ export default function WirePage() {
           <div>
             <Link
               href="/dashboard"
-              className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 hover:text-[#ff8c42]"
+              className="text-[12px] font-mono uppercase tracking-widest text-zinc-500 hover:text-[#ff8c42]"
             >
               ← DASHBOARD
             </Link>
@@ -290,7 +290,7 @@ export default function WirePage() {
             >
               THE <span className="text-[#ff8c42]">WIRE</span>
             </h1>
-            <p className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.3em] text-zinc-500 mt-1.5">
+            <p className="flex items-center gap-2 text-[12px] font-mono uppercase tracking-[0.3em] text-zinc-500 mt-1.5">
               <span className="inline-block w-2 h-2 rounded-full bg-[#35C46B] animate-pulse" />
               LIVE · THE SCENE TALKS. ALL OF IT.
             </p>
@@ -308,7 +308,7 @@ export default function WirePage() {
         {/* Composer — stance-based, no free text */}
         {composerOpen && (
           <div className="bg-[#101114] border-2 border-[#ff8c42]/50 p-4 mb-4">
-            <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-3">
+            <p className="text-[12px] font-mono uppercase tracking-widest text-zinc-500 mb-3">
               SPEAK FOR {myStageName?.toUpperCase()}&apos;S CAMP — PICK A STANCE
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -354,7 +354,7 @@ export default function WirePage() {
                 <button
                   key={f.key}
                   onClick={() => setFilter(f.key)}
-                  className={`px-3 py-1.5 text-[10px] font-display font-black uppercase tracking-wider border-2 transition-colors ${
+                  className={`px-3 py-1.5 text-[12px] font-display font-black uppercase tracking-wider border-2 transition-colors ${
                     filter === f.key
                       ? 'bg-[#ff8c42] text-black border-[#ff8c42]'
                       : 'bg-transparent text-zinc-400 border-[#3a3d44] hover:border-[#ff8c42]/50'
@@ -400,18 +400,18 @@ export default function WirePage() {
                               {post.account?.stamped && (
                                 <span
                                   title="Stamped"
-                                  className="text-[9px] font-mono text-amber-400 border border-amber-500/40 px-1"
+                                  className="text-[11px] font-mono text-amber-400 border border-amber-500/40 px-1"
                                 >
                                   ✓
                                 </span>
                               )}
                               <span
-                                className={`text-[9px] font-mono uppercase tracking-widest border px-1.5 py-0.5 ${chip.tone}`}
+                                className={`text-[11px] font-mono uppercase tracking-widest border px-1.5 py-0.5 ${chip.tone}`}
                               >
                                 {chip.label}
                               </span>
                             </div>
-                            <span className="text-[10px] font-mono text-zinc-600 shrink-0">
+                            <span className="text-[12px] font-mono text-zinc-600 shrink-0">
                               {timeAgo(post.created_at)}
                             </span>
                           </div>
@@ -443,18 +443,18 @@ export default function WirePage() {
                         <div className="flex items-center gap-3.5 min-w-0">
                           <span title="Props" className="shrink-0 flex items-center gap-1 text-zinc-500">
                             <Icon name="flame" size={11} />
-                            <span style={{ fontFamily: 'var(--font-pixel)', fontSize: 8 }}>{fmt(post.props)}</span>
+                            <span style={{ fontFamily: 'var(--font-pixel)', fontSize: 10 }}>{fmt(post.props)}</span>
                           </span>
                           <span title="Boosts" className="shrink-0 flex items-center gap-1 text-zinc-500">
                             <Icon name="bolt" size={11} />
-                            <span style={{ fontFamily: 'var(--font-pixel)', fontSize: 8 }}>{fmt(post.boosts)}</span>
+                            <span style={{ fontFamily: 'var(--font-pixel)', fontSize: 10 }}>{fmt(post.boosts)}</span>
                           </span>
                           <span title="Replies" className="shrink-0 flex items-center gap-1 text-zinc-500">
                             <Icon name="users" size={11} />
-                            <span style={{ fontFamily: 'var(--font-pixel)', fontSize: 8 }}>{fmt(post.replies)}</span>
+                            <span style={{ fontFamily: 'var(--font-pixel)', fontSize: 10 }}>{fmt(post.replies)}</span>
                           </span>
                           {post.crowd_tag && (
-                            <span className="text-[10px] font-mono text-[#ff8c42]/80 truncate max-w-[9rem] sm:max-w-[14rem]">
+                            <span className="text-[12px] font-mono text-[#ff8c42]/80 truncate max-w-[9rem] sm:max-w-[14rem]">
                               {post.crowd_tag}
                             </span>
                           )}
@@ -462,7 +462,7 @@ export default function WirePage() {
                         {post.battle_id && (
                           <Link
                             href={`/battle/${post.battle_id}`}
-                            className="text-[10px] font-mono uppercase tracking-widest text-[#E7B23C]/80 hover:text-[#E7B23C] shrink-0"
+                            className="text-[12px] font-mono uppercase tracking-widest text-[#E7B23C]/80 hover:text-[#E7B23C] shrink-0"
                           >
                             ▸ THE TAPE
                           </Link>
@@ -472,7 +472,7 @@ export default function WirePage() {
                       {/* Callout / controversy — the player can answer or stay silent */}
                       {canAct && (
                         <div className="mt-3 pt-3 border-t-2 border-[#3a3d44]">
-                          <p className="flex items-center gap-1.5 text-[9px] font-mono uppercase tracking-widest text-red-400 mb-2">
+                          <p className="flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-widest text-red-400 mb-2">
                             <Icon name={post.actionable === 'callout' ? 'target' : 'flame'} size={11} />
                             {post.actionable === 'callout'
                               ? 'THEY\'RE TALKING ABOUT YOU'
@@ -482,21 +482,21 @@ export default function WirePage() {
                             <button
                               disabled={busy === post.id}
                               onClick={() => act('reply', 'fire_back', post.id)}
-                              className="px-3 py-1.5 text-[10px] font-display font-black uppercase tracking-wider bg-red-500/15 text-red-400 border-2 border-red-500/40 hover:bg-red-500/25 transition-colors disabled:opacity-50"
+                              className="px-3 py-1.5 text-[12px] font-display font-black uppercase tracking-wider bg-red-500/15 text-red-400 border-2 border-red-500/40 hover:bg-red-500/25 transition-colors disabled:opacity-50"
                             >
                               FIRE BACK
                             </button>
                             <button
                               disabled={busy === post.id}
                               onClick={() => act('reply', 'take_high_road', post.id)}
-                              className="px-3 py-1.5 text-[10px] font-display font-black uppercase tracking-wider bg-green-500/15 text-green-400 border-2 border-green-500/40 hover:bg-green-500/25 transition-colors disabled:opacity-50"
+                              className="px-3 py-1.5 text-[12px] font-display font-black uppercase tracking-wider bg-green-500/15 text-green-400 border-2 border-green-500/40 hover:bg-green-500/25 transition-colors disabled:opacity-50"
                             >
                               TAKE THE HIGH ROAD
                             </button>
                             <button
                               disabled={busy === post.id}
                               onClick={() => act('ignore', undefined, post.id)}
-                              className="px-3 py-1.5 text-[10px] font-display font-black uppercase tracking-wider bg-transparent text-zinc-500 border-2 border-[#3a3d44] hover:border-zinc-500 transition-colors disabled:opacity-50"
+                              className="px-3 py-1.5 text-[12px] font-display font-black uppercase tracking-wider bg-transparent text-zinc-500 border-2 border-[#3a3d44] hover:border-zinc-500 transition-colors disabled:opacity-50"
                             >
                               STAY SILENT
                             </button>
@@ -517,7 +517,7 @@ export default function WirePage() {
                 <Icon name="flame" size={14} /> HEATING UP
               </h2>
               {heating.length === 0 ? (
-                <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-600">
+                <p className="text-[12px] font-mono uppercase tracking-widest text-zinc-600">
                   NOTHING BUZZING YET
                 </p>
               ) : (
@@ -528,12 +528,12 @@ export default function WirePage() {
                       <li key={h.tag}>
                         <div className="flex items-baseline justify-between gap-2">
                           <span className="text-xs font-mono text-zinc-200 truncate">
-                            <span style={{ fontFamily: 'var(--font-pixel)', fontSize: 8, color: '#E7B23C' }} className="mr-1.5">
+                            <span style={{ fontFamily: 'var(--font-pixel)', fontSize: 10, color: '#E7B23C' }} className="mr-1.5">
                               {i + 1}
                             </span>
                             {h.tag}
                           </span>
-                          <span className="text-[9px] font-mono text-zinc-500 shrink-0">
+                          <span className="text-[11px] font-mono text-zinc-500 shrink-0">
                             {h.posts} DROPS
                           </span>
                         </div>
@@ -559,13 +559,13 @@ export default function WirePage() {
                 <h2 className="flex items-center gap-1.5 text-sm font-display font-black uppercase tracking-tighter text-[#ff8c42] group-hover:text-[#ff9d5c] transition">
                   <Icon name="news" size={14} /> THE NEWSROOM
                 </h2>
-                <span className="text-[9px] font-mono text-zinc-600 group-hover:text-[#ff8c42] transition">THE DESK →</span>
+                <span className="text-[11px] font-mono text-zinc-600 group-hover:text-[#ff8c42] transition">THE DESK →</span>
               </Link>
-              <p className="text-[9px] font-mono uppercase tracking-widest text-zinc-600 mb-2.5">
+              <p className="text-[11px] font-mono uppercase tracking-widest text-zinc-600 mb-2.5">
                 WHAT THE BLOGS ARE SITTING ON
               </p>
               {dedupedDeveloping.length === 0 ? (
-                <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-600">
+                <p className="text-[12px] font-mono uppercase tracking-widest text-zinc-600">
                   NO STORIES DEVELOPING
                 </p>
               ) : (
@@ -575,10 +575,10 @@ export default function WirePage() {
                     return (
                       <li key={d.id} className="border-l-2 border-[#3a3d44] pl-2.5">
                         <div className="flex items-center justify-between gap-2">
-                          <span className={`text-[9px] font-mono font-bold uppercase tracking-widest ${sit.tone}`}>
+                          <span className={`text-[11px] font-mono font-bold uppercase tracking-widest ${sit.tone}`}>
                             {sit.label}
                           </span>
-                          <span className="text-[9px] font-mono text-zinc-600 shrink-0">
+                          <span className="text-[11px] font-mono text-zinc-600 shrink-0">
                             DROPS ~{dropsIn(d.publishAfter)}
                           </span>
                         </div>
@@ -586,8 +586,8 @@ export default function WirePage() {
                           {d.subject}
                           {d.other ? <span className="text-zinc-500"> vs {d.other}</span> : null}
                         </p>
-                        <p className="text-[10px] text-zinc-500 leading-snug line-clamp-2">{d.hint}</p>
-                        <p className="text-[9px] font-mono text-zinc-600 mt-0.5">
+                        <p className="text-[12px] text-zinc-500 leading-snug line-clamp-2">{d.hint}</p>
+                        <p className="text-[11px] font-mono text-zinc-600 mt-0.5">
                           {d.handle} on the {(d.subcategory ?? 'story').replace(/_/g, ' ')}
                         </p>
                       </li>

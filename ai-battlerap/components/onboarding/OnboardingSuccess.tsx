@@ -106,7 +106,7 @@ export default function OnboardingSuccess({
             <p className="mt-4 font-mono text-sm uppercase tracking-widest text-[#ff8c42] font-bold">
               THIS FACE IS YOURS. FOREVER.
             </p>
-            <p className="font-mono text-[11px] uppercase tracking-wider text-zinc-500 mt-1">
+            <p className="font-mono text-[13px] uppercase tracking-wider text-zinc-500 mt-1">
               NO OTHER BATTLER CAN EVER CLAIM IT
             </p>
           </div>

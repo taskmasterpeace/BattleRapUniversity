@@ -83,7 +83,7 @@ export default function VerifiedProfileClient({
             )}
           </div>
           <div className="min-w-0 flex-1">
-            <div className="inline-block px-2.5 py-1 bg-[#ff8c42]/15 border border-[#ff8c42]/40 font-mono text-[10px] uppercase tracking-[0.3em] text-[#ff8c42] mb-2">
+            <div className="inline-block px-2.5 py-1 bg-[#ff8c42]/15 border border-[#ff8c42]/40 font-mono text-[12px] uppercase tracking-[0.3em] text-[#ff8c42] mb-2">
               ✓ Verified Battler
             </div>
             <h1 className="text-4xl font-display font-black uppercase tracking-tighter text-zinc-100">
@@ -114,7 +114,7 @@ export default function VerifiedProfileClient({
             ].map((s) => (
               <div key={s.label} className="bg-[#18191c] border-2 border-[#3a3d44] p-4 text-center">
                 <div className="text-3xl font-display font-black text-[#ff8c42]">{s.value}</div>
-                <div className="font-mono text-[10px] uppercase tracking-widest text-zinc-500 mt-1">
+                <div className="font-mono text-[12px] uppercase tracking-widest text-zinc-500 mt-1">
                   {s.label}
                 </div>
               </div>
@@ -130,13 +130,13 @@ export default function VerifiedProfileClient({
             </h2>
             <div className="flex items-center gap-3">
               {saved && !editing && (
-                <span className="font-mono text-[10px] uppercase tracking-widest text-green-400">✓ Saved</span>
+                <span className="font-mono text-[12px] uppercase tracking-widest text-green-400">✓ Saved</span>
               )}
               {!editing && (
                 <button
                   type="button"
                   onClick={() => setEditing(true)}
-                  className="px-4 py-2 border-2 border-[#3a3d44] hover:border-[#ff8c42] text-zinc-300 font-mono text-[10px] uppercase tracking-widest transition"
+                  className="px-4 py-2 border-2 border-[#3a3d44] hover:border-[#ff8c42] text-zinc-300 font-mono text-[12px] uppercase tracking-widest transition"
                 >
                   Edit
                 </button>
@@ -147,7 +147,7 @@ export default function VerifiedProfileClient({
           {editing ? (
             <div className="space-y-4">
               <div>
-                <label className="block font-mono text-[10px] uppercase tracking-widest text-zinc-500 mb-1.5">
+                <label className="block font-mono text-[12px] uppercase tracking-widest text-zinc-500 mb-1.5">
                   Bio
                 </label>
                 <textarea
@@ -160,7 +160,7 @@ export default function VerifiedProfileClient({
                 />
               </div>
               <div>
-                <label className="block font-mono text-[10px] uppercase tracking-widest text-zinc-500 mb-1.5">
+                <label className="block font-mono text-[12px] uppercase tracking-widest text-zinc-500 mb-1.5">
                   Avatar URL
                 </label>
                 <input
@@ -220,7 +220,7 @@ export default function VerifiedProfileClient({
                 .filter((g) => g.items.length > 0)
                 .map((group) => (
                   <div key={group.title}>
-                    <div className="font-mono text-[10px] uppercase tracking-widest text-zinc-500 mb-3">
+                    <div className="font-mono text-[12px] uppercase tracking-widest text-zinc-500 mb-3">
                       {group.title}
                     </div>
                     <div className="space-y-2">
@@ -231,7 +231,7 @@ export default function VerifiedProfileClient({
                           </span>
                           <div className="min-w-0">
                             <div className="text-sm font-bold text-zinc-100">{a.title}</div>
-                            <div className="font-mono text-[10px] uppercase tracking-widest text-zinc-600">
+                            <div className="font-mono text-[12px] uppercase tracking-widest text-zinc-600">
                               {[a.region, a.year].filter(Boolean).join(' · ') || '—'}
                             </div>
                           </div>
@@ -250,7 +250,7 @@ export default function VerifiedProfileClient({
             {(battler.style_tags ?? []).map((t) => (
               <span
                 key={t}
-                className="px-3 py-1.5 bg-[#18191c] border border-[#3a3d44] font-mono text-[10px] uppercase tracking-widest text-zinc-400"
+                className="px-3 py-1.5 bg-[#18191c] border border-[#3a3d44] font-mono text-[12px] uppercase tracking-widest text-zinc-400"
               >
                 {t}
               </span>

@@ -89,7 +89,7 @@ export default function StatGauge({ label, v10, valueText, noGrade }: StatGaugeP
   const grade = gradeOf(v);
   return (
     <div className="fs flex items-center gap-3">
-      <span className="w-32 shrink-0 font-mono text-[9px] uppercase tracking-[0.18em] text-zinc-400 truncate">
+      <span className="w-32 shrink-0 font-mono text-[11px] uppercase tracking-[0.18em] text-zinc-400 truncate">
         {label}
       </span>
       <div className="flex-1 min-w-0">
@@ -110,7 +110,7 @@ export default function StatGauge({ label, v10, valueText, noGrade }: StatGaugeP
       )}
       <span
         className="w-12 text-right shrink-0"
-        style={{ fontFamily: 'var(--font-pixel)', fontSize: 9, color: '#F4F4F6' }}
+        style={{ fontFamily: 'var(--font-pixel)', fontSize: 11, color: '#F4F4F6' }}
       >
         {valueText ?? `${fmt(v)}/10`}
       </span>

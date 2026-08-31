@@ -163,7 +163,7 @@ export default async function LandingPage() {
 
       {/* ── BREAKING TICKER (real headlines from the living world) ── */}
       <div className="border-b border-[#ff8c42]/30 bg-[#0e0f12] py-2 overflow-hidden flex items-center">
-        <span className="flex-shrink-0 px-3 font-mono text-[10px] font-bold uppercase tracking-widest bg-[#ff8c42] text-black py-0.5 ml-3 mr-2 flex items-center gap-1.5">
+        <span className="flex-shrink-0 px-3 font-mono text-[12px] font-bold uppercase tracking-widest bg-[#ff8c42] text-black py-0.5 ml-3 mr-2 flex items-center gap-1.5">
           <span className="w-1.5 h-1.5 rounded-full bg-black animate-live-blink" />
           LIVE
         </span>
@@ -172,7 +172,7 @@ export default async function LandingPage() {
             {[0, 1].map((dup) => (
               <span key={dup} className="inline-flex">
                 {tickerItems.map((t, i) => (
-                  <span key={`${dup}-${i}`} className="font-mono text-[11px] uppercase tracking-[0.2em] text-[#ff8c42]/90 mx-8">
+                  <span key={`${dup}-${i}`} className="font-mono text-[13px] uppercase tracking-[0.2em] text-[#ff8c42]/90 mx-8">
                     ● {t}
                   </span>
                 ))}
@@ -263,7 +263,7 @@ export default async function LandingPage() {
                     priority={i === 1}
                   />
                 </div>
-                <p className={`text-center font-mono text-[10px] uppercase tracking-[0.25em] mt-2 ${i === 1 ? 'text-[#ff8c42]' : 'text-zinc-600'}`}>
+                <p className={`text-center font-mono text-[12px] uppercase tracking-[0.25em] mt-2 ${i === 1 ? 'text-[#ff8c42]' : 'text-zinc-600'}`}>
                   {b.name}
                 </p>
               </div>
@@ -287,13 +287,13 @@ export default async function LandingPage() {
               </h2>
               <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-live-blink" />
             </div>
-            <p className="text-center font-mono text-[10px] uppercase tracking-[0.35em] text-zinc-500 -mt-4 mb-8">
+            <p className="text-center font-mono text-[12px] uppercase tracking-[0.35em] text-zinc-500 -mt-4 mb-8">
               THIS IS NOT A MOCKUP — THE WORLD IS RUNNING RIGHT NOW
             </p>
             <div className="grid lg:grid-cols-3 gap-5">
               {/* Tonight's card */}
               <div className="bg-[#101114] border-2 border-[#3a3d44] p-5">
-                <p className="font-mono text-[10px] uppercase tracking-widest text-[#ff8c42] mb-4">TONIGHT&apos;S CARD</p>
+                <p className="font-mono text-[12px] uppercase tracking-widest text-[#ff8c42] mb-4">TONIGHT&apos;S CARD</p>
                 <div className="space-y-3">
                   {pulse.upcoming.map((b) => (
                     <Link key={b.id} href={`/watch/${b.id}`} className="flex items-center gap-2 group">
@@ -307,7 +307,7 @@ export default async function LandingPage() {
                         <span className="block text-xs font-bold uppercase tracking-tight text-zinc-200 group-hover:text-[#ff8c42] truncate transition-colors">
                           {b.a?.stage_name} <span className="text-[#ff8c42]">vs</span> {b.b?.stage_name}
                         </span>
-                        <span className="block font-mono text-[9px] uppercase tracking-widest text-zinc-600 truncate">
+                        <span className="block font-mono text-[11px] uppercase tracking-widest text-zinc-600 truncate">
                           {b.league?.name}
                         </span>
                       </span>
@@ -320,13 +320,13 @@ export default async function LandingPage() {
                     </Link>
                   ))}
                 </div>
-                <Link href="/watch" className="block mt-4 text-center font-mono text-[10px] uppercase tracking-widest text-[#ff8c42] hover:text-[#ff9d5c]">
+                <Link href="/watch" className="block mt-4 text-center font-mono text-[12px] uppercase tracking-widest text-[#ff8c42] hover:text-[#ff9d5c]">
                   FULL CARD →
                 </Link>
               </div>
               {/* Top of the rankings */}
               <div className="bg-[#101114] border-2 border-[#3a3d44] p-5">
-                <p className="font-mono text-[10px] uppercase tracking-widest text-[#ff8c42] mb-4">POWER RANKINGS</p>
+                <p className="font-mono text-[12px] uppercase tracking-widest text-[#ff8c42] mb-4">POWER RANKINGS</p>
                 <div className="space-y-3">
                   {pulse.top.map((t: any, i: number) => (
                     <Link key={t.battler.id} href={`/battler/${t.battler.id}`} className="flex items-center gap-3 group">
@@ -340,20 +340,20 @@ export default async function LandingPage() {
                       <span className="min-w-0 flex-1">
                         <span className="block text-xs font-bold uppercase tracking-tight text-zinc-200 group-hover:text-[#ff8c42] truncate transition-colors">
                           {t.battler.stage_name}
-                          {t.battler.is_real && <span className="ml-1.5 px-1 py-px bg-[#ff8c42] text-black font-mono text-[7px] font-bold tracking-widest align-middle">✓</span>}
+                          {t.battler.is_real && <span className="ml-1.5 px-1 py-px bg-[#ff8c42] text-black font-mono text-[11px] font-bold tracking-widest align-middle">✓</span>}
                         </span>
                       </span>
                       <span className="font-mono text-xs text-zinc-400">{t.rating}</span>
                     </Link>
                   ))}
                 </div>
-                <Link href="/leaderboard" className="block mt-4 text-center font-mono text-[10px] uppercase tracking-widest text-[#ff8c42] hover:text-[#ff9d5c]">
+                <Link href="/leaderboard" className="block mt-4 text-center font-mono text-[12px] uppercase tracking-widest text-[#ff8c42] hover:text-[#ff9d5c]">
                   FULL RANKINGS →
                 </Link>
               </div>
               {/* The press */}
               <div className="bg-[#101114] border-2 border-[#3a3d44] p-5">
-                <p className="font-mono text-[10px] uppercase tracking-widest text-[#ff8c42] mb-4">THE PRESS</p>
+                <p className="font-mono text-[12px] uppercase tracking-widest text-[#ff8c42] mb-4">THE PRESS</p>
                 <div className="space-y-3">
                   {pulse.headlines.slice(0, 3).map((h) => (
                     <Link key={h.slug} href={`/media/${h.slug}`} className="block group">
@@ -363,7 +363,7 @@ export default async function LandingPage() {
                     </Link>
                   ))}
                 </div>
-                <Link href="/media" className="block mt-4 text-center font-mono text-[10px] uppercase tracking-widest text-[#ff8c42] hover:text-[#ff9d5c]">
+                <Link href="/media" className="block mt-4 text-center font-mono text-[12px] uppercase tracking-widest text-[#ff8c42] hover:text-[#ff9d5c]">
                   ALL COVERAGE →
                 </Link>
               </div>
@@ -386,7 +386,7 @@ export default async function LandingPage() {
             </p>
           </div>
           <div className="relative border-2 border-[#ff8c42]/60 bg-[#101114] p-2 shadow-[0_0_80px_-20px_rgba(255,140,66,0.4)]">
-            <div className="absolute -top-3 left-6 px-3 py-0.5 bg-[#ff8c42] text-black font-mono text-[10px] font-bold uppercase tracking-widest z-10">
+            <div className="absolute -top-3 left-6 px-3 py-0.5 bg-[#ff8c42] text-black font-mono text-[12px] font-bold uppercase tracking-widest z-10">
               ▶ REQUIRED VIEWING — FRESHMAN ORIENTATION
             </div>
             <video
@@ -501,7 +501,7 @@ export default async function LandingPage() {
                       className="object-contain [image-rendering:pixelated] opacity-90"
                     />
                   </span>
-                  <span className="font-mono text-[9px] uppercase tracking-widest text-zinc-500 mt-2 text-center whitespace-normal leading-tight">
+                  <span className="font-mono text-[11px] uppercase tracking-widest text-zinc-500 mt-2 text-center whitespace-normal leading-tight">
                     {l.name}
                   </span>
                 </span>
@@ -532,7 +532,7 @@ export default async function LandingPage() {
           >
             <Icon name="mic" size={18} className="mr-2 -mt-0.5" />CREATE YOUR BATTLER
           </Link>
-          <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-zinc-600 mt-8">
+          <p className="font-mono text-[12px] uppercase tracking-[0.3em] text-zinc-600 mt-8">
             NO BARS REQUIRED — WE SIMULATE. YOU STRATEGIZE.
           </p>
         </div>

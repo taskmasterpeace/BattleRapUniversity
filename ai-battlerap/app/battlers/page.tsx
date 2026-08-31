@@ -208,7 +208,7 @@ export default async function BattlersRosterPage({
                       >
                         {b.stage_name}
                       </h3>
-                      <div className="flex items-center justify-between text-[10px] uppercase tracking-widest font-bold">
+                      <div className="flex items-center justify-between text-[12px] uppercase tracking-widest font-bold">
                         <span className={`px-2 py-0.5 border ${tierClass}`}>
                           {b.tier || 'unranked'}
                         </span>
@@ -219,7 +219,7 @@ export default async function BattlersRosterPage({
                         )}
                       </div>
                       {league && (
-                        <div className="text-[10px] uppercase tracking-widest text-zinc-500 truncate">
+                        <div className="text-[12px] uppercase tracking-widest text-zinc-500 truncate">
                           {league.short_code}
                         </div>
                       )}

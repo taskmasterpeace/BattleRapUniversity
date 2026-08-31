@@ -90,15 +90,15 @@ function Fighter({
       </div>
       <div className="flex items-center gap-2 mt-1.5 justify-center flex-wrap">
         {f.isReal && (
-          <span className="px-1.5 py-0.5 bg-[#F5731A] text-black font-mono text-[8px] font-bold uppercase tracking-widest">
+          <span className="px-1.5 py-0.5 bg-[#F5731A] text-black font-mono text-[10px] font-bold uppercase tracking-widest">
             ✓ VERIFIED
           </span>
         )}
         {f.tier && (
-          <span className="font-mono text-[9px] uppercase tracking-widest text-zinc-500">{f.tier} TIER</span>
+          <span className="font-mono text-[11px] uppercase tracking-widest text-zinc-500">{f.tier} TIER</span>
         )}
       </div>
-      {f.record && <p className="font-mono text-[11px] text-zinc-300 mt-1">{f.record}</p>}
+      {f.record && <p className="font-mono text-[13px] text-zinc-300 mt-1">{f.record}</p>}
       {f.won && (
         <span
           className="inline-block mt-2 px-3 py-1 font-display font-black text-xs uppercase tracking-wider text-black"
@@ -154,7 +154,7 @@ export default function MatchupMasthead({
             </div>
           )}
           {subLine && (
-            <p className="font-mono text-[9px] uppercase tracking-[0.25em] text-zinc-400 mt-2">{subLine}</p>
+            <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-zinc-400 mt-2">{subLine}</p>
           )}
         </div>
         <Fighter f={b} corner="blue" linkProfile={linkProfiles} />

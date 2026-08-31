@@ -48,14 +48,14 @@ function MatchupBadge({ m }: { m: ReturnType<typeof matchupVs> }) {
   return m.kind === 'super' ? (
     <span
       title={`Super effective vs their ${label} (2×)`}
-      className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-green-500/15 text-green-400 border border-green-500/40 text-[9px] font-mono font-bold uppercase tracking-wider"
+      className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-green-500/15 text-green-400 border border-green-500/40 text-[11px] font-mono font-bold uppercase tracking-wider"
     >
       ★ 2× VS {label}
     </span>
   ) : (
     <span
       title={`Not very effective vs their ${label} (0.5×)`}
-      className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-red-500/15 text-red-400 border border-red-500/40 text-[9px] font-mono font-bold uppercase tracking-wider"
+      className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-red-500/15 text-red-400 border border-red-500/40 text-[11px] font-mono font-bold uppercase tracking-wider"
     >
       ▼ 0.5× VS {label}
     </span>

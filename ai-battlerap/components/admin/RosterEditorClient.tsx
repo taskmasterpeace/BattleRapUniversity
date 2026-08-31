@@ -178,12 +178,12 @@ export default function RosterEditorClient() {
 
       {/* Coding legend — the culture read, not race */}
       <div className="bg-[#17181C] border-2 border-black p-4 shadow-[3px_3px_0_rgba(0,0,0,.4)]" style={{ borderTop: '3px solid #F5731A' }}>
-        <p className="font-mono text-[9px] uppercase tracking-[0.25em] text-zinc-500 mb-2">
+        <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-zinc-500 mb-2">
           CODING = WHICH ROOM CLAIMS THEM (PERSONALITY, NOT RACE)
         </p>
         <div className="flex flex-wrap gap-x-6 gap-y-1">
           {Object.entries(CODING_META).map(([k, m]) => (
-            <span key={k} className="font-mono text-[10px] uppercase tracking-wide text-zinc-400">
+            <span key={k} className="font-mono text-[12px] uppercase tracking-wide text-zinc-400">
               <span className="font-bold" style={{ color: m.color }}>■ {m.label}</span> — {m.hint}
             </span>
           ))}
@@ -212,7 +212,7 @@ export default function RosterEditorClient() {
           <option value="overseas">OVERSEAS</option>
           <option value="unset">MISSING</option>
         </select>
-        <span className="font-mono text-[10px] uppercase tracking-widest text-zinc-600 ml-auto">
+        <span className="font-mono text-[12px] uppercase tracking-widest text-zinc-600 ml-auto">
           {filtered.length > 150 ? `SHOWING 150 OF ${filtered.length} — REFINE SEARCH` : `SHOWING ${filtered.length}`}
         </span>
       </div>
@@ -253,12 +253,12 @@ export default function RosterEditorClient() {
                         {r.stageName}
                       </Link>
                       {r.isReal && (
-                        <span className="px-1.5 py-0.5 bg-[#ff8c42] text-black font-mono text-[8px] font-bold uppercase">
+                        <span className="px-1.5 py-0.5 bg-[#ff8c42] text-black font-mono text-[10px] font-bold uppercase">
                           REAL
                         </span>
                       )}
                     </div>
-                    <p className="font-mono text-[9px] uppercase tracking-widest text-zinc-600 truncate">
+                    <p className="font-mono text-[11px] uppercase tracking-widest text-zinc-600 truncate">
                       {[
                         r.gender ? r.gender.toUpperCase() : '⚠ NO GENDER',
                         cm ? cm.label : '⚠ NO CODING',
@@ -274,7 +274,7 @@ export default function RosterEditorClient() {
                   </div>
                   <button
                     onClick={() => (isOpen ? (setOpenId(null), setDraft(null)) : openDrawer(r))}
-                    className="shrink-0 px-4 py-2 border-2 border-[#3a3d44] font-mono text-[10px] uppercase tracking-widest text-zinc-300 hover:border-[#F5731A] hover:text-[#F5731A] transition-colors"
+                    className="shrink-0 px-4 py-2 border-2 border-[#3a3d44] font-mono text-[12px] uppercase tracking-widest text-zinc-300 hover:border-[#F5731A] hover:text-[#F5731A] transition-colors"
                   >
                     {isOpen ? 'CLOSE ▲' : 'EDIT ▼'}
                   </button>
@@ -285,7 +285,7 @@ export default function RosterEditorClient() {
                     {/* Left: identity */}
                     <div className="space-y-3">
                       <div>
-                        <label className="font-mono text-[9px] uppercase tracking-[0.2em] text-zinc-500 block mb-1">
+                        <label className="font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-500 block mb-1">
                           Stage name
                         </label>
                         <input
@@ -296,7 +296,7 @@ export default function RosterEditorClient() {
                       </div>
                       <div className="grid grid-cols-2 gap-3">
                         <div>
-                          <label className="font-mono text-[9px] uppercase tracking-[0.2em] text-zinc-500 block mb-1">
+                          <label className="font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-500 block mb-1">
                             Gender
                           </label>
                           <select
@@ -310,7 +310,7 @@ export default function RosterEditorClient() {
                           </select>
                         </div>
                         <div>
-                          <label className="font-mono text-[9px] uppercase tracking-[0.2em] text-zinc-500 block mb-1">
+                          <label className="font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-500 block mb-1">
                             Coding
                           </label>
                           <select
@@ -329,7 +329,7 @@ export default function RosterEditorClient() {
                       <div className="grid grid-cols-2 gap-3">
                         {IDENTITY_FIELDS.map((f) => (
                           <div key={f.key}>
-                            <label className="font-mono text-[9px] uppercase tracking-[0.2em] text-zinc-500 block mb-1">
+                            <label className="font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-500 block mb-1">
                               {f.label}
                             </label>
                             <input
@@ -344,7 +344,7 @@ export default function RosterEditorClient() {
                         ))}
                       </div>
                       <div>
-                        <label className="font-mono text-[9px] uppercase tracking-[0.2em] text-zinc-500 block mb-1">
+                        <label className="font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-500 block mb-1">
                           Style tags (comma separated)
                         </label>
                         <input
@@ -355,7 +355,7 @@ export default function RosterEditorClient() {
                         />
                       </div>
                       <div>
-                        <label className="font-mono text-[9px] uppercase tracking-[0.2em] text-zinc-500 block mb-1">
+                        <label className="font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-500 block mb-1">
                           Persona facets — who they are in the culture (comma separated)
                         </label>
                         <input
@@ -364,7 +364,7 @@ export default function RosterEditorClient() {
                           placeholder="Christian, LGBTQ, Ex-Con, Veteran, Muslim, Sober, Family Man, Battle Nerd…"
                           className={inputCls}
                         />
-                        <p className="font-mono text-[8px] uppercase tracking-wide text-zinc-600 mt-1">
+                        <p className="font-mono text-[10px] uppercase tracking-wide text-zinc-600 mt-1">
                           FEEDS ANGLES + STORYLINES — WHAT OPPONENTS AND BLOGGERS CAN TALK ABOUT
                         </p>
                       </div>
@@ -373,7 +373,7 @@ export default function RosterEditorClient() {
                     {/* Right: numbers */}
                     <div className="space-y-3">
                       <div>
-                        <label className="font-mono text-[9px] uppercase tracking-[0.2em] text-zinc-500 block mb-1">
+                        <label className="font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-500 block mb-1">
                           ELO rating
                         </label>
                         <input
@@ -385,11 +385,11 @@ export default function RosterEditorClient() {
                       </div>
                       {ATTR_GROUPS.map((g) => (
                         <div key={g.group}>
-                          <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#ff8c42] mb-1">{g.label}</p>
+                          <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-[#ff8c42] mb-1">{g.label}</p>
                           <div className="grid grid-cols-4 gap-2">
                             {g.keys.map((k) => (
                               <div key={k}>
-                                <label className="font-mono text-[8px] uppercase tracking-wide text-zinc-600 block">
+                                <label className="font-mono text-[10px] uppercase tracking-wide text-zinc-600 block">
                                   {k.replace(/_/g, ' ').slice(0, 10)}
                                 </label>
                                 <input
@@ -415,7 +415,7 @@ export default function RosterEditorClient() {
                         </div>
                       ))}
                       <div>
-                        <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#ff8c42] mb-1">MENTAL</p>
+                        <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-[#ff8c42] mb-1">MENTAL</p>
                         <input
                           type="number"
                           min={1}
@@ -438,7 +438,7 @@ export default function RosterEditorClient() {
                         </button>
                         <button
                           onClick={() => (setOpenId(null), setDraft(null))}
-                          className="px-4 py-2.5 border-2 border-[#3a3d44] font-mono text-[10px] uppercase tracking-widest text-zinc-400 hover:text-zinc-100 transition-colors"
+                          className="px-4 py-2.5 border-2 border-[#3a3d44] font-mono text-[12px] uppercase tracking-widest text-zinc-400 hover:text-zinc-100 transition-colors"
                         >
                           CANCEL
                         </button>

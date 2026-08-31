@@ -78,7 +78,7 @@ export default function LeaderboardFilters({
       {/* scope selects */}
       <div className="flex flex-wrap gap-2">
         <label className="flex items-center gap-2 bg-[#101114] border-2 border-[#3a3d44] px-3 py-2 focus-within:border-[#ff8c42] transition">
-          <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-zinc-500">
+          <span className="font-mono text-[12px] uppercase tracking-[0.25em] text-zinc-500">
             CITY
           </span>
           <select
@@ -105,7 +105,7 @@ export default function LeaderboardFilters({
         </label>
 
         <label className="flex items-center gap-2 bg-[#101114] border-2 border-[#3a3d44] px-3 py-2 focus-within:border-[#ff8c42] transition">
-          <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-zinc-500">
+          <span className="font-mono text-[12px] uppercase tracking-[0.25em] text-zinc-500">
             LEAGUE
           </span>
           <select
@@ -134,7 +134,7 @@ export default function LeaderboardFilters({
         {(city || league || playersOnly || verifiedOnly) && (
           <Link
             href="/leaderboard"
-            className="flex items-center px-3 py-2 border-2 border-transparent text-[11px] font-mono uppercase tracking-[0.2em] text-zinc-500 hover:text-[#ff8c42] transition"
+            className="flex items-center px-3 py-2 border-2 border-transparent text-[13px] font-mono uppercase tracking-[0.2em] text-zinc-500 hover:text-[#ff8c42] transition"
           >
             ✕ CLEAR
           </Link>

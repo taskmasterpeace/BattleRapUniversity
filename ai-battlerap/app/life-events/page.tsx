@@ -112,7 +112,7 @@ export default async function LifeEventsPage() {
                     />
                   )}
                   <span className="flex-1 min-w-0 flex flex-col justify-center">
-                    <span className="font-mono text-[10px] uppercase tracking-[0.1em] mb-0.5">
+                    <span className="font-mono text-[12px] uppercase tracking-[0.1em] mb-0.5">
                       <b className={`${cat.text} font-display font-black tracking-wider`}>{cat.label}</b>
                       <span className="text-zinc-600"> · </span>
                       <b className={`${sev.text} font-display font-black tracking-wider`}>{sev.label}</b>
@@ -121,7 +121,7 @@ export default async function LifeEventsPage() {
                       {event.template?.title ?? 'LIFE EVENT'}
                     </span>
                     {event.battle_context?.opponent && (
-                      <span className="font-mono text-[11px] uppercase tracking-wide text-[#ff8c42] mt-0.5">
+                      <span className="font-mono text-[13px] uppercase tracking-wide text-[#ff8c42] mt-0.5">
                         vs {event.battle_context.opponent}
                         {event.battle_context.league ? (
                           <span className="text-zinc-500"> · {event.battle_context.league}</span>
@@ -133,7 +133,7 @@ export default async function LifeEventsPage() {
                     </span>
                   </span>
                   <span className="flex-none self-center flex flex-col items-end gap-1">
-                    <span className="text-[10px] font-mono text-zinc-600 uppercase">
+                    <span className="text-[12px] font-mono text-zinc-600 uppercase">
                       {new Date(event.triggered_at).toLocaleDateString()}
                     </span>
                     <span className={`text-lg ${cat.text} group-hover:translate-x-0.5 transition`}>→</span>

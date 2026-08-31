@@ -201,13 +201,13 @@ export default function RoundResultsPage() {
           {/* What you locked in */}
           {lockedRows.length > 0 && (
             <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-6 mb-8">
-              <div className="text-[11px] text-zinc-500 font-display font-black uppercase tracking-widest mb-4">
+              <div className="text-[13px] text-zinc-500 font-display font-black uppercase tracking-widest mb-4">
                 WHAT YOU'RE WALKING IN WITH
               </div>
               <div className="space-y-3">
                 {lockedRows.map(({ label, items }) => (
                   <div key={label} className="flex flex-col sm:flex-row sm:items-center gap-2">
-                    <div className="text-[10px] text-zinc-500 font-display font-black uppercase tracking-widest w-24 shrink-0">
+                    <div className="text-[12px] text-zinc-500 font-display font-black uppercase tracking-widest w-24 shrink-0">
                       {label}
                     </div>
                     <div className="flex flex-wrap gap-2">
@@ -223,7 +223,7 @@ export default function RoundResultsPage() {
                   </div>
                 ))}
               </div>
-              <div className="mt-4 pt-4 border-t border-[#3a3d44] text-[11px] text-zinc-500 font-display font-bold uppercase tracking-wide">
+              <div className="mt-4 pt-4 border-t border-[#3a3d44] text-[13px] text-zinc-500 font-display font-bold uppercase tracking-wide">
                 {battle.ai_battler?.stage_name}'s cards stay hidden until the reveal.
               </div>
             </div>
@@ -231,7 +231,7 @@ export default function RoundResultsPage() {
 
           {/* PRESSURE MOVE — the physical chess match before the bars */}
           <div className="fs bg-[#101114] border-2 border-black p-5 mb-8 shadow-[3px_3px_0_rgba(0,0,0,.4)]" style={{ borderTop: '3px solid #E23A2E' }}>
-            <div className="font-mono text-[9px] uppercase tracking-[0.25em] text-zinc-500 mb-3">
+            <div className="font-mono text-[11px] uppercase tracking-[0.25em] text-zinc-500 mb-3">
               PRESSURE MOVE · HOW YOU CARRY IT IN THE ROOM
             </div>
             <div className="grid grid-cols-3 gap-2">
@@ -254,7 +254,7 @@ export default function RoundResultsPage() {
                   <div className="font-display font-black uppercase tracking-wider text-sm text-zinc-100">
                     {opt.label}
                   </div>
-                  <div className="font-mono text-[8px] uppercase tracking-wide text-zinc-500 mt-1 leading-relaxed">
+                  <div className="font-mono text-[10px] uppercase tracking-wide text-zinc-500 mt-1 leading-relaxed">
                     {opt.hint}
                   </div>
                 </button>
@@ -270,7 +270,7 @@ export default function RoundResultsPage() {
           >
             {simulating ? 'THE ROOM GOES QUIET…' : `PERFORM ROUND ${roundNum} →`}
           </button>
-          <p className="text-center text-[11px] text-zinc-600 font-display font-bold uppercase tracking-widest mt-4">
+          <p className="text-center text-[13px] text-zinc-600 font-display font-bold uppercase tracking-widest mt-4">
             Once it's performed, there's no taking it back.
           </p>
         </div>
@@ -285,7 +285,7 @@ export default function RoundResultsPage() {
               >
                 {battle.ai_battler?.stage_name} BUMPED YOU
               </div>
-              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-zinc-400 mb-6">
+              <p className="font-mono text-[12px] uppercase tracking-[0.2em] text-zinc-400 mb-6">
                 Walked straight through your space mid-setup. The whole room saw it. What are you doing?
               </p>
               <div className="space-y-3">
@@ -294,7 +294,7 @@ export default function RoundResultsPage() {
                   className="w-full p-4 border-2 border-[#35C46B]/60 hover:border-[#35C46B] bg-[#35C46B]/5 text-left transition-all"
                 >
                   <div className="font-display font-black uppercase tracking-wider text-zinc-100">LAUGH IT OFF</div>
-                  <div className="font-mono text-[8px] uppercase tracking-wide text-zinc-500 mt-1">
+                  <div className="font-mono text-[10px] uppercase tracking-wide text-zinc-500 mt-1">
                     Composure wins the room — they look pressed, you look untouchable
                   </div>
                 </button>
@@ -303,7 +303,7 @@ export default function RoundResultsPage() {
                   className="w-full p-4 border-2 border-[#E7B23C]/60 hover:border-[#E7B23C] bg-[#E7B23C]/5 text-left transition-all"
                 >
                   <div className="font-display font-black uppercase tracking-wider text-zinc-100">BUMP BACK</div>
-                  <div className="font-mono text-[8px] uppercase tracking-wide text-zinc-500 mt-1">
+                  <div className="font-mono text-[10px] uppercase tracking-wide text-zinc-500 mt-1">
                     Meet the energy — both of you tense up, and the room EATS IT UP
                   </div>
                 </button>
@@ -312,7 +312,7 @@ export default function RoundResultsPage() {
                   className="w-full p-4 border-2 border-[#E23A2E]/60 hover:border-[#E23A2E] bg-[#E23A2E]/5 text-left transition-all"
                 >
                   <div className="font-display font-black uppercase tracking-wider text-[#E23A2E]">SWING</div>
-                  <div className="font-mono text-[8px] uppercase tracking-wide text-zinc-500 mt-1">
+                  <div className="font-mono text-[10px] uppercase tracking-wide text-zinc-500 mt-1">
                     Battle OVER. No contest. Your rep craters — leagues stop calling people who turn card nights into brawls
                   </div>
                 </button>
@@ -331,10 +331,10 @@ export default function RoundResultsPage() {
               >
                 IT GOT PHYSICAL
               </div>
-              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-zinc-300 mb-2">
+              <p className="font-mono text-[12px] uppercase tracking-[0.2em] text-zinc-300 mb-2">
                 {fightBroke.swungBy === 'player' ? 'YOU SWUNG.' : `${battle.ai_battler?.stage_name?.toUpperCase()} SWUNG.`} SECURITY RUSHED THE STAGE.
               </p>
-              <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-zinc-500 mb-6">
+              <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-zinc-500 mb-6">
                 NO CONTEST · THE TAPE CUTS · THE BLOGS ALREADY KNOW
               </p>
               <Link
@@ -424,10 +424,10 @@ export default function RoundResultsPage() {
               return (
                 <span
                   key={i}
-                  className="inline-flex items-center gap-2 px-3 py-1.5 border-2 border-black bg-[#170c0b] shadow-[2px_2px_0_rgba(0,0,0,.45)]"
-                  style={{ borderLeft: `3px solid ${p.by === 'player' ? '#E7B23C' : '#E23A2E'}` }}
+                  className="inline-flex items-center gap-2 px-4 py-2.5 border-2 border-black bg-[#170c0b] shadow-[3px_3px_0_rgba(0,0,0,.45)]"
+                  style={{ borderLeft: `4px solid ${p.by === 'player' ? '#E7B23C' : '#E23A2E'}` }}
                 >
-                  <span className="font-mono text-[8px] uppercase tracking-[0.18em] text-zinc-300">{story}</span>
+                  <span className="font-mono text-[13px] uppercase tracking-[0.16em] text-zinc-200">{story}</span>
                 </span>
               );
             })}
@@ -440,19 +440,19 @@ export default function RoundResultsPage() {
             {angles.map((a, i) => (
               <span
                 key={i}
-                className="inline-flex items-center gap-2 px-3 py-1.5 border-2 border-black bg-[#1c1409] shadow-[2px_2px_0_rgba(0,0,0,.45)]"
-                style={{ borderLeft: `3px solid ${a.researcherIsPlayer ? '#E7B23C' : '#E23A2E'}` }}
+                className="inline-flex items-center gap-2.5 px-4 py-2.5 border-2 border-black bg-[#1c1409] shadow-[3px_3px_0_rgba(0,0,0,.45)]"
+                style={{ borderLeft: `4px solid ${a.researcherIsPlayer ? '#E7B23C' : '#E23A2E'}` }}
               >
-                <span className="font-mono text-[8px] uppercase tracking-[0.2em] text-[#E7B23C]">
+                <span className="font-mono text-[12px] uppercase tracking-[0.2em] text-[#E7B23C]">
                   {a.researcherIsPlayer ? 'YOUR RESEARCH FOUND' : `${a.researcher.toUpperCase()} DUG UP`}
                 </span>
                 <span
                   className="uppercase text-zinc-100"
-                  style={{ fontFamily: 'var(--font-poster)', fontSize: 14, textShadow: '1px 1px 0 #000' }}
+                  style={{ fontFamily: 'var(--font-poster)', fontSize: 18, textShadow: '1px 1px 0 #000' }}
                 >
                   {a.facets.join(' · ')}
                 </span>
-                <span className="font-mono text-[8px] uppercase tracking-[0.15em] text-zinc-500">
+                <span className="font-mono text-[12px] uppercase tracking-[0.15em] text-zinc-500">
                   ON {a.target.toUpperCase()}
                 </span>
               </span>
@@ -508,7 +508,7 @@ export default function RoundResultsPage() {
           return (
             <div className={`mt-6 border-2 p-5 rounded-lg ${won ? 'border-[#ff8c42]/50 bg-[#ff8c42]/5' : winner === 'tie' ? 'border-yellow-500/40 bg-yellow-500/5' : 'border-red-500/40 bg-red-500/5'}`}>
               <div className="flex items-center gap-2 mb-1">
-                <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">The Read</span>
+                <span className="text-[12px] font-mono uppercase tracking-widest text-zinc-500">The Read</span>
               </div>
               <div className={`text-xl font-display font-black uppercase tracking-tight ${won ? 'text-[#ff8c42]' : winner === 'tie' ? 'text-yellow-500' : 'text-red-400'}`}>
                 {headline}

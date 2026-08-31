@@ -387,13 +387,13 @@ export default function LiveBattleViewer({
                 />
               )}
               <div className="text-center min-w-0">
-                <div className="text-[9px] md:text-[10px] font-mono uppercase tracking-[0.3em] text-[#ff8c42]">Battle Night · Live</div>
+                <div className="text-[11px] md:text-[12px] font-mono uppercase tracking-[0.3em] text-[#ff8c42]">Battle Night · Live</div>
                 <div className="font-display font-black uppercase tracking-tight text-lg md:text-2xl text-zinc-100 truncate">
                   {league.name}
                 </div>
               </div>
               {league.short_code && (
-                <span className="hidden sm:inline-block px-2 py-0.5 border-2 border-[#3a3d44] font-mono text-[10px] md:text-xs text-zinc-400 tracking-widest shrink-0">
+                <span className="hidden sm:inline-block px-2 py-0.5 border-2 border-[#3a3d44] font-mono text-[12px] md:text-xs text-zinc-400 tracking-widest shrink-0">
                   {league.short_code}
                 </span>
               )}
@@ -407,7 +407,7 @@ export default function LiveBattleViewer({
               <div className="relative inline-block w-[84px] md:w-[180px] aspect-square">
                 <Avatar url={playerAvatarUrl} size={180} className={`!w-full !h-full ${ended ? (playerWon ? 'ring-4 ring-[#ff8c42] shadow-[0_0_44px_rgba(255,140,66,0.65)] scale-110 transition-all duration-500' : 'opacity-40 grayscale scale-95 transition-all duration-500') : portraitFx(!!activeIsPlayer, activeMood)}`} alt={player.stage_name} />
                 {activeIsPlayer && !ended && activeMood && (
-                  <span className={`absolute -bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap px-1.5 md:px-2.5 py-0.5 text-[8px] md:text-[10px] font-display font-black uppercase tracking-wider ${MOOD_BADGE[activeMood].tone}`}>
+                  <span className={`absolute -bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap px-1.5 md:px-2.5 py-0.5 text-[10px] md:text-[12px] font-display font-black uppercase tracking-wider ${MOOD_BADGE[activeMood].tone}`}>
                     {MOOD_BADGE[activeMood].label}
                   </span>
                 )}
@@ -415,11 +415,11 @@ export default function LiveBattleViewer({
               <h2 className="mt-2 md:mt-3 text-base md:text-3xl font-display font-black uppercase tracking-tight truncate">
                 {player.stage_name}
               </h2>
-              <p className="text-[10px] md:text-xs text-[#ff8c42] uppercase tracking-widest mb-1 md:mb-2">YOU</p>
+              <p className="text-[12px] md:text-xs text-[#ff8c42] uppercase tracking-widest mb-1 md:mb-2">YOU</p>
               <div className="text-3xl md:text-6xl font-display font-black text-[#ff8c42] tabular-nums">
                 {pairedPlayerScore.toFixed(1)}
               </div>
-              <p className="text-[9px] md:text-[10px] text-zinc-500 uppercase tracking-widest">Cumulative</p>
+              <p className="text-[11px] md:text-[12px] text-zinc-500 uppercase tracking-widest">Cumulative</p>
             </div>
             {/* VS */}
             <div className="text-center px-1">
@@ -432,7 +432,7 @@ export default function LiveBattleViewer({
               <div className="relative inline-block w-[84px] md:w-[180px] aspect-square">
                 <Avatar url={aiAvatarUrl} size={180} className={`!w-full !h-full ${ended ? (!playerWon && winnerId ? 'ring-4 ring-red-500 shadow-[0_0_44px_rgba(239,68,68,0.6)] scale-110 transition-all duration-500' : 'opacity-40 grayscale scale-95 transition-all duration-500') : portraitFx(!activeIsPlayer && !!currentSegment, activeMood)}`} alt={ai.stage_name} />
                 {!activeIsPlayer && currentSegment && !ended && activeMood && (
-                  <span className={`absolute -bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap px-1.5 md:px-2.5 py-0.5 text-[8px] md:text-[10px] font-display font-black uppercase tracking-wider ${MOOD_BADGE[activeMood].tone}`}>
+                  <span className={`absolute -bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap px-1.5 md:px-2.5 py-0.5 text-[10px] md:text-[12px] font-display font-black uppercase tracking-wider ${MOOD_BADGE[activeMood].tone}`}>
                     {MOOD_BADGE[activeMood].label}
                   </span>
                 )}
@@ -440,11 +440,11 @@ export default function LiveBattleViewer({
               <h2 className="mt-2 md:mt-3 text-base md:text-3xl font-display font-black uppercase tracking-tight truncate">
                 {ai.stage_name}
               </h2>
-              <p className="text-[10px] md:text-xs text-red-500 uppercase tracking-widest mb-1 md:mb-2">OPPONENT</p>
+              <p className="text-[12px] md:text-xs text-red-500 uppercase tracking-widest mb-1 md:mb-2">OPPONENT</p>
               <div className="text-3xl md:text-6xl font-display font-black text-red-500 tabular-nums">
                 {pairedAiScore.toFixed(1)}
               </div>
-              <p className="text-[9px] md:text-[10px] text-zinc-500 uppercase tracking-widest">Cumulative</p>
+              <p className="text-[11px] md:text-[12px] text-zinc-500 uppercase tracking-widest">Cumulative</p>
             </div>
           </div>
 
@@ -466,8 +466,8 @@ export default function LiveBattleViewer({
             return (
               <div className="mb-8">
                 <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-600">THE ROOM</span>
-                  <span className={`text-[11px] font-display font-black uppercase tracking-wider ${
+                  <span className="text-[12px] font-mono uppercase tracking-widest text-zinc-600">THE ROOM</span>
+                  <span className={`text-[13px] font-display font-black uppercase tracking-wider ${
                     total === 0 ? 'text-zinc-600' : mag < 5 ? 'text-zinc-300' : leaderIsPlayer ? 'text-[#ff8c42]' : 'text-red-500'
                   }`}>
                     {verdict}
@@ -510,8 +510,8 @@ export default function LiveBattleViewer({
                       />
                       <span className="absolute bottom-0 right-0 text-xs md:text-sm bg-[#18191c]/80 px-0.5 leading-none">{d.emoji}</span>
                     </div>
-                    <div className="text-[9px] md:text-[10px] font-display font-black uppercase tracking-wider text-zinc-300 truncate w-full text-center">{res.lane.name}</div>
-                    <div className={`text-[9px] md:text-[10px] font-mono uppercase tracking-wide ${d.tone}`}>{d.label}</div>
+                    <div className="text-[11px] md:text-[12px] font-display font-black uppercase tracking-wider text-zinc-300 truncate w-full text-center">{res.lane.name}</div>
+                    <div className={`text-[11px] md:text-[12px] font-mono uppercase tracking-wide ${d.tone}`}>{d.label}</div>
                   </div>
                 );
               })}
@@ -597,22 +597,22 @@ export default function LiveBattleViewer({
                   }`}
                 >
                   <div className="flex items-center justify-between mb-1.5 md:mb-2">
-                    <span className="text-[10px] md:text-xs text-zinc-500 uppercase tracking-widest">Round {r}</span>
-                    {isActive && <span className="text-[9px] font-mono text-[#ff8c42] uppercase tracking-wider animate-pulse">● LIVE</span>}
-                    {decided && <span className="text-[9px] font-mono text-zinc-500 uppercase tracking-wider">FINAL</span>}
+                    <span className="text-[12px] md:text-xs text-zinc-500 uppercase tracking-widest">Round {r}</span>
+                    {isActive && <span className="text-[11px] font-mono text-[#ff8c42] uppercase tracking-wider animate-pulse">● LIVE</span>}
+                    {decided && <span className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider">FINAL</span>}
                   </div>
                   <div className="flex justify-between items-center text-base md:text-lg font-display font-black tabular-nums">
                     <span className={playerTook ? 'text-[#ff8c42]' : decided ? 'text-zinc-500' : 'text-zinc-600'}>
                       {decided || isActive ? playerRoundScore.toFixed(1) : '—'}
                     </span>
-                    <span className="text-zinc-700 text-[10px] md:text-xs">vs</span>
+                    <span className="text-zinc-700 text-[12px] md:text-xs">vs</span>
                     <span className={aiTook ? 'text-red-500' : decided ? 'text-zinc-500' : 'text-zinc-600'}>
                       {decided || isActive ? aiRoundScore.toFixed(1) : '—'}
                     </span>
                   </div>
                   {/* Who took it — the tally you can watch build. */}
                   {decided && (playerTook || aiTook) && (
-                    <div className={`mt-2 text-center text-[9px] md:text-[10px] font-display font-black uppercase tracking-wider ${playerTook ? 'text-[#ff8c42]' : 'text-red-500'}`}>
+                    <div className={`mt-2 text-center text-[11px] md:text-[12px] font-display font-black uppercase tracking-wider ${playerTook ? 'text-[#ff8c42]' : 'text-red-500'}`}>
                       ✓ {(playerTook ? player.stage_name : ai.stage_name).slice(0, 12)}
                     </div>
                   )}
@@ -648,7 +648,7 @@ export default function LiveBattleViewer({
             const bg = playerWon ? 'bg-[#ff8c42]/10' : 'bg-red-500/10';
             return (
             <div className={`text-center py-10 border-4 ${border} ${bg}`}>
-              <div className="text-[11px] text-zinc-500 uppercase tracking-[0.3em] mb-1">The Streets Decided</div>
+              <div className="text-[13px] text-zinc-500 uppercase tracking-[0.3em] mb-1">The Streets Decided</div>
               {/* Scoreline is the headline — how battles are actually scored. */}
               <div className={`font-display font-black tabular-nums leading-none ${accent}`} style={{ fontSize: 'clamp(64px, 12vw, 130px)' }}>
                 {scoreline}
@@ -673,7 +673,7 @@ export default function LiveBattleViewer({
       </div>
 
       {/* Footer hint */}
-      <div className="px-6 py-2 border-t border-[#3a3d44] text-[10px] text-zinc-600 uppercase tracking-widest text-center">
+      <div className="px-6 py-2 border-t border-[#3a3d44] text-[12px] text-zinc-600 uppercase tracking-widest text-center">
         Space: play/pause • ← → step • Esc: exit
       </div>
 

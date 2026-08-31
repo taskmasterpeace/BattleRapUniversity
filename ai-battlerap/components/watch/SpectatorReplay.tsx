@@ -56,7 +56,7 @@ export default function SpectatorReplay({
       {/* round-by-round */}
       <div className="mt-10 space-y-5">
         {/* legend — the solid bar is the round average, the tick is the peak (haymaker) moment */}
-        <p className="font-mono text-[9px] uppercase tracking-widest text-zinc-500 flex items-center gap-4 -mt-3 mb-1">
+        <p className="font-mono text-[11px] uppercase tracking-widest text-zinc-500 flex items-center gap-4 -mt-3 mb-1">
           <span className="flex items-center gap-1.5"><span className="inline-block w-4 h-2 bg-zinc-500/60" /> ROUND AVG</span>
           <span className="flex items-center gap-1.5"><span className="inline-block w-[2px] h-3.5 bg-white shadow-[0_0_4px_rgba(255,255,255,0.7)]" /> PEAK MOMENT</span>
         </p>
@@ -74,7 +74,7 @@ export default function SpectatorReplay({
           return (
             <div key={r.roundIndex} className="animate-fade-in" style={{ animationDelay: `${i * 1500}ms` }}>
               <div className="flex justify-between items-center mb-1 gap-2 flex-wrap">
-                <p className="font-mono text-[10px] uppercase tracking-widest text-zinc-500">
+                <p className="font-mono text-[12px] uppercase tracking-widest text-zinc-500">
                   ROUND {r.roundIndex}
                 </p>
                 <div className="flex gap-3 flex-wrap">
@@ -97,7 +97,7 @@ export default function SpectatorReplay({
                 </div>
               </div>
               <div className="flex items-center gap-2 mb-1">
-                <span className="w-20 md:w-28 font-mono text-[10px] uppercase truncate text-[#ff6a5e]">{a.name}</span>
+                <span className="w-20 md:w-28 font-mono text-[12px] uppercase truncate text-[#ff6a5e]">{a.name}</span>
                 <div className="flex-1 h-4 bg-[#18191c] border border-[#3a3d44] relative">
                   <div
                     className={`h-full animate-bar-fill ${r.a.choke ? 'bg-[#E23A2E]/25' : r.winner === 'a' ? 'bg-[#E23A2E]' : 'bg-[#E23A2E]/40'}`}
@@ -117,7 +117,7 @@ export default function SpectatorReplay({
                 <span className="w-10 font-mono text-xs text-zinc-300 text-right">{r.a.avg.toFixed(1)}</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="w-20 md:w-28 font-mono text-[10px] uppercase truncate text-[#5da2e8]">{b.name}</span>
+                <span className="w-20 md:w-28 font-mono text-[12px] uppercase truncate text-[#5da2e8]">{b.name}</span>
                 <div className="flex-1 h-4 bg-[#18191c] border border-[#3a3d44] relative">
                   <div
                     className={`h-full animate-bar-fill ${r.b.choke ? 'bg-[#2F7DD1]/25' : r.winner === 'b' ? 'bg-[#2F7DD1]' : 'bg-[#2F7DD1]/40'}`}
@@ -136,7 +136,7 @@ export default function SpectatorReplay({
                 </div>
                 <span className="w-10 font-mono text-xs text-zinc-300 text-right">{r.b.avg.toFixed(1)}</span>
               </div>
-              <p className="font-mono text-[9px] uppercase tracking-widest text-zinc-600 mt-1">
+              <p className="font-mono text-[11px] uppercase tracking-widest text-zinc-600 mt-1">
                 CROWD {r.a.crowd}% / {r.b.crowd}% · PEAKS {r.a.peak.toFixed(1)} / {r.b.peak.toFixed(1)}
               </p>
               {/* THE ROOM — what the crowd was doing during this round */}

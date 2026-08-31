@@ -508,7 +508,7 @@ export default function OnboardingWizard() {
                   </button>
                 </div>
                 {avatarPool && (
-                  <p className="font-mono text-[11px] uppercase tracking-wider text-zinc-500 mb-3">
+                  <p className="font-mono text-[13px] uppercase tracking-wider text-zinc-500 mb-3">
                     <span className="text-[#ff8c42] font-bold">{avatarPool.claimed}</span> OF {avatarPool.total} FACES CLAIMED — YOURS IS FOREVER
                   </p>
                 )}
@@ -557,7 +557,7 @@ export default function OnboardingWizard() {
                     <span className="text-zinc-500 cursor-help text-xs">ⓘ</span>
                   </Tooltip>
                 </div>
-                <p className="font-mono text-[11px] uppercase tracking-wider text-zinc-500 mb-3">
+                <p className="font-mono text-[13px] uppercase tracking-wider text-zinc-500 mb-3">
                   HOMETOWNS AREN'T MADE UP — PICK A REAL SCENE
                 </p>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -595,17 +595,17 @@ export default function OnboardingWizard() {
                             {city.name}
                           </h4>
                           <div className="flex items-center justify-between mt-1">
-                            <span className="font-mono text-[10px] uppercase tracking-wider text-zinc-400">
+                            <span className="font-mono text-[12px] uppercase tracking-wider text-zinc-400">
                               {city.state || city.country || ''}
                             </span>
                             {city.culture_style && (
-                              <span className="px-1.5 py-0.5 bg-[#ff8c42]/20 border border-[#ff8c42]/40 text-[#ff8c42] font-mono text-[9px] uppercase tracking-wider">
+                              <span className="px-1.5 py-0.5 bg-[#ff8c42]/20 border border-[#ff8c42]/40 text-[#ff8c42] font-mono text-[11px] uppercase tracking-wider">
                                 {city.culture_style}
                               </span>
                             )}
                           </div>
                           {/* Where you're from determines what you start with */}
-                          <p className="font-mono text-[9px] uppercase tracking-wider text-green-400/90 mt-1 drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
+                          <p className="font-mono text-[11px] uppercase tracking-wider text-green-400/90 mt-1 drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
                             {getCityBonus(city.culture_style, city.scene_size).labels.join(' · ')}
                           </p>
                         </div>
@@ -676,7 +676,7 @@ export default function OnboardingWizard() {
 
                       {/* Tier badge — top corner */}
                       <div className="absolute top-3 left-3 flex items-center gap-2">
-                        <span className={`px-2 py-0.5 text-[10px] font-display font-black uppercase tracking-widest border ${
+                        <span className={`px-2 py-0.5 text-[12px] font-display font-black uppercase tracking-widest border ${
                           tier === 'PREMIER'
                             ? 'bg-[#ff8c42] text-black border-[#ff8c42]'
                             : tier === 'ONLINE'
@@ -685,7 +685,7 @@ export default function OnboardingWizard() {
                         }`}>
                           {tier}
                         </span>
-                        <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-300 drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
+                        <span className="text-[12px] font-mono uppercase tracking-widest text-zinc-300 drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
                           {league.short_code}
                         </span>
                       </div>
@@ -699,16 +699,16 @@ export default function OnboardingWizard() {
                         </p>
                         <div className="flex items-center justify-center gap-2">
                           {isOnline ? (
-                            <span className="inline-block px-2 py-1 bg-black/60 border border-zinc-400/50 text-zinc-300 text-[9px] font-display font-black uppercase tracking-widest">
+                            <span className="inline-block px-2 py-1 bg-black/60 border border-zinc-400/50 text-zinc-300 text-[11px] font-display font-black uppercase tracking-widest">
                               WORLDWIDE
                             </span>
                           ) : selectedCityObj && (
-                            <span className="inline-block px-2 py-1 bg-black/60 border border-[#ff8c42]/50 text-[#ff8c42] text-[9px] font-display font-black uppercase tracking-widest">
+                            <span className="inline-block px-2 py-1 bg-black/60 border border-[#ff8c42]/50 text-[#ff8c42] text-[11px] font-display font-black uppercase tracking-widest">
                               {selectedCityObj.name}
                             </span>
                           )}
                           {league.base_payout ? (
-                            <span className="inline-block px-2 py-1 bg-black/60 border border-green-500/50 text-green-400 text-[9px] font-display font-black uppercase tracking-widest">
+                            <span className="inline-block px-2 py-1 bg-black/60 border border-green-500/50 text-green-400 text-[11px] font-display font-black uppercase tracking-widest">
                               ${Number(league.base_payout).toLocaleString()} PURSE
                             </span>
                           ) : null}

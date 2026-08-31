@@ -38,7 +38,7 @@ const Stat = ({
       className="bg-[#101114] border-2 border-black p-4 shadow-[3px_3px_0_rgba(0,0,0,.4)]"
       style={{ borderTop: `3px solid ${edge}` }}
     >
-      <div className="font-mono text-[8px] uppercase tracking-[0.25em] text-zinc-500 mb-2">
+      <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-zinc-500 mb-2">
         {label}
       </div>
       <div
@@ -48,7 +48,7 @@ const Stat = ({
         {value}
       </div>
       {hint && (
-        <div className="font-mono text-[8px] text-zinc-600 mt-2 uppercase tracking-[0.2em]">{hint}</div>
+        <div className="font-mono text-[10px] text-zinc-600 mt-2 uppercase tracking-[0.2em]">{hint}</div>
       )}
     </div>
   );

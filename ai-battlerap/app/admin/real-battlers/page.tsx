@@ -70,19 +70,19 @@ export default async function RealBattlersPage() {
               <div className="font-display font-black uppercase tracking-tighter text-lg text-zinc-100 group-hover:text-[#ff8c42] transition-colors truncate">
                 {b.stage_name}
               </div>
-              <div className="font-mono text-[10px] uppercase tracking-widest text-zinc-500">
+              <div className="font-mono text-[12px] uppercase tracking-widest text-zinc-500">
                 {b.region ?? 'No city'} · Tier {b.tier} · {ratingByBattler.get(b.id) ?? '—'} rating
               </div>
             </div>
             <span
-              className={`px-2 py-1 border font-mono text-[10px] uppercase tracking-widest ${
+              className={`px-2 py-1 border font-mono text-[12px] uppercase tracking-widest ${
                 LIKENESS_STYLES[b.likeness_status ?? 'unofficial'] ?? LIKENESS_STYLES.unofficial
               }`}
             >
               {b.likeness_status ?? 'unofficial'}
             </span>
             <span
-              className={`px-2 py-1 border font-mono text-[10px] uppercase tracking-widest ${
+              className={`px-2 py-1 border font-mono text-[12px] uppercase tracking-widest ${
                 b.verified_user_id
                   ? 'bg-[#ff8c42]/15 text-[#ff8c42] border-[#ff8c42]/40'
                   : 'bg-zinc-500/10 text-zinc-500 border-zinc-600/30'

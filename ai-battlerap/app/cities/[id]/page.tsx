@@ -135,7 +135,7 @@ export default async function CityDetailPage({
               <div className="flex flex-wrap items-center gap-3 mb-2">
                 <Link
                   href="/cities"
-                  className="text-[10px] font-mono uppercase tracking-widest text-zinc-400 hover:text-[#ff8c42] transition"
+                  className="text-[12px] font-mono uppercase tracking-widest text-zinc-400 hover:text-[#ff8c42] transition"
                 >
                   ← All cities
                 </Link>
@@ -146,7 +146,7 @@ export default async function CityDetailPage({
               <p className="text-sm uppercase tracking-widest text-zinc-300 drop-shadow mt-1">
                 {[city.state, city.country].filter(Boolean).join(' · ')}
               </p>
-              <div className="flex flex-wrap gap-2 mt-3 text-[10px] uppercase tracking-widest font-bold">
+              <div className="flex flex-wrap gap-2 mt-3 text-[12px] uppercase tracking-widest font-bold">
                 {city.scene_size && (
                   <span className="px-2 py-1 bg-[#101114]/80 border border-[#3a3d44] text-zinc-300">
                     {city.scene_size} scene
@@ -185,7 +185,7 @@ export default async function CityDetailPage({
         <section>
           <div className="flex items-baseline justify-between mb-4">
             <h2 className="text-2xl font-display font-black tracking-tighter">LOCAL LEAGUES</h2>
-            <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">
+            <span className="text-[12px] font-mono uppercase tracking-widest text-zinc-500">
               {leagueList.length} based here
             </span>
           </div>
@@ -216,7 +216,7 @@ export default async function CityDetailPage({
                     <h3 className="font-black uppercase tracking-tight text-sm group-hover:text-[#ff8c42] transition truncate">
                       {l.name}
                     </h3>
-                    <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 mt-1">
+                    <p className="text-[12px] font-mono uppercase tracking-widest text-zinc-500 mt-1">
                       {Math.round(Number(l.writing_weight) * 100)}% pen ·{' '}
                       {Math.round(Number(l.performance_weight) * 100)}% perf ·{' '}
                       {l.round_length_minutes}min rds
@@ -232,7 +232,7 @@ export default async function CityDetailPage({
         <section>
           <div className="flex items-baseline justify-between mb-1">
             <h2 className="text-2xl font-display font-black tracking-tighter">THE LOCALS</h2>
-            <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">
+            <span className="text-[12px] font-mono uppercase tracking-widest text-zinc-500">
               {localList.length} battlers rep {city.name}
             </span>
           </div>
@@ -267,7 +267,7 @@ export default async function CityDetailPage({
                           </div>
                         )}
                         {b.is_real && (
-                          <span className="absolute top-2 left-2 px-1.5 py-0.5 bg-[#ff8c42] text-black text-[9px] font-black uppercase tracking-widest">
+                          <span className="absolute top-2 left-2 px-1.5 py-0.5 bg-[#ff8c42] text-black text-[11px] font-black uppercase tracking-widest">
                             ✓ Verified
                           </span>
                         )}
@@ -280,11 +280,11 @@ export default async function CityDetailPage({
                           {b.stage_name}
                         </h3>
                       </Link>
-                      <div className="flex items-center justify-between text-[10px] uppercase tracking-widest font-bold">
+                      <div className="flex items-center justify-between text-[12px] uppercase tracking-widest font-bold">
                         <span className={`px-2 py-0.5 border ${tierClass}`}>
                           {b.tier || 'unranked'}
                         </span>
-                        <span className="font-mono text-[9px] text-zinc-500">
+                        <span className="font-mono text-[11px] text-zinc-500">
                           {inTown ? 'IN TOWN' : isHometown ? 'HOMETOWN' : ''}
                         </span>
                       </div>

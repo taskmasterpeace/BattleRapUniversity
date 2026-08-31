@@ -336,12 +336,12 @@ export function CharacterSheet({
             {(homeLine || wireHandle) && (
               <div style={{ marginTop: 10 }}>
                 {homeLine && (
-                  <p className="font-mono text-[9px] uppercase tracking-[0.22em] text-zinc-400">
+                  <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-zinc-400">
                     FIGHTING OUT OF <span className="text-zinc-100 font-bold">{homeLine}</span>
                   </p>
                 )}
                 {wireHandle && (
-                  <p className="font-mono text-[9px] uppercase tracking-[0.22em] text-zinc-500 mt-1">
+                  <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-zinc-500 mt-1">
                     ON THE WIRE <span className="text-[#F5731A]">@{wireHandle.replace(/^@/, "")}</span>
                   </p>
                 )}
@@ -354,11 +354,11 @@ export function CharacterSheet({
                 style={{ borderTop: "3px solid #E23A2E" }}
               >
                 <div className="flex items-baseline justify-between gap-2">
-                  <span className="font-mono text-[8px] uppercase tracking-[0.25em] text-zinc-500">
+                  <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-zinc-500">
                     Top Rival
                   </span>
                   {rival.record && (
-                    <span style={{ fontFamily: "var(--font-pixel)", fontSize: 8, color: "#F4F4F6" }}>
+                    <span style={{ fontFamily: "var(--font-pixel)", fontSize: 10, color: "#F4F4F6" }}>
                       H2H {rival.record}
                     </span>
                   )}
@@ -382,7 +382,7 @@ export function CharacterSheet({
                     />
                   ))}
                 </div>
-                <p className="font-mono text-[8px] uppercase tracking-[0.2em] text-zinc-600 mt-1">
+                <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-zinc-600 mt-1">
                   HOSTILITY {rival.intensity}/100
                 </p>
               </div>
@@ -402,7 +402,7 @@ export function CharacterSheet({
               {form.length > 0 && (
                 <div className="mt-2">
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-[8px] uppercase tracking-[0.25em] text-zinc-500 shrink-0">
+                    <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-zinc-500 shrink-0">
                       Last {form.length}
                     </span>
                     <div className="flex gap-1.5">
@@ -430,7 +430,7 @@ export function CharacterSheet({
                 </div>
               )}
               {danger && (
-                <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-zinc-400 mt-2">
+                <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-zinc-400 mt-2">
                   <span className="text-[#F5731A] font-bold">{danger.bodies}</span> {danger.bodies === 1 ? "BODY" : "BODIES"}
                   {" · "}
                   <span className="text-zinc-100 font-bold">{danger.roundWinRate}%</span> ROUNDS
@@ -448,10 +448,10 @@ export function CharacterSheet({
                   className="mt-2 px-3 py-2 bg-[#1c1409] border border-[#E7B23C]/40"
                   style={{ borderLeft: "3px solid #E7B23C" }}
                 >
-                  <p className="font-mono text-[8px] uppercase tracking-[0.25em] text-[#E7B23C]">
+                  <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-[#E7B23C]">
                     {signature.title}
                   </p>
-                  <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-zinc-300 mt-0.5">
+                  <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-zinc-300 mt-0.5">
                     {signature.detail}
                   </p>
                 </div>
@@ -528,19 +528,19 @@ export function CharacterSheet({
                       return (
                         <div key={p.name} className="flex items-center gap-2 min-w-0">
                           <span
-                            className="flex-1 min-w-0 truncate font-mono text-[9px] uppercase tracking-[0.14em] text-zinc-300"
+                            className="flex-1 min-w-0 truncate font-mono text-[11px] uppercase tracking-[0.14em] text-zinc-300"
                             title={p.narrative ?? undefined}
                           >
                             {p.name}
                           </span>
-                          <span className="shrink-0 font-mono text-[8px] uppercase tracking-[0.14em] text-zinc-600">
+                          <span className="shrink-0 font-mono text-[10px] uppercase tracking-[0.14em] text-zinc-600">
                             {p.articles} {p.articles === 1 ? "STORY" : "STORIES"}
                           </span>
                           <span
                             className="shrink-0 px-1.5 py-0.5 border border-black"
                             style={{
                               fontFamily: "var(--font-pixel)",
-                              fontSize: 7,
+                              fontSize: 9,
                               color: "#0F0F12",
                               background: lean > 0 ? "#35C46B" : lean < 0 ? "#E23A2E" : "#9CA3AF",
                             }}
@@ -551,7 +551,7 @@ export function CharacterSheet({
                       )
                     })}
                     {press[0]?.narrative && (
-                      <p className="font-mono text-[8px] uppercase tracking-[0.16em] text-zinc-500 mt-1 border-t border-[#2E2F35] pt-2">
+                      <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-500 mt-1 border-t border-[#2E2F35] pt-2">
                         LATEST ANGLE: <span className="text-zinc-300">{press[0].narrative}</span>
                       </p>
                     )}
@@ -572,7 +572,7 @@ export function CharacterSheet({
                           className="w-5 h-5 shrink-0 grid place-items-center border border-black"
                           style={{
                             fontFamily: "var(--font-poster)",
-                            fontSize: 11,
+                            fontSize: 13,
                             color: "#0F0F12",
                             background:
                               o.result === "W"
@@ -585,18 +585,18 @@ export function CharacterSheet({
                         {o.opponentId ? (
                           <a
                             href={`/battler/${o.opponentId}`}
-                            className="flex-1 min-w-0 truncate font-mono text-[9px] uppercase tracking-[0.14em] text-zinc-300 hover:text-[#F5731A] transition-colors"
+                            className="flex-1 min-w-0 truncate font-mono text-[11px] uppercase tracking-[0.14em] text-zinc-300 hover:text-[#F5731A] transition-colors"
                           >
                             VS {o.opponent}
                           </a>
                         ) : (
-                          <span className="flex-1 min-w-0 truncate font-mono text-[9px] uppercase tracking-[0.14em] text-zinc-300">
+                          <span className="flex-1 min-w-0 truncate font-mono text-[11px] uppercase tracking-[0.14em] text-zinc-300">
                             VS {o.opponent}
                           </span>
                         )}
                         <span
                           className="shrink-0"
-                          style={{ fontFamily: "var(--font-pixel)", fontSize: 8, color: "#F4F4F6" }}
+                          style={{ fontFamily: "var(--font-pixel)", fontSize: 10, color: "#F4F4F6" }}
                         >
                           {o.score}
                         </span>

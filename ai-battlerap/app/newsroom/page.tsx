@@ -100,7 +100,7 @@ export default function NewsroomPage() {
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mt-3">
             <div>
               <h1 className="text-3xl md:text-5xl font-display font-black uppercase tracking-tighter">📰 THE NEWSROOM</h1>
-              <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-widest mt-1">
+              <p className="text-[13px] font-mono text-zinc-500 uppercase tracking-widest mt-1">
                 THE BLOGS DECIDE WHAT THE CULTURE TALKS ABOUT
               </p>
             </div>
@@ -116,7 +116,7 @@ export default function NewsroomPage() {
               </button>
             </div>
           </div>
-          {note && <p className="text-[11px] font-mono text-[#ff8c42] mt-2">{note}</p>}
+          {note && <p className="text-[13px] font-mono text-[#ff8c42] mt-2">{note}</p>}
         </div>
       </div>
 
@@ -132,11 +132,11 @@ export default function NewsroomPage() {
                 {bloggers.map((b) => (
                   <div key={b.handle} className="bg-[#101114] border-2 border-[#3a3d44] p-3">
                     <div className="font-display font-black text-sm uppercase tracking-tight text-zinc-100 truncate">{b.handle}</div>
-                    <div className="flex items-center gap-2 mt-1.5 font-mono text-[10px] uppercase tracking-wide text-zinc-500">
+                    <div className="flex items-center gap-2 mt-1.5 font-mono text-[12px] uppercase tracking-wide text-zinc-500">
                       <span>INF <b className="text-[#ff8c42]">{b.influence}</b></span>
                       <span>{b.frequency >= 0.85 ? '2×/WK' : b.frequency >= 0.7 ? '~WKLY' : 'SLOW'}</span>
                     </div>
-                    <div className="mt-1.5 text-[10px] font-mono uppercase tracking-wide">
+                    <div className="mt-1.5 text-[12px] font-mono uppercase tracking-wide">
                       {b.holdingCount > 0
                         ? <span className="text-[#ff8c42]">ON {b.holdingCount} {b.holdingCount === 1 ? 'STORY' : 'STORIES'}</span>
                         : <span className="text-zinc-600">QUIET</span>}
@@ -149,7 +149,7 @@ export default function NewsroomPage() {
             {/* Developing */}
             <section>
               <h2 className="text-xl font-display font-black uppercase tracking-tighter text-[#ff8c42] mb-1">Developing</h2>
-              <p className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest mb-3">STORIES THE BLOGS ARE SITTING ON</p>
+              <p className="text-[12px] font-mono text-zinc-600 uppercase tracking-widest mb-3">STORIES THE BLOGS ARE SITTING ON</p>
               {developing.length === 0 ? (
                 <p className="text-zinc-600 font-mono uppercase tracking-widest text-sm py-8 text-center bg-[#101114] border-2 border-[#3a3d44]">
                   SLOW NEWS DAY — NOTHING DEVELOPING
@@ -161,18 +161,18 @@ export default function NewsroomPage() {
                     return (
                       <div key={d.id} className={`bg-[#101114] border-2 ${sit.border} p-4`}>
                         <div className="flex items-center justify-between gap-2 mb-2">
-                          <span className={`text-[10px] font-mono font-bold uppercase tracking-widest ${sit.tone}`}>{sit.label}</span>
-                          <span className="text-[10px] font-mono text-zinc-600 uppercase">DROPS ~{dropsIn(d.publishAfter)}</span>
+                          <span className={`text-[12px] font-mono font-bold uppercase tracking-widest ${sit.tone}`}>{sit.label}</span>
+                          <span className="text-[12px] font-mono text-zinc-600 uppercase">DROPS ~{dropsIn(d.publishAfter)}</span>
                         </div>
                         <p className="font-display font-black text-lg uppercase tracking-tight leading-none text-zinc-100">
                           {d.subject}{d.other ? <span className="text-zinc-500"> vs {d.other}</span> : null}
                         </p>
                         <p className="text-sm text-zinc-400 leading-snug mt-1.5">{d.hint}</p>
                         <div className="flex items-center justify-between gap-2 mt-3 pt-2.5 border-t-2 border-[#3a3d44]">
-                          <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wide">
+                          <span className="text-[12px] font-mono text-zinc-500 uppercase tracking-wide">
                             {d.handle} <span className="text-zinc-600">on the</span> <span className={CAT_TONE[d.category ?? 'career']}>{beatWord(d.subcategory)}</span>
                           </span>
-                          <span className="text-[9px] font-mono text-zinc-700 uppercase">HEAT {Math.round(d.heat)}</span>
+                          <span className="text-[11px] font-mono text-zinc-700 uppercase">HEAT {Math.round(d.heat)}</span>
                         </div>
                       </div>
                     );
@@ -185,7 +185,7 @@ export default function NewsroomPage() {
             {dropped.length > 0 && (
               <section>
                 <h2 className="text-xl font-display font-black uppercase tracking-tighter text-[#ff8c42] mb-1">Just Dropped</h2>
-                <p className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest mb-3">STORIES THAT MADE THE TIMELINE</p>
+                <p className="text-[12px] font-mono text-zinc-600 uppercase tracking-widest mb-3">STORIES THAT MADE THE TIMELINE</p>
                 <div className="space-y-2">
                   {dropped.map((p) => (
                     <div key={p.id} className="bg-[#101114] border-2 border-[#3a3d44] p-3.5 flex items-start gap-3">
@@ -193,7 +193,7 @@ export default function NewsroomPage() {
                       <div className="min-w-0">
                         <div className="flex items-center gap-2 mb-1">
                           <span className="font-display font-black text-sm uppercase tracking-tight text-[#ff8c42]">{p.blogger}</span>
-                          <span className="text-[9px] font-mono text-zinc-600 uppercase">{beatWord(p.subcategory)} · {ago(p.createdAt)}</span>
+                          <span className="text-[11px] font-mono text-zinc-600 uppercase">{beatWord(p.subcategory)} · {ago(p.createdAt)}</span>
                         </div>
                         <p className="text-sm text-zinc-300 leading-snug">{p.body}</p>
                       </div>
@@ -207,14 +207,14 @@ export default function NewsroomPage() {
             {cold.length > 0 && (
               <section>
                 <h2 className="text-xl font-display font-black uppercase tracking-tighter text-zinc-500 mb-1">Went Cold</h2>
-                <p className="text-[10px] font-mono text-zinc-700 uppercase tracking-widest mb-3">STORIES THAT DIED ON THE VINE — SAT ON TOO LONG, OR NOBODY BIT</p>
+                <p className="text-[12px] font-mono text-zinc-700 uppercase tracking-widest mb-3">STORIES THAT DIED ON THE VINE — SAT ON TOO LONG, OR NOBODY BIT</p>
                 <div className="space-y-1.5">
                   {cold.map((c) => (
                     <div key={c.id} className="bg-[#101114]/60 border-2 border-[#2d2f35] p-3 flex items-center justify-between gap-3">
                       <p className="text-sm text-zinc-600 leading-snug line-through decoration-zinc-700">
                         {c.subject ? <span className="text-zinc-500">{c.subject}: </span> : null}{c.hint}
                       </p>
-                      <span className="text-[9px] font-mono text-zinc-700 uppercase shrink-0">{beatWord(c.subcategory)}</span>
+                      <span className="text-[11px] font-mono text-zinc-700 uppercase shrink-0">{beatWord(c.subcategory)}</span>
                     </div>
                   ))}
                 </div>

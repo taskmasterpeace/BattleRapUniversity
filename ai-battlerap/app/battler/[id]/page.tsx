@@ -386,7 +386,7 @@ export default function BattlerCareerPage({ params }: { params: Promise<{ id: st
                   size="lg"
                   label="CHALLENGE THIS PLAYER"
                 />
-                <p className="text-[10px] text-zinc-500 uppercase tracking-widest mt-2">
+                <p className="text-[12px] text-zinc-500 uppercase tracking-widest mt-2">
                   Challenge this player — async PvP, prep on your own time
                 </p>
               </div>
@@ -411,7 +411,7 @@ export default function BattlerCareerPage({ params }: { params: Promise<{ id: st
                       )}
                       <div className="min-w-0">
                         <p className="font-bold text-sm text-zinc-100 leading-snug">{a.title}</p>
-                        <p className="font-mono text-[10px] uppercase tracking-widest text-zinc-500">
+                        <p className="font-mono text-[12px] uppercase tracking-widest text-zinc-500">
                           {[a.region, a.year, a.scope === 'real_world' ? 'REAL WORLD' : 'IN GAME'].filter(Boolean).join(' · ')}
                         </p>
                       </div>
@@ -489,11 +489,11 @@ function OverviewTab({ data }: { data: CareerData }) {
                   @{data.wire.handle.replace(/^@+/, '')}
                 </div>
                 <div className="text-xs text-zinc-500 uppercase tracking-wide mb-3">{data.wire.display_name}</div>
-                <div className="flex gap-4 font-mono text-[11px] uppercase tracking-wide">
+                <div className="flex gap-4 font-mono text-[13px] uppercase tracking-wide">
                   <span className="text-zinc-400">INFLUENCE <b className="text-[#ff8c42]">{data.wire.influence}</b></span>
                   <span className="text-zinc-400">CRED <b className="text-zinc-200">{data.wire.credibility}</b></span>
                 </div>
-                <div className="mt-3 text-[10px] font-mono text-zinc-600 uppercase tracking-widest group-hover:text-zinc-400 transition">SEE THEIR DROPS ON THE WIRE →</div>
+                <div className="mt-3 text-[12px] font-mono text-zinc-600 uppercase tracking-widest group-hover:text-zinc-400 transition">SEE THEIR DROPS ON THE WIRE →</div>
               </Link>
             ) : (
               <p className="text-zinc-500 text-center py-8 uppercase tracking-wide text-sm">No Wire account — off the grid</p>
@@ -503,12 +503,12 @@ function OverviewTab({ data }: { data: CareerData }) {
           {/* The Press */}
           <div className="lg:col-span-2 bg-[#2d2f35] border-2 border-[#3a3d44] p-6">
             <h2 className="text-2xl font-display font-black uppercase tracking-tighter mb-1 text-[#ff8c42]">The Press</h2>
-            <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest mb-4">WHO COVERS THEM · AND HOW THEY LEAN</p>
+            <p className="text-[12px] font-mono text-zinc-500 uppercase tracking-widest mb-4">WHO COVERS THEM · AND HOW THEY LEAN</p>
 
             {/* Developing — stories the blogs are sitting on about this battler */}
             {data.developing && data.developing.length > 0 && (
               <div className="mb-4 bg-[#18191c] border-2 border-[#ff8c42]/30 p-3">
-                <p className="text-[10px] font-mono text-[#ff8c42] uppercase tracking-widest mb-2">
+                <p className="text-[12px] font-mono text-[#ff8c42] uppercase tracking-widest mb-2">
                   📰 DEVELOPING · THE BLOGS ARE SITTING ON THIS
                 </p>
                 <div className="space-y-2">
@@ -529,11 +529,11 @@ function OverviewTab({ data }: { data: CareerData }) {
                       <div key={i} className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
                           <p className="text-xs text-zinc-300 leading-snug">{d.hint}</p>
-                          <p className="text-[10px] font-mono text-zinc-600 uppercase tracking-wide">
+                          <p className="text-[12px] font-mono text-zinc-600 uppercase tracking-wide">
                             {d.blogger} · on the {(d.subcategory ?? 'story').replace(/_/g, ' ')}
                           </p>
                         </div>
-                        <span className="text-[9px] font-mono text-zinc-500 shrink-0 uppercase">drops {drops}</span>
+                        <span className="text-[11px] font-mono text-zinc-500 shrink-0 uppercase">drops {drops}</span>
                       </div>
                     );
                   })}
@@ -550,7 +550,7 @@ function OverviewTab({ data }: { data: CareerData }) {
                     <div key={p.blogger_name} className="bg-[#18191c] border-2 border-[#3a3d44] p-3">
                       <div className="flex flex-wrap items-center justify-between gap-2 mb-1.5">
                         <span className="font-display font-black text-sm uppercase tracking-wide text-zinc-100">{p.blogger_name}</span>
-                        <span className={`font-mono text-[10px] uppercase tracking-wider ${leanColor}`}>{leanLabel} · {p.total_articles} {p.total_articles === 1 ? 'STORY' : 'STORIES'}</span>
+                        <span className={`font-mono text-[12px] uppercase tracking-wider ${leanColor}`}>{leanLabel} · {p.total_articles} {p.total_articles === 1 ? 'STORY' : 'STORIES'}</span>
                       </div>
                       <div className="h-1.5 bg-[#2d2f35] flex overflow-hidden">
                         <div className="bg-green-500/70" style={{ width: `${p.sentiment_positive}%` }} />

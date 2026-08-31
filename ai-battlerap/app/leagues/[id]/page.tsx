@@ -159,14 +159,14 @@ export default async function LeagueHomePage({ params }: { params: Promise<{ id:
             <div className={`text-sm font-black uppercase tracking-tight truncate ${aWon ? 'text-[#ff8c42]' : 'text-zinc-200'}`}>
               {aName}
             </div>
-            <div className="text-[10px] uppercase tracking-widest text-zinc-500 my-1">vs</div>
+            <div className="text-[12px] uppercase tracking-widest text-zinc-500 my-1">vs</div>
             <div className={`text-sm font-black uppercase tracking-tight truncate ${cWon ? 'text-[#ff8c42]' : 'text-zinc-200'}`}>
               {cName}
             </div>
           </div>
           <div className="text-right shrink-0">
-            <div className="text-[10px] uppercase tracking-widest text-zinc-500">{fmtDate(b.scheduled_at)}</div>
-            <div className="text-[10px] uppercase tracking-widest font-bold mt-1 text-zinc-400">{b.status}</div>
+            <div className="text-[12px] uppercase tracking-widest text-zinc-500">{fmtDate(b.scheduled_at)}</div>
+            <div className="text-[12px] uppercase tracking-widest font-bold mt-1 text-zinc-400">{b.status}</div>
           </div>
         </div>
       </Link>
@@ -213,7 +213,7 @@ export default async function LeagueHomePage({ params }: { params: Promise<{ id:
                   {l.description}
                 </p>
               )}
-              <div className="flex flex-wrap gap-2 text-[10px] uppercase tracking-widest font-bold">
+              <div className="flex flex-wrap gap-2 text-[12px] uppercase tracking-widest font-bold">
                 <span className="px-2 py-1 border-2 border-[#3a3d44] text-zinc-300">
                   {l.round_length_minutes}-min rounds
                 </span>
@@ -242,22 +242,22 @@ export default async function LeagueHomePage({ params }: { params: Promise<{ id:
         {/* Weights + throne link */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
           <div className="bg-[#18191c] border-2 border-[#3a3d44] p-4">
-            <div className="text-[10px] uppercase tracking-widest text-zinc-500 mb-1">Writing</div>
+            <div className="text-[12px] uppercase tracking-widest text-zinc-500 mb-1">Writing</div>
             <div className="text-2xl font-black text-zinc-100">{Math.round(Number(l.writing_weight) * 100)}%</div>
           </div>
           <div className="bg-[#18191c] border-2 border-[#3a3d44] p-4">
-            <div className="text-[10px] uppercase tracking-widest text-zinc-500 mb-1">Performance</div>
+            <div className="text-[12px] uppercase tracking-widest text-zinc-500 mb-1">Performance</div>
             <div className="text-2xl font-black text-zinc-100">{Math.round(Number(l.performance_weight) * 100)}%</div>
           </div>
           <div className="bg-[#18191c] border-2 border-[#3a3d44] p-4">
-            <div className="text-[10px] uppercase tracking-widest text-zinc-500 mb-1">Crowd Factor</div>
+            <div className="text-[12px] uppercase tracking-widest text-zinc-500 mb-1">Crowd Factor</div>
             <div className="text-2xl font-black text-zinc-100">{Math.round(Number(l.base_crowd_factor) * 100)}%</div>
           </div>
           <Link
             href={`/leagues/${l.id}/thrones`}
             className="group bg-[#ff8c42]/10 border-2 border-[#ff8c42] hover:bg-[#ff8c42]/20 hover:-translate-y-[1px] hover:shadow-[0_10px_30px_-15px_rgba(255,140,66,0.6)] transition-all duration-200 p-4 flex flex-col justify-between"
           >
-            <div className="text-[10px] uppercase tracking-widest text-[#ff8c42] mb-1">Throne System</div>
+            <div className="text-[12px] uppercase tracking-widest text-[#ff8c42] mb-1">Throne System</div>
             <div className="flex items-center justify-between">
               <div className="text-sm font-black uppercase tracking-tight text-zinc-100">
                 View Crown →
@@ -299,11 +299,11 @@ export default async function LeagueHomePage({ params }: { params: Promise<{ id:
                         <div className="text-sm font-bold uppercase tracking-tight text-zinc-100 group-hover:text-[#ff8c42] truncate">
                           {b.stage_name}
                         </div>
-                        <div className="text-[10px] uppercase tracking-widest text-zinc-500">
+                        <div className="text-[12px] uppercase tracking-widest text-zinc-500">
                           {w}W · {losses}L
                         </div>
                       </div>
-                      <span className={`text-[10px] uppercase tracking-widest font-bold px-1.5 py-0.5 border ${tierClass} shrink-0`}>
+                      <span className={`text-[12px] uppercase tracking-widest font-bold px-1.5 py-0.5 border ${tierClass} shrink-0`}>
                         {b.tier || '—'}
                       </span>
                       <span className="text-sm font-black text-zinc-200 shrink-0 w-12 text-right">{rating}</span>

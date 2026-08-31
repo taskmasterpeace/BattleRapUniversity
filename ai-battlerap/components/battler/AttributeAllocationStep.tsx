@@ -121,7 +121,7 @@ export default function AttributeAllocationStep({
     <div className="mb-3">
       <div className="flex items-center gap-2 mb-1.5">
         <span className="flex items-center justify-center text-[#ff8c42] flex-shrink-0">{icon}</span>
-        <span className="text-[11px] text-zinc-300 uppercase tracking-wider font-bold leading-tight flex-1 min-w-0">
+        <span className="text-[13px] text-zinc-300 uppercase tracking-wider font-bold leading-tight flex-1 min-w-0">
           {label}
         </span>
         <span className="text-lg font-display font-black text-[#ff8c42] tabular-nums w-5 text-right">

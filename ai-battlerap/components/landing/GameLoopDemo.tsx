@@ -133,7 +133,7 @@ export default function GameLoopDemo() {
       {/* Stage */}
       <div className="relative bg-[#101114] border-2 border-[#3a3d44] min-h-[380px] sm:min-h-[420px] overflow-hidden">
         {/* corner tape */}
-        <div className="absolute top-0 left-0 px-3 py-1 bg-[#ff8c42] text-black font-mono text-[10px] font-bold uppercase tracking-widest z-10">
+        <div className="absolute top-0 left-0 px-3 py-1 bg-[#ff8c42] text-black font-mono text-[12px] font-bold uppercase tracking-widest z-10">
           LIVE DEMO — REAL GAME MECHANICS
         </div>
 
@@ -145,14 +145,14 @@ export default function GameLoopDemo() {
                 📬 NEW BATTLE OFFER
               </p>
               <div className="bg-[#18191c] border-2 border-[#ff8c42]/60 p-6 shadow-[0_0_40px_-12px_rgba(255,140,66,0.5)]">
-                <p className="font-mono text-[10px] uppercase tracking-widest text-[#ff8c42] mb-2">{story.league}</p>
+                <p className="font-mono text-[12px] uppercase tracking-widest text-[#ff8c42] mb-2">{story.league}</p>
                 <h3 className="font-display text-4xl font-black uppercase tracking-tight text-zinc-100 mb-1">
                   VS {story.opponent}
                 </h3>
                 <p className="text-xs uppercase tracking-wider text-zinc-500 mb-4">{story.tier} · 3 ROUNDS · 2-MIN</p>
                 <div className="flex justify-between items-center border-t-2 border-[#3a3d44] pt-4">
                   <div>
-                    <p className="text-[10px] uppercase tracking-widest text-zinc-500">PURSE</p>
+                    <p className="text-[12px] uppercase tracking-widest text-zinc-500">PURSE</p>
                     <p className="font-display text-2xl font-black text-green-400">{story.purse}</p>
                   </div>
                   <div className="px-6 py-3 bg-[#ff8c42] text-black font-display font-black uppercase tracking-wider animate-pulse-orange">
@@ -182,9 +182,9 @@ export default function GameLoopDemo() {
                     style={{ animationDelay: `${i * 380}ms` }}
                   >
                     <div className={`border-2 bg-[#18191c] p-2 sm:p-3 text-center ${FOCUS_COLORS[d.focus]}`}>
-                      <p className="text-[9px] font-mono text-zinc-600 mb-1">{d.day}</p>
+                      <p className="text-[11px] font-mono text-zinc-600 mb-1">{d.day}</p>
                       <p className="text-lg sm:text-2xl mb-1">{d.icon}</p>
-                      <p className="text-[8px] sm:text-[10px] font-black uppercase tracking-wide">{d.focus}</p>
+                      <p className="text-[10px] sm:text-[12px] font-black uppercase tracking-wide">{d.focus}</p>
                     </div>
                   </div>
                 ))}
@@ -192,15 +192,15 @@ export default function GameLoopDemo() {
               <div className="mt-6 flex justify-center gap-6 text-center animate-fade-in" style={{ animationDelay: '3s' }}>
                 <div>
                   <p className="font-display text-2xl font-black text-[#ff8c42]">+WORDPLAY</p>
-                  <p className="text-[10px] uppercase tracking-widest text-zinc-600">writing days</p>
+                  <p className="text-[12px] uppercase tracking-widest text-zinc-600">writing days</p>
                 </div>
                 <div>
                   <p className="font-display text-2xl font-black text-amber-400">+ANGLES</p>
-                  <p className="text-[10px] uppercase tracking-widest text-zinc-600">research days</p>
+                  <p className="text-[12px] uppercase tracking-widest text-zinc-600">research days</p>
                 </div>
                 <div>
                   <p className="font-display text-2xl font-black text-green-400">−CHOKE RISK</p>
-                  <p className="text-[10px] uppercase tracking-widest text-zinc-600">rest days</p>
+                  <p className="text-[12px] uppercase tracking-widest text-zinc-600">rest days</p>
                 </div>
               </div>
             </div>
@@ -218,7 +218,7 @@ export default function GameLoopDemo() {
                 {story.rounds.map((r, i) => (
                   <div key={i} className="animate-fade-in" style={{ animationDelay: `${i * 1500}ms` }}>
                     <div className="flex justify-between items-center mb-1">
-                      <p className="font-mono text-[10px] uppercase tracking-widest text-zinc-500">ROUND {i + 1}</p>
+                      <p className="font-mono text-[12px] uppercase tracking-widest text-zinc-500">ROUND {i + 1}</p>
                       {r.haymaker && (
                         <span
                           className="font-display font-black text-sm uppercase text-[#ff8c42] animate-haymaker"
@@ -238,7 +238,7 @@ export default function GameLoopDemo() {
                     </div>
                     {/* you */}
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="w-10 font-mono text-[10px] text-[#ff8c42]">YOU</span>
+                      <span className="w-10 font-mono text-[12px] text-[#ff8c42]">YOU</span>
                       <div className="flex-1 h-4 bg-[#18191c] border border-[#3a3d44]">
                         <div
                           className={`h-full animate-bar-fill ${r.choke ? 'bg-red-500/70' : 'bg-[#ff8c42]'}`}
@@ -249,7 +249,7 @@ export default function GameLoopDemo() {
                     </div>
                     {/* opp */}
                     <div className="flex items-center gap-2">
-                      <span className="w-10 font-mono text-[10px] text-zinc-500">OPP</span>
+                      <span className="w-10 font-mono text-[12px] text-zinc-500">OPP</span>
                       <div className="flex-1 h-4 bg-[#18191c] border border-[#3a3d44]">
                         <div
                           className="h-full bg-zinc-500 animate-bar-fill"
@@ -284,7 +284,7 @@ export default function GameLoopDemo() {
                 📰 THE BLOGS WRITE THEMSELVES
               </p>
               <div className="bg-[#18191c] border-2 border-[#3a3d44] p-6">
-                <p className="font-mono text-[10px] uppercase tracking-widest text-[#ff8c42] mb-3">
+                <p className="font-mono text-[12px] uppercase tracking-widest text-[#ff8c42] mb-3">
                   {story.blogger} · BATTLE RECAP
                 </p>
                 <h3 className="animate-typewriter font-display text-xl sm:text-2xl font-black uppercase tracking-tight text-zinc-100">

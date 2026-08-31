@@ -62,7 +62,7 @@ function CrowdFace({ result, mirror = false }: { result: LaneResult; mirror?: bo
       </div>
       <div className={`leading-tight ${mirror ? 'text-right' : ''}`}>
         <div className="text-base">{display.emoji}</div>
-        <div className={`text-[10px] font-mono uppercase tracking-widest ${display.tone}`}>
+        <div className={`text-[12px] font-mono uppercase tracking-widest ${display.tone}`}>
           {display.label}
         </div>
       </div>
@@ -117,7 +117,7 @@ export default function CrowdReactionStrip({
         <h3 className="text-lg font-display font-black uppercase tracking-tighter text-[#ff8c42]">
           CROWD REACTION
         </h3>
-        <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">
+        <span className="text-[12px] font-mono uppercase tracking-widest text-zinc-500">
           ROUND {roundIndex} · 3 SECTIONS OF THE ROOM
         </span>
       </div>
@@ -127,7 +127,7 @@ export default function CrowdReactionStrip({
         <div className="text-xs font-display font-black uppercase tracking-wider text-zinc-300 truncate">
           {playerName}
         </div>
-        <div className="text-[10px] font-mono uppercase tracking-widest text-zinc-600 px-2">VS</div>
+        <div className="text-[12px] font-mono uppercase tracking-widest text-zinc-600 px-2">VS</div>
         <div className="text-xs font-display font-black uppercase tracking-wider text-zinc-300 truncate text-right">
           {opponentName}
         </div>
@@ -138,7 +138,7 @@ export default function CrowdReactionStrip({
           <div key={pl.lane.id} className="grid grid-cols-[1fr_auto_1fr] gap-2 items-center py-2">
             <CrowdFace result={pl} />
             <div className="text-center px-1 min-w-[88px]" title={pl.lane.blurb}>
-              <div className="text-[10px] font-mono uppercase tracking-widest text-zinc-400">
+              <div className="text-[12px] font-mono uppercase tracking-widest text-zinc-400">
                 {pl.lane.name}
               </div>
             </div>
@@ -149,7 +149,7 @@ export default function CrowdReactionStrip({
         ))}
       </div>
 
-      <p className="mt-2 text-[10px] font-mono uppercase tracking-widest text-zinc-600">
+      <p className="mt-2 text-[12px] font-mono uppercase tracking-widest text-zinc-600">
         🔥 LOVED IT · 😐 MIXED · 🧊 COLD — per demographic, from crowd score + style matchup
       </p>
     </div>

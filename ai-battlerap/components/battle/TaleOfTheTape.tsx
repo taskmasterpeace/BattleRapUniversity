@@ -83,7 +83,7 @@ function MirrorRow({ row }: { row: StatRow }) {
         <div className="min-w-0 [transform:scaleX(-1)]">
           <SegGauge v10={row.player} grade={gradeOf(row.player)} />
         </div>
-        <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 text-center min-w-[92px]">
+        <span className="text-[12px] font-mono uppercase tracking-widest text-zinc-500 text-center min-w-[92px]">
           {row.label}
         </span>
         {/* opponent gauge fills left→right */}
@@ -134,7 +134,7 @@ export default function TaleOfTheTape({
         <h3 className="text-lg font-display font-black uppercase tracking-tighter text-[#ff8c42]">
           TALE OF THE TAPE
         </h3>
-        <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">
+        <span className="text-[12px] font-mono uppercase tracking-widest text-zinc-500">
           {writingLeague ? 'PEN LEAGUE' : 'STAGE LEAGUE'}
         </span>
       </div>
@@ -144,14 +144,14 @@ export default function TaleOfTheTape({
         <div className="text-xs font-display font-black uppercase tracking-wider text-zinc-300 truncate">
           {playerName}
         </div>
-        <div className="text-[10px] font-mono uppercase tracking-widest text-zinc-600">VS</div>
+        <div className="text-[12px] font-mono uppercase tracking-widest text-zinc-600">VS</div>
         <div className="text-xs font-display font-black uppercase tracking-wider text-zinc-300 truncate text-right">
           {opponentName}
         </div>
       </div>
 
       {/* league-relevant attributes (always visible) */}
-      <div className="text-[10px] font-mono uppercase tracking-widest text-[#ff8c42]/80 border-b border-[#3a3d44] pb-1 mb-1">
+      <div className="text-[12px] font-mono uppercase tracking-widest text-[#ff8c42]/80 border-b border-[#3a3d44] pb-1 mb-1">
         {weightLabel(primary)}
       </div>
       <div className="divide-y divide-[#3a3d44]/40">
@@ -163,7 +163,7 @@ export default function TaleOfTheTape({
       {/* full sheet behind expandable */}
       {fullSheet && (
         <>
-          <div className="mt-3 text-[10px] font-mono uppercase tracking-widest text-zinc-500 border-b border-[#3a3d44] pb-1 mb-1">
+          <div className="mt-3 text-[12px] font-mono uppercase tracking-widest text-zinc-500 border-b border-[#3a3d44] pb-1 mb-1">
             {weightLabel(secondary)}
           </div>
           <div className="divide-y divide-[#3a3d44]/40">
@@ -172,7 +172,7 @@ export default function TaleOfTheTape({
             ))}
           </div>
 
-          <div className="mt-3 text-[10px] font-mono uppercase tracking-widest text-zinc-500 border-b border-[#3a3d44] pb-1 mb-1">
+          <div className="mt-3 text-[12px] font-mono uppercase tracking-widest text-zinc-500 border-b border-[#3a3d44] pb-1 mb-1">
             INTANGIBLES
           </div>
           <div className="divide-y divide-[#3a3d44]/40">
@@ -185,7 +185,7 @@ export default function TaleOfTheTape({
 
       <button
         onClick={() => setFullSheet(!fullSheet)}
-        className="mt-3 w-full py-2 border-2 border-[#3a3d44] text-[10px] font-mono uppercase tracking-widest text-zinc-400 hover:text-[#ff8c42] hover:border-[#ff8c42]/50 transition-colors"
+        className="mt-3 w-full py-2 border-2 border-[#3a3d44] text-[12px] font-mono uppercase tracking-widest text-zinc-400 hover:text-[#ff8c42] hover:border-[#ff8c42]/50 transition-colors"
       >
         {fullSheet ? 'RELEVANT ONLY ▲' : 'FULL SHEET ▼'}
       </button>

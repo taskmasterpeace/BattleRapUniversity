@@ -247,7 +247,7 @@ export default function DashboardClient({
             <h2 className="text-sm font-display font-black uppercase tracking-wider text-zinc-400">
               YOUR ROSTER
             </h2>
-            <span className="text-[10px] uppercase tracking-widest text-zinc-600 font-bold">
+            <span className="text-[12px] uppercase tracking-widest text-zinc-600 font-bold">
               1 / 3 SLOTS
             </span>
           </div>
@@ -259,7 +259,7 @@ export default function DashboardClient({
                 <div className="font-display font-black uppercase tracking-wider text-sm text-zinc-100 truncate">
                   {battler.stage_name}
                 </div>
-                <div className="text-[10px] font-display font-black uppercase tracking-widest text-[#ff8c42]">
+                <div className="text-[12px] font-display font-black uppercase tracking-widest text-[#ff8c42]">
                   ● ACTIVE
                 </div>
               </div>
@@ -277,7 +277,7 @@ export default function DashboardClient({
                   <div className="font-display font-black uppercase tracking-wider text-sm text-zinc-500">
                     ROSTER SLOT {slot}
                   </div>
-                  <div className="text-[10px] font-display font-black uppercase tracking-widest text-zinc-600">
+                  <div className="text-[12px] font-display font-black uppercase tracking-widest text-zinc-600">
                     COMING SOON
                   </div>
                 </div>
@@ -466,7 +466,7 @@ export default function DashboardClient({
                           }`}
                         >
                           <div>
-                            <p className="text-[10px] text-zinc-500 font-display font-black uppercase tracking-wider mb-1.5">
+                            <p className="text-[12px] text-zinc-500 font-display font-black uppercase tracking-wider mb-1.5">
                               TODAY&apos;S SLOTS
                             </p>
                             <div className="flex items-center gap-1.5" aria-label={`${slots.remaining} of ${slots.base + slots.bonus} battle slots remaining today`}>
@@ -493,7 +493,7 @@ export default function DashboardClient({
                                   >
                                     <Icon name="swords" size={20} className={isUsed ? 'text-zinc-600' : 'text-[#ff8c42]'} />
                                     {isBonus && (
-                                      <span className="absolute -top-1 -right-1.5 text-[9px] font-display font-black text-[#ff8c42] not-italic">
+                                      <span className="absolute -top-1 -right-1.5 text-[11px] font-display font-black text-[#ff8c42] not-italic">
                                         +
                                       </span>
                                     )}
@@ -511,7 +511,7 @@ export default function DashboardClient({
                               {slots.remaining} OF {slots.base + slots.bonus} BATTLE
                               {slots.base + slots.bonus === 1 ? '' : 'S'} LEFT
                             </p>
-                            <p className="text-[10px] text-zinc-500 font-display font-black uppercase tracking-wider mt-0.5">
+                            <p className="text-[12px] text-zinc-500 font-display font-black uppercase tracking-wider mt-0.5">
                               {slotsExhausted
                                 ? `RESETS AT ${formatResetTime(slots.resetsAt)}`
                                 : slots.bonus >= MAX_BONUS_SLOTS_PER_DAY
@@ -638,7 +638,7 @@ export default function DashboardClient({
           <div className="fs grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Writing */}
             <div className="bg-[#101114] border-2 border-black p-6 shadow-[4px_4px_0_rgba(0,0,0,.45)]" style={{ borderTop: '3px solid #F5731A' }}>
-              <h3 className="font-mono text-[10px] uppercase tracking-[0.3em] text-[#F5731A] mb-4">01 · WRITING & RAPPING</h3>
+              <h3 className="font-mono text-[12px] uppercase tracking-[0.3em] text-[#F5731A] mb-4">01 · WRITING & RAPPING</h3>
               <div className="space-y-3">
                 <StatGauge label="LYRICISM" v10={attributes?.writing.lyricism} />
                 <StatGauge label="WORDPLAY" v10={attributes?.writing.wordplay} />
@@ -648,7 +648,7 @@ export default function DashboardClient({
 
             {/* Performance */}
             <div className="bg-[#101114] border-2 border-black p-6 shadow-[4px_4px_0_rgba(0,0,0,.45)]" style={{ borderTop: '3px solid #E23A2E' }}>
-              <h3 className="font-mono text-[10px] uppercase tracking-[0.3em] text-[#E23A2E] mb-4">02 · PERFORMANCE</h3>
+              <h3 className="font-mono text-[12px] uppercase tracking-[0.3em] text-[#E23A2E] mb-4">02 · PERFORMANCE</h3>
               <div className="space-y-3">
                 <StatGauge label="STAGE PRESENCE" v10={attributes?.performance.stage_presence} />
                 <StatGauge label="CROWD CONTROL" v10={attributes?.performance.crowd_control} />
@@ -658,7 +658,7 @@ export default function DashboardClient({
 
             {/* Personal */}
             <div className="bg-[#101114] border-2 border-black p-6 shadow-[4px_4px_0_rgba(0,0,0,.45)]" style={{ borderTop: '3px solid #2F7DD1' }}>
-              <h3 className="font-mono text-[10px] uppercase tracking-[0.3em] text-[#5da2e8] mb-4">03 · PERSONAL</h3>
+              <h3 className="font-mono text-[12px] uppercase tracking-[0.3em] text-[#5da2e8] mb-4">03 · PERSONAL</h3>
               <div className="space-y-3">
                 <StatGauge label="RESILIENCE" v10={attributes?.resilience} />
                 <StatGauge label="REPUTATION" v10={attributes?.personal.reputation} />
@@ -669,7 +669,7 @@ export default function DashboardClient({
 
             {/* Mental State */}
             <div className="bg-[#101114] border-2 border-black p-6 shadow-[4px_4px_0_rgba(0,0,0,.45)]" style={{ borderTop: '3px solid #E7B23C' }}>
-              <h3 className="font-mono text-[10px] uppercase tracking-[0.3em] text-[#E7B23C] mb-4">04 · MENTAL STATE</h3>
+              <h3 className="font-mono text-[12px] uppercase tracking-[0.3em] text-[#E7B23C] mb-4">04 · MENTAL STATE</h3>
               <div className="space-y-4">
                 <StatGauge
                   label="PUBLIC KNOWLEDGE"

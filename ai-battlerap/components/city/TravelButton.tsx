@@ -75,12 +75,12 @@ export default function TravelButton({ cityId, cityName, cost, balance }: Props)
         {status === 'traveling' ? 'EN ROUTE…' : `✈️ TRAVEL HERE — $${cost}`}
       </button>
       {!canAfford && !error && (
-        <p className="text-[10px] font-mono uppercase tracking-widest text-red-400">
+        <p className="text-[12px] font-mono uppercase tracking-widest text-red-400">
           Need ${cost} · You have ${balance}
         </p>
       )}
       {error && (
-        <p className="text-[10px] font-mono uppercase tracking-widest text-red-400 max-w-xs">
+        <p className="text-[12px] font-mono uppercase tracking-widest text-red-400 max-w-xs">
           {error}
         </p>
       )}

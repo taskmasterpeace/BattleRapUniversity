@@ -93,12 +93,12 @@ export default function RolesManager({ users: initialUsers, selfId }: { users: U
               <div className="text-sm font-bold text-zinc-100 truncate">
                 {u.email}
                 {u.id === selfId && (
-                  <span className="ml-2 font-mono text-[10px] uppercase tracking-widest text-zinc-500">
+                  <span className="ml-2 font-mono text-[12px] uppercase tracking-widest text-zinc-500">
                     (you)
                   </span>
                 )}
               </div>
-              <div className="font-mono text-[10px] uppercase tracking-widest text-zinc-600">
+              <div className="font-mono text-[12px] uppercase tracking-widest text-zinc-600">
                 Joined {new Date(u.created_at).toLocaleDateString()}
               </div>
             </div>
@@ -120,7 +120,7 @@ export default function RolesManager({ users: initialUsers, selfId }: { users: U
                           ? `Revoke ${ROLE_LABELS[role]}`
                           : `Grant ${ROLE_LABELS[role]}`
                     }
-                    className={`px-3 py-1.5 border-2 font-mono text-[10px] uppercase tracking-widest transition disabled:cursor-not-allowed ${
+                    className={`px-3 py-1.5 border-2 font-mono text-[12px] uppercase tracking-widest transition disabled:cursor-not-allowed ${
                       active
                         ? ROLE_ACTIVE_STYLES[role]
                         : 'border-[#3a3d44] text-zinc-600 hover:border-zinc-500 hover:text-zinc-400'

@@ -105,12 +105,12 @@ export default function LifeEventResolutionClient({ event, battler }: Props) {
       {/* Interstitial framing bar */}
       <div className="border-b-2 border-[#3a3d44] bg-[#101114]">
         <div className="max-w-2xl mx-auto px-4 py-2.5 flex justify-between items-center">
-          <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#ff8c42]">
+          <span className="font-mono text-[12px] uppercase tracking-[0.14em] text-[#ff8c42]">
             {event.battle ? 'WHILE YOU WERE BATTLING…' : 'THE WORLD MOVED'}
           </span>
           <Link
             href="/dashboard"
-            className="font-mono text-[10px] uppercase tracking-[0.14em] text-zinc-500 hover:text-zinc-300 min-h-[44px] inline-flex items-center transition"
+            className="font-mono text-[12px] uppercase tracking-[0.14em] text-zinc-500 hover:text-zinc-300 min-h-[44px] inline-flex items-center transition"
           >
             DASHBOARD →
           </Link>
@@ -135,12 +135,12 @@ export default function LifeEventResolutionClient({ event, battler }: Props) {
               <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#101114]" />
               <div className="absolute left-3.5 bottom-2.5 flex gap-1.5">
                 <span
-                  className={`px-2.5 py-0.5 border-2 font-display font-black text-[11px] uppercase tracking-wider ${cat.text} ${cat.border} ${cat.tint}`}
+                  className={`px-2.5 py-0.5 border-2 font-display font-black text-[13px] uppercase tracking-wider ${cat.text} ${cat.border} ${cat.tint}`}
                 >
                   {cat.label}
                 </span>
                 <span
-                  className={`px-2.5 py-0.5 border-2 border-[#3a3d44] bg-[#18191c]/80 font-display font-black text-[11px] uppercase tracking-wider ${sev.text}`}
+                  className={`px-2.5 py-0.5 border-2 border-[#3a3d44] bg-[#18191c]/80 font-display font-black text-[13px] uppercase tracking-wider ${sev.text}`}
                 >
                   {sev.label}
                 </span>
@@ -154,7 +154,7 @@ export default function LifeEventResolutionClient({ event, battler }: Props) {
               {template.title}
             </h1>
             {event.battle && (
-              <p className="font-mono text-[10px] uppercase tracking-[0.1em] text-zinc-500 mt-1.5">
+              <p className="font-mono text-[12px] uppercase tracking-[0.1em] text-zinc-500 mt-1.5">
                 AFTER YOUR BATTLE VS {event.battle.ai_battler?.stage_name?.toUpperCase() ?? 'UNKNOWN'} ·{' '}
                 {new Date(event.battle.scheduled_at).toLocaleDateString()}
               </p>
@@ -167,7 +167,7 @@ export default function LifeEventResolutionClient({ event, battler }: Props) {
 
             {/* Context strip — what the world already knows */}
             {hasContext && (
-              <div className="mt-4 flex flex-wrap gap-x-5 gap-y-1 bg-[#2d2f35] border-2 border-[#3a3d44] px-3.5 py-2.5 font-mono text-[11px] uppercase tracking-wide">
+              <div className="mt-4 flex flex-wrap gap-x-5 gap-y-1 bg-[#2d2f35] border-2 border-[#3a3d44] px-3.5 py-2.5 font-mono text-[13px] uppercase tracking-wide">
                 {ctx.battle_result && (
                   <span className="text-zinc-400">
                     RESULT: <b className="text-zinc-200">{ctx.battle_result}</b>
@@ -224,7 +224,7 @@ export default function LifeEventResolutionClient({ event, battler }: Props) {
       {/* Sticky confirm bar — fixed on mobile, static on md+ */}
       <div className="fixed md:static bottom-0 inset-x-0 bg-[#18191c]/95 md:bg-transparent backdrop-blur md:backdrop-blur-none border-t-2 md:border-t-0 border-[#3a3d44] p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] md:p-0 md:mt-6">
         <div className="max-w-2xl mx-auto md:px-4">
-          <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500 text-center mb-2">
+          <p className="font-mono text-[12px] uppercase tracking-[0.12em] text-zinc-500 text-center mb-2">
             THIS CALL IS FINAL · THE WORLD DOES NOT WAIT
           </p>
           <button

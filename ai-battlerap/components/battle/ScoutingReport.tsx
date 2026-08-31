@@ -112,7 +112,7 @@ export default function ScoutingReport({ battleId, refreshKey = 0 }: Props) {
         </h3>
         {/* Intel level pips */}
         <div className="flex items-center gap-2">
-          <span className="text-[10px] text-zinc-500 font-display font-black uppercase tracking-wider">
+          <span className="text-[12px] text-zinc-500 font-display font-black uppercase tracking-wider">
             INTEL LEVEL
           </span>
           <div className="flex gap-1">
@@ -153,7 +153,7 @@ export default function ScoutingReport({ battleId, refreshKey = 0 }: Props) {
               <IntelStat label="ELO RATING" value={`${data.tier1.record.rating}`} />
               <IntelStat label="TIER" value={data.tier1.tier.toUpperCase()} />
               <div className="bg-[#18191c] border-2 border-[#3a3d44] p-3 col-span-2 sm:col-span-1">
-                <p className="text-[10px] text-zinc-500 font-display font-black uppercase tracking-wider mb-1">
+                <p className="text-[12px] text-zinc-500 font-display font-black uppercase tracking-wider mb-1">
                   STYLE
                 </p>
                 <div className="flex flex-wrap gap-1">
@@ -161,7 +161,7 @@ export default function ScoutingReport({ battleId, refreshKey = 0 }: Props) {
                     data.tier1.styleTags.slice(0, 4).map((tag) => (
                       <span
                         key={tag}
-                        className="px-1.5 py-0.5 bg-[#ff8c42]/15 text-[#ff8c42] border border-[#ff8c42]/40 text-[10px] font-display font-black uppercase tracking-wide"
+                        className="px-1.5 py-0.5 bg-[#ff8c42]/15 text-[#ff8c42] border border-[#ff8c42]/40 text-[12px] font-display font-black uppercase tracking-wide"
                       >
                         {tag.replace(/_/g, ' ')}
                       </span>
@@ -188,7 +188,7 @@ export default function ScoutingReport({ battleId, refreshKey = 0 }: Props) {
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         <span
-                          className={`px-2 py-0.5 text-[10px] font-display font-black uppercase tracking-wider border ${
+                          className={`px-2 py-0.5 text-[12px] font-display font-black uppercase tracking-wider border ${
                             b.won
                               ? 'bg-green-500/20 text-green-400 border-green-500/50'
                               : 'bg-red-500/20 text-red-400 border-red-500/50'
@@ -206,7 +206,7 @@ export default function ScoutingReport({ battleId, refreshKey = 0 }: Props) {
                             {b.verdict}
                           </span>
                         )}
-                        <span className="text-[10px] text-zinc-600 font-display font-bold uppercase">
+                        <span className="text-[12px] text-zinc-600 font-display font-bold uppercase">
                           {new Date(b.date).toLocaleDateString()}
                         </span>
                       </div>
@@ -220,7 +220,7 @@ export default function ScoutingReport({ battleId, refreshKey = 0 }: Props) {
               )}
               {data.tier2.avgCrowdReaction !== null && (
                 <div className="flex items-center justify-between bg-[#18191c] border-2 border-[#3a3d44] px-3 py-2">
-                  <span className="text-[10px] text-zinc-500 font-display font-black uppercase tracking-wider">
+                  <span className="text-[12px] text-zinc-500 font-display font-black uppercase tracking-wider">
                     AVG CROWD REACTION ({data.tier2.roundsScouted} ROUNDS)
                   </span>
                   <span className="text-lg font-display font-black text-[#ff8c42]">
@@ -273,7 +273,7 @@ export default function ScoutingReport({ battleId, refreshKey = 0 }: Props) {
 
               {data.tier3.badges.length > 0 && (
                 <div>
-                  <p className="text-[10px] text-zinc-500 font-display font-black uppercase tracking-wider mb-2">
+                  <p className="text-[12px] text-zinc-500 font-display font-black uppercase tracking-wider mb-2">
                     KNOWN BADGES
                   </p>
                   <div className="flex flex-wrap gap-1.5">
@@ -281,7 +281,7 @@ export default function ScoutingReport({ battleId, refreshKey = 0 }: Props) {
                       <span
                         key={badge.code}
                         title={badge.description ?? undefined}
-                        className={`px-2 py-1 text-[10px] font-display font-black uppercase tracking-wide border ${
+                        className={`px-2 py-1 text-[12px] font-display font-black uppercase tracking-wide border ${
                           badge.negative
                             ? 'bg-red-500/15 text-red-400 border-red-500/50'
                             : 'bg-[#3a3d44]/60 text-zinc-300 border-[#3a3d44]'
@@ -297,7 +297,7 @@ export default function ScoutingReport({ battleId, refreshKey = 0 }: Props) {
 
               {data.tier3.insights.length > 0 && (
                 <div className="bg-[#18191c] border-2 border-[#3a3d44] p-4 space-y-2">
-                  <p className="text-[10px] text-zinc-500 font-display font-black uppercase tracking-wider">
+                  <p className="text-[12px] text-zinc-500 font-display font-black uppercase tracking-wider">
                     HOW TO BEAT HIM
                   </p>
                   {data.tier3.insights.map((line, i) => (
@@ -342,7 +342,7 @@ function TierSection({
           {title}
         </h4>
         {!unlocked && (
-          <span className="text-[10px] text-[#ff8c42] font-display font-black uppercase tracking-wider">
+          <span className="text-[12px] text-[#ff8c42] font-display font-black uppercase tracking-wider">
             {Math.max(1, daysNeeded)} MORE RESEARCH DAY{Math.max(1, daysNeeded) === 1 ? '' : 'S'}
           </span>
         )}
@@ -376,12 +376,12 @@ function IntelStat({
 }) {
   return (
     <div className="bg-[#18191c] border-2 border-[#3a3d44] p-3">
-      <p className="text-[10px] text-zinc-500 font-display font-black uppercase tracking-wider mb-1">
+      <p className="text-[12px] text-zinc-500 font-display font-black uppercase tracking-wider mb-1">
         {label}
       </p>
       <p className={`text-lg font-display font-black ${accent ?? 'text-zinc-100'}`}>{value}</p>
       {sub && (
-        <p className="text-[10px] text-zinc-600 font-display font-bold uppercase tracking-wide mt-0.5">
+        <p className="text-[12px] text-zinc-600 font-display font-bold uppercase tracking-wide mt-0.5">
           {sub}
         </p>
       )}

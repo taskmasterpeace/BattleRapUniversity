@@ -101,12 +101,12 @@ export default function BadgeShowcase({ styleTags, badgeProgress = [], badgeIcon
                 {label}
               </span>
               {desc?.tier && !flaw && (
-                <span className={`text-[9px] font-display font-black uppercase tracking-widest ${colors.text} opacity-70`}>
+                <span className={`text-[11px] font-display font-black uppercase tracking-widest ${colors.text} opacity-70`}>
                   {desc.tier}
                 </span>
               )}
             </span>
-            <span className="text-[10px] text-zinc-400 leading-snug normal-case tracking-normal">
+            <span className="text-[12px] text-zinc-400 leading-snug normal-case tracking-normal">
               {effectText}
             </span>
           </span>
@@ -167,7 +167,7 @@ export default function BadgeShowcase({ styleTags, badgeProgress = [], badgeIcon
                     FLAWS &amp; KNOCKS
                   </span>
                   <span className="text-lg font-display font-black text-red-400">{flaws.length}</span>
-                  <span className="text-[10px] text-zinc-500 uppercase tracking-wide font-bold">
+                  <span className="text-[12px] text-zinc-500 uppercase tracking-wide font-bold">
                     the culture remembers
                   </span>
                 </div>

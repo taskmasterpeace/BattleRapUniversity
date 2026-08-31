@@ -203,7 +203,7 @@ function Expandable({
             {title}
           </span>
           {subtitle && (
-            <span className="ml-3 text-[10px] font-mono uppercase tracking-widest text-zinc-500">
+            <span className="ml-3 text-[12px] font-mono uppercase tracking-widest text-zinc-500">
               {subtitle}
             </span>
           )}
@@ -488,7 +488,7 @@ export default function BattleViewerPage({
         <div className="fs min-w-0 [transform:scaleX(-1)]">
           <SegGauge v10={(player / max) * 10} grade={gradeOf((player / max) * 10)} />
         </div>
-        <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 text-center min-w-[64px]">
+        <span className="text-[12px] font-mono uppercase tracking-widest text-zinc-500 text-center min-w-[64px]">
           {label}
         </span>
         <div className="fs min-w-0">
@@ -519,7 +519,7 @@ export default function BattleViewerPage({
     oppSegs?: BattleSegment[];
   }) => (
     <div>
-      <div className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-1">{name}</div>
+      <div className="text-[12px] font-mono uppercase tracking-widest text-zinc-500 mb-1">{name}</div>
       <div className="flex gap-1.5 items-end h-[72px]">
         {segs.map((seg) => {
           // A haymaker only earns the amber highlight if it LANDED — i.e. won its
@@ -543,7 +543,7 @@ export default function BattleViewerPage({
                 }`}
                 style={{ height: `${Math.max(22, Math.min(100, (seg.segment_score / 10) * 100))}%` }}
               >
-                <span className="text-[10px] font-black">{seg.segment_score.toFixed(1)}</span>
+                <span className="text-[12px] font-black">{seg.segment_score.toFixed(1)}</span>
               </div>
             </div>
           );
@@ -602,10 +602,10 @@ export default function BattleViewerPage({
           <div className="absolute inset-0 bg-gradient-to-r from-[#ff8c42]/5 via-transparent to-[#ff8c42]/5 pointer-events-none"></div>
           <div className="relative z-10">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">
+              <span className="text-[12px] font-mono uppercase tracking-widest text-zinc-500">
                 {battle.league.name}
               </span>
-              <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">
+              <span className="text-[12px] font-mono uppercase tracking-widest text-zinc-500">
                 {isCompleted ? 'FINAL' : 'UPCOMING'}
               </span>
             </div>
@@ -696,7 +696,7 @@ export default function BattleViewerPage({
                       >
                         ROUND {roundNum}
                         {won !== undefined && (
-                          <span className="ml-2 text-[10px] font-mono tracking-widest">
+                          <span className="ml-2 text-[12px] font-mono tracking-widest">
                             {won ? '✓ W' : '✗ L'}
                           </span>
                         )}
@@ -712,7 +712,7 @@ export default function BattleViewerPage({
                       <h2 className="text-lg font-display font-black uppercase tracking-tighter text-[#ff8c42]">
                         ROUND {selectedRound} BREAKDOWN
                       </h2>
-                      <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">
+                      <span className="text-[12px] font-mono uppercase tracking-widest text-zinc-500">
                         YOU ← → OPP
                       </span>
                     </div>
@@ -756,7 +756,7 @@ export default function BattleViewerPage({
                         oppSegs={playerSegments}
                         accent="bg-zinc-700 border-zinc-600"
                       />
-                      <div className="flex gap-4 justify-center text-[10px] font-mono uppercase tracking-widest text-zinc-500">
+                      <div className="flex gap-4 justify-center text-[12px] font-mono uppercase tracking-widest text-zinc-500">
                         <span className="flex items-center gap-1">
                           <span className="inline-block w-3 h-3 bg-amber-300 border border-amber-200"></span> HAYMAKER
                         </span>

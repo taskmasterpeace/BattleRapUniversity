@@ -115,7 +115,7 @@ export default function ReviewStep({
               </div>
             )}
             {avatarUrl && (
-              <p className="font-mono text-[10px] uppercase tracking-wider text-[#ff8c42]">
+              <p className="font-mono text-[12px] uppercase tracking-wider text-[#ff8c42]">
                 FACE CLAIMED ON CREATE — YOURS FOREVER
               </p>
             )}
@@ -243,7 +243,7 @@ export default function ReviewStep({
       {/* Starting Badges — what you automatically walk in with */}
       <div className="bg-[#18191c] border-2 border-[#3a3d44] p-6">
         <h3 className="text-sm font-black uppercase text-zinc-400 mb-1">STARTING BADGES</h3>
-        <p className="font-mono text-[10px] uppercase tracking-widest text-zinc-600 mb-4">
+        <p className="font-mono text-[12px] uppercase tracking-widest text-zinc-600 mb-4">
           AUTOMATIC ON CREATION — YOUR STYLES PLUS YOUR CITY REP
         </p>
         <div className="flex flex-wrap gap-2">

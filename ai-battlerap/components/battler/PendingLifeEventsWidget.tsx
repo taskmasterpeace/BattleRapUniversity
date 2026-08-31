@@ -125,7 +125,7 @@ export default function PendingLifeEventsWidget({ initialEvents = [] }: Props) {
               </span>
             </div>
             {event.battle_context?.opponent && (
-              <p className="font-mono text-[10px] uppercase tracking-wide text-[#ff8c42] mb-1">
+              <p className="font-mono text-[12px] uppercase tracking-wide text-[#ff8c42] mb-1">
                 vs {event.battle_context.opponent}
                 {event.battle_context.league ? (
                   <span className="text-zinc-500"> · {event.battle_context.league}</span>

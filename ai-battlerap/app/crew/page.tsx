@@ -141,12 +141,12 @@ export default async function CrewPage() {
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-[#18191c] to-transparent" />
                     {m.is_real && (
-                      <span className="absolute top-2 left-2 px-1.5 py-0.5 bg-[#ff8c42] text-black text-[9px] font-black uppercase tracking-widest">
+                      <span className="absolute top-2 left-2 px-1.5 py-0.5 bg-[#ff8c42] text-black text-[11px] font-black uppercase tracking-widest">
                         ✓ Verified
                       </span>
                     )}
                     {tension && (
-                      <span className="absolute top-2 right-2 px-1.5 py-0.5 bg-red-500 text-white text-[9px] font-black uppercase tracking-widest">
+                      <span className="absolute top-2 right-2 px-1.5 py-0.5 bg-red-500 text-white text-[11px] font-black uppercase tracking-widest">
                         ⚠ Tension
                       </span>
                     )}
@@ -159,7 +159,7 @@ export default async function CrewPage() {
                 </Link>
 
                 <div className="p-4 space-y-3 flex-1 flex flex-col">
-                  <div className="flex items-center justify-between text-[10px] uppercase tracking-widest font-bold">
+                  <div className="flex items-center justify-between text-[12px] uppercase tracking-widest font-bold">
                     <span className={`px-2 py-0.5 border ${tierClass}`}>{m.tier || 'unranked'}</span>
                     <span className="font-mono text-zinc-500">
                       <Icon name={SPECIALTY_ICON[c.specialty] as any} size={12} className="mr-1 -mt-0.5" />{c.specialty}
@@ -167,13 +167,13 @@ export default async function CrewPage() {
                   </div>
 
                   {/* The bonus — the reason they're on the payroll */}
-                  <div className="px-3 py-2 bg-[#ff8c42]/10 border border-[#ff8c42]/40 text-[#ff8c42] text-[10px] font-black uppercase tracking-widest text-center">
+                  <div className="px-3 py-2 bg-[#ff8c42]/10 border border-[#ff8c42]/40 text-[#ff8c42] text-[12px] font-black uppercase tracking-widest text-center">
                     {SPECIALTY_BONUS_LABEL[c.specialty]}
                   </div>
 
                   {/* Beefing with you — kept on the crew, but flagged, not loyal */}
                   {tension && (
-                    <div className="px-3 py-2 bg-red-500/10 border border-red-500/40 text-red-400 text-[10px] font-black uppercase tracking-widest text-center">
+                    <div className="px-3 py-2 bg-red-500/10 border border-red-500/40 text-red-400 text-[12px] font-black uppercase tracking-widest text-center">
                       ⚔ {TENSION_LABEL[tension] ?? 'TENSION'}
                       {typeof c.loyalty === 'number' && (
                         <span className="text-red-300"> · Loyalty {c.loyalty}%</span>
@@ -181,7 +181,7 @@ export default async function CrewPage() {
                     </div>
                   )}
 
-                  <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-600">
+                  <p className="text-[12px] font-mono uppercase tracking-widest text-zinc-600">
                     Signed{recruitedIn ? ` in ${recruitedIn}` : ''} · ${c.recruit_cost}
                   </p>
 
@@ -206,10 +206,10 @@ export default async function CrewPage() {
               <h3 className="font-black uppercase tracking-wider text-sm text-zinc-300 group-hover:text-[#ff8c42] transition mb-2">
                 Recruit in the streets
               </h3>
-              <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-600 max-w-[14rem] leading-relaxed">
+              <p className="text-[12px] font-mono uppercase tracking-widest text-zinc-600 max-w-[14rem] leading-relaxed">
                 Visit a city and recruit local talent — you have to be in town to sign them
               </p>
-              <span className="mt-4 text-[10px] font-black uppercase tracking-widest text-[#ff8c42] opacity-0 group-hover:opacity-100 transition">
+              <span className="mt-4 text-[12px] font-black uppercase tracking-widest text-[#ff8c42] opacity-0 group-hover:opacity-100 transition">
                 Browse cities →
               </span>
             </Link>

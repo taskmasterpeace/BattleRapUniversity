@@ -51,7 +51,7 @@ export default function ClaimClient() {
                 className="w-24 h-24 object-cover mx-auto mb-6 border-2 border-[#3a3d44]"
               />
             )}
-            <div className="inline-block px-3 py-1 bg-[#ff8c42]/15 border border-[#ff8c42]/40 font-mono text-[10px] uppercase tracking-[0.3em] text-[#ff8c42] mb-4">
+            <div className="inline-block px-3 py-1 bg-[#ff8c42]/15 border border-[#ff8c42]/40 font-mono text-[12px] uppercase tracking-[0.3em] text-[#ff8c42] mb-4">
               ✓ Verified Battler
             </div>
             <h1 className="text-4xl font-display font-black uppercase tracking-tighter text-zinc-100 mb-3">
@@ -85,7 +85,7 @@ export default function ClaimClient() {
     <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center px-4">
       <div className="max-w-lg w-full animate-fade-in-up">
         <div className="text-center mb-8">
-          <p className="font-mono text-[10px] uppercase tracking-[0.4em] text-[#ff8c42] mb-3">
+          <p className="font-mono text-[12px] uppercase tracking-[0.4em] text-[#ff8c42] mb-3">
             Verified Battler Program
           </p>
           <h1 className="text-5xl font-display font-black uppercase tracking-tighter text-zinc-100">
@@ -103,7 +103,7 @@ export default function ClaimClient() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block font-mono text-[10px] uppercase tracking-widest text-zinc-500 mb-2">
+              <label className="block font-mono text-[12px] uppercase tracking-widest text-zinc-500 mb-2">
                 Claim Code
               </label>
               <input
@@ -132,7 +132,7 @@ export default function ClaimClient() {
             </button>
           </form>
 
-          <p className="font-mono text-[10px] uppercase tracking-widest text-zinc-600 mt-6 text-center">
+          <p className="font-mono text-[12px] uppercase tracking-widest text-zinc-600 mt-6 text-center">
             No code? Codes are issued directly by BRU staff to the battler.
           </p>
         </div>

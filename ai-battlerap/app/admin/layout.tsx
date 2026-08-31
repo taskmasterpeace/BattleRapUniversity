@@ -34,7 +34,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               Roles
             </Link>
           </nav>
-          <span className="ml-auto font-mono text-[10px] uppercase tracking-widest text-zinc-600 border border-[#3a3d44] px-2 py-1">
+          <span className="ml-auto font-mono text-[12px] uppercase tracking-widest text-zinc-600 border border-[#3a3d44] px-2 py-1">
             STAFF ONLY
           </span>
         </div>

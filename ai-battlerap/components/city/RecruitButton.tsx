@@ -61,7 +61,7 @@ export default function RecruitButton({
 
   if (inCrew || status === 'recruited') {
     return (
-      <div className="w-full text-center px-2 py-1.5 bg-[#ff8c42]/10 border border-[#ff8c42]/50 text-[#ff8c42] text-[10px] font-black uppercase tracking-widest">
+      <div className="w-full text-center px-2 py-1.5 bg-[#ff8c42]/10 border border-[#ff8c42]/50 text-[#ff8c42] text-[12px] font-black uppercase tracking-widest">
         ✓ In your crew
       </div>
     );
@@ -74,10 +74,10 @@ export default function RecruitButton({
         className="group/hint relative w-full"
         title={`Travel here to recruit ${stageName}`}
       >
-        <div className="w-full text-center px-2 py-1.5 border border-dashed border-[#3a3d44] text-zinc-600 text-[10px] font-black uppercase tracking-widest cursor-not-allowed select-none">
+        <div className="w-full text-center px-2 py-1.5 border border-dashed border-[#3a3d44] text-zinc-600 text-[12px] font-black uppercase tracking-widest cursor-not-allowed select-none">
           Recruit · ${cost}
         </div>
-        <div className="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap px-2 py-1 bg-[#101114] border border-[#ff8c42]/60 text-[#ff8c42] text-[9px] font-mono uppercase tracking-widest opacity-0 group-hover/hint:opacity-100 transition-opacity z-10">
+        <div className="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap px-2 py-1 bg-[#101114] border border-[#ff8c42]/60 text-[#ff8c42] text-[11px] font-mono uppercase tracking-widest opacity-0 group-hover/hint:opacity-100 transition-opacity z-10">
           Travel here to recruit
         </div>
       </div>
@@ -99,7 +99,7 @@ export default function RecruitButton({
               ? `Costs $${cost} — you have $${balance}`
               : `Recruit ${stageName} for $${cost}`
         }
-        className={`w-full px-2 py-1.5 border text-[10px] font-black uppercase tracking-widest transition ${
+        className={`w-full px-2 py-1.5 border text-[12px] font-black uppercase tracking-widest transition ${
           status === 'recruiting'
             ? 'border-[#3a3d44] text-zinc-500 cursor-wait'
             : disabled
@@ -110,17 +110,17 @@ export default function RecruitButton({
         {status === 'recruiting' ? 'TALKING…' : `🤝 Recruit · $${cost}`}
       </button>
       {crewFull && (
-        <p className="text-[9px] font-mono uppercase tracking-widest text-zinc-600 text-center">
+        <p className="text-[11px] font-mono uppercase tracking-widest text-zinc-600 text-center">
           Crew full (3 max)
         </p>
       )}
       {!crewFull && !canAfford && (
-        <p className="text-[9px] font-mono uppercase tracking-widest text-red-400 text-center">
+        <p className="text-[11px] font-mono uppercase tracking-widest text-red-400 text-center">
           Need ${cost}
         </p>
       )}
       {error && (
-        <p className="text-[9px] font-mono uppercase tracking-widest text-red-400 text-center">
+        <p className="text-[11px] font-mono uppercase tracking-widest text-red-400 text-center">
           {error}
         </p>
       )}

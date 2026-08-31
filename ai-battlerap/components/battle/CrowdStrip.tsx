@@ -136,7 +136,7 @@ export default function CrowdStrip({
   return (
     <div className="fs">
       {label && (
-        <p className="font-mono text-[9px] uppercase tracking-[0.3em] text-zinc-500 mb-1.5">{label}</p>
+        <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-zinc-500 mb-1.5">{label}</p>
       )}
       <div
         className="relative overflow-hidden"
@@ -185,7 +185,7 @@ export default function CrowdStrip({
             style={{ zIndex: 5, background: 'rgba(8,9,12,.85)', border: '1px solid #2E2F35' }}
           >
             <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#E23A2E] animate-pulse" />
-            <span style={{ fontFamily: 'var(--font-pixel)', fontSize: 7, color: '#F4F4F6' }}>
+            <span style={{ fontFamily: 'var(--font-pixel)', fontSize: 9, color: '#F4F4F6' }}>
               {broadcast === 'ppv' ? 'LIVE PPV' : 'ON CAM'}
             </span>
           </span>

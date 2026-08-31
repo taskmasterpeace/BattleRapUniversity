@@ -102,7 +102,7 @@ export default function EffectChips({ effects }: { effects: Record<string, unkno
         return (
           <span
             key={i}
-            className={`inline-flex items-center gap-1 px-2 py-0.5 bg-[#101114] border font-mono text-[10px] uppercase tracking-wide ${
+            className={`inline-flex items-center gap-1 px-2 py-0.5 bg-[#101114] border font-mono text-[12px] uppercase tracking-wide ${
               up
                 ? 'text-green-400 border-green-500/40'
                 : 'text-red-400 border-red-500/40'

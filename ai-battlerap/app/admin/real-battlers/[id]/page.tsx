@@ -51,7 +51,7 @@ export default async function RealBattlerEditPage({
         <div>
           <Link
             href="/admin/real-battlers"
-            className="font-mono text-[10px] uppercase tracking-widest text-zinc-500 hover:text-[#ff8c42] transition-colors"
+            className="font-mono text-[12px] uppercase tracking-widest text-zinc-500 hover:text-[#ff8c42] transition-colors"
           >
             ← Real Battlers
           </Link>

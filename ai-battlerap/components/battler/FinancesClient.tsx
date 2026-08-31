@@ -101,7 +101,7 @@ export default function FinancesClient({
               className="bg-[#101114] border-2 border-black p-5 shadow-[4px_4px_0_rgba(0,0,0,.45)]"
               style={{ borderTop: `3px solid ${p.hot ? '#E7B23C' : '#3E404A'}` }}
             >
-              <p className={`font-mono text-[9px] uppercase tracking-[0.3em] mb-2 ${p.hot ? 'text-[#E7B23C]' : 'text-zinc-500'}`}>
+              <p className={`font-mono text-[11px] uppercase tracking-[0.3em] mb-2 ${p.hot ? 'text-[#E7B23C]' : 'text-zinc-500'}`}>
                 {p.lab}
               </p>
               <p
@@ -114,7 +114,7 @@ export default function FinancesClient({
               >
                 {p.val}
               </p>
-              <p className="font-mono text-[8px] uppercase tracking-[0.25em] text-zinc-600 mt-2">{p.sub}</p>
+              <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-zinc-600 mt-2">{p.sub}</p>
             </div>
           ))}
         </div>

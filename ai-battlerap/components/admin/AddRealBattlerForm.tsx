@@ -36,7 +36,7 @@ export default function AddRealBattlerForm({ cities }: { cities: CityOption[] })
         <span className="font-display font-black uppercase tracking-tighter text-lg text-zinc-100">
           <span className="text-[#ff8c42]">+</span> ADD REAL BATTLER
         </span>
-        <span className="font-mono text-[10px] uppercase tracking-widest text-zinc-500">
+        <span className="font-mono text-[12px] uppercase tracking-widest text-zinc-500">
           {open ? 'Close' : 'Open'}
         </span>
       </button>

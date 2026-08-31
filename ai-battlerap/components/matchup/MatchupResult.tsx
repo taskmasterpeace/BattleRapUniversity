@@ -42,9 +42,9 @@ function Corner({ side, won, align }: { side: Side; won: boolean; align: 'left' 
       </p>
       <div className="flex items-center gap-2 mt-1">
         {side.isReal && (
-          <span className="px-1.5 py-0.5 bg-[#ff8c42] text-black font-mono text-[8px] font-bold uppercase tracking-widest">✓ VERIFIED</span>
+          <span className="px-1.5 py-0.5 bg-[#ff8c42] text-black font-mono text-[10px] font-bold uppercase tracking-widest">✓ VERIFIED</span>
         )}
-        <span className="font-mono text-[10px] uppercase tracking-widest text-zinc-500">{side.tier} TIER</span>
+        <span className="font-mono text-[12px] uppercase tracking-widest text-zinc-500">{side.tier} TIER</span>
       </div>
       {won && (
         <span className="mt-2 px-3 py-1 bg-green-500/20 border-2 border-green-500/50 text-green-400 font-display font-black text-xs uppercase tracking-wider">
@@ -120,7 +120,7 @@ export default function MatchupResult({
     <div className="max-w-4xl mx-auto px-4 md:px-6 py-10">
       {/* header */}
       <div className="text-center mb-8">
-        <Link href="/matchup" className="font-mono text-[10px] uppercase tracking-[0.3em] text-[#ff8c42] hover:text-[#ff9d5c]">
+        <Link href="/matchup" className="font-mono text-[12px] uppercase tracking-[0.3em] text-[#ff8c42] hover:text-[#ff9d5c]">
           ← DREAM MATCHUP SIMULATOR
         </Link>
         <p className="font-mono text-xs uppercase tracking-[0.35em] text-zinc-500 mt-4 mb-2">
@@ -146,7 +146,7 @@ export default function MatchupResult({
         {/* rounds */}
         <div className="mt-10 space-y-5">
           {/* legend — solid bar is the round average, the tick is the peak moment */}
-          <p className="font-mono text-[9px] uppercase tracking-widest text-zinc-500 flex items-center gap-4 -mt-3 mb-1">
+          <p className="font-mono text-[11px] uppercase tracking-widest text-zinc-500 flex items-center gap-4 -mt-3 mb-1">
             <span className="flex items-center gap-1.5"><span className="inline-block w-4 h-2 bg-zinc-500/60" /> ROUND AVG</span>
             <span className="flex items-center gap-1.5"><span className="inline-block w-[2px] h-3.5 bg-white shadow-[0_0_4px_rgba(255,255,255,0.7)]" /> PEAK MOMENT</span>
           </p>
@@ -162,7 +162,7 @@ export default function MatchupResult({
             return (
               <div key={r.roundIndex} className="animate-fade-in" style={{ animationDelay: `${i * 1500}ms` }}>
                 <div className="flex justify-between items-center mb-1">
-                  <p className="font-mono text-[10px] uppercase tracking-widest text-zinc-500">ROUND {r.roundIndex}</p>
+                  <p className="font-mono text-[12px] uppercase tracking-widest text-zinc-500">ROUND {r.roundIndex}</p>
                   <div className="flex gap-3">
                     {(aHay || bHay) && (
                       <span className="font-display font-black text-xs uppercase text-[#ff8c42] animate-haymaker" style={{ animationDelay: `${i * 1500 + 600}ms` }}>
@@ -177,7 +177,7 @@ export default function MatchupResult({
                   </div>
                 </div>
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="w-20 md:w-28 font-mono text-[10px] uppercase truncate text-[#ff8c42]">{battlerA.stageName}</span>
+                  <span className="w-20 md:w-28 font-mono text-[12px] uppercase truncate text-[#ff8c42]">{battlerA.stageName}</span>
                   <div className="flex-1 h-4 bg-[#18191c] border border-[#3a3d44] relative">
                     <div
                       className={`h-full animate-bar-fill ${aChoke ? 'bg-red-500/70' : r.winner === 'a' ? 'bg-[#ff8c42]' : 'bg-[#ff8c42]/40'}`}
@@ -194,7 +194,7 @@ export default function MatchupResult({
                   <span className="w-10 font-mono text-xs text-zinc-300 text-right">{r.a.avg}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="w-20 md:w-28 font-mono text-[10px] uppercase truncate text-zinc-300">{battlerB.stageName}</span>
+                  <span className="w-20 md:w-28 font-mono text-[12px] uppercase truncate text-zinc-300">{battlerB.stageName}</span>
                   <div className="flex-1 h-4 bg-[#18191c] border border-[#3a3d44] relative">
                     <div
                       className={`h-full animate-bar-fill ${bChoke ? 'bg-red-500/70' : r.winner === 'b' ? 'bg-zinc-300' : 'bg-zinc-300/40'}`}
@@ -219,7 +219,7 @@ export default function MatchupResult({
       {/* headline */}
       {headline && (
         <div className="mt-8 bg-[#18191c] border-l-4 border-[#ff8c42] p-5">
-          <p className="font-mono text-[10px] uppercase tracking-widest text-[#ff8c42] mb-2">📰 THE WRITE-UP</p>
+          <p className="font-mono text-[12px] uppercase tracking-widest text-[#ff8c42] mb-2">📰 THE WRITE-UP</p>
           <h2 className="font-display text-xl md:text-2xl font-black uppercase tracking-tight text-zinc-100">
             {headline}
           </h2>
@@ -249,7 +249,7 @@ export default function MatchupResult({
         </Link>
       </div>
 
-      <p className="text-center font-mono text-[10px] uppercase tracking-[0.3em] text-zinc-600 mt-10">
+      <p className="text-center font-mono text-[12px] uppercase tracking-[0.3em] text-zinc-600 mt-10">
         SIMULATED ON THE BATTLE RAP UNIVERSITY ENGINE —{' '}
         <Link href="/login" className="text-[#ff8c42] hover:underline">BUILD YOUR OWN BATTLER</Link>
       </p>
