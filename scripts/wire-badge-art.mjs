@@ -66,6 +66,13 @@ const CURATED = {
   gunslinger: 20,
 }
 
+// medallions generated AFTER the original 120 set (PixelLab, style ref badge_046, 112px):
+// numbers continue the badge_NNN sequence; add here as gaps get filled.
+const GENERATED = {
+  legend: 121, // LEGEND — laurel wreath + crowned mic
+  peoples_champ: 122, // PEOPLE'S CHAMPION — championship belt, heart buckle, crowd hands
+}
+
 const norm = (s) => s.toUpperCase().replace(/KING\/QUEEN/g, 'KING').replace(/[^A-Z0-9]+/g, ' ').trim()
 const byLabel = {}
 SHEET_LABELS.forEach((l, i) => (byLabel[norm(l)] = i + 1))
@@ -102,13 +109,17 @@ const rows = []
 for (const b of entries) {
   let num = byLabel[norm(b.name)]
   let how = 'exact'
+  if (!num && GENERATED[b.id]) {
+    num = GENERATED[b.id]
+    how = 'generated'
+  }
   if (!num && CURATED[b.id]) {
     num = CURATED[b.id]
     how = 'curated'
   }
   if (num) {
     map[b.id] = num
-    rows.push({ ...b, num, how, label: SHEET_LABELS[num - 1] })
+    rows.push({ ...b, num, how, label: SHEET_LABELS[num - 1] ?? 'GENERATED ' + b.name })
   } else {
     gaps.push(b)
   }

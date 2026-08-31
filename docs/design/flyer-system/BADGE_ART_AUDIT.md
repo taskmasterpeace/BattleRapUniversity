@@ -4,13 +4,13 @@
 ## Headline
 - **119 badges** in `lib/all-badges.ts` · **120 medallions** recovered from `ai-battlerap/public/sprites/badges/` (3 sheets × 40, names baked into the art, no code mapping existed).
 - Numbering recovered visually from the contact sheets and **validated** on both known anchors (046 REBUTTAL KING, 054 WELL RESEARCHED).
-- **87 badges mapped** (16 exact-name, 71 curated semantic) · **32 true gaps** (no matching concept in the art set).
+- **89 badges mapped** (16 exact-name, 71 curated semantic) · **30 true gaps** (no matching concept in the art set).
 - All 120 medallions copied flat to `public/sprites/badges/badge_001..120.png`; source of truth: `lib/badge-art.ts` (`badgeArt(idOrName)`).
 
 ## Gaps by category
 - **performance**: 1
-- **reputation**: 7
-- **milestone**: 10
+- **reputation**: 6
+- **milestone**: 9
 - **city**: 5
 - **region**: 5
 - **special_ability**: 4
@@ -24,12 +24,10 @@
 | gatekeeper | GATEKEEPER | reputation | epic |
 | draw_power | DRAW POWER | reputation | legendary |
 | viral_battler | VIRAL BATTLER | reputation | epic |
-| peoples_champ | PEOPLE'S CHAMPION | reputation | legendary |
 | underrated | UNDERRATED | reputation | common |
 | rookie | ROOKIE | milestone | common |
 | journeyman | JOURNEYMAN | milestone | rare |
 | veteran | VETERAN | milestone | epic |
-| legend | LEGEND | milestone | legendary |
 | first_win | FIRST VICTORY | milestone | common |
 | ten_wins | TEN VICTORIES | milestone | common |
 | undefeated_streak | UNDEFEATED | milestone | rare |
@@ -101,6 +99,7 @@
 | fan_favorite | FAN FAVORITE | badge_076 | CROWD FAVORITE | curated |
 | consistent_performer | CONSISTENT PERFORMER | badge_044 | CONSISTENT WRITER | curated |
 | headline_maker | HEADLINE MAKER | badge_034 | CONTROVERSIAL | curated |
+| peoples_champ | PEOPLE'S CHAMPION | badge_122 | GENERATED PEOPLE'S CHAMPION | generated |
 | aggressive_style | AGGRESSIVE STYLE | badge_056 | AGGRESSIVE | curated |
 | lyrical_purist | LYRICAL PURIST | badge_017 | WORDPLAY | curated |
 | entertainer | ENTERTAINER | badge_009 | SLAPSTICK | curated |
@@ -116,6 +115,7 @@
 | conscious_battler | CONSCIOUS BATTLER | badge_028 | SOCIAL COMMENTARY | curated |
 | actor | ACTOR | badge_010 | CONCEPT BATTLES | curated |
 | street_battler | STREET BATTLER | badge_012 | STREET TALK | curated |
+| legend | LEGEND | badge_121 | GENERATED LEGEND | generated |
 | choker | CHOKER | badge_094 | CHOKER | exact |
 | ring_rust | RING RUST | badge_089 | OUTDATED | curated |
 | controversial_loss | CONTROVERSIAL LOSS | badge_105 | SORE LOSER | curated |

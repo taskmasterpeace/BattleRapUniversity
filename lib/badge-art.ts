@@ -52,6 +52,7 @@ export const BADGE_ART: Record<string, string> = {
   "fan_favorite": "/sprites/badges/badge_076.png", // FAN FAVORITE (art: CROWD FAVORITE)
   "consistent_performer": "/sprites/badges/badge_044.png", // CONSISTENT PERFORMER (art: CONSISTENT WRITER)
   "headline_maker": "/sprites/badges/badge_034.png", // HEADLINE MAKER (art: CONTROVERSIAL)
+  "peoples_champ": "/sprites/badges/badge_122.png", // PEOPLE'S CHAMPION
   "aggressive_style": "/sprites/badges/badge_056.png", // AGGRESSIVE STYLE (art: AGGRESSIVE)
   "lyrical_purist": "/sprites/badges/badge_017.png", // LYRICAL PURIST (art: WORDPLAY)
   "entertainer": "/sprites/badges/badge_009.png", // ENTERTAINER (art: SLAPSTICK)
@@ -67,6 +68,7 @@ export const BADGE_ART: Record<string, string> = {
   "conscious_battler": "/sprites/badges/badge_028.png", // CONSCIOUS BATTLER (art: SOCIAL COMMENTARY)
   "actor": "/sprites/badges/badge_010.png", // ACTOR (art: CONCEPT BATTLES)
   "street_battler": "/sprites/badges/badge_012.png", // STREET BATTLER (art: STREET TALK)
+  "legend": "/sprites/badges/badge_121.png", // LEGEND
   "choker": "/sprites/badges/badge_094.png", // CHOKER
   "ring_rust": "/sprites/badges/badge_089.png", // RING RUST (art: OUTDATED)
   "controversial_loss": "/sprites/badges/badge_105.png", // CONTROVERSIAL LOSS (art: SORE LOSER)
@@ -143,6 +145,7 @@ export const BADGE_ART_BY_NAME: Record<string, string> = {
   "FAN FAVORITE": "/sprites/badges/badge_076.png",
   "CONSISTENT PERFORMER": "/sprites/badges/badge_044.png",
   "HEADLINE MAKER": "/sprites/badges/badge_034.png",
+  "PEOPLE'S CHAMPION": "/sprites/badges/badge_122.png",
   "AGGRESSIVE STYLE": "/sprites/badges/badge_056.png",
   "LYRICAL PURIST": "/sprites/badges/badge_017.png",
   "ENTERTAINER": "/sprites/badges/badge_009.png",
@@ -158,6 +161,7 @@ export const BADGE_ART_BY_NAME: Record<string, string> = {
   "CONSCIOUS BATTLER": "/sprites/badges/badge_028.png",
   "ACTOR": "/sprites/badges/badge_010.png",
   "STREET BATTLER": "/sprites/badges/badge_012.png",
+  "LEGEND": "/sprites/badges/badge_121.png",
   "CHOKER": "/sprites/badges/badge_094.png",
   "RING RUST": "/sprites/badges/badge_089.png",
   "CONTROVERSIAL LOSS": "/sprites/badges/badge_105.png",
@@ -193,12 +197,10 @@ export const BADGE_ART_GAPS: string[] = [
   "gatekeeper", // GATEKEEPER (reputation/epic)
   "draw_power", // DRAW POWER (reputation/legendary)
   "viral_battler", // VIRAL BATTLER (reputation/epic)
-  "peoples_champ", // PEOPLE'S CHAMPION (reputation/legendary)
   "underrated", // UNDERRATED (reputation/common)
   "rookie", // ROOKIE (milestone/common)
   "journeyman", // JOURNEYMAN (milestone/rare)
   "veteran", // VETERAN (milestone/epic)
-  "legend", // LEGEND (milestone/legendary)
   "first_win", // FIRST VICTORY (milestone/common)
   "ten_wins", // TEN VICTORIES (milestone/common)
   "undefeated_streak", // UNDEFEATED (milestone/rare)
