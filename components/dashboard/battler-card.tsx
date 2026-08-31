@@ -4,6 +4,7 @@ import Image from "next/image"
 import Link from "next/link"
 import type { Battler, CareerTier } from "@/lib/types"
 import { getCityByName, getCityBackdrop as getCityBackdropHelper } from "@/lib/cities"
+import { badgeArt } from "@/lib/badge-art"
 import { ChevronRight, Clock } from "lucide-react"
 import { useState } from "react"
 
@@ -251,14 +252,7 @@ export function BattlerCard({ battler }: BattlerCardProps) {
           <div className="mt-3 pt-3 border-t border-zinc-700/50">
             <div className="flex items-center gap-2">
               {battler.badges.slice(0, 4).map((badgeName, index) => {
-                const spriteMap: Record<string, string> = {
-                  "REBUTTAL KING": "badge_046",
-                  "MASTER WORDSMITH": "badge_001",
-                  "PUNCHLINE KING": "badge_002",
-                  "TECHNICAL WRITER": "badge_003",
-                  "WELL RESEARCHED": "badge_054",
-                }
-                const spriteId = spriteMap[badgeName] || `badge_${String(46 + index).padStart(3, "0")}`
+                const artPath = badgeArt(badgeName)
                 const badgeSlug = badgeName.toLowerCase().replace(/\s+/g, "-")
 
                 return (
@@ -273,7 +267,7 @@ export function BattlerCard({ battler }: BattlerCardProps) {
                       className="block w-10 h-10 sm:w-12 sm:h-12 bg-zinc-800/80 border border-zinc-600 rounded overflow-hidden hover:border-orange-500 hover:scale-110 transition-all"
                     >
                       <Image
-                        src={`/sprites/badges/${spriteId}.png`}
+                        src={artPath || "/sprites/badges/badge_046.png"}
                         alt={badgeName}
                         width={48}
                         height={48}

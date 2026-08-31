@@ -23,6 +23,7 @@ import {
   Search,
 } from "lucide-react"
 import { ALL_BADGES, type Badge, type BadgeCategory, type BadgeRarity } from "@/lib/all-badges"
+import { badgeArt } from "@/lib/badge-art"
 import { Input } from "@/components/ui/input"
 
 const categoryIcons: Record<BadgeCategory, React.ElementType> = {
@@ -58,7 +59,7 @@ const getRarityColor = (rarity: BadgeRarity) => {
     case "rare":
       return "text-blue-400 border-blue-500 bg-blue-500/10"
     case "epic":
-      return "text-purple-400 border-purple-500 bg-purple-500/10"
+      return "text-red-400 border-red-500 bg-red-500/10"
     case "legendary":
       return "text-amber-400 border-amber-500 bg-amber-500/10"
   }
@@ -72,32 +73,15 @@ const getRarityGlow = (rarity: BadgeRarity, earned: boolean) => {
     case "rare":
       return "shadow-blue-500/20 shadow-lg"
     case "epic":
-      return "shadow-purple-500/30 shadow-lg"
+      return "shadow-blue-500/30 shadow-lg"
     case "legendary":
       return "shadow-amber-500/40 shadow-xl animate-pulse"
   }
 }
 
-const badgeSpriteMap: Record<string, string> = {
-  "rebuttal king/queen": "/sprites/badges/badge_046.png",
-  "rebuttal king": "/sprites/badges/badge_046.png",
-  "well researched": "/sprites/badges/badge_054.png",
-  "punchline king/queen": "/images/badge-046.png",
-  "double entendre expert": "/images/badge-048.png",
-}
-
 function getBadgeImage(badge: Badge): string | null {
-  const lowerName = badge.name.toLowerCase()
-  if (badgeSpriteMap[lowerName]) {
-    return badgeSpriteMap[lowerName]
-  }
-  // Try to find by partial match
-  for (const [key, value] of Object.entries(badgeSpriteMap)) {
-    if (lowerName.includes(key) || key.includes(lowerName)) {
-      return value
-    }
-  }
-  return null
+  // single source of truth: lib/badge-art.ts (see docs/design/flyer-system/BADGE_ART_AUDIT.md)
+  return badgeArt(badge.id) ?? badgeArt(badge.name) ?? null
 }
 
 function BadgeDetailModal({ badge, earned, onClose }: { badge: Badge; earned: boolean; onClose: () => void }) {
@@ -445,18 +429,21 @@ export default function BadgesPage() {
                                 earned ? getRarityColor(badge.rarity) : "border-zinc-700 bg-zinc-800"
                               } ${badge.isNegative && earned ? "border-red-500 bg-red-500/10" : ""}`}
                             >
-                              {earned ? (
-                                badgeImage ? (
+                              {badgeImage ? (
+                                <div className="relative w-12 h-12">
                                   <Image
-                                    src={badgeImage || "/placeholder.svg"}
+                                    src={badgeImage}
                                     alt={badge.name}
                                     width={48}
                                     height={48}
-                                    className="pixelated"
+                                    className={`pixelated ${earned ? "" : "grayscale opacity-40"}`}
                                   />
-                                ) : (
-                                  <span className="text-2xl">{badge.icon}</span>
-                                )
+                                  {!earned && (
+                                    <Lock className="w-4 h-4 text-zinc-400 absolute -bottom-1 -right-1" />
+                                  )}
+                                </div>
+                              ) : earned ? (
+                                <span className="text-2xl">{badge.icon}</span>
                               ) : (
                                 <Lock className="w-6 h-6 text-zinc-600" />
                               )}

@@ -1,4 +1,5 @@
 import { ALL_BADGES, type Badge } from "@/lib/all-badges"
+import { badgeArt } from "@/lib/badge-art"
 import type { BadgeInfo, BadgeEffect, NetEffect } from "@/components/battler/character-sheet"
 
 // Effects where a POSITIVE number is a downside (costs), everything else positive = buff.
@@ -61,7 +62,7 @@ export function toBadgeInfos(codes: string[]): BadgeInfo[] {
       return {
         name: def.name,
         tier: TIER_BY_RARITY[def.rarity] ?? "bronze",
-        icon: def.imageId != null ? `/sprites/badges/badge_${String(def.imageId).padStart(3, "0")}.png` : undefined,
+        icon: badgeArt(def.id) ?? badgeArt(def.name),
         emoji: def.icon,
         effects: formatEffects(def),
       }
