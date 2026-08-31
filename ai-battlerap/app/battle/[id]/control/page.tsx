@@ -6,7 +6,7 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { BattleWithDetails, ScoringContext, PrepBlock } from '@/lib/models';
 import { toast } from '@/components/ui/Toast';
-import Avatar from '@/components/ui/Avatar';
+import MatchupMasthead, { battleFace } from '@/components/battle/MatchupMasthead';
 import Icon from '@/components/ui/Icon';
 
 const CONTEXTS: { value: ScoringContext; label: string; description: string }[] = [
@@ -141,30 +141,44 @@ export default function BattleControlPage() {
       </div>
 
       <div className="max-w-5xl mx-auto px-4 md:px-6 py-8">
-        {/* Matchup strip */}
-        <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-6 mb-6 flex flex-col sm:flex-row items-start sm:items-center gap-6">
-          <Avatar url={battle.ai_battler?.avatar_url} size={96} alt={battle.ai_battler?.stage_name || 'Opponent'} />
-          <div className="flex-1">
-            <h2 className="text-2xl font-display font-black uppercase tracking-tight mb-2">
-              VS {battle.ai_battler?.stage_name}
-            </h2>
-            <div className="flex flex-wrap gap-x-6 gap-y-1 text-xs font-display font-bold uppercase tracking-wider text-zinc-400">
-              <span><span className="text-zinc-600">LEAGUE</span> · {battle.league?.name}</span>
-              <span><span className="text-zinc-600">FORMAT</span> · {battle.league?.round_length_minutes}-MIN ROUNDS</span>
-            </div>
-          </div>
+        {/* Battle-night masthead — the corners, before you pick the room */}
+        <div className="bg-[#101114] border-2 border-[#3a3d44] p-5 md:p-7 mb-6">
+          <MatchupMasthead
+            a={{
+              id: battle.player_battler?.id,
+              name: battle.player_battler?.stage_name || 'YOU',
+              portrait: battleFace(battle.player_battler),
+              tier: battle.player_battler?.tier,
+            }}
+            b={{
+              id: battle.ai_battler?.id,
+              name: battle.ai_battler?.stage_name || 'OPPONENT',
+              portrait: battleFace(battle.ai_battler),
+              tier: battle.ai_battler?.tier,
+            }}
+            subLine={`${(battle.league?.name || '').toUpperCase()} · ${battle.league?.round_length_minutes}-MIN ROUNDS`}
+          />
           {/* Camp readout */}
-          <div className="bg-[#18191c] border-2 border-[#3a3d44] px-5 py-4">
-            <p className="text-[10px] text-zinc-500 font-display font-black uppercase tracking-wider mb-2">
-              CAMP YOU'RE WALKING IN WITH
+          <div className="fs mt-5 bg-[#17181C] border-2 border-black px-5 py-4">
+            <p className="font-mono text-[9px] text-zinc-500 uppercase tracking-[0.3em] mb-2.5">
+              ◤ CAMP YOU'RE WALKING IN WITH
             </p>
-            <div className="flex gap-4">
+            <div className="flex gap-5 flex-wrap">
               {(['research', 'writing', 'performance', 'life', 'rest'] as const).map((focus) => (
                 <div key={focus} className="text-center">
-                  <div className={`text-xl font-display font-black ${prepSummary[focus] ? 'text-[#ff8c42]' : 'text-zinc-600'}`}>
+                  <div
+                    style={{
+                      fontFamily: 'var(--font-pixel)',
+                      fontSize: 16,
+                      color: prepSummary[focus] ? '#E7B23C' : '#3E404A',
+                      textShadow: '2px 2px 0 #000',
+                    }}
+                  >
                     {prepSummary[focus] || 0}
                   </div>
-                  <div className="text-[9px] text-zinc-500 font-display font-bold uppercase tracking-wider">{focus}</div>
+                  <div className="text-[9px] text-zinc-500 font-display font-bold uppercase tracking-wider mt-1">
+                    {focus === 'writing' ? 'write' : focus === 'performance' ? 'rehearse' : focus}
+                  </div>
                 </div>
               ))}
             </div>

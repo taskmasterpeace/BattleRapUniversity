@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { createClient } from '@supabase/supabase-js';
 import LeaderboardFilters from '@/components/leaderboard/LeaderboardFilters';
 import ShareButton from '@/components/leaderboard/ShareButton';
+import { portraitFillStyle } from '@/lib/sprite-crops';
 
 export const dynamic = 'force-dynamic';
 
@@ -169,10 +170,13 @@ function Avatar({
     <div
       role="img"
       aria-label={name}
-      className={`bg-[#2d2f35] bg-cover bg-center [image-rendering:pixelated] ${className}`}
-      style={url ? { backgroundImage: `url(${url})` } : undefined}
+      className={`relative overflow-hidden ${className}`}
+      style={{ background: 'linear-gradient(170deg, #1F2024 0%, #101114 78%)' }}
     >
-      {!url && (
+      {url ? (
+        // Fill-frame portrait, anchored bottom — never a floaty bg-cover crop.
+        <img src={url} alt="" style={portraitFillStyle(url, { targetH: 0.95 })} />
+      ) : (
         <div className="w-full h-full flex items-center justify-center text-zinc-700 font-bebas text-3xl">
           ?
         </div>

@@ -14,12 +14,22 @@
 | /battle/[id] final | **A** | masthead w/ poster digits + verdict stamp |
 | /battle/offers | **A** | every offer is a fight poster (2026-08-31) |
 | /battle/[id]/prep | **B+** | CAMP pipeline strip added; the day-calendar itself still pre-flyer |
-| /newsroom | **B+** | strong own identity (the Desk); consistent enough — leave |
+| /newsroom | **B+** | strong own identity (the Desk); @PredictionsKing on the roster — leave |
 | /leagues | **B** | tiered cards + crests fine (white boxes in dev = image-optimizer lag, not a bug) |
 | /media | **D** | legacy article hub, empty in dev — decide: fold into /newsroom or restyle |
 
+## Iteration 2 — graded + fixed 2026-08-31 (late)
+| Page | Grade | Notes |
+|---|---|---|
+| /calendar | C → **A-** | FIGHT NIGHTS rail: next 14 days of bouts as face-chip matchup rows (red/blue edges, gold pixel VS, ★ mine), TONIGHT'S CARD footer link; rail has its own query, not month-bounded |
+| /leaderboard | A- → **A** | podium + list avatars were floaty bg-cover crops → fill-frame portraitFillStyle, gradient plates |
+| /finances | B → **A-** | THE BAG poster plates: gold pixel-font money, gold top edge, hard shadows, "FLAT PAY · WIN OR LOSE" law in subtext |
+| /battle/[id]/control | B → **A** | BATTLE NIGHT opens on the MatchupMasthead (corners + VS seal + league/format), camp readout in gold pixel digits w/ WRITE/REHEARSE labels |
+| /wire | **B+** | feed + HEATING UP + newsroom ticker — own identity, leave |
+| /matchup | **B** | corner slots + VS present; picker is text-only buttons — faces in the picker = next pass |
+
 ## Not yet swept (next loop iterations)
-/finances · /calendar · /wire · /matchup · /leaderboard · /crew · /tournaments · /notifications · /life-events (recently overhauled — likely B+) · /onboarding · /guide · /settings · /battle/[id]/control · /battle/[id]/promotion
+/crew · /tournaments · /notifications · /life-events (recently overhauled — likely B+) · /onboarding · /guide · /settings · /battle/[id]/promotion · /cities · /badges · /verified · article detail pages
 
 ## Loop recipe (each iteration)
 1. Pick 2-3 ungraded or lowest-graded pages.

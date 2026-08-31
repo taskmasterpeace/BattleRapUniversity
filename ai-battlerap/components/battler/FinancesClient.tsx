@@ -85,26 +85,38 @@ export default function FinancesClient({
       </div>
 
       <div className="max-w-5xl mx-auto px-6 py-12">
-        {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          <StatCard
-            label="CURRENT BALANCE"
-            value={formatCurrency(balance)}
-            icon={<Icon name="cash" size={18} />}
-            subtext={balance >= 0 ? 'POSITIVE BALANCE' : 'NEGATIVE BALANCE'}
-          />
-          <StatCard
-            label="LIFETIME EARNINGS"
-            value={formatCurrency(lifetimeEarnings)}
-            icon={<Icon name="trophy" size={18} />}
-            subtext="TOTAL CAREER EARNINGS"
-          />
-          <StatCard
-            label="BATTLE EARNINGS"
-            value={formatCurrency(battleEarnings)}
-            icon={<Icon name="swords" size={18} />}
-            subtext="FROM BATTLES ONLY"
-          />
+        {/* THE BAG — poster plates, pixel-font money (Flyer System) */}
+        <div className="fs grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
+          {[
+            {
+              lab: '◤ THE BAG', val: formatCurrency(balance),
+              sub: balance >= 0 ? 'CASH ON HAND' : 'IN THE HOLE',
+              hot: true, neg: balance < 0,
+            },
+            { lab: 'LIFETIME EARNINGS', val: formatCurrency(lifetimeEarnings), sub: 'CAREER TOTAL', hot: false, neg: false },
+            { lab: 'BATTLE PURSES', val: formatCurrency(battleEarnings), sub: 'FLAT PAY · WIN OR LOSE', hot: false, neg: false },
+          ].map((p) => (
+            <div
+              key={p.lab}
+              className="bg-[#101114] border-2 border-black p-5 shadow-[4px_4px_0_rgba(0,0,0,.45)]"
+              style={{ borderTop: `3px solid ${p.hot ? '#E7B23C' : '#3E404A'}` }}
+            >
+              <p className={`font-mono text-[9px] uppercase tracking-[0.3em] mb-2 ${p.hot ? 'text-[#E7B23C]' : 'text-zinc-500'}`}>
+                {p.lab}
+              </p>
+              <p
+                style={{
+                  fontFamily: 'var(--font-pixel)',
+                  fontSize: 'clamp(18px,2.6vw,26px)',
+                  color: p.neg ? '#E23A2E' : p.hot ? '#E7B23C' : '#F4F4F6',
+                  textShadow: '2px 2px 0 #000',
+                }}
+              >
+                {p.val}
+              </p>
+              <p className="font-mono text-[8px] uppercase tracking-[0.25em] text-zinc-600 mt-2">{p.sub}</p>
+            </div>
+          ))}
         </div>
 
         {/* Earnings Breakdown with Visual Chart */}
