@@ -19,12 +19,12 @@
 | 12 | **Mockups/boards** (board.html, Codex dossier concept, all proof screenshots) | `docs/design/flyer-system/` | n/a (docs) |
 
 ## Port queue into `ai-battlerap/` (owner's order — everything moves)
-1. **Dashboard Command Hero** ← in progress
-2. **Battle screens in the new style** (owner: "I need to see how it is to be actually in a battle") — restyle `/watch/[battleId]` + battle results with fs layer + BattleFlyer + portrait sets
-3. **Battle Flyer** onto matchup/card surfaces (`/matchup`, Tonight's Card)
-4. **Badge art reconciliation** (merge `badgeArt()` map with badge_costs.icon_url — one source of truth)
-5. **Jesse blogger persona** into ai-battlerap's newsroom roster
-6. **Roster/battlers list cards** in the new style so *every* battler browses in the dossier language
+1. ✅ **Dashboard Command Hero** — LIVE (commit 3728b45): BattlerHero on /dashboard, hometown city crown + backdrop, next-battle mini-flyer
+2. ✅ **Battle screens in the new style** — LIVE (8ca7191): MatchupMasthead (red vs blue corners, gold VS seal / scoreline + verdict stamp, WINNER badge) on round select ("CALL YOUR SHOT"), ON DECK, THE TAPE, final battle page, spectator replay + tale of the tape; `battleFace()` uses sprite_set[1] battle-face variants
+3. ✅ **Battle Flyer on Tonight's Card** — LIVE (c0f34b4): headliner bout runs the full event poster w/ undercard rows
+4. ✅ **Badge art reconciliation** — RESOLVED, no wiring needed: ai-battlerap's badge_costs (76 badges) already 100% covered by its own verified icon_url mapping, all 76 files present on disk. The root tree's `badgeArt()` map is a DIFFERENT badge vocabulary (89 codes, only 14 shared) → it's the **art bank for future badge-set expansion** (root `public/sprites/badges/badge_*.png`, 120 medallions + generation recipe in BADGE_ART_AUDIT.md). When badges are added to badge_costs, pull art from the bank.
+5. ✅ **Jesse blogger persona** — LIVE in both DBs: social_accounts row `@PredictionsKing` (kind=blogger, voice analyst_rankings, influence 61 / cred 72 / controversy 65) **linked to his battler row via battler_id** — true dual-lane; the newsroom engine now lets him claim story leads
+6. ✅ **Roster/battlers list cards** — LIVE (8bf4e1e): all 112 battlers render as fighter cards (fill-frame portraits, Anton names, pixel ELO, tier edges)
 
 ## "All battlers appear in that style" — current truth
 ✅ Already true for **profiles**: `/battler/[id]` on prod renders EVERY battler (all 102) in the dossier style — data-driven, not per-battler work. Their portraits are the existing mixed-style sprites until each gets a real set; the **style-consistency fix at scale = the model-training plan** (30 battlers → train a LoRA on the house style; noted in the skill).
