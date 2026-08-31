@@ -35,8 +35,14 @@
 | /tournaments/[id] | C+ → **B+** | bracket + participants rows get corner-edged FaceChips, names drill to profiles (drill-down law); winner highlight kept green |
 | /tournaments | **C+** | list page sparse — one text card; needs a championship-poster treatment when tournaments matter more |
 
+## Iteration 4 — graded + fixed 2026-08-31 (late)
+| Page | Grade | Notes |
+|---|---|---|
+| /cities | **A-** | pixel skylines per city, league chips — already in language, leave |
+| /matchup | B → **A-** | corner slots get red/blue-edged fill-frame portraits; all 1000 roster buttons get fill-frame face chips (were floaty object-contain) |
+
 ## Not yet swept (next loop iterations)
-/crew · /notifications · /life-events (recently overhauled — likely B+) · /onboarding · /guide · /settings · /battle/[id]/promotion · /cities · /verified · article detail pages · /matchup picker faces · prep day-calendar fs pass
+/crew · /notifications · /life-events (recently overhauled — likely B+) · /onboarding (needs a fresh account to view) · /guide · /settings · /battle/[id]/promotion · /verified · article detail pages · prep day-calendar fs pass · /tournaments list poster treatment
 
 ## Loop recipe (each iteration)
 1. Pick 2-3 ungraded or lowest-graded pages.

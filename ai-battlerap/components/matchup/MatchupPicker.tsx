@@ -5,6 +5,7 @@
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { portraitFillStyle } from '@/lib/sprite-crops';
 
 type PickerBattler = {
   id: string;
@@ -41,15 +42,15 @@ function BattlerSlot({
       <p className={`absolute top-2 left-3 font-mono text-[10px] uppercase tracking-widest ${text}`}>{label}</p>
       {selected ? (
         <>
-          <div className="relative w-20 h-20 mb-2">
+          <div
+            className="relative w-24 h-24 mb-2 overflow-hidden"
+            style={{
+              background: 'linear-gradient(170deg, #1F2024 0%, #101114 78%)',
+              borderTop: `3px solid ${corner === 'a' ? '#E23A2E' : '#2F7DD1'}`,
+            }}
+          >
             {selected.avatar_url ? (
-              <Image
-                src={selected.avatar_url}
-                alt={selected.stage_name}
-                fill
-                sizes="80px"
-                className="object-contain [image-rendering:pixelated]"
-              />
+              <img src={selected.avatar_url} alt={selected.stage_name} style={portraitFillStyle(selected.avatar_url, { targetH: 1.0 })} />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-4xl bg-[#18191c] border border-[#3a3d44]">🎤</div>
             )}
@@ -178,9 +179,12 @@ export default function MatchupPicker({
             className="group bg-[#101114] border-2 border-[#3a3d44] hover:border-[#ff8c42] p-3 text-left transition disabled:opacity-30 disabled:cursor-not-allowed"
           >
             <div className="flex items-center gap-2">
-              <div className="relative w-10 h-10 flex-shrink-0">
+              <div
+                className="relative w-10 h-10 flex-shrink-0 overflow-hidden"
+                style={{ background: '#17181C', borderRadius: 4 }}
+              >
                 {x.avatar_url ? (
-                  <Image src={x.avatar_url} alt="" fill sizes="40px" className="object-contain [image-rendering:pixelated]" />
+                  <img src={x.avatar_url} alt="" style={portraitFillStyle(x.avatar_url, { targetH: 1.25 })} />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-[#18191c] text-lg">🎤</div>
                 )}
