@@ -31,6 +31,7 @@ export async function GET(
     .select(`
       *,
       league:leagues(*),
+      venue:venue_id(name, prestige_level, venue_type:venue_type_id(slug, tier, sprite_key)),
       player_battler:battler_player_id(id, stage_name, tier, avatar_url, sprite_set, style_tags),
       ai_battler:battler_ai_id(id, stage_name, tier, avatar_url, sprite_set, style_tags)
     `)

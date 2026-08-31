@@ -56,6 +56,7 @@ export async function GET() {
     .select(`
       *,
       league:leagues(*, city:city_id(name, state, background_url, skyline_url)),
+      venue:venue_id(name, prestige_level, venue_type:venue_type_id(slug, tier, sprite_key)),
       ai_battler:battler_ai_id(
         id,
         stage_name,
@@ -85,6 +86,7 @@ export async function GET() {
     .select(`
       *,
       league:leagues(*, city:city_id(name, state, background_url, skyline_url)),
+      venue:venue_id(name, prestige_level, venue_type:venue_type_id(slug, tier, sprite_key)),
       challenger:battler_player_id(
         id,
         stage_name,
@@ -130,6 +132,7 @@ export async function GET() {
             .select(`
               *,
               league:leagues(*, city:city_id(name, state, background_url, skyline_url)),
+      venue:venue_id(name, prestige_level, venue_type:venue_type_id(slug, tier, sprite_key)),
               ai_battler:battler_ai_id(
                 id,
                 stage_name,

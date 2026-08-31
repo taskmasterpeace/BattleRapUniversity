@@ -251,6 +251,17 @@ async function createBattleOffer(
   const lockPrepAt = new Date(scheduledAt);
   lockPrepAt.setDate(lockPrepAt.getDate() - 1);
 
+  // Book the ROOM — leagues run venues in their city sized to their draw;
+  // white-hot grudges and premier marquee nights take the city's biggest room
+  // and go out on national TV.
+  const { bookVenueForBattle } = await import('@/lib/game/venueBooking');
+  const booking = await bookVenueForBattle(
+    supabase,
+    league as any,
+    playerBattlerId,
+    aiBattlerId
+  );
+
   const { data: battle, error } = await supabase.from('battles').insert({
     league_id: league.id,
     battler_player_id: playerBattlerId,
@@ -262,6 +273,8 @@ async function createBattleOffer(
     // Venue scoring-context derived from the league (was silently defaulting to
     // 'ppv' for every battle, making the in_building/on_cam modifiers dead).
     context: contextForLeague(league.short_code, league.prestige_level, league.base_crowd_factor),
+    venue_id: booking.venueId,
+    tv_broadcast: booking.tvBroadcast,
   }).select('id').single();
 
   if (error) {

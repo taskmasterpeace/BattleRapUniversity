@@ -10,7 +10,7 @@ import { toast } from '@/components/ui/Toast';
 import MatchupMasthead, { battleFace } from '@/components/battle/MatchupMasthead';
 import { GrudgeMeter } from '@/components/grudge/GrudgeMeter';
 import { RematchDemandBar } from '@/components/grudge/RematchDemandBar';
-import { venueForLeagueName } from '@/lib/game/venueForLeague';
+import { venueForLeagueName, artForTier } from '@/lib/game/venueForLeague';
 
 type BattlerAttributes = {
   writing: {
@@ -44,6 +44,12 @@ type BattleOffer = {
       skyline_url: string | null;
     } | null;
   };
+  venue?: {
+    name: string;
+    prestige_level: number;
+    venue_type?: { slug: string; tier: string; sprite_key: string | null } | null;
+  } | null;
+  tv_broadcast?: boolean;
   ai_battler: {
     id: string;
     stage_name: string;
@@ -215,10 +221,17 @@ export default function BattleOffersPage() {
               const isGrudgeMatch = offer.grudge && offer.grudge.intensity > 70;
 
               const city = offer.league.city;
-              const room = venueForLeagueName(offer.league.name);
-              // The ROOM is the venue; the city skyline is the backup while
-              // venue art rolls out type by type.
-              const venueArt = room.art || city?.background_url || city?.skyline_url || null;
+              // The battle's BOOKED room (venues table) is the truth; the
+              // tier-fallback resolver covers legacy offers with no booking.
+              const fallback = venueForLeagueName(offer.league.name);
+              const roomName = offer.venue?.name ?? fallback.name;
+              const venueArt =
+                offer.venue?.venue_type?.sprite_key ??
+                (offer.venue?.venue_type?.tier
+                  ? artForTier(offer.venue.venue_type.tier)
+                  : fallback.art) ??
+                city?.background_url ??
+                null;
               const coding = offer.ai_battler.identity?.coding;
               const CODING_CHIP: Record<string, { label: string; color: string }> = {
                 street: { label: 'STREET-CODED', color: '#E23A2E' },
@@ -268,7 +281,7 @@ export default function BattleOffersPage() {
                         )}
                         <div className="min-w-0">
                           <p className="font-mono text-[12px] uppercase tracking-[0.3em] text-[#ff8c42]">
-                            LIVE FROM {room.name.toUpperCase()}
+                            LIVE FROM {roomName.toUpperCase()}
                             {city ? ` · ${city.name.toUpperCase()}${city.state ? `, ${city.state}` : ''}` : ''}
                           </p>
                           <p
@@ -280,6 +293,12 @@ export default function BattleOffersPage() {
                         </div>
                       </div>
                       <div className="shrink-0 text-right">
+                        {offer.tv_broadcast && (
+                          <span className="inline-flex items-center gap-2 px-3 py-1.5 mb-2 mr-2 bg-[#E23A2E] text-white font-display font-black uppercase tracking-wider text-sm border-2 border-black shadow-[2px_2px_0_rgba(0,0,0,.5)]">
+                            <span className="inline-block w-2 h-2 rounded-full bg-white animate-pulse" />
+                            NATIONAL TV
+                          </span>
+                        )}
                         {(isGrudgeMatch || offer.is_pvp) && (
                           <span className="inline-block px-3 py-1.5 mb-2 bg-[#ff8c42] text-black font-display font-black uppercase tracking-wider text-sm border-2 border-black shadow-[2px_2px_0_rgba(0,0,0,.5)]">
                             {offer.is_pvp ? 'PLAYER CHALLENGE' : 'GRUDGE MATCH'}

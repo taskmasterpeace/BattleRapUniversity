@@ -78,13 +78,27 @@ interface CrowdStripProps {
   seed: string;
   /** which crowd shows up — pass venueForLeague(league.name) */
   venue?: Venue;
-  /** streamed-online framing: battle.context 'ppv' | 'on_cam' adds a live chip */
-  broadcast?: 'ppv' | 'on_cam' | null;
+  /** streamed-online framing: 'ppv' | 'on_cam' | 'national_tv' adds a live chip */
+  broadcast?: 'ppv' | 'on_cam' | 'national_tv' | null;
   label?: string;
   height?: number;
   /** heads in the FRONT row (other rows derive) */
   perRow?: number;
+  /**
+   * The ROOM's size sets the crowd density (owner law: where you battle
+   * determines how big the crowd is). Overridden by an explicit perRow.
+   */
+  size?: 'virtual' | 'small' | 'medium' | 'large';
+  /** Venue art drawn behind the bodies — the empty room this crowd fills. */
+  backdrop?: string | null;
 }
+
+const SIZE_PER_ROW: Record<NonNullable<CrowdStripProps['size']>, number> = {
+  virtual: 4,
+  small: 5,
+  medium: 7,
+  large: 10,
+};
 
 export default function CrowdStrip({
   score,
@@ -93,8 +107,11 @@ export default function CrowdStrip({
   broadcast = null,
   label,
   height = 150,
-  perRow = 7,
+  perRow,
+  size,
+  backdrop = null,
 }: CrowdStripProps) {
+  const heads = perRow ?? (size ? SIZE_PER_ROW[size] : 7);
   const rand = rng(`${seed}|${Math.round(score / 5)}|${venue}`);
   const weights = moodWeights(score);
   const mix = VENUE_MIX[venue] ?? VENUE_MIX.urban;
@@ -128,9 +145,9 @@ export default function CrowdStrip({
   // (img width > horizontal step), and the frame crops waists at the bottom
   // and the back row at the top, so bodies fill the frame edge to edge.
   const rows = [
-    { count: perRow + 4, width: 12.5, bottom: 44, bright: 0.22, z: 1, offset: 0.5 },
-    { count: perRow + 2, width: 14.5, bottom: 20, bright: 0.55, z: 2, offset: 0 },
-    { count: perRow, width: 17, bottom: -16, bright: 1, z: 3, offset: 0.4 },
+    { count: heads + 4, width: 12.5, bottom: 44, bright: 0.22, z: 1, offset: 0.5 },
+    { count: heads + 2, width: 14.5, bottom: 20, bright: 0.55, z: 2, offset: 0 },
+    { count: heads, width: 17, bottom: -16, bright: 1, z: 3, offset: 0.4 },
   ];
 
   return (
@@ -147,6 +164,15 @@ export default function CrowdStrip({
           boxShadow: 'inset 0 -22px 28px rgba(0,0,0,.6), 3px 3px 0 rgba(0,0,0,.4)',
         }}
       >
+        {/* the empty room — crowd bodies layer in front of it */}
+        {backdrop && (
+          <img
+            src={backdrop}
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+            style={{ imageRendering: 'pixelated', filter: 'brightness(.6)', zIndex: 0 }}
+          />
+        )}
         {rows.map((row, ri) => {
           const step = 100 / row.count;
           return Array.from({ length: row.count + 1 }, (_, i) => {
@@ -186,7 +212,7 @@ export default function CrowdStrip({
           >
             <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#E23A2E] animate-pulse" />
             <span style={{ fontFamily: 'var(--font-pixel)', fontSize: 9, color: '#F4F4F6' }}>
-              {broadcast === 'ppv' ? 'LIVE PPV' : 'ON CAM'}
+              {broadcast === 'national_tv' ? 'LIVE · NATIONAL TV' : broadcast === 'ppv' ? 'LIVE PPV' : 'ON CAM'}
             </span>
           </span>
         )}

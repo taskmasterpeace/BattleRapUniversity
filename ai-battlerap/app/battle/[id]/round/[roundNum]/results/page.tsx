@@ -10,6 +10,7 @@ import { toast } from '@/components/ui/Toast';
 import MatchupMasthead, { battleFace } from '@/components/battle/MatchupMasthead';
 import CrowdStrip from '@/components/battle/CrowdStrip';
 import { venueForLeague } from '@/lib/crowd-venue';
+import { artForTier } from '@/lib/game/venueForLeague';
 
 export default function RoundResultsPage() {
   const router = useRouter();
@@ -396,14 +397,25 @@ export default function RoundResultsPage() {
           />
         </div>
 
-        {/* THE ROOM — the crowd IS the per-round feedback */}
+        {/* THE ROOM — the crowd IS the per-round feedback, packed into the booked venue */}
         <div className="mb-8">
           <CrowdStrip
             score={Math.max(playerRound.crowd_reaction ?? 0, aiRound.crowd_reaction ?? 0)}
             seed={`${battleId}-r${roundNum}`}
             venue={venueForLeague(battle.league?.name)}
-            broadcast={battle.context === 'ppv' || battle.context === 'on_cam' ? battle.context : null}
-            label={`THE ROOM · YOU ${Math.round(playerRound.crowd_reaction ?? 0)}% — ${(battle.ai_battler?.stage_name || 'THEM').toUpperCase()} ${Math.round(aiRound.crowd_reaction ?? 0)}%`}
+            size={(battle.venue?.venue_type?.tier as 'virtual' | 'small' | 'medium' | 'large') ?? undefined}
+            backdrop={
+              battle.venue?.venue_type?.sprite_key ??
+              (battle.venue?.venue_type?.tier ? artForTier(battle.venue.venue_type.tier) : null)
+            }
+            broadcast={
+              battle.tv_broadcast
+                ? 'national_tv'
+                : battle.context === 'ppv' || battle.context === 'on_cam'
+                  ? battle.context
+                  : null
+            }
+            label={`${battle.venue ? `LIVE FROM ${battle.venue.name.toUpperCase()}` : 'THE ROOM'} · YOU ${Math.round(playerRound.crowd_reaction ?? 0)}% — ${(battle.ai_battler?.stage_name || 'THEM').toUpperCase()} ${Math.round(aiRound.crowd_reaction ?? 0)}%`}
           />
         </div>
 

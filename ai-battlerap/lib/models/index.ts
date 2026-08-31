@@ -254,6 +254,14 @@ export interface BattlerWithDetails extends Battler {
 
 export interface BattleWithDetails extends Battle {
   league?: League;
+  /** The ROOM this battle was booked into (venues table) — a place, never a league brand. */
+  venue?: {
+    name: string;
+    prestige_level?: number;
+    venue_type?: { slug: string; tier: string; sprite_key?: string | null } | null;
+  } | null;
+  /** Special events go out on national TV (biggest room in the city). */
+  tv_broadcast?: boolean;
   player_battler?: BattlerWithDetails;
   ai_battler?: BattlerWithDetails;
   rounds?: BattleRound[];
