@@ -72,7 +72,7 @@ export default function BadgeCard({
             src={badge.icon_url}
             alt={badge.badge_name}
             tier={tier}
-            size="lg"
+            size="xl"
           />
         ) : (
           <div className="w-32 h-32 bg-zinc-800 rounded-full flex items-center justify-center">

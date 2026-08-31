@@ -5,7 +5,7 @@ export interface BadgeSpriteProps extends HTMLAttributes<HTMLDivElement> {
   src: string;
   alt: string;
   tier: 'gold' | 'silver' | 'bronze' | 'common';
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg' | 'xl';
 }
 
 export function BadgeSprite({
@@ -25,6 +25,7 @@ export function BadgeSprite({
     sm: 'w-16 h-16',  // 64x64 square
     md: 'w-24 h-24',  // 96x96 square
     lg: 'w-32 h-32',  // 128x128 square
+    xl: 'w-40 h-40',  // 160x160 — compendium hero size (owner: medallions bigger)
   };
 
   return (

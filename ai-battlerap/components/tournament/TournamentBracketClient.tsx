@@ -4,6 +4,34 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { formatCurrency } from '@/lib/game/paymentCalculator';
 import TournamentTimeline from './TournamentTimeline';
+import { portraitFillStyle } from '@/lib/sprite-crops';
+
+/** Corner-edged face chip — same language as the calendar rail (drill-down law) */
+function FaceChip({ b, corner }: { b: any; corner: 'red' | 'blue' }) {
+  const body = (
+    <span
+      className="relative overflow-hidden shrink-0 block"
+      style={{
+        width: 44,
+        height: 44,
+        borderRadius: 6,
+        background: '#101114',
+        borderTop: `2px solid ${corner === 'red' ? '#E23A2E' : '#2F7DD1'}`,
+      }}
+    >
+      {b?.avatar_url && (
+        <img src={b.avatar_url} alt="" style={portraitFillStyle(b.avatar_url, { targetH: 1.25 })} />
+      )}
+    </span>
+  );
+  return b?.id ? (
+    <Link href={`/battler/${b.id}`} className="hover:opacity-85 transition-opacity" title={`${b.stage_name} — profile`}>
+      {body}
+    </Link>
+  ) : (
+    body
+  );
+}
 
 type Bracket = {
   id: string;
@@ -318,11 +346,21 @@ export default function TournamentBracketClient({
                     p.battlers.id === playerId ? 'border-green-500' : 'border-[#3a3d44]'
                   }`}
                 >
-                  <p className="text-xs text-zinc-500 mb-1">
-                    {p.seed_number ? `SEED #${p.seed_number}` : 'UNSEEDED'}
-                  </p>
-                  <p className="font-bold">{p.battlers.stage_name}</p>
-                  <p className="text-xs text-zinc-500 uppercase mt-1">{p.battlers.tier} TIER</p>
+                  <div className="flex items-center gap-3">
+                    <FaceChip b={p.battlers} corner={p.battlers.id === playerId ? 'red' : 'blue'} />
+                    <div className="min-w-0">
+                      <p className="text-xs text-zinc-500 mb-0.5">
+                        {p.seed_number ? `SEED #${p.seed_number}` : 'UNSEEDED'}
+                      </p>
+                      <Link
+                        href={`/battler/${p.battlers.id}`}
+                        className="font-bold block truncate hover:text-[#ff8c42] transition-colors"
+                      >
+                        {p.battlers.stage_name}
+                      </Link>
+                      <p className="text-xs text-zinc-500 uppercase mt-0.5">{p.battlers.tier} TIER</p>
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
@@ -365,19 +403,31 @@ export default function TournamentBracketClient({
                               </p>
                             </div>
 
-                            {/* Battler 1 */}
+                            {/* Battler 1 — red corner */}
                             <div
-                              className={`flex justify-between items-center p-3 mb-2 ${
+                              className={`flex justify-between items-center gap-3 p-3 mb-2 ${
                                 bracket.winner?.id === bracket.battler_1?.id
                                   ? 'bg-green-500/20 border-2 border-green-500/50'
                                   : 'bg-[#18191c] border-2 border-[#3a3d44]'
                               }`}
                             >
-                              <div>
-                                <p className="font-bold">{bracket.battler_1?.stage_name || 'TBD'}</p>
-                                {bracket.seed_1 && (
-                                  <p className="text-xs text-zinc-500">SEED #{bracket.seed_1}</p>
-                                )}
+                              <div className="flex items-center gap-3 min-w-0">
+                                <FaceChip b={bracket.battler_1} corner="red" />
+                                <div className="min-w-0">
+                                  {bracket.battler_1?.id ? (
+                                    <Link
+                                      href={`/battler/${bracket.battler_1.id}`}
+                                      className="font-bold block truncate hover:text-[#ff8c42] transition-colors"
+                                    >
+                                      {bracket.battler_1.stage_name}
+                                    </Link>
+                                  ) : (
+                                    <p className="font-bold">TBD</p>
+                                  )}
+                                  {bracket.seed_1 && (
+                                    <p className="text-xs text-zinc-500">SEED #{bracket.seed_1}</p>
+                                  )}
+                                </div>
                               </div>
                               {bracket.winner?.id === bracket.battler_1?.id && (
                                 <span className="text-green-400 text-lg">✓</span>
@@ -386,19 +436,31 @@ export default function TournamentBracketClient({
 
                             <div className="text-center text-xs text-zinc-600 mb-2">VS</div>
 
-                            {/* Battler 2 */}
+                            {/* Battler 2 — blue corner */}
                             <div
-                              className={`flex justify-between items-center p-3 mb-4 ${
+                              className={`flex justify-between items-center gap-3 p-3 mb-4 ${
                                 bracket.winner?.id === bracket.battler_2?.id
                                   ? 'bg-green-500/20 border-2 border-green-500/50'
                                   : 'bg-[#18191c] border-2 border-[#3a3d44]'
                               }`}
                             >
-                              <div>
-                                <p className="font-bold">{bracket.battler_2?.stage_name || 'TBD'}</p>
-                                {bracket.seed_2 && (
-                                  <p className="text-xs text-zinc-500">SEED #{bracket.seed_2}</p>
-                                )}
+                              <div className="flex items-center gap-3 min-w-0">
+                                <FaceChip b={bracket.battler_2} corner="blue" />
+                                <div className="min-w-0">
+                                  {bracket.battler_2?.id ? (
+                                    <Link
+                                      href={`/battler/${bracket.battler_2.id}`}
+                                      className="font-bold block truncate hover:text-[#ff8c42] transition-colors"
+                                    >
+                                      {bracket.battler_2.stage_name}
+                                    </Link>
+                                  ) : (
+                                    <p className="font-bold">TBD</p>
+                                  )}
+                                  {bracket.seed_2 && (
+                                    <p className="text-xs text-zinc-500">SEED #{bracket.seed_2}</p>
+                                  )}
+                                </div>
                               </div>
                               {bracket.winner?.id === bracket.battler_2?.id && (
                                 <span className="text-green-400 text-lg">✓</span>

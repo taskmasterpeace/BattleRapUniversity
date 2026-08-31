@@ -36,7 +36,7 @@ export default async function TournamentBracketPage({ params }: { params: Promis
     .from('tournament_participants')
     .select(`
       *,
-      battlers!inner(id, stage_name, tier)
+      battlers!inner(id, stage_name, tier, avatar_url)
     `)
     .eq('tournament_id', tournamentId)
     .eq('is_active', true)
@@ -47,8 +47,8 @@ export default async function TournamentBracketPage({ params }: { params: Promis
     .from('tournament_brackets')
     .select(`
       *,
-      battler_1:battlers!tournament_brackets_battler_1_id_fkey(id, stage_name, tier),
-      battler_2:battlers!tournament_brackets_battler_2_id_fkey(id, stage_name, tier),
+      battler_1:battlers!tournament_brackets_battler_1_id_fkey(id, stage_name, tier, avatar_url),
+      battler_2:battlers!tournament_brackets_battler_2_id_fkey(id, stage_name, tier, avatar_url),
       winner:battlers!tournament_brackets_winner_battler_id_fkey(id, stage_name),
       battle:battles(id, status, scheduled_at)
     `)

@@ -28,8 +28,15 @@
 | /wire | **B+** | feed + HEATING UP + newsroom ticker — own identity, leave |
 | /matchup | **B** | corner slots + VS present; picker is text-only buttons — faces in the picker = next pass |
 
+## Iteration 3 — graded + fixed 2026-08-31 (late)
+| Page | Grade | Notes |
+|---|---|---|
+| /badges | B+ → **A-** | compendium already shows every badge + full effects; medallions bumped to new xl size (160px) per owner's "badge logos bigger" |
+| /tournaments/[id] | C+ → **B+** | bracket + participants rows get corner-edged FaceChips, names drill to profiles (drill-down law); winner highlight kept green |
+| /tournaments | **C+** | list page sparse — one text card; needs a championship-poster treatment when tournaments matter more |
+
 ## Not yet swept (next loop iterations)
-/crew · /tournaments · /notifications · /life-events (recently overhauled — likely B+) · /onboarding · /guide · /settings · /battle/[id]/promotion · /cities · /badges · /verified · article detail pages
+/crew · /notifications · /life-events (recently overhauled — likely B+) · /onboarding · /guide · /settings · /battle/[id]/promotion · /cities · /verified · article detail pages · /matchup picker faces · prep day-calendar fs pass
 
 ## Loop recipe (each iteration)
 1. Pick 2-3 ungraded or lowest-graded pages.
