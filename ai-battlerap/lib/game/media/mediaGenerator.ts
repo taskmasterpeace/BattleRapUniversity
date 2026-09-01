@@ -58,6 +58,10 @@ export interface VideoCard {
   topicIds: string[];
   thumbnailConcept: string;
   blurb: string;
+  /** For the ClipHive thumbnail: matchup + story shape. */
+  story: MainStory;
+  winnerName: string;
+  loserName: string;
 }
 
 export type MediaItem = PodcastEpisode | VideoCard;
@@ -258,6 +262,9 @@ export function mediaFromBattle(ctx: BattleMediaContext): MediaItem[] {
     topicIds: [leadTopic.id],
     thumbnailConcept: ctx.bigMoment ? 'the highlight moment, crowd reacting' : `${ctx.winner.name} mid-round`,
     blurb: fillSlots(pick(leadTopic.takes, ctx.battleId + 'vb'), slots),
+    story: ctx.mainStory,
+    winnerName: ctx.winner.name,
+    loserName: ctx.loser.name,
   };
 
   return [podcast, video];
