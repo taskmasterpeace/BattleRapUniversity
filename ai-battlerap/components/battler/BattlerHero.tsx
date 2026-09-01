@@ -79,7 +79,10 @@ export default function BattlerHero({
           {league && <span className="fs-chip tier">{league}</span>}
           {tierLabel && <span className="fs-chip">{tierLabel}</span>}
           {cityName && <span className="fs-chip city">{cityName}</span>}
-          {region && <span className="fs-chip loc">{region}</span>}
+          {/* region often mirrors the home city for city-born battlers — one chip is enough */}
+          {region && region.toLowerCase() !== (cityName ?? '').toLowerCase() && (
+            <span className="fs-chip loc">{region}</span>
+          )}
         </div>
         <span className="fs-lvl">
           <span className="r">{levelLabel}</span>

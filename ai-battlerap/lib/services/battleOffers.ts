@@ -242,10 +242,19 @@ async function createBattleOffer(
   aiBattlerId: string,
   league: League
 ): Promise<boolean> {
-  // Schedule battle 7-14 days in the future (uses virtual time in dev mode)
+  // Schedule battle 7-14 days out, then snap to FIGHT NIGHT (owner law,
+  // 2026-08-31: battle rap events basically never happen on a weekday —
+  // cards run Friday/Saturday/Sunday, Saturday most of all).
   const daysAhead = 7 + Math.floor(Math.random() * 8); // 7-14 days
   const { getFutureDate } = await import('@/lib/dev/timeManipulation');
   const scheduledAt = getFutureDate(daysAhead);
+  const day = scheduledAt.getDay(); // 0 Sun .. 6 Sat
+  if (day >= 1 && day <= 4) {
+    // Mon-Thu -> roll forward to the weekend (Fri 60% / Sat 40% of rolls land
+    // Fri+Sat; Sundays only come from naturally-Sunday dates)
+    const toFriday = 5 - day;
+    scheduledAt.setDate(scheduledAt.getDate() + toFriday + (Math.random() < 0.5 ? 1 : 0));
+  }
 
   // Lock prep 1 day before battle
   const lockPrepAt = new Date(scheduledAt);

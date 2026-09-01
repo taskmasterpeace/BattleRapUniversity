@@ -41,8 +41,13 @@ export function portraitFillStyle(
   }
 
   const cx = box.x + box.w / 2 // content centre x (fraction)
-  const tx = -(cx - 0.5) * 100 // re-centre content horizontally
-  const ty = (1 - (box.y + box.h)) * 100 // push content bottom down to the frame bottom
+  // NOTE: in a transform list the rightmost op applies FIRST, so scale() runs
+  // before these translates — distances must be pre-multiplied by the scale or
+  // the content floats (scale-1)*margin short of the frame bottom (the "black
+  // bar under every face" bug, owner report 2026-08-31).
+  const heightScale = Math.min(maxScale, targetH / Math.max(0.15, box.h))
+  const txFor = (s: number) => -(cx - 0.5) * s * 100 // re-centre content horizontally
+  const tyFor = (s: number) => (1 - (box.y + box.h)) * s * 100 // content bottom -> frame bottom
 
   if (fit === "width") {
     // width-driven: content spans targetW of the frame width regardless of frame height —
@@ -55,12 +60,12 @@ export function portraitFillStyle(
       width: `${widthPct.toFixed(1)}%`,
       height: "auto",
       maxWidth: "none",
-      transform: `translateX(-50%) translateX(${tx.toFixed(2)}%) translateY(${ty.toFixed(2)}%)`,
+      transform: `translateX(-50%) translateX(${txFor(1).toFixed(2)}%) translateY(${tyFor(1).toFixed(2)}%)`,
       imageRendering: "pixelated",
     }
   }
 
-  const scale = Math.min(maxScale, targetH / Math.max(0.15, box.h)) // fill content to targetH of frame
+  const scale = heightScale // fill content to targetH of frame
   return {
     position: "absolute",
     left: "50%",
@@ -69,7 +74,7 @@ export function portraitFillStyle(
     width: "auto",
     maxWidth: "none",
     transformOrigin: "bottom center",
-    transform: `translateX(-50%) translateX(${tx.toFixed(2)}%) translateY(${ty.toFixed(2)}%) scale(${scale.toFixed(3)})`,
+    transform: `translateX(-50%) translateX(${txFor(scale).toFixed(2)}%) translateY(${tyFor(scale).toFixed(2)}%) scale(${scale.toFixed(3)})`,
     imageRendering: "pixelated",
   }
 }

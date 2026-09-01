@@ -14,6 +14,11 @@ import { BattlerTemplate } from '@/lib/game/battlerTemplates';
 import Tooltip from '@/components/onboarding/Tooltip';
 import { getCityBonus } from '@/lib/game/cityBonuses';
 import { portraitFillStyle } from '@/lib/sprite-crops';
+import spriteMetaRaw from '@/lib/game/characterSpriteMeta.json';
+
+// Owner ask 2026-08-31: "we gotta identify males or females so they know" —
+// every pool face carries a hand-classified gender tag.
+const SPRITE_GENDER = spriteMetaRaw as Record<string, string>;
 
 type League = {
   id: string;
@@ -539,6 +544,17 @@ export default function OnboardingWizard() {
                               style={portraitFillStyle(sprite)}
                               loading="lazy"
                             />
+                            {SPRITE_GENDER[sprite] && (
+                              <span
+                                className={`absolute top-1 right-1 z-10 px-1.5 py-0.5 font-mono text-[10px] font-bold uppercase leading-none border ${
+                                  SPRITE_GENDER[sprite] === 'female'
+                                    ? 'bg-[#E23A2E]/85 border-black text-white'
+                                    : 'bg-[#101114]/85 border-[#3a3d44] text-zinc-300'
+                                }`}
+                              >
+                                {SPRITE_GENDER[sprite] === 'female' ? 'F' : 'M'}
+                              </span>
+                            )}
                           </div>
                         );
                       })}

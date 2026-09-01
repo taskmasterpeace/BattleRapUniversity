@@ -82,7 +82,7 @@ export default function OnboardingSuccess({
         </div>
       )}
 
-      <div className="max-w-3xl w-full bg-[#2d2f35] border-2 border-[#ff8c42] p-8 md:p-12 animate-in zoom-in duration-500">
+      <div className="max-w-4xl w-full bg-[#2d2f35] border-2 border-[#ff8c42] p-8 md:p-12 animate-in zoom-in duration-500">
         {/* Success Header */}
         <div className="text-center mb-8">
           <div className="mb-4 animate-bounce text-[#ff8c42] flex justify-center"><Icon name="mic" size={52} /></div>
@@ -121,8 +121,9 @@ export default function OnboardingSuccess({
             </p>
           </div>
 
-          {/* Stats Grid */}
-          <div className="grid md:grid-cols-3 gap-x-6 gap-y-4 mb-6">
+          {/* Stats Grid — gauges need real width; 3 columns overlap in a modal
+              (owner bug report: values colliding into the next column's labels) */}
+          <div className="grid md:grid-cols-2 gap-x-10 gap-y-5 mb-6">
             {/* Writing */}
             <div className="space-y-2">
               <h3 className="text-xs font-black uppercase text-zinc-500 mb-2">WRITING</h3>

@@ -54,6 +54,24 @@ export default async function LeaguesIndexPage() {
     .maybeSingle();
   const myLeagueId = battler?.primary_league_id ?? null;
 
+  // The rooms each league runs (owner ask 2026-08-31: "we should see venue
+  // information here... see the cities") — city name + the venues inside the
+  // league's booking band.
+  const { bandFor } = await import('@/lib/game/venueBooking');
+  const [{ data: cities }, { data: venues }] = await Promise.all([
+    supabase.from('cities').select('id, name'),
+    supabase.from('venues').select('city_id, name, prestige_level').eq('is_active', true),
+  ]);
+  const cityName = new Map((cities ?? []).map((c) => [c.id, c.name]));
+  const roomsFor = (l: League): string[] => {
+    if (!l.city_id) return [];
+    const [lo, hi] = bandFor(l.prestige_level ?? 3);
+    return (venues ?? [])
+      .filter((v) => v.city_id === l.city_id && v.prestige_level >= lo && v.prestige_level <= hi)
+      .sort((a, b) => b.prestige_level - a.prestige_level)
+      .map((v) => v.name);
+  };
+
   const list: League[] = leagues ?? [];
   const physical = list.filter((l) => l.city_id);
   const online = list.filter((l) => !l.city_id);
@@ -154,8 +172,26 @@ export default async function LeaguesIndexPage() {
                       </div>
                     </div>
                     {l.description && (
-                      <p className="text-sm text-zinc-400 leading-relaxed mb-4 line-clamp-2">
+                      <p className="text-sm text-zinc-400 leading-relaxed mb-3 line-clamp-2">
                         {l.description}
+                      </p>
+                    )}
+                    {l.city_id && cityName.get(l.city_id) && (
+                      <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-zinc-500 mb-4">
+                        <span className="text-[#ff8c42]">{cityName.get(l.city_id)}</span>
+                        {(() => {
+                          const rooms = roomsFor(l);
+                          if (rooms.length === 0) return null;
+                          const shown = rooms.slice(0, 2).join(' · ');
+                          const extra = rooms.length - 2;
+                          return (
+                            <>
+                              {' — RUNS '}
+                              <span className="text-zinc-300">{shown}</span>
+                              {extra > 0 && <span> +{extra} MORE</span>}
+                            </>
+                          );
+                        })()}
                       </p>
                     )}
                     <div className="grid grid-cols-4 gap-3 text-xs uppercase tracking-wide">

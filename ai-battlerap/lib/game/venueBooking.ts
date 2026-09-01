@@ -13,7 +13,7 @@ export type BookedVenue = {
 };
 
 /** League prestige → the venue-prestige band that league can book. */
-function bandFor(prestige: number): [number, number] {
+export function bandFor(prestige: number): [number, number] {
   if (prestige <= 2) return [1, 3];
   if (prestige <= 4) return [2, 4];
   if (prestige <= 6) return [4, 7];
