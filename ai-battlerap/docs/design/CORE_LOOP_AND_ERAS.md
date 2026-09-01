@@ -1,6 +1,40 @@
 # Core Loop & The Era System
 
-**Status:** design, co-developed with Codex 2026-09-01. Cherry-picked from a grand "persistent multiplayer historical league simulator" pitch, ruthlessly scoped to fit the game we actually have: a **single-battler career sim**. This is the spine we build toward.
+**Status:** design, co-developed with Codex 2026-09-01, refined by owner steer same day. Cherry-picked from a grand "persistent multiplayer historical league simulator" pitch, ruthlessly scoped to fit the game we actually have: a **single-battler career sim**. This is the spine we build toward.
+
+---
+
+## OWNER REFINEMENTS (2026-09-01) — read this first
+
+Three corrections that reshape priority. **The story layer is the heart, not the battle math.**
+
+### A. "Respect" is NOT a floating points bar — it's concrete REPUTATION you can see
+
+The owner's objection to an abstract Scene-Respect currency is right. Kill the invisible number. Reputation is **observable, measurable things** built from the `game_events` log + Wire + newsroom:
+
+- **Your record vs NAMES** — who you've beaten that people actually care about (not a win count; a list of names with weight).
+- **A RECOGNITION MAP** — which scenes know you. Shown literally: *"Known in NYC · Buzzing in Newark · Unknown in Atlanta."* You can watch your name spread city by city.
+- **LABELS pinned on you** — what the blogs/crowd call you (Real One, Choker, Duckin', Washed, Villain), true or not. They STICK and change how the world treats you.
+
+The **era** doesn't invent a new currency — it changes **which of these the world weighs.** Neighborhood = local name + who-you-beat. DVD = whose tape circulates. Web = whose clips spread + comment sentiment. Platform = who actually draws. Same reputation signals, re-weighted by the culture. Measurable because every input is a concrete event, never a hand-wave.
+
+### B. Prepare for VIDEO + PODCASTS now (placeholders), real media later
+
+The Wire (Twitter) and newsroom (blogs) are text media. The world needs to feel like real battle-rap media, which means **more media TYPES on the same story pipeline**:
+
+- **Podcasts** — shows that discuss your battles/beef. Structured *episodes* with real host names + takes now (text/script), audio later. "Listen to a podcast about the battle."
+- **Video** — battle recap cards, callout clips, faceoff footage. **Rich placeholders now** (thumbnail art + structured description/host), real video later.
+
+Architecture: a unified **media layer** — `type` = wire_post | blog | podcast_episode | video_card — so new media types slot into the existing newsroom engine and surfaces. Placeholders must be RICH (real host names, real takes, real thumbnails) so it reads as a living media world today and swaps in real audio/video later without a rebuild.
+
+### C. The LIFE / LABELS / MANAGEMENT layer is the best part — enrich it
+
+Owner: *"the life stories are low-key the best part of battle rap — what the blogs say, the labels that get stuck on people whether it's true or not… I want them to feel like they MANAGE a battler."* So this is a first-class system, not flavor:
+
+- **Labels that stick** — events (a choke, a duck, a real-life crime, a classic) make the blogs/crowd pin a label on you. It PERSISTS and has teeth: changes offers, crowd hostility, the angles opponents research, sponsor interest. This is "respect made concrete" + the drama engine.
+- **Life decisions = managing** — the existing life-event categories (crime, money, family, beef) get richer, more consequential choices whose fallout becomes STORY (blogs write it, labels stick, the recognition map moves). You manage a battler through a LIFE, not just a battle card.
+
+**Everything below still holds** — the era spine, the crowd mechanic, the lean attributes — but read it through these three: reputation is concrete, the media world is rich (and video-ready), and the life/label story is the point.
 
 ---
 
