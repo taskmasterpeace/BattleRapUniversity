@@ -6,8 +6,20 @@
 
 A podcast/video is **not** a hardcoded episode. It's a **composition of modular TOPIC BLOCKS**, each tagged. That gives us a browsable, filterable media world today and a clean input for real audio/video generation later.
 
+## Context-rich + intelligent (owner steer #2)
+
+The blocks aren't "winner + loser" — the composer reasons over a **dossier per battler** (`lib/game/media/types.ts`: origin/scene, record, tier, streak/arc, reputation labels, a notable win) **plus the head-to-head** (series score, last meeting, rematch/revenge). It then **selects the blocks that fit the actual story** and orders them lead → context → close:
+
+- revenge get-back vs a neutral "history" recap (revenge wins; history is dropped when it's a get-back),
+- a **style clash** when the two come from different scenes,
+- **THE RUN / THE SLIDE** off a hot or cold streak,
+- the primary **reputation scar** (snitch > ghostwriter > ducking > washed > mainstream > villain) leading the context.
+
+Verbiage draws on it all: *"Out of Newark at 9-3… Kingpin took the last one in New York City — tonight he got it back… riding a 4-fight run."* Same battle, different dossiers → a different, true episode.
+
 ## The pieces
 
+- **`lib/game/media/types.ts`** — the rich `MediaBattler` dossier + `HeadToHead` + `BattleMediaContext`.
 - **`lib/game/media/podcastTopics.ts`** — the taxonomy: every "thing that can happen" a podcast discusses (THE UPSET, THE CHOKE, THE PAPERWORK/snitch, THE PEN QUESTION/ghostwriter, THE WASHED TALK, THE DUCKING TALK, THE CROSSOVER, THE COMEBACK, THE VILLAIN, THE CALLOUT, THE RANKINGS, THE GATEKEEPER, THE STREAK, THE VET, THE ERA…). Each block carries:
   - **tags** — what it's ABOUT (filter/routing),
   - **slots** — who it's about (`{winner}`/`{loser}`/`{subject}`/`{rival}`/`{city}`/`{score}`),

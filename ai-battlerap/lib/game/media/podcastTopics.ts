@@ -1,92 +1,84 @@
 /**
- * Podcast topic taxonomy — the MODULAR, TAGGED content blocks.
+ * Podcast topic taxonomy — MODULAR, TAGGED, CONTEXT-RICH content blocks.
  *
- * Owner steer (2026-09-01): "don't worry about the creation of the podcast yet —
- * lock down the things that can happen, the verbiage, how it's written, so it can
- * feed creation later. Everything has to be modular. Tag what podcasts are talking
- * about, so there's a central hub AND a 'podcasts about you' view, and you can
- * hear about other players."
+ * Owner steer (2026-09-01): the blocks gotta be richer than winner+loser — know
+ * the battler, the history, where they're from, the past results between them.
+ * Intelligently organized.
  *
- * So a podcast is NOT a hardcoded episode. It's a composition of these TOPIC
- * BLOCKS. Each block:
- *   - is TAGGED (what it's about) → powers filtering + the "about you" view,
- *   - names its SUBJECT SLOTS (who it's about) → powers subject tagging + drill-down,
- *   - carries VERBIAGE variants (how it's written) → fills with battlers/context,
- *     and later feeds real audio/script generation.
+ * So each block now has:
+ *   - role: 'lead' (the main story) | 'context' (history/origin/arc/rep) | 'close',
+ *   - condition?: when it's relevant (h2h, streak, scene clash…),
+ *   - verbiage that draws on the full dossier (home, record, arc, series, scene).
  *
- * PURE data + fill helpers. No DB, no audio, no invented bars — talk performance,
- * momentum, angles, crowd, narrative, like real battle-rap media.
+ * The composer (mediaGenerator.ts) reads the dossier + head-to-head, selects the
+ * blocks that fit the ACTUAL story, and orders them lead → context → close.
+ *
+ * PURE data. No invented bars — performance, momentum, angles, crowd, narrative.
  */
 
-export type PodcastCategory = 'battle' | 'reputation' | 'beef' | 'career' | 'culture';
+import type { BattleMediaContext, SlotName } from './types';
 
-/** Subjects a block can reference; the composer fills these from context. */
-export type SlotName = 'winner' | 'loser' | 'subject' | 'rival' | 'city' | 'score';
+export type PodcastCategory = 'battle' | 'reputation' | 'beef' | 'career' | 'culture';
+export type TopicRole = 'lead' | 'context' | 'close';
 
 export interface PodcastTopic {
   id: string;
-  /** Human label, e.g. "THE CHOKE". */
   label: string;
   category: PodcastCategory;
-  /** What it's ABOUT — the filter/routing tags. */
+  role: TopicRole;
   tags: string[];
-  /** Which subject slots the verbiage needs. */
   slots: SlotName[];
-  /** Episode-title fragments (pick one). Use {slot} placeholders. */
+  /** Episode-title fragments (lead blocks). {slot} placeholders. */
   headlines: string[];
-  /** Segment topic label shown next to the take. */
   segmentTopic: string;
-  /** Commentary variants (pick one). {slot} placeholders. NEVER invent bars. */
+  /** Commentary variants. {slot} placeholders. NEVER invent bars. */
   takes: string[];
-  /** Story size 1–5 — drives whether it can lead an episode + duration. */
+  /** Story size 1–5. */
   weight: number;
+  /** When this block is relevant. Omitted = always eligible (leads/close). */
+  condition?: (ctx: BattleMediaContext) => boolean;
 }
 
-/**
- * THE TAXONOMY — every "thing that can happen" a podcast talks about.
- * Add here to expand what the media world can say; the composer + hub pick these
- * up automatically. Keep verbiage modular and slot-filled.
- */
 export const PODCAST_TOPICS: Record<string, PodcastTopic> = {
-  // ── BATTLE outcomes ──
+  // ══ LEAD blocks — the main story (one per episode, by mainStory) ══
   battle_upset: {
-    id: 'battle_upset', label: 'THE UPSET', category: 'battle',
-    tags: ['upset', 'underdog', 'battle'], slots: ['winner', 'loser', 'score'],
-    headlines: ['HOW DID NOBODY SEE {winner} COMING?', '{winner} SHOCKS {loser} — THE BREAKDOWN', 'THE {winner} UPSET NOBODY PREDICTED'],
+    id: 'battle_upset', label: 'THE UPSET', category: 'battle', role: 'lead',
+    tags: ['upset', 'underdog', 'battle'], slots: ['winner', 'loser', 'winnerHome', 'winnerRecord', 'score'],
+    headlines: ['HOW DID NOBODY SEE {winner} COMING?', '{winner} SHOCKS {loser} — THE BREAKDOWN'],
     segmentTopic: 'THE UPSET',
     takes: [
-      'Everybody walked in expecting {loser} to handle this. The room said different.',
-      '{winner} controlled the pace from the jump and never gave it back — you felt the crowd flip.',
-      'This is the one that changes {winner}’s whole trajectory. The gettable names just got longer.',
+      'Out of {winnerHome} at {winnerRecord}, {winner} was supposed to be a stepping stone. He walked into {loser}’s night and took it over.',
+      '{winner} controlled the pace from the jump and never gave it back — you felt the room flip.',
+      'This is the one that changes {winner}’s whole trajectory. The names that were untouchable are gettable now.',
     ],
     weight: 4,
   },
   battle_body: {
-    id: 'battle_body', label: 'THE BODY', category: 'battle',
-    tags: ['body', 'dominant', 'performance', 'battle'], slots: ['winner', 'loser', 'score'],
+    id: 'battle_body', label: 'THE BODY', category: 'battle', role: 'lead',
+    tags: ['body', 'dominant', 'performance', 'battle'], slots: ['winner', 'loser', 'winnerRecord', 'score'],
     headlines: ['WAS THAT A BODY? {winner} vs {loser}', '{winner} BODIES {loser} — {score}, NO DEBATE'],
     segmentTopic: 'THE DAMAGE',
     takes: [
-      '{winner} took every round and the room knew it by the second one.',
-      '{loser} never adjusted — same energy round three as round one.',
+      '{winner} took every round and the room knew it by the second one — {winnerRecord} and looking the part.',
+      '{loser} never adjusted. Same energy round three as round one.',
       'A showing like this forces the gatekeepers to move {winner} up. Period.',
     ],
     weight: 4,
   },
   battle_choke: {
-    id: 'battle_choke', label: 'THE CHOKE', category: 'battle',
-    tags: ['choke', 'shade', 'performance', 'battle'], slots: ['loser', 'winner'],
+    id: 'battle_choke', label: 'THE CHOKE', category: 'battle', role: 'lead',
+    tags: ['choke', 'shade', 'performance', 'battle'], slots: ['loser', 'winner', 'loserHome'],
     headlines: ['THE CHOKE HEARD ROUND THE ROOM — {loser} BLANKS', '{loser} CHOKED vs {winner} — WHAT HAPPENED?'],
     segmentTopic: 'THE MOMENT',
     takes: [
       'You could hear the room turn. {loser} lost the words and never got the round back.',
-      'That clip is going to follow {loser}. The choker talk starts tonight.',
+      'That clip is going to follow {loser} from {loserHome} to every room he steps in after this.',
       'He can come back from it — but only with a clean showing on a big stage. The pressure’s on now.',
     ],
     weight: 5,
   },
   battle_classic: {
-    id: 'battle_classic', label: 'THE CLASSIC', category: 'battle',
+    id: 'battle_classic', label: 'THE CLASSIC', category: 'battle', role: 'lead',
     tags: ['classic', 'elite', 'battle'], slots: ['winner', 'loser', 'score'],
     headlines: ['INSTANT CLASSIC: {winner} vs {loser}', '{winner} vs {loser} — INSTANT CLASSIC ({score})'],
     segmentTopic: 'ROUND BY ROUND',
@@ -98,213 +90,187 @@ export const PODCAST_TOPICS: Record<string, PodcastTopic> = {
     weight: 5,
   },
   battle_robbery: {
-    id: 'battle_robbery', label: 'THE ROBBERY', category: 'battle',
+    id: 'battle_robbery', label: 'THE ROBBERY', category: 'battle', role: 'lead',
     tags: ['robbery', 'controversy', 'rematch', 'battle'], slots: ['winner', 'loser'],
     headlines: ['DID {loser} GET ROBBED? THE {winner} DECISION', '{loser} ROBBED?! THE DECISION EVERYONE’S MAD ABOUT'],
     segmentTopic: 'THE CONTROVERSY',
     takes: [
-      'Half the room had {loser}. The decision went the other way and the comments are on fire.',
+      'Half the room had {loser}. The decision went to {winner} and the comments are on fire.',
       'Watching it back, it’s closer than the yelling suggests — but the argument is real.',
       'You can’t leave it here. This needs a run-back, and the demand just tripled.',
     ],
     weight: 4,
   },
-
-  // ── REPUTATION / scandal ──
-  rep_snitch: {
-    id: 'rep_snitch', label: 'THE PAPERWORK', category: 'reputation',
-    tags: ['snitch', 'credibility', 'scandal', 'reputation'], slots: ['subject'],
-    headlines: ['THE {subject} PAPERWORK — CAN THE CULTURE MOVE PAST IT?', '{subject} AND THE ELEPHANT IN EVERY ROOM'],
-    segmentTopic: 'THE ELEPHANT IN THE ROOM',
+  battle_recap: {
+    id: 'battle_recap', label: 'THE RECAP', category: 'battle', role: 'lead',
+    tags: ['battle'], slots: ['winner', 'loser', 'winnerRecord', 'score'],
+    headlines: ['{winner} def. {loser} — {score} RECAP', 'THE {winner} vs {loser} BREAKDOWN'],
+    segmentTopic: 'THE WORK',
     takes: [
-      'You can’t talk about {subject} without talking about the paperwork. It colors every crowd he’s in front of.',
-      'It doesn’t matter how the bars land — this is the first thing every opponent reaches for.',
-      'In a street-rooted culture, this is the one thing you don’t out-rap. It just sits there.',
+      '{winner} did what he was supposed to and took the {score} — {winnerRecord} now.',
+      'Solid night for the card. The crowd was into it the whole way.',
+      'Both of these names have real matchups waiting after this.',
+    ],
+    weight: 2,
+  },
+
+  // ══ CONTEXT blocks — history, origin, arc (condition-selected) ══
+  the_history: {
+    id: 'the_history', label: 'THE HISTORY', category: 'career', role: 'context',
+    tags: ['history', 'rivalry', 'rematch'], slots: ['winner', 'loser', 'h2h', 'lastMeeting'],
+    headlines: [], segmentTopic: 'THE HISTORY',
+    takes: [
+      'These two got history. {h2h}. {lastMeeting}.',
+      'You can’t talk about tonight without the backstory — {h2h}, and it’s been building the whole time.',
+    ],
+    weight: 4,
+    condition: (c) => !!c.headToHead && c.headToHead.total >= 2,
+  },
+  the_getback: {
+    id: 'the_getback', label: 'THE GET-BACK', category: 'career', role: 'context',
+    tags: ['revenge', 'rivalry', 'redemption'], slots: ['winner', 'loser', 'lastMeeting'],
+    headlines: [], segmentTopic: 'THE GET-BACK',
+    takes: [
+      'This one was personal. {lastMeeting} — and {winner} spent the whole camp on it. Tonight he got it back.',
+      '{winner} owed {loser} one and everybody knew it. Revenge served, live in the room.',
+    ],
+    weight: 5,
+    condition: (c) => !!c.headToHead?.isRevenge,
+  },
+  style_clash: {
+    id: 'style_clash', label: 'THE STYLE CLASH', category: 'culture', role: 'context',
+    tags: ['style', 'scene', 'culture'], slots: ['winner', 'loser', 'winnerScene', 'loserScene', 'winnerHome', 'loserHome'],
+    headlines: [], segmentTopic: 'THE STYLE CLASH',
+    takes: [
+      'Two different worlds in one room — {winner}’s {winnerScene} approach out of {winnerHome} against {loser}’s {loserScene} lane. That contrast is the whole show.',
+      'You could feel the scenes clashing. {winnerHome} vs {loserHome}, two different ways to win a round.',
+    ],
+    weight: 3,
+    condition: (c) => !!c.winner.scene && !!c.loser.scene && c.winner.scene !== c.loser.scene,
+  },
+  the_run: {
+    id: 'the_run', label: 'THE RUN', category: 'career', role: 'context',
+    tags: ['streak', 'arc', 'career'], slots: ['winner', 'winnerArc', 'winnerRecord'],
+    headlines: [], segmentTopic: 'THE RUN',
+    takes: [
+      '{winner} is {winnerRecord} and {winnerArc}. This isn’t a fluke — it’s a run.',
+      'Where {winner}’s career is right now, {winnerArc}, this win means more than the number.',
+    ],
+    weight: 3,
+    condition: (c) => Math.abs(c.winner.streak ?? 0) >= 3,
+  },
+  the_slide: {
+    id: 'the_slide', label: 'THE SLIDE', category: 'career', role: 'context',
+    tags: ['decline', 'arc', 'career'], slots: ['loser', 'loserArc', 'loserRecord'],
+    headlines: [], segmentTopic: 'THE SLIDE',
+    takes: [
+      '{loser} is {loserRecord} and {loserArc}. Nights like this are how careers quietly turn.',
+      'The concerning part for {loser} — {loserArc}. The window doesn’t stay open forever.',
+    ],
+    weight: 3,
+    condition: (c) => (c.loser.streak ?? 0) <= -3,
+  },
+  résumé_check: {
+    id: 'résumé_check', label: 'THE RÉSUMÉ', category: 'career', role: 'context',
+    tags: ['résumé', 'rankings', 'career'], slots: ['winner', 'winnerRecord'],
+    headlines: [], segmentTopic: 'THE RÉSUMÉ',
+    takes: [
+      'Add it to the file — {winner} at {winnerRecord} with a real name on the board now.',
+      'The résumé is starting to talk for {winner}. The rankings people have to respond.',
+    ],
+    weight: 2,
+    condition: (c) => !!c.winner.notableWinName,
+  },
+
+  // ══ CONTEXT blocks — reputation (composer picks the primary scar) ══
+  rep_snitch: {
+    id: 'rep_snitch', label: 'THE PAPERWORK', category: 'reputation', role: 'context',
+    tags: ['snitch', 'credibility', 'scandal', 'reputation'], slots: ['subject', 'subjectHome'],
+    headlines: ['THE {subject} PAPERWORK — CAN THE CULTURE MOVE PAST IT?'], segmentTopic: 'THE ELEPHANT IN THE ROOM',
+    takes: [
+      'You can’t talk about {subject} without the paperwork. It colors every crowd he stands in front of.',
+      'In a street-rooted culture, this is the one thing you don’t out-rap. Out of {subjectHome} or anywhere — it just sits there.',
     ],
     weight: 5,
   },
   rep_ghostwriter: {
-    id: 'rep_ghostwriter', label: 'THE PEN QUESTION', category: 'reputation',
+    id: 'rep_ghostwriter', label: 'THE PEN QUESTION', category: 'reputation', role: 'context',
     tags: ['ghostwriter', 'credibility', 'scandal', 'reputation'], slots: ['subject'],
-    headlines: ['DOES {subject} WRITE HIS OWN BARS? THE GHOSTWRITING TALK', 'THE {subject} PEN QUESTION WON’T GO AWAY'],
-    segmentTopic: 'THE PEN QUESTION',
+    headlines: ['DOES {subject} WRITE HIS OWN BARS?'], segmentTopic: 'THE PEN QUESTION',
     takes: [
-      'For a battler billed on the pen, this is the one accusation that undoes the whole résumé.',
-      'Every win gets an asterisk in some people’s eyes now — fair or not.',
-      'He can spend the next five years proving it and some folks still won’t let it go.',
+      'For a battler billed on the pen, this accusation undoes the whole résumé — win or lose.',
+      'Every result gets an asterisk in some eyes now. {subject} can’t fully shake it.',
     ],
     weight: 4,
   },
   rep_washed: {
-    id: 'rep_washed', label: 'THE WASHED TALK', category: 'reputation',
-    tags: ['washed', 'decline', 'reputation'], slots: ['subject'],
-    headlines: ['IS {subject} WASHED? THE HONEST CONVERSATION', 'WHAT’S LEFT FOR {subject}?'],
-    segmentTopic: 'THE WASHED TALK',
+    id: 'rep_washed', label: 'THE WASHED TALK', category: 'reputation', role: 'context',
+    tags: ['washed', 'decline', 'reputation'], slots: ['subject', 'subjectRecord'],
+    headlines: ['IS {subject} WASHED?'], segmentTopic: 'THE WASHED TALK',
     takes: [
-      'People wrote {subject} off, and the last few showings didn’t help the case.',
-      'There’s a version of this where he flips it — but the clock is loud right now.',
-      'One more flat night and the "washed" label locks in for good.',
+      'People wrote {subject} off, and at {subjectRecord} the last few showings didn’t help the case.',
+      'One more flat night and the "washed" label locks in on {subject} for good.',
     ],
     weight: 3,
   },
   rep_ducking: {
-    id: 'rep_ducking', label: 'THE DUCKING TALK', category: 'reputation',
-    tags: ['ducking', 'cowardice', 'reputation', 'beef'], slots: ['subject', 'rival'],
-    headlines: ['IS {subject} DUCKING {rival}?', 'THE {subject} DUCKING TALK — SIGN THE CONTRACT'],
-    segmentTopic: 'HE DON’T WANT IT?',
+    id: 'rep_ducking', label: 'THE DUCKING TALK', category: 'reputation', role: 'context',
+    tags: ['ducking', 'cowardice', 'reputation'], slots: ['subject', 'rival'],
+    headlines: ['IS {subject} DUCKING {rival}?'], segmentTopic: 'HE DON’T WANT IT?',
     takes: [
-      'The talk keeps getting louder — {subject} has had every chance to sign {rival} and hasn’t.',
-      'At some point the excuses stop working and the "scared of the smoke" label sticks.',
-      'One signature kills this whole narrative. Until then, the fans are going to run it.',
+      '{subject} has had every chance to sign {rival} and hasn’t. The talk keeps getting louder.',
+      'One signature kills this narrative. Until then the "scared of the smoke" label rides with {subject}.',
     ],
     weight: 3,
   },
   rep_mainstream: {
-    id: 'rep_mainstream', label: 'THE CROSSOVER', category: 'reputation',
+    id: 'rep_mainstream', label: 'THE CROSSOVER', category: 'reputation', role: 'context',
     tags: ['mainstream', 'crossover', 'reputation', 'culture'], slots: ['subject'],
-    headlines: ['{subject} WENT MAINSTREAM — DID THE CULTURE LOSE HIM?', 'THE {subject} CROSSOVER QUESTION'],
-    segmentTopic: 'THE CROSSOVER QUESTION',
+    headlines: ['{subject} WENT MAINSTREAM — DID THE CULTURE LOSE HIM?'], segmentTopic: 'THE CROSSOVER QUESTION',
     takes: [
       '{subject} blew up outside the leagues — validation to some, betrayal to the purists.',
-      'Coming back and still doing this at a high level buys back a lot of respect.',
-      'The question is whether he still needs this, or he’s just visiting.',
+      'Coming back and still doing this at a high level buys {subject} back a lot of respect.',
     ],
     weight: 3,
-  },
-  rep_comeback: {
-    id: 'rep_comeback', label: 'THE COMEBACK', category: 'reputation',
-    tags: ['comeback', 'redemption', 'reputation'], slots: ['subject'],
-    headlines: ['THE {subject} COMEBACK IS REAL', '{subject} SILENCED THE DOUBTERS'],
-    segmentTopic: 'THE REDEMPTION',
-    takes: [
-      'Everybody had the obituary written. {subject} showed up and tore it up.',
-      'This is what the culture loves — the fall and the climb back. He earned this one.',
-      'The tag he was carrying is peeling off with every clean showing.',
-    ],
-    weight: 4,
   },
   rep_villain: {
-    id: 'rep_villain', label: 'THE VILLAIN', category: 'reputation',
+    id: 'rep_villain', label: 'THE VILLAIN', category: 'reputation', role: 'context',
     tags: ['villain', 'heel', 'disrespect', 'reputation'], slots: ['subject'],
-    headlines: ['{subject} IS THE VILLAIN THE CULTURE NEEDS', 'NOBODY PLAYS THE BAD GUY LIKE {subject}'],
-    segmentTopic: 'THE HEEL',
+    headlines: ['{subject} IS THE VILLAIN THE CULTURE NEEDS'], segmentTopic: 'THE HEEL',
     takes: [
-      '{subject} figured out that being hated sells tickets — and he leans all the way in.',
-      'It’s pro wrestling. The disrespect is the draw, and the crowd eats it up while they boo.',
-      'You need a villain for the heroes to chase. Right now that’s him.',
-    ],
-    weight: 3,
-  },
-  rep_newcomer: {
-    id: 'rep_newcomer', label: 'THE NEXT UP', category: 'reputation',
-    tags: ['newcomer', 'hype', 'prospect', 'reputation', 'career'], slots: ['subject'],
-    headlines: ['IS {subject} THE NEXT UP?', 'REMEMBER THE NAME: {subject}'],
-    segmentTopic: 'THE PROSPECT',
-    takes: [
-      'The buzz on {subject} is real — now comes the part where he has to convert it.',
-      'Every era has a prospect everybody argues about. This one’s ours right now.',
-      'Hype is a loan. He’s got to pay it back on a big stage before we crown anything.',
+      '{subject} figured out being hated sells tickets — and he leans all the way in.',
+      'It’s pro wrestling. The disrespect is the draw, and the crowd eats it up while they boo {subject}.',
     ],
     weight: 3,
   },
 
-  // ── BEEF ──
-  beef_callout: {
-    id: 'beef_callout', label: 'THE CALLOUT', category: 'beef',
-    tags: ['beef', 'callout'], slots: ['subject', 'rival'],
-    headlines: ['{subject} CALLED OUT {rival} — IS IT REAL?', 'THE {subject} vs {rival} SMOKE IS BREWING'],
-    segmentTopic: 'THE CALLOUT',
+  // ══ CLOSE block ══
+  whats_next: {
+    id: 'whats_next', label: 'WHAT’S NEXT', category: 'career', role: 'close',
+    tags: ['next', 'career'], slots: ['winner', 'loser'],
+    headlines: [], segmentTopic: 'WHAT’S NEXT',
     takes: [
-      '{subject} said the name. Now the ball’s in {rival}’s court and everybody’s watching.',
-      'This is the matchup the culture actually wants. Somebody make it happen.',
-      'Talk is cheap until there’s a contract — but the tension is real.',
+      'So where do they go? {winner} has options now; {loser} has to answer.',
+      'The wheel keeps turning — this result just reshuffled the whole board around both of them.',
     ],
-    weight: 3,
-  },
-  beef_response: {
-    id: 'beef_response', label: 'THE RESPONSE', category: 'beef',
-    tags: ['beef', 'response'], slots: ['subject', 'rival'],
-    headlines: ['{subject} RESPONDED TO {rival} — LINE FOR LINE', 'THE {subject} CLAPBACK AT {rival}'],
-    segmentTopic: 'THE RESPONSE',
-    takes: [
-      '{subject} didn’t let it sit — came right back at {rival} and the internet lit up.',
-      'Now it’s a real back-and-forth, and a back-and-forth means a battle is coming.',
-      'The energy is genuine. This isn’t a work — these two actually want it.',
-    ],
-    weight: 3,
-  },
-
-  // ── CAREER / rankings ──
-  ranking_debate: {
-    id: 'ranking_debate', label: 'THE RANKINGS', category: 'career',
-    tags: ['rankings', 'top5', 'career'], slots: ['subject'],
-    headlines: ['IS {subject} TOP 5? THE RANKINGS DEBATE', 'WHERE DOES {subject} SIT NOW?'],
-    segmentTopic: 'THE RANKINGS',
-    takes: [
-      'The list-keepers are arguing about {subject} again — and that argument is itself a status.',
-      'Résumé says one thing, the eye test says another. That’s where the debate lives.',
-      'Beat one more name people respect and this stops being a debate.',
-    ],
-    weight: 2,
-  },
-  gatekeeper_test: {
-    id: 'gatekeeper_test', label: 'THE GATEKEEPER', category: 'career',
-    tags: ['gatekeeper', 'comeup', 'career'], slots: ['winner', 'loser'],
-    headlines: ['{loser} WAS THE GATEKEEPER — {winner} GOT THROUGH', 'THE {winner} COME-UP: PAST THE GATEKEEPER'],
-    segmentTopic: 'THE COME-UP',
-    takes: [
-      '{loser} is the test everybody has to pass. {winner} passed it.',
-      'This is how you announce yourself — you go through the established name, not around him.',
-      'The come-up is real now. The question is who’s next.',
-    ],
-    weight: 3,
-  },
-  undefeated_watch: {
-    id: 'undefeated_watch', label: 'THE STREAK', category: 'career',
-    tags: ['undefeated', 'streak', 'career'], slots: ['subject'],
-    headlines: ['{subject} IS STILL UNDEFEATED — WHO ENDS IT?', 'THE {subject} STREAK IS A BOUNTY NOW'],
-    segmentTopic: 'THE STREAK',
-    takes: [
-      'That 0 in the loss column is a target. Everybody wants to be the one who hands it to him.',
-      'The longer it goes, the more the mystique — and the more the pressure.',
-      'One slip and the whole narrative flips. That’s the price of the streak.',
-    ],
-    weight: 3,
-  },
-  veteran_respect: {
-    id: 'veteran_respect', label: 'THE VET', category: 'career',
-    tags: ['veteran', 'legacy', 'og', 'career'], slots: ['subject'],
-    headlines: ['{subject}: DO WE GIVE HIM HIS FLOWERS?', 'THE {subject} LEGACY CONVERSATION'],
-    segmentTopic: 'THE LEGACY',
-    takes: [
-      'Whatever he’s got left, {subject} put in work that a lot of these new names are living off.',
-      'Respect the pedigree — the pioneers don’t always get the credit while they’re still active.',
-      'The legacy is set. Everything now is just adding to it.',
-    ],
-    weight: 2,
-  },
-
-  // ── CULTURE ──
-  era_shift: {
-    id: 'era_shift', label: 'THE ERA', category: 'culture',
-    tags: ['era', 'culture'], slots: [],
-    headlines: ['THE CULTURE IS SHIFTING — WHERE ARE WE HEADED?', 'IS THIS A NEW ERA OF BATTLE RAP?'],
-    segmentTopic: 'THE ERA',
-    takes: [
-      'The way people find battles, the way they judge them — it’s all moving. You can feel it.',
-      'Every era has its style. The question is whose style defines this one.',
-      'What travels now isn’t what traveled five years ago. Adapt or get left.',
-    ],
-    weight: 2,
+    weight: 1,
   },
 };
 
-/** All distinct tags across the taxonomy (for hub filters). */
+/** Which reputation-label DISPLAY maps to which rep block (priority order). */
+export const LABEL_TO_TOPIC: Array<[string, string]> = [
+  ['THE PAPERWORK', 'rep_snitch'],
+  ['GHOSTWRITTEN', 'rep_ghostwriter'],
+  ['DUCKING SMOKE', 'rep_ducking'],
+  ['WASHED', 'rep_washed'],
+  ['WENT MAINSTREAM', 'rep_mainstream'],
+  ['VILLAIN', 'rep_villain'],
+];
+
 export const ALL_TOPIC_TAGS: string[] = Array.from(
   new Set(Object.values(PODCAST_TOPICS).flatMap((t) => t.tags))
 ).sort();
 
-/** Fill {slot} placeholders in a template string. */
 export function fillSlots(template: string, subjects: Partial<Record<SlotName, string>>): string {
   return template.replace(/\{(\w+)\}/g, (_, k: string) => subjects[k as SlotName] ?? `{${k}}`);
 }
