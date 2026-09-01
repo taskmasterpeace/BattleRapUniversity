@@ -410,14 +410,16 @@ export async function applyPostBattleCareerEffects(
     console.error('Error updating stress after battle:', stressError);
   }
 
-  // Auto-generate new battle offers for the player after successful simulation
+  // ONE follow-up offer after the battle, not a flooded inbox (owner note,
+  // 2026-09-01: "as soon as the battle was over I got all these battles in my
+  // box — I haven't even went through any days"). A win gets promoters
+  // calling; the rest of the slate arrives with time, not instantly.
   let offersGenerated = 0;
   try {
-    const offerCount = 1 + Math.floor(Math.random() * 3); // 1, 2, or 3
     offersGenerated = await generateOffersForPlayer(
       supabase,
       battle.battler_player_id,
-      offerCount
+      1
     );
   } catch (offerError: any) {
     console.error(

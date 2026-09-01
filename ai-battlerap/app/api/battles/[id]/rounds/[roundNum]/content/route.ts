@@ -80,16 +80,33 @@ export async function POST(
     return NextResponse.json({ error: 'Not your battle' }, { status: 403 });
   }
 
-  // Verify battle is in correct state for this round
-  const expectedStatus = `awaiting_r${roundIndex}_content`;
-  if (battle.status !== expectedStatus) {
+  // WRITE-FIRST FLOW (owner law, 2026-09-01: "I should select my content
+  // BEFORE the battle — you gotta write the actual content"): a round can be
+  // written any time before it's performed, so the player pens all three
+  // rounds up front and battle night is performance + pressure + audibles.
+  const WRITE_WINDOW: Record<number, string[]> = {
+    1: ['awaiting_r1_content'],
+    2: ['awaiting_r1_content', 'r1_simulated', 'awaiting_r2_content'],
+    3: ['awaiting_r1_content', 'r1_simulated', 'awaiting_r2_content', 'r2_simulated', 'awaiting_r3_content'],
+  };
+  if (!WRITE_WINDOW[roundIndex]?.includes(battle.status)) {
     return NextResponse.json(
       {
         // Player-facing: never leak the internal status name into a toast.
-        error: `Round ${roundIndex} isn't open for selection right now.`,
-        detail: `expected '${expectedStatus}', got '${battle.status}'`,
+        error: `Round ${roundIndex} is already performed — the pen is closed.`,
+        detail: `write window for r${roundIndex} excludes '${battle.status}'`,
       },
       { status: 409 }
+    );
+  }
+
+  // Adaptive content can't be pre-written — a rebuttal answers something that
+  // hasn't been said yet. Those enter live, as an AUDIBLE on battle night.
+  const adaptive = (contentTypes ?? []).filter((t) => t === 'rebuttals' || t === 'freestyles');
+  if (adaptive.length > 0) {
+    return NextResponse.json(
+      { error: `You can't pre-write ${adaptive.join(' or ')} — call it live as an AUDIBLE on battle night.` },
+      { status: 400 }
     );
   }
 

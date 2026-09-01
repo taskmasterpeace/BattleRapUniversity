@@ -85,8 +85,10 @@ function Fighter({
       ) : (
         name
       )}
+      {/* No "corners" in battle rap (owner law 2026-09-01) — the color marks
+          keep side identity without the boxing language. */}
       <div className="tag" style={{ color: c.color, opacity: 1 }}>
-        {corner === 'red' ? '◢ RED CORNER' : 'BLUE CORNER ◣'}
+        {corner === 'red' ? '◢◢◢' : '◣◣◣'}
       </div>
       <div className="flex items-center gap-2 mt-1.5 justify-center flex-wrap">
         {f.isReal && (

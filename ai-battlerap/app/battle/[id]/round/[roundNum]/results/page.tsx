@@ -34,6 +34,8 @@ export default function RoundResultsPage() {
     Array<{ researcher: string; researcherIsPlayer: boolean; target: string; facets: string[] }>
   >([]);
   const [pressureMove, setPressureMove] = useState<'none' | 'talk_over' | 'bump'>('none');
+  // THE AUDIBLE — flip one written slot to adaptive content in the moment.
+  const [audible, setAudible] = useState<'none' | 'rebuttals' | 'freestyles'>('none');
   const [bumpPrompt, setBumpPrompt] = useState(false);
   const [fightBroke, setFightBroke] = useState<null | { swungBy: string }>(null);
   const [pressureEvents, setPressureEvents] = useState<
@@ -81,7 +83,11 @@ export default function RoundResultsPage() {
       const response = await fetch(`/api/battles/${battleId}/rounds/${roundNum}/simulate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ pressureMove, bumpResponse }),
+        body: JSON.stringify({
+          pressureMove,
+          bumpResponse,
+          audible: audible === 'none' ? undefined : audible,
+        }),
       });
       const data = await response.json();
 
@@ -110,7 +116,8 @@ export default function RoundResultsPage() {
 
   const handleNextRound = () => {
     if (roundNum < 3) {
-      router.push(`/battle/${battleId}/round/${roundNum + 1}/select`);
+      // Write-first flow: the next round is already on paper — go perform it.
+      router.push(`/battle/${battleId}/round/${roundNum + 1}/results`);
     } else {
       // Battle is settled by the finalizer — straight to the full results page.
       router.push(`/battle/${battleId}`);
@@ -170,12 +177,24 @@ export default function RoundResultsPage() {
             >
               ← Back to Dashboard
             </Link>
-            <h1 className="text-3xl md:text-4xl font-display font-black uppercase tracking-tighter text-white mt-3">
-              ON DECK · ROUND {roundNum}
-            </h1>
-            <p className="text-zinc-400 text-sm mt-1 font-display font-bold uppercase tracking-wider">
-              vs {battle.ai_battler?.stage_name} • {battle.league?.name}
-            </p>
+            <div className="mt-3 flex items-end gap-4 flex-wrap">
+              <h1
+                style={{ fontFamily: 'var(--font-poster)', fontSize: 'clamp(56px, 9vw, 96px)', lineHeight: 0.9 }}
+                className="uppercase text-[#ff8c42]"
+              >
+                ROUND {roundNum}
+              </h1>
+              <div className="pb-2">
+                <p className="text-zinc-100 text-lg md:text-xl font-display font-black uppercase tracking-wider">
+                  {battle.player_battler?.stage_name} vs {battle.ai_battler?.stage_name}
+                </p>
+                <p className="font-mono text-[12px] uppercase tracking-[0.25em] text-zinc-500 mt-0.5">
+                  {battle.venue ? `LIVE FROM ${battle.venue.name.toUpperCase()} · ` : ''}
+                  {battle.league?.name?.toUpperCase()}
+                  {battle.tv_broadcast ? ' · NATIONAL TV' : ''}
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -198,6 +217,55 @@ export default function RoundResultsPage() {
               subLine={battle.league?.name ? `${battle.league.name.toUpperCase()} · ROUND ${roundNum}` : `ROUND ${roundNum}`}
             />
           </div>
+
+          {/* THE ROOM TONIGHT — you should see where you're battling (owner ask) */}
+          {(() => {
+            const art =
+              battle.venue?.venue_type?.sprite_key ??
+              (battle.venue?.venue_type?.tier ? artForTier(battle.venue.venue_type.tier) : null);
+            return art ? (
+              <div className="fs relative mb-8 border-2 border-black shadow-[4px_4px_0_rgba(0,0,0,.45)] overflow-hidden h-28">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={art}
+                  alt=""
+                  className="absolute inset-0 w-full h-full object-cover"
+                  style={{ imageRendering: 'pixelated', filter: 'brightness(.75)' }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-[#101114]/90 via-transparent to-transparent" />
+                <div className="absolute left-4 bottom-3">
+                  <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-zinc-400">Tonight&apos;s room</p>
+                  <p style={{ fontFamily: 'var(--font-poster)', fontSize: 20 }} className="text-zinc-100 uppercase">
+                    {battle.venue?.name ?? 'The Room'}
+                  </p>
+                </div>
+                {battle.tv_broadcast && (
+                  <span className="absolute top-2 right-2 flex items-center gap-1.5 px-2 py-1 bg-[#E23A2E] border border-black">
+                    <span className="inline-block w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                    <span style={{ fontFamily: 'var(--font-pixel)', fontSize: 9 }} className="text-white">NATIONAL TV</span>
+                  </span>
+                )}
+              </div>
+            ) : null;
+          })()}
+
+          {/* Legacy / edge: nothing written for this round yet — send them to the pen */}
+          {lockedRows.length === 0 && (
+            <div className="bg-[#2d2f35] border-2 border-[#ff8c42] p-6 mb-8 text-center">
+              <p className="text-zinc-100 font-display font-black uppercase tracking-wider mb-2">
+                Nothing on paper for round {roundNum}
+              </p>
+              <p className="text-[13px] text-zinc-400 font-display font-bold uppercase tracking-wide mb-4">
+                You can&apos;t take the stage with empty pages.
+              </p>
+              <Link
+                href={`/battle/${battleId}/round/${roundNum}/select`}
+                className="inline-block px-8 py-3 bg-[#ff8c42] hover:bg-[#ff9d5c] text-black font-display font-black uppercase tracking-wider transition-all"
+              >
+                WRITE ROUND {roundNum} →
+              </Link>
+            </div>
+          )}
 
           {/* What you locked in */}
           {lockedRows.length > 0 && (
@@ -227,6 +295,46 @@ export default function RoundResultsPage() {
               <div className="mt-4 pt-4 border-t border-[#3a3d44] text-[13px] text-zinc-500 font-display font-bold uppercase tracking-wide">
                 {battle.ai_battler?.stage_name}'s cards stay hidden until the reveal.
               </div>
+            </div>
+          )}
+
+          {/* THE AUDIBLE — flip one written slot to adaptive content, live */}
+          {lockedRows.length > 0 && (
+            <div className="fs bg-[#101114] border-2 border-black p-5 mb-8 shadow-[3px_3px_0_rgba(0,0,0,.4)]" style={{ borderTop: '3px solid #E7B23C' }}>
+              <div className="font-mono text-[11px] uppercase tracking-[0.25em] text-zinc-500 mb-3">
+                THE AUDIBLE · FLIP THE PEN IN THE MOMENT
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                {(
+                  [
+                    { v: 'none', label: 'STICK TO THE PAPER', hint: 'Perform it as written' },
+                    { v: 'rebuttals', label: 'REBUTTALS', hint: 'Flip what they just said back at them' },
+                    { v: 'freestyles', label: 'FREESTYLE', hint: 'Off the top — show it can’t be written' },
+                  ] as const
+                ).map((opt) => (
+                  <button
+                    key={opt.v}
+                    onClick={() => setAudible(opt.v)}
+                    className={`p-3 border-2 text-left transition-all ${
+                      audible === opt.v
+                        ? 'border-[#E7B23C] bg-[#E7B23C]/10'
+                        : 'border-[#3a3d44] hover:border-zinc-500'
+                    }`}
+                  >
+                    <div className="font-display font-black uppercase tracking-wider text-sm text-zinc-100">
+                      {opt.label}
+                    </div>
+                    <div className="font-mono text-[10px] uppercase tracking-wide text-zinc-500 mt-1 leading-relaxed">
+                      {opt.hint}
+                    </div>
+                  </button>
+                ))}
+              </div>
+              {audible !== 'none' && (
+                <p className="font-mono text-[11px] uppercase tracking-wider text-[#E7B23C] mt-3">
+                  ⚡ One written slot becomes {audible.toUpperCase()} this round
+                </p>
+              )}
             </div>
           )}
 
@@ -266,7 +374,7 @@ export default function RoundResultsPage() {
           {/* Perform it */}
           <button
             onClick={() => handleSimulateRound()}
-            disabled={simulating}
+            disabled={simulating || lockedRows.length === 0}
             className="w-full py-5 bg-[#ff8c42] hover:bg-[#ff9d5c] text-black font-display font-black uppercase tracking-widest text-lg md:text-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
             {simulating ? 'THE ROOM GOES QUIET…' : `PERFORM ROUND ${roundNum} →`}

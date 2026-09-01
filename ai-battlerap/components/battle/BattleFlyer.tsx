@@ -96,10 +96,11 @@ export function BattleFlyer({
           </div>
         )}
         <h2 className="title">{eventTitle}</h2>
+        {/* No "corners" in battle rap (owner law) — colors carry the sides. */}
         <div className="fs-matchup">
-          <FighterCol f={a} tag="RED CORNER" />
+          <FighterCol f={a} tag="◢◢◢" />
           <div className="fs-vsseal">VS</div>
-          <FighterCol f={b} tag="BLUE CORNER" />
+          <FighterCol f={b} tag="◣◣◣" />
         </div>
         {undercard.length > 0 && (
           <div className="fs-under">

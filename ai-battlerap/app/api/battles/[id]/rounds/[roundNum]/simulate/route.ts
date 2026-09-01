@@ -88,12 +88,33 @@ export async function POST(
   // PRESSURE MOVES — the physical chess match before the bars start.
   let pressureMove: 'none' | 'talk_over' | 'bump' = 'none';
   let bumpResponse: 'laugh_off' | 'bump_back' | 'swing' | undefined;
+  let audible: 'rebuttals' | 'freestyles' | undefined;
   try {
     const body = await request.json();
     if (body?.pressureMove === 'talk_over' || body?.pressureMove === 'bump') pressureMove = body.pressureMove;
     if (['laugh_off', 'bump_back', 'swing'].includes(body?.bumpResponse)) bumpResponse = body.bumpResponse;
+    if (body?.audible === 'rebuttals' || body?.audible === 'freestyles') audible = body.audible;
   } catch {
     // no body — defaults hold
+  }
+
+  // THE AUDIBLE — adaptive content can't be pre-written (a rebuttal answers
+  // what was just said), so the player may flip ONE written content slot to
+  // rebuttals/freestyles in the moment, right before performing the round.
+  if (audible) {
+    const mine = selections.find((s: any) => s.battler_id === battle.battler_player_id);
+    if (mine && Array.isArray(mine.content_types) && !mine.content_types.includes(audible)) {
+      const swapped = [...mine.content_types.slice(0, -1), audible];
+      const { error: audibleError } = await supabase
+        .from('round_content_selections')
+        .update({ content_types: swapped })
+        .eq('id', mine.id);
+      if (audibleError) {
+        console.error('Audible swap failed:', audibleError);
+      } else {
+        mine.content_types = swapped;
+      }
+    }
   }
 
   // AI intent is decided ONCE per round and persisted, so the interrupt

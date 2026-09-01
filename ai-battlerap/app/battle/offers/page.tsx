@@ -133,12 +133,13 @@ export default function BattleOffersPage() {
     }
   };
 
-  const handleDecline = async (battleId: string) => {
-    if (!confirm('Are you sure you want to decline this battle? This may affect your reputation.')) {
-      return;
-    }
+  // In-game confirm — never the browser's native dialog (owner: "I don't like
+  // that Windows thing coming up. I want it to look like the game.")
+  const [declineTarget, setDeclineTarget] = useState<string | null>(null);
 
+  const handleDecline = async (battleId: string) => {
     setActionLoading(battleId);
+    setDeclineTarget(null);
     try {
       const response = await fetch(`/api/battles/${battleId}/decline`, {
         method: 'POST',
@@ -470,7 +471,7 @@ export default function BattleOffersPage() {
                         {actionLoading === offer.id ? 'ACCEPTING...' : 'ACCEPT'}
                       </GamingButton>
                       <GamingButton
-                        onClick={() => handleDecline(offer.id)}
+                        onClick={() => setDeclineTarget(offer.id)}
                         disabled={actionLoading === offer.id}
                         variant="secondary"
                         size="lg"
@@ -487,6 +488,35 @@ export default function BattleOffersPage() {
           </div>
         )}
       </div>
+
+      {/* Decline confirm — in the game's voice, not the browser's */}
+      {declineTarget && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center px-4">
+          <div className="fs max-w-md w-full bg-[#101114] border-2 border-black shadow-[6px_6px_0_rgba(0,0,0,.6)] p-7" style={{ borderTop: '4px solid #E23A2E' }}>
+            <p style={{ fontFamily: 'var(--font-poster)', fontSize: 28 }} className="text-zinc-100 uppercase">
+              Turn the battle down?
+            </p>
+            <p className="text-[14px] text-zinc-400 mt-2 mb-6">
+              The culture keeps receipts — ducking a card can follow your name. The offer goes away for
+              good.
+            </p>
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                onClick={() => setDeclineTarget(null)}
+                className="py-3 bg-[#17181C] border-2 border-[#3a3d44] hover:border-zinc-500 text-zinc-200 font-display font-black uppercase tracking-wider transition-all"
+              >
+                Keep it
+              </button>
+              <button
+                onClick={() => handleDecline(declineTarget)}
+                className="py-3 bg-[#E23A2E] hover:bg-[#f04a3e] text-white font-display font-black uppercase tracking-wider transition-all"
+              >
+                Decline it
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

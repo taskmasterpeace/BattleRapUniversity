@@ -9,11 +9,21 @@ import { toast } from '@/components/ui/Toast';
 import MatchupMasthead, { battleFace } from '@/components/battle/MatchupMasthead';
 import Icon from '@/components/ui/Icon';
 
-const CONTEXTS: { value: ScoringContext; label: string; description: string }[] = [
-  { value: 'in_building', label: 'IN BUILDING', description: 'Small venue, intimate crowd' },
-  { value: 'ppv', label: 'PPV EVENT', description: 'Large event, balanced crowd' },
-  { value: 'on_cam', label: 'ON CAM', description: 'Recorded for a global online audience' },
-];
+// The ROOM is booked by the league (venue system) — the player doesn't pick
+// it anymore (owner: "how am I picking the room? is this a practice mode?").
+// Scoring context derives from the room itself.
+const CONTEXT_LABEL: Record<ScoringContext, string> = {
+  in_building: 'IN BUILDING — intimate room, every bar heard',
+  ppv: 'BIG EVENT — cameras on, big-crowd energy',
+  on_cam: 'ON CAM — recorded for the internet',
+};
+
+function deriveContext(battle: BattleWithDetails): ScoringContext {
+  const tier = battle.venue?.venue_type?.tier;
+  if (tier === 'virtual') return 'on_cam';
+  if (battle.tv_broadcast || tier === 'large') return 'ppv';
+  return 'in_building';
+}
 
 export default function BattleControlPage() {
   const router = useRouter();
@@ -24,7 +34,6 @@ export default function BattleControlPage() {
   const [prepBlocks, setPrepBlocks] = useState<PrepBlock[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState<'locked_in' | 'auto' | null>(null);
-  const [selectedContext, setSelectedContext] = useState<ScoringContext>('ppv');
 
   useEffect(() => {
     fetchBattleData();
@@ -43,15 +52,6 @@ export default function BattleControlPage() {
 
       setBattle(battleData.battle);
       setPrepBlocks(prepData.prepBlocks || []);
-
-      // Pre-select the battle's stored room instead of always resetting to PPV.
-      // Otherwise the picker ignores a battle's actual context and, on commit,
-      // silently overwrites it with 'ppv' (wrong for e.g. an intimate Small Room
-      // card, which should walk in as 'in_building').
-      const savedContext = battleData.battle?.context;
-      if (savedContext && CONTEXTS.some((c) => c.value === savedContext)) {
-        setSelectedContext(savedContext as ScoringContext);
-      }
     } catch (error) {
       console.error('Error fetching battle data:', error);
     }
@@ -68,7 +68,7 @@ export default function BattleControlPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           lockedIn: mode === 'locked_in',
-          context: selectedContext,
+          context: deriveContext(battle),
         }),
       });
 
@@ -192,30 +192,50 @@ export default function BattleControlPage() {
           </div>
         )}
 
-        {/* Context Selection */}
-        <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-6 mb-8">
-          <h2 className="text-lg font-display font-black uppercase tracking-wider mb-1">PICK THE ROOM</h2>
-          <p className="text-xs text-zinc-500 font-display font-bold uppercase tracking-wide mb-4">
-            The environment shapes crowd reactions and scoring
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {CONTEXTS.map((context) => (
-              <button
-                key={context.value}
-                onClick={() => setSelectedContext(context.value)}
-                className={`p-4 border-2 text-left transition-all ${
-                  selectedContext === context.value
-                    ? 'border-[#ff8c42] bg-[#ff8c42]/10'
-                    : 'border-[#3a3d44] bg-[#18191c] hover:border-[#ff8c42]/50'
-                }`}
-              >
-                <div className="font-display font-black uppercase tracking-wider text-sm mb-1">
-                  {context.label}
+        {/* TONIGHT'S CARD — the league booked the room; this is the flyer */}
+        <div className="fs bg-[#101114] border-2 border-black shadow-[5px_5px_0_rgba(0,0,0,.45)] mb-8 overflow-hidden">
+          {(() => {
+            const art =
+              battle.venue?.venue_type?.sprite_key ??
+              (battle.venue?.venue_type?.tier
+                ? `/sprites/venues/${battle.venue.venue_type.tier === 'virtual' ? 'home-studio' : battle.venue.venue_type.tier === 'large' ? 'grand-theater' : battle.venue.venue_type.tier === 'medium' ? 'small-bar' : 'basement'}.png`
+                : null);
+            return (
+              <>
+                {art && (
+                  <div className="relative h-36">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={art}
+                      alt=""
+                      className="absolute inset-0 w-full h-full object-cover"
+                      style={{ imageRendering: 'pixelated' }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#101114] via-transparent to-transparent" />
+                    {battle.tv_broadcast && (
+                      <span className="absolute top-2 right-2 flex items-center gap-1.5 px-2 py-1 bg-[#E23A2E] border border-black">
+                        <span className="inline-block w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                        <span style={{ fontFamily: 'var(--font-pixel)', fontSize: 10 }} className="text-white">
+                          NATIONAL TV
+                        </span>
+                      </span>
+                    )}
+                  </div>
+                )}
+                <div className="px-5 py-4">
+                  <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-zinc-500">
+                    Tonight&apos;s card
+                  </p>
+                  <p style={{ fontFamily: 'var(--font-poster)', fontSize: 24 }} className="text-zinc-100 uppercase mt-0.5">
+                    LIVE FROM {(battle.venue?.name ?? 'THE ROOM').toUpperCase()}
+                  </p>
+                  <p className="font-mono text-[12px] uppercase tracking-wider text-zinc-400 mt-1">
+                    {CONTEXT_LABEL[deriveContext(battle)]}
+                  </p>
                 </div>
-                <div className="text-xs text-zinc-500 font-display font-bold uppercase tracking-wide">{context.description}</div>
-              </button>
-            ))}
-          </div>
+              </>
+            );
+          })()}
         </div>
 
         {/* Mode Selection */}
@@ -229,13 +249,13 @@ export default function BattleControlPage() {
               <Icon name="target" size={36} className="text-[#ff8c42] mb-3" />
               <h3 className="text-2xl font-display font-black uppercase tracking-tight mb-2">LOCKED IN</h3>
               <p className="text-sm text-zinc-400 font-display font-bold uppercase tracking-wide">
-                Call every round yourself — content, delivery, adjustments
+                Put your three rounds on paper, then take the stage
               </p>
             </div>
 
             <ul className="text-xs text-zinc-400 font-display font-bold uppercase tracking-wide space-y-2 mb-6 flex-1">
-              <li className="flex gap-2"><Icon name="check" size={14} className="text-[#ff8c42]" /> Counter your opponent round by round</li>
-              <li className="flex gap-2"><Icon name="check" size={14} className="text-[#ff8c42]" /> See crowd verdicts between rounds</li>
+              <li className="flex gap-2"><Icon name="check" size={14} className="text-[#ff8c42]" /> Write all three rounds before the first bar</li>
+              <li className="flex gap-2"><Icon name="check" size={14} className="text-[#ff8c42]" /> Between rounds: pressure moves + live audibles</li>
               <li className="flex gap-2"><Icon name="check" size={14} className="text-[#ff8c42]" /> Maximum control, maximum stakes</li>
             </ul>
 

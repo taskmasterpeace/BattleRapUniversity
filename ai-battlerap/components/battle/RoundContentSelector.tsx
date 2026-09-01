@@ -77,7 +77,12 @@ export function RoundContentSelector({
     initialSelection?.performanceTypes || []
   );
 
-  const allContentTypes = getAllContentTypes();
+  // Adaptive content (rebuttals/freestyles) can't be PRE-written — a rebuttal
+  // answers what was just said. Those get called live as an AUDIBLE on battle
+  // night, so the pen only offers the writable twelve.
+  const allContentTypes = getAllContentTypes().filter(
+    (t) => t.id !== 'rebuttals' && t.id !== 'freestyles'
+  );
   const allDeliveryTypes = getAllDeliveryTypes();
   const allPerformanceTypes = getAllPerformanceTypes();
 
@@ -90,34 +95,24 @@ export function RoundContentSelector({
     });
   }, [selectedContent, selectedDelivery, selectedPerformance]);
 
+  // Functional updaters — the stale-closure form dropped clicks when several
+  // toggles fired inside one React batch (fast fingers, automated tests).
   const toggleContent = (type: ContentType) => {
-    if (selectedContent.includes(type)) {
-      setSelectedContent(selectedContent.filter((t) => t !== type));
-    } else {
-      if (selectedContent.length < 4) {
-        setSelectedContent([...selectedContent, type]);
-      }
-    }
+    setSelectedContent((prev) =>
+      prev.includes(type) ? prev.filter((t) => t !== type) : prev.length < 4 ? [...prev, type] : prev
+    );
   };
 
   const toggleDelivery = (type: DeliveryType) => {
-    if (selectedDelivery.includes(type)) {
-      setSelectedDelivery(selectedDelivery.filter((t) => t !== type));
-    } else {
-      if (selectedDelivery.length < 2) {
-        setSelectedDelivery([...selectedDelivery, type]);
-      }
-    }
+    setSelectedDelivery((prev) =>
+      prev.includes(type) ? prev.filter((t) => t !== type) : prev.length < 2 ? [...prev, type] : prev
+    );
   };
 
   const togglePerformance = (type: PerformanceType) => {
-    if (selectedPerformance.includes(type)) {
-      setSelectedPerformance(selectedPerformance.filter((t) => t !== type));
-    } else {
-      if (selectedPerformance.length < 2) {
-        setSelectedPerformance([...selectedPerformance, type]);
-      }
-    }
+    setSelectedPerformance((prev) =>
+      prev.includes(type) ? prev.filter((t) => t !== type) : prev.length < 2 ? [...prev, type] : prev
+    );
   };
 
   const isContentValid = selectedContent.length >= 3 && selectedContent.length <= 4;

@@ -40,15 +40,17 @@ function resumeTargetFor(status: BattleStatus, battleId: string): { label: strin
     case 'awaiting_lock_in_choice':
       return { label: 'GO TO BATTLE NIGHT', href: `/battle/${battleId}/control` };
     case 'awaiting_r1_content':
-      return { label: 'CALL ROUND 1', href: `/battle/${battleId}/round/1/select` };
+      return { label: 'WRITE YOUR ROUNDS', href: `/battle/${battleId}/round/1/select` };
     case 'r1_simulated':
       return { label: 'SEE ROUND 1 RESULTS', href: `/battle/${battleId}/round/1/results` };
+    // Write-first flow: by the time the battle awaits round 2/3, those rounds
+    // were penned before the first bar — the next stop is the STAGE.
     case 'awaiting_r2_content':
-      return { label: 'CALL ROUND 2', href: `/battle/${battleId}/round/2/select` };
+      return { label: 'PERFORM ROUND 2', href: `/battle/${battleId}/round/2/results` };
     case 'r2_simulated':
       return { label: 'SEE ROUND 2 RESULTS', href: `/battle/${battleId}/round/2/results` };
     case 'awaiting_r3_content':
-      return { label: 'CALL ROUND 3', href: `/battle/${battleId}/round/3/select` };
+      return { label: 'PERFORM ROUND 3', href: `/battle/${battleId}/round/3/results` };
     case 'r3_simulated':
     case 'simulated':
     case 'completed':
@@ -76,7 +78,9 @@ export default function RoundSelectPage() {
 
   useEffect(() => {
     fetchBattleData();
-  }, [battleId]);
+    // roundNum matters too: writing chains select/1 -> select/2 -> select/3 in
+    // the same mounted component, and the opponent prediction is per-round.
+  }, [battleId, roundNum]);
 
   const fetchBattleData = async () => {
     setLoading(true);
@@ -121,8 +125,15 @@ export default function RoundSelectPage() {
       });
 
       if (response.ok) {
-        // Redirect to round results page
-        router.push(`/battle/${battleId}/round/${roundNum}/results`);
+        // Write-first flow: pen all three rounds, THEN take the stage.
+        if (roundNum < 3) {
+          router.push(`/battle/${battleId}/round/${roundNum + 1}/select`);
+          // Re-mount state for the next round's blank page.
+          setSelection({ contentTypes: [], deliveryTypes: [], performanceTypes: [] });
+          setSubmitting(false);
+        } else {
+          router.push(`/battle/${battleId}/round/1/results`);
+        }
       } else {
         const data = await response.json();
         toast(data.error || 'Failed to save content selection', 'error');
@@ -159,12 +170,17 @@ export default function RoundSelectPage() {
     );
   }
 
-  // Is this round's content stage the one that's actually open right now?
+  // Write-first flow: a round is writable any time BEFORE it's performed —
+  // the player pens rounds 1-3 back to back before the first bar drops.
   const expectedStatus = `awaiting_r${roundNum}_content` as BattleStatus;
   const curIdx = FLOW_ORDER.indexOf(battle.status);
   const expIdx = FLOW_ORDER.indexOf(expectedStatus);
   const roundState: 'open' | 'locked' | 'not_yet' =
-    curIdx === expIdx ? 'open' : curIdx > expIdx ? 'locked' : 'not_yet';
+    curIdx <= expIdx && curIdx >= FLOW_ORDER.indexOf('awaiting_r1_content')
+      ? 'open'
+      : curIdx > expIdx
+        ? 'locked'
+        : 'not_yet';
 
   if (roundState !== 'open') {
     const resume = resumeTargetFor(battle.status, battleId);
@@ -214,12 +230,15 @@ export default function RoundSelectPage() {
               ← DASHBOARD
             </Link>
             <span className="font-mono text-[12px] uppercase tracking-[0.3em] text-zinc-500">
-              ROUND <span className="text-[#ff8c42]">{roundNum}</span> / 3
+              WRITING <span className="text-[#ff8c42]">{roundNum}</span> / 3
             </span>
           </div>
-          <h1 className="text-center text-2xl md:text-3xl font-display font-black uppercase tracking-tighter text-white mb-4">
-            ROUND {roundNum} — CALL YOUR SHOT
+          <h1 className="text-center text-2xl md:text-3xl font-display font-black uppercase tracking-tighter text-white mb-1">
+            THE PEN — WRITE ROUND {roundNum}
           </h1>
+          <p className="text-center font-mono text-[12px] uppercase tracking-[0.25em] text-zinc-500 mb-4">
+            All three rounds go on paper BEFORE the battle · rebuttals get called live
+          </p>
           <MatchupMasthead
             a={{
               id: battle.player_battler?.id,
@@ -340,7 +359,11 @@ export default function RoundSelectPage() {
             disabled={!isSelectionValid || submitting}
             className="px-8 py-3 bg-[#ff8c42] hover:bg-[#ff9d5c] text-black font-display font-black uppercase tracking-wider disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
-            {submitting ? 'LOCKING...' : 'LOCK THE ROUND'}
+            {submitting
+              ? 'LOCKING...'
+              : roundNum < 3
+                ? `ROUND ${roundNum} ON PAPER — WRITE ROUND ${roundNum + 1} →`
+                : 'PEN DOWN — TAKE THE STAGE →'}
           </button>
         </div>
 

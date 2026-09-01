@@ -26,7 +26,8 @@ const TYPE_STYLES: Record<ToastType, string> = {
   info: 'border-[#ff8c42]/50 text-[#ff8c42]',
 };
 
-const DISMISS_MS = 4000;
+// Long enough to actually read (owner: "I got a pop up and couldn't read it").
+const DISMISS_MS = 8000;
 
 export function Toaster() {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
