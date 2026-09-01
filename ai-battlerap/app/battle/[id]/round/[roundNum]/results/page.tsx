@@ -397,11 +397,17 @@ export default function RoundResultsPage() {
           />
         </div>
 
-        {/* THE ROOM — the crowd IS the per-round feedback, packed into the booked venue */}
+        {/* THE ROOM — the crowd IS the per-round feedback, packed into the booked venue.
+            It reacts to WHAT won: comedy → laughter, personals → OOOH, wordplay → nods. */}
         <div className="mb-8">
           <CrowdStrip
             score={Math.max(playerRound.crowd_reaction ?? 0, aiRound.crowd_reaction ?? 0)}
             seed={`${battleId}-r${roundNum}`}
+            flavor={
+              (determineWinner() === 'ai'
+                ? aiRound?.contentSelection?.content_types
+                : playerRound?.contentSelection?.content_types) ?? []
+            }
             venue={venueForLeague(battle.league?.name)}
             size={(battle.venue?.venue_type?.tier as 'virtual' | 'small' | 'medium' | 'large') ?? undefined}
             backdrop={
@@ -417,6 +423,14 @@ export default function RoundResultsPage() {
             }
             label={`${battle.venue ? `LIVE FROM ${battle.venue.name.toUpperCase()}` : 'THE ROOM'} · YOU ${Math.round(playerRound.crowd_reaction ?? 0)}% — ${(battle.ai_battler?.stage_name || 'THEM').toUpperCase()} ${Math.round(aiRound.crowd_reaction ?? 0)}%`}
           />
+          <div className="fs text-right mt-1.5">
+            <Link
+              href="/guide/the-room"
+              className="font-mono text-[11px] uppercase tracking-[0.25em] text-zinc-600 hover:text-[#F5731A]"
+            >
+              How to read the room →
+            </Link>
+          </div>
         </div>
 
         {/* PRESSURE — what happened between the bars this round */}

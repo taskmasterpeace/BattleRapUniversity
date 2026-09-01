@@ -43,6 +43,40 @@ function moodWeights(score: number): Record<string, number> {
   };
 }
 
+/**
+ * The crowd reacts to WHAT landed, not just how hard (owner note, 2026-08-31):
+ * comedy winning looks like a laughing room, personals look like hands-on-head
+ * "OOOH", wordplay gets the head-nod "bars" face. Keyed by the round winner's
+ * locked content types.
+ */
+const FLAVOR_MOODS: Record<string, string[]> = {
+  comedy: ['laugh'],
+  pop_culture_refs: ['laugh', 'talk'],
+  name_flips: ['laugh', 'talk'],
+  personals: ['oooh'],
+  shock_value: ['oooh'],
+  gun_bars: ['oooh', 'hype'],
+  wordplay: ['nod'],
+  schemes: ['nod'],
+  storytelling: ['nod'],
+  social_commentary: ['nod', 'talk'],
+  punchlines: ['hype', 'oooh'],
+  street_talk: ['hype'],
+  freestyles: ['talk', 'hype'],
+  rebuttals: ['oooh', 'talk'],
+};
+
+/** Tilt the mood mix toward the flavor of what landed — only once it's actually landing (score-gated). */
+function applyFlavor(weights: Record<string, number>, flavor: string[], score: number): void {
+  const landed = Math.max(0, Math.min(1, (score - 45) / 35));
+  if (landed === 0) return;
+  for (const f of flavor) {
+    const moods = FLAVOR_MOODS[f];
+    if (!moods) continue;
+    for (const m of moods) weights[m] = (weights[m] ?? 0) + (1.6 * landed) / moods.length;
+  }
+}
+
 function pickWeighted(weights: Record<string, number>, r: number): string {
   let total = 0;
   for (const w of Object.values(weights)) total += w;
@@ -91,6 +125,8 @@ interface CrowdStripProps {
   size?: 'virtual' | 'small' | 'medium' | 'large';
   /** Venue art drawn behind the bodies — the empty room this crowd fills. */
   backdrop?: string | null;
+  /** Content types that WON the round — tilts the room toward matching reactions. */
+  flavor?: string[];
 }
 
 const SIZE_PER_ROW: Record<NonNullable<CrowdStripProps['size']>, number> = {
@@ -110,10 +146,12 @@ export default function CrowdStrip({
   perRow,
   size,
   backdrop = null,
+  flavor,
 }: CrowdStripProps) {
   const heads = perRow ?? (size ? SIZE_PER_ROW[size] : 7);
-  const rand = rng(`${seed}|${Math.round(score / 5)}|${venue}`);
+  const rand = rng(`${seed}|${Math.round(score / 5)}|${venue}|${(flavor ?? []).join(',')}`);
   const weights = moodWeights(score);
+  if (flavor?.length) applyFlavor(weights, flavor, score);
   const mix = VENUE_MIX[venue] ?? VENUE_MIX.urban;
 
   const pickDemo = (): string => {
@@ -127,6 +165,8 @@ export default function CrowdStrip({
   };
 
   /** Front row telegraphs hardest: sharpen weights so its moods read decisive. */
+  const used = new Set<string>();
+  let lastPick = '';
   const pick = (sharpen = 1): string => {
     const w =
       sharpen === 1
@@ -137,7 +177,15 @@ export default function CrowdStrip({
     let candidates = FAMILY.filter((m) => m.mood === mood && m.demo === demo);
     if (candidates.length === 0) candidates = FAMILY.filter((m) => m.mood === mood);
     if (candidates.length === 0) candidates = FAMILY;
-    return candidates[Math.floor(rand() * candidates.length)].src;
+    // Variety pass (owner note: "we got two of the same"): prefer bodies not on
+    // screen yet, and NEVER the same body twice side by side.
+    const fresh = candidates.filter((c) => !used.has(c.src) && c.src !== lastPick);
+    const notAdjacent = candidates.filter((c) => c.src !== lastPick);
+    const pool = fresh.length > 0 ? fresh : notAdjacent.length > 0 ? notAdjacent : candidates;
+    const chosen = pool[Math.floor(rand() * pool.length)].src;
+    used.add(chosen);
+    lastPick = chosen;
+    return chosen;
   };
 
   // Three PACKED rows — a camera frame of a crowd, not people on a shelf.
