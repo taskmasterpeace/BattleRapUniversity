@@ -24,22 +24,57 @@ const GRADE_COLOR: Record<Grade, string> = {
   D: '#E23A2E',
 };
 
+// TIERS — the game's own attribute ladder (owner 2026-09-01: "we need a WORD
+// for it — is your delivery TOP tier or MID tier?"). The 10-cell gauge is four
+// readable regions: LOW 1-3, MID 4-6, TOP 7-9, GOD 10. Cells fill in their
+// region's color, so you SEE the bar climb from red into green/gold, and the
+// word names where you landed.
+export type Tier = 'low' | 'mid' | 'top' | 'god';
+
+export const TIER_META: Record<Tier, { label: string; color: string; cell: string; faint: string }> = {
+  low: { label: 'LOW', color: '#E23A2E', cell: 'linear-gradient(180deg,#e86458,#a5281e)', faint: 'rgba(226,58,46,0.10)' },
+  mid: { label: 'MID', color: '#F5731A', cell: 'linear-gradient(180deg,#ff9d5c,#c4560f)', faint: 'rgba(245,115,26,0.10)' },
+  top: { label: 'TOP', color: '#35C46B', cell: 'linear-gradient(180deg,#3fd67e,#1c7a3f)', faint: 'rgba(53,196,107,0.10)' },
+  god: { label: 'GOD', color: '#E7B23C', cell: 'linear-gradient(180deg,#f0c964,#b8901e)', faint: 'rgba(231,178,60,0.13)' },
+};
+
+/** Which tier a given cell index (0-9) belongs to. */
+export function tierForCell(i: number): Tier {
+  return i < 3 ? 'low' : i < 6 ? 'mid' : i < 9 ? 'top' : 'god';
+}
+
+/** The tier a value lands in (by the highest cell it fills), or null at 0. */
+export function tierOf(v10: number): Tier | null {
+  const filled = Math.round(Math.max(0, Math.min(10, v10)));
+  if (filled <= 0) return null;
+  return tierForCell(filled - 1);
+}
+
 function fmt(v: number): string {
   const r = Math.round(v * 10) / 10; // kill float-precision noise (1.9000000000000001)
   return Number.isInteger(r) ? String(r) : r.toFixed(1);
 }
 
-/** Notched 10-segment gauge colored by grade (pips at 3/6/9). */
-export function SegGauge({ v10, grade }: { v10: number; grade: Grade }) {
+/**
+ * Notched 10-segment gauge colored by TIER REGION (pips at 3/6/9 divide the
+ * LOW/MID/TOP/GOD zones). Filled cells take their region's full color; empty
+ * cells keep a faint region tint so the four zones read even on a low stat.
+ * `grade` is accepted for backward compat but no longer drives the color.
+ */
+export function SegGauge({ v10 }: { v10: number; grade?: Grade }) {
   const filled = Math.round(Math.max(0, Math.min(10, v10)));
   return (
     <div className="fs-seg">
-      {Array.from({ length: 10 }).map((_, i) => (
-        <i
-          key={i}
-          className={`${i < filled ? `on ${grade}` : ''}${i === 2 || i === 5 || i === 8 ? ' notch' : ''}`}
-        />
-      ))}
+      {Array.from({ length: 10 }).map((_, i) => {
+        const meta = TIER_META[tierForCell(i)];
+        return (
+          <i
+            key={i}
+            className={i === 2 || i === 5 || i === 8 ? 'notch' : undefined}
+            style={{ background: i < filled ? meta.cell : meta.faint }}
+          />
+        );
+      })}
     </div>
   );
 }
@@ -83,10 +118,11 @@ interface StatGaugeProps {
   noGrade?: boolean;
 }
 
-/** One dossier-style stat row: label · notched gauge · grade + pixel value. */
+/** One dossier-style stat row: label · region gauge · TIER word + value. */
 export default function StatGauge({ label, v10, valueText, noGrade }: StatGaugeProps) {
   const v = Math.max(0, Math.min(10, Number(v10 ?? 0)));
   const grade = gradeOf(v);
+  const tier = tierOf(v);
   return (
     <div className="fs flex items-center gap-3">
       <span className="w-32 shrink-0 font-mono text-[11px] uppercase tracking-[0.18em] text-zinc-400 truncate">
@@ -97,15 +133,14 @@ export default function StatGauge({ label, v10, valueText, noGrade }: StatGaugeP
       </div>
       {!noGrade && (
         <span
-          className="w-5 text-center shrink-0"
+          className="w-11 text-center shrink-0 font-mono font-bold uppercase"
           style={{
-            fontFamily: 'var(--font-poster)',
-            fontSize: 15,
-            color: GRADE_COLOR[grade],
-            textShadow: '1px 1px 0 #000',
+            fontSize: 11,
+            letterSpacing: '0.06em',
+            color: tier ? TIER_META[tier].color : '#5E606A',
           }}
         >
-          {grade}
+          {tier ? TIER_META[tier].label : '—'}
         </span>
       )}
       <span

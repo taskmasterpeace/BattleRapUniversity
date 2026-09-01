@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { portraitFillStyle } from "@/lib/sprite-crops"
+import { tierForCell, tierOf, TIER_META } from "@/components/ui/StatGauge"
 
 export interface AttrRow {
   label: string
@@ -144,17 +145,21 @@ function fmt10(v: number): string {
   return Number.isInteger(v) ? String(v) : v.toFixed(1)
 }
 
-/** Segmented, notched gauge (pips at 3/6/9) colored by grade. */
-function SegGauge({ v10, grade }: { v10: number; grade: Grade }) {
-  const filled = Math.round(v10)
+/** Segmented gauge colored by TIER REGION (LOW/MID/TOP/GOD), pips at 3/6/9. */
+function SegGauge({ v10 }: { v10: number; grade?: Grade }) {
+  const filled = Math.round(Math.max(0, Math.min(10, v10)))
   return (
     <div className="fs-seg">
-      {Array.from({ length: 10 }).map((_, i) => (
-        <i
-          key={i}
-          className={`${i < filled ? `on ${grade}` : ""}${i === 2 || i === 5 || i === 8 ? " notch" : ""}`}
-        />
-      ))}
+      {Array.from({ length: 10 }).map((_, i) => {
+        const meta = TIER_META[tierForCell(i)]
+        return (
+          <i
+            key={i}
+            className={i === 2 || i === 5 || i === 8 ? "notch" : undefined}
+            style={{ background: i < filled ? meta.cell : meta.faint }}
+          />
+        )
+      })}
     </div>
   )
 }
@@ -622,12 +627,23 @@ export function CharacterSheet({
               </div>
               {g.rows.map((row) => {
                 const v10 = to10(row, g.scale10)
-                const grade = gradeOf(v10)
+                const tier = tierOf(v10)
                 return (
                   <div className="fs-attr2" key={row.label}>
                     <span className="l">{row.label}</span>
-                    <SegGauge v10={v10} grade={grade} />
-                    <span className={`fs-grade ${grade}`}>{grade}</span>
+                    <SegGauge v10={v10} />
+                    <span
+                      style={{
+                        fontFamily: "var(--font-mono, monospace)",
+                        fontWeight: 700,
+                        fontSize: 11,
+                        letterSpacing: ".06em",
+                        textAlign: "center",
+                        color: tier ? TIER_META[tier].color : "#5E606A",
+                      }}
+                    >
+                      {tier ? TIER_META[tier].label : "—"}
+                    </span>
                     <span className="v">{fmt10(v10)}</span>
                   </div>
                 )

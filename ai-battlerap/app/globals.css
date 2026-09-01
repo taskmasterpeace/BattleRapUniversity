@@ -407,7 +407,7 @@ html, body {
 .fs-seg i.on.D{background:linear-gradient(180deg,#e86458,#a5281e)}
 .fs-seg i.notch{position:relative}
 .fs-seg i.notch::after{content:"";position:absolute;top:-4px;bottom:-4px;right:-2px;width:1px;background:var(--fs-line2)}
-.fs-attr2{display:grid;grid-template-columns:110px 1fr 22px 40px;align-items:center;gap:9px;margin:8px 0}
+.fs-attr2{display:grid;grid-template-columns:110px 1fr 46px 40px;align-items:center;gap:9px;margin:8px 0}
 .fs-attr2 .l{font-family:var(--font-display);font-weight:600;font-size:14px;letter-spacing:.04em;text-transform:uppercase;color:var(--fs-mut)}
 .fs-attr2 .v{font-family:var(--font-pixel);font-size:13px;text-align:right;color:var(--fs-ink)}
 .fs-grp2{background:var(--fs-surface);border:1px solid var(--fs-line);border-radius:12px;padding:14px;margin-bottom:12px}
