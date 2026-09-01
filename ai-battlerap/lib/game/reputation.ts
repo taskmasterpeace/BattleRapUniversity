@@ -534,6 +534,86 @@ function buildSummary(input: ReputationInput, labels: RepLabel[], rec: Recogniti
 
 // ── public entry ────────────────────────────────────────────────────────────
 
+// ── teeth ───────────────────────────────────────────────────────────────────
+//
+// Labels aren't just flavor — they change how the world treats you. This turns a
+// battler's live labels into gameplay deltas the sim and the offer generator
+// consume. (Wiring points: crowdDelta → crowd_reaction; pressurePenalty → choke
+// chance; offerAppeal → who's willing to book you; opponentPrepBias → how hard
+// the AI preps against you; rematchDemandBias → grudge/rematch pull.)
+
+export interface ReputationModifiers {
+  /** Added to crowd reaction, roughly -12..+12. */
+  crowdDelta: number;
+  /** Added to per-segment choke chance from nerves/target-on-back, 0..~0.05. */
+  pressurePenalty: number;
+  /** How attractive you are to book, -1..+1 (bigger names, better cards). */
+  offerAppeal: number;
+  /** How much harder opponents prep for you, 0..1. */
+  opponentPrepBias: number;
+  /** Fan pull for grudges/rematches, 0..1. */
+  rematchDemandBias: number;
+  /** Which labels drove the numbers — for tooltips / "why". */
+  notes: string[];
+}
+
+const MOD_RULES: Record<
+  string,
+  Partial<Omit<ReputationModifiers, 'notes'>> & { note?: string }
+> = {
+  untouchable: { offerAppeal: 0.5, opponentPrepBias: 0.35, pressurePenalty: 0.015, note: 'target on your back' },
+  problem: { offerAppeal: 0.35, opponentPrepBias: 0.3, note: 'they prep for you' },
+  on_a_run: { offerAppeal: 0.3, crowdDelta: 3, note: 'hot hand' },
+  upset_king: { offerAppeal: 0.3, opponentPrepBias: 0.25, note: 'live underdog' },
+  body_bag_collector: { crowdDelta: 6, offerAppeal: 0.3, opponentPrepBias: 0.2, note: 'they expect a body' },
+  got_bodies: { crowdDelta: 3, offerAppeal: 0.12, note: 'proven finisher' },
+  moment_maker: { crowdDelta: 6, offerAppeal: 0.25, note: 'clip machine' },
+  crowd_killer: { crowdDelta: 8, offerAppeal: 0.2, note: 'brings the energy' },
+  hometown_hero: { crowdDelta: 4, note: 'home crowd rides' },
+  road_warrior: { offerAppeal: 0.22, crowdDelta: 2, note: 'travels well' },
+  gatekeeper: { opponentPrepBias: 0.3, offerAppeal: 0.1, note: 'the test to pass' },
+  blog_darling: { crowdDelta: 4, offerAppeal: 0.2, note: 'press rides for you' },
+  robbed: { crowdDelta: 5, rematchDemandBias: 0.5, note: 'sympathy + rematch heat' },
+  starts_smoke: { rematchDemandBias: 0.45, offerAppeal: 0.18, note: 'grudges sell' },
+  choker: { pressurePenalty: 0.045, opponentPrepBias: 0.3, crowdDelta: -4, note: 'they press your nerves' },
+  sweated_one: { pressurePenalty: 0.015, note: 'small composure question' },
+  washed: { offerAppeal: -0.55, crowdDelta: -6, note: 'booked as a get-back' },
+  skidding: { offerAppeal: -0.3, crowdDelta: -3, note: 'cold streak' },
+  blog_villain: { opponentPrepBias: 0.2, crowdDelta: -5, offerAppeal: -0.1, rematchDemandBias: 0.2, note: 'the story they hate' },
+};
+
+export function reputationModifiers(rep: Reputation): ReputationModifiers {
+  const acc: ReputationModifiers = {
+    crowdDelta: 0,
+    pressurePenalty: 0,
+    offerAppeal: 0,
+    opponentPrepBias: 0,
+    rematchDemandBias: 0,
+    notes: [],
+  };
+  for (const label of rep.labels) {
+    const rule = MOD_RULES[label.key];
+    if (!rule) continue;
+    acc.crowdDelta += rule.crowdDelta ?? 0;
+    acc.pressurePenalty += rule.pressurePenalty ?? 0;
+    acc.offerAppeal += rule.offerAppeal ?? 0;
+    acc.opponentPrepBias += rule.opponentPrepBias ?? 0;
+    acc.rematchDemandBias += rule.rematchDemandBias ?? 0;
+    if (rule.note) acc.notes.push(`${label.label}: ${rule.note}`);
+  }
+  // Clamp to sane ranges so a stacked resume can't run away.
+  acc.crowdDelta = clamp(acc.crowdDelta, -12, 12);
+  acc.pressurePenalty = clamp(acc.pressurePenalty, 0, 0.05);
+  acc.offerAppeal = clamp(acc.offerAppeal, -1, 1);
+  acc.opponentPrepBias = clamp(acc.opponentPrepBias, 0, 1);
+  acc.rematchDemandBias = clamp(acc.rematchDemandBias, 0, 1);
+  return acc;
+}
+
+function clamp(v: number, lo: number, hi: number): number {
+  return Math.max(lo, Math.min(hi, v));
+}
+
 export function deriveReputation(input: ReputationInput): Reputation {
   const labels = buildLabels(input);
   const recognition = buildRecognition(input);
