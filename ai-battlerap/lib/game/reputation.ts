@@ -13,8 +13,12 @@
  * This module is PURE (no DB, no React) so it can be unit-tested / Monte-Carlo'd
  * and reused by the career API, the dashboard, and future media generators.
  *
- * See docs/design/CORE_LOOP_AND_ERAS.md → "Owner refinements".
+ * See docs/design/CORE_LOOP_AND_ERAS.md → "Owner refinements" and
+ * docs/design/STICKY_LABELS.md for the stored "on your record" layer.
  */
+
+import { LABELS, RETIRE_AT, type LabelTier } from './labels/registry';
+import type { StoredLabel } from './labels/lifecycle';
 
 export type LabelTone = 'gas' | 'shade' | 'neutral';
 
@@ -29,6 +33,12 @@ export interface RepLabel {
   heat: number;
   /** Human-readable teeth: how the world treats you for it. */
   effect?: string;
+  /** live current-form · stored on-your-record · both. */
+  provenance?: 'live' | 'stored' | 'both';
+  /** Stickiness tier (stored labels only). */
+  tier?: LabelTier;
+  /** Which band the chip shows in. */
+  band?: 'current' | 'record';
 }
 
 export type RecognitionLevel = 'unknown' | 'heard' | 'buzzing' | 'known' | 'respected';
@@ -82,8 +92,14 @@ export interface ReputationInput {
   losses: number;
   streak: number;
   battles: RepBattle[];
-  /** life_events template_code[] this battler has collected. */
-  lifeEventCodes: string[];
+  /**
+   * @deprecated life_events template_code[]. The live layer no longer derives
+   * labels from all-time codes (they became stored pins — see storedLabels).
+   * Kept for back-compat; ignored by buildLabels.
+   */
+  lifeEventCodes?: string[];
+  /** Stored "on your record" labels (battler_labels ledger), active rows. */
+  storedLabels?: StoredLabel[];
   /** Press sentiment rows (blogger_memory). */
   press?: Array<{ pos: number; neg: number }>;
   /** Career average crowd reaction 0-100 (drives Crowd Killer). */
@@ -98,7 +114,10 @@ export interface ReputationInput {
 export interface Reputation {
   /** One-line "word on you" for headers. */
   summary: string;
+  /** Display slice (top 6 by heat), each tagged band: current | record. */
   labels: RepLabel[];
+  /** Gameplay deltas from ALL active labels (computed before the display slice). */
+  modifiers: ReputationModifiers;
   recognition: RecognitionEntry[];
   signatureWins: SignatureWin[];
   /** Quick totals the UI leans on. */
@@ -233,10 +252,10 @@ function buildLabels(input: ReputationInput): RepLabel[] {
   const losses = input.losses;
   const winRate = total > 0 ? wins / total : 0;
   const bodies = input.battles.filter((b) => b.result === 'W' && b.score === '3-0').length;
-  const chokes = input.battles.reduce((n, b) => n + b.chokedRounds, 0);
+  // Live CHOKER uses a ROLLING window (recent 5), not all-time — otherwise a
+  // retired stored CHOKER would instantly respawn from old history (Codex).
+  const recentChokes = input.battles.slice(0, 5).reduce((n, b) => n + b.chokedRounds, 0);
   const bestPeak = input.battles.reduce((m, b) => Math.max(m, b.bestPeak), 0);
-  const codes = new Set(input.lifeEventCodes);
-  const has = (c: string) => codes.has(c);
 
   // No tape yet — the honest blank slate.
   if (total === 0) {
@@ -282,16 +301,17 @@ function buildLabels(input: ReputationInput): RepLabel[] {
     });
   }
 
-  // Skidding / washed — the culture is brutal about decline.
-  if (input.streak <= -3 || has('CAREER_CRISIS')) {
-    const washed = has('CAREER_CRISIS') && losses > wins;
+  // Skidding / washed — CURRENT FORM only (a stored WASHED pin carries the
+  // long-term brand; this is "right now"). Stat-driven, no life-event codes.
+  if (input.streak <= -3) {
+    const washed = losses > wins && total >= 6;
     push({
       key: washed ? 'washed' : 'skidding',
       label: washed ? 'WASHED' : 'SKIDDING',
       tone: 'shade',
       reason: washed
-        ? 'The blogs are writing the obituary — career crisis, more L’s than W’s.'
-        : `${Math.abs(input.streak)} straight losses — the shine is coming off.`,
+        ? `${wins}-${losses} and sliding — the shine is coming off fast.`
+        : `${Math.abs(input.streak)} straight losses — ice cold right now.`,
       heat: washed ? 84 : 66,
       effect: 'Weaker offers, colder rooms. You get booked as somebody else’s get-back.',
     });
@@ -390,64 +410,42 @@ function buildLabels(input: ReputationInput): RepLabel[] {
     });
   }
 
-  // ── chokes — a credibility killer in this culture ──
-  if (chokes >= 2 || has('CHOKE_IN_BIG_BATTLE')) {
+  // ── chokes — CURRENT FORM (rolling window). The sticky CHOKER brand lives in
+  //    the stored layer; this is "shaky lately". ──
+  if (recentChokes >= 2) {
     push({
       key: 'choker',
       label: 'CHOKER',
       tone: 'shade',
-      reason: has('CHOKE_IN_BIG_BATTLE')
-        ? 'Blanked on the big stage — the clip lives forever.'
-        : `Choked in ${chokes} rounds — the room remembers.`,
+      reason: `Choked ${recentChokes} times lately — the room remembers.`,
       heat: 90,
       effect: 'Opponents bet on your nerves and press early. The crowd waits for you to crack.',
     });
-  } else if (chokes === 1 || has('CHOKE_EVENT')) {
+  } else if (recentChokes === 1) {
     push({
       key: 'sweated_one',
       label: 'SWEATED ONE',
       tone: 'shade',
-      reason: 'Lost the words once — a stumble the blogs clipped.',
+      reason: 'Lost the words once lately — a stumble the blogs clipped.',
       heat: 44,
       effect: 'A small question mark on your composure. Shake it with a clean showing.',
     });
   }
 
-  // ── moments ──
-  if (bestPeak >= 9 || has('BODYBAG_HYPE')) {
+  // ── moments (current form: a big recent peak) ──
+  if (bestPeak >= 9) {
     push({
       key: 'moment_maker',
       label: 'MOMENT MAKER',
       tone: 'gas',
-      reason: bestPeak >= 9 ? `Dropped a ${bestPeak.toFixed(1)} peak — a certified moment.` : 'Gave the culture a moment people still quote.',
+      reason: `Dropped a ${bestPeak.toFixed(1)} peak — a certified moment.`,
       heat: 74,
       effect: 'Your name comes up in "best bars" talk. Clips carry your buzz between battles.',
     });
   }
 
-  // ── robbed (the culture respects a good L) ──
-  if (has('CONTROVERSIAL_LOSS')) {
-    push({
-      key: 'robbed',
-      label: 'ROBBED',
-      tone: 'neutral',
-      reason: 'Took an L the internet still argues about — you won the crowd, lost the card.',
-      heat: 60,
-      effect: 'Sympathy buzz. Fans demand the rematch louder than a clean win would.',
-    });
-  }
-
-  // ── beef ──
-  if (has('RIVAL_CALLOUT')) {
-    push({
-      key: 'starts_smoke',
-      label: 'STARTS SMOKE',
-      tone: 'neutral',
-      reason: 'Out here calling names out — you keep a beef simmering.',
-      heat: 52,
-      effect: 'Grudge matches sell. The angle writes itself, but so do the enemies.',
-    });
-  }
+  // (ROBBED and the DUCKING/ANSWERED family are STORED life-event pins now —
+  //  see lib/game/labels — not derived from all-time codes here.)
 
   // ── press narrative ──
   if (input.press && input.press.length > 0) {
@@ -514,7 +512,7 @@ function buildSummary(input: ReputationInput, labels: RepLabel[], rec: Recogniti
   if (input.battles.length === 0) {
     return 'Unwritten — no tape, no reputation yet. Go take a name.';
   }
-  const hot = labels.find((l) => l.heat >= 55);
+  const hot = [...labels].sort((a, b) => b.heat - a.heat).find((l) => l.heat >= 55);
   const record = `${input.wins}-${input.losses}`;
   const topScene = rec.find((r) => r.level === 'respected' || r.level === 'known');
   const reach = rec.filter((r) => r.score >= REC.MIN_SHOWN).length;
@@ -557,6 +555,8 @@ export interface ReputationModifiers {
   notes: string[];
 }
 
+// Modifier vectors for LIVE (current-form) labels only. STORED labels carry
+// their own vectors in the registry (LABELS[key].modifiers) — that wins on merge.
 const MOD_RULES: Record<
   string,
   Partial<Omit<ReputationModifiers, 'notes'>> & { note?: string }
@@ -567,62 +567,128 @@ const MOD_RULES: Record<
   upset_king: { offerAppeal: 0.3, opponentPrepBias: 0.25, note: 'live underdog' },
   body_bag_collector: { crowdDelta: 6, offerAppeal: 0.3, opponentPrepBias: 0.2, note: 'they expect a body' },
   got_bodies: { crowdDelta: 3, offerAppeal: 0.12, note: 'proven finisher' },
-  moment_maker: { crowdDelta: 6, offerAppeal: 0.25, note: 'clip machine' },
   crowd_killer: { crowdDelta: 8, offerAppeal: 0.2, note: 'brings the energy' },
   hometown_hero: { crowdDelta: 4, note: 'home crowd rides' },
   road_warrior: { offerAppeal: 0.22, crowdDelta: 2, note: 'travels well' },
   gatekeeper: { opponentPrepBias: 0.3, offerAppeal: 0.1, note: 'the test to pass' },
   blog_darling: { crowdDelta: 4, offerAppeal: 0.2, note: 'press rides for you' },
-  robbed: { crowdDelta: 5, rematchDemandBias: 0.5, note: 'sympathy + rematch heat' },
-  starts_smoke: { rematchDemandBias: 0.45, offerAppeal: 0.18, note: 'grudges sell' },
-  choker: { pressurePenalty: 0.045, opponentPrepBias: 0.3, crowdDelta: -4, note: 'they press your nerves' },
   sweated_one: { pressurePenalty: 0.015, note: 'small composure question' },
-  washed: { offerAppeal: -0.55, crowdDelta: -6, note: 'booked as a get-back' },
   skidding: { offerAppeal: -0.3, crowdDelta: -3, note: 'cold streak' },
   blog_villain: { opponentPrepBias: 0.2, crowdDelta: -5, offerAppeal: -0.1, rematchDemandBias: 0.2, note: 'the story they hate' },
 };
 
-export function reputationModifiers(rep: Reputation): ReputationModifiers {
+/** Compute gameplay deltas from ALL active labels, each scaled by its heat. */
+function computeModifiers(labels: RepLabel[]): ReputationModifiers {
   const acc: ReputationModifiers = {
-    crowdDelta: 0,
-    pressurePenalty: 0,
-    offerAppeal: 0,
-    opponentPrepBias: 0,
-    rematchDemandBias: 0,
-    notes: [],
+    crowdDelta: 0, pressurePenalty: 0, offerAppeal: 0, opponentPrepBias: 0, rematchDemandBias: 0, notes: [],
   };
-  for (const label of rep.labels) {
-    const rule = MOD_RULES[label.key];
+  for (const label of labels) {
+    // Registry (stored) vector wins; else the live rule.
+    const rule = LABELS[label.key]?.modifiers ?? MOD_RULES[label.key];
     if (!rule) continue;
-    acc.crowdDelta += rule.crowdDelta ?? 0;
-    acc.pressurePenalty += rule.pressurePenalty ?? 0;
-    acc.offerAppeal += rule.offerAppeal ?? 0;
-    acc.opponentPrepBias += rule.opponentPrepBias ?? 0;
-    acc.rematchDemandBias += rule.rematchDemandBias ?? 0;
-    if (rule.note) acc.notes.push(`${label.label}: ${rule.note}`);
+    const scale = clamp(label.heat, 0, 100) / 100; // effective = configured × heat/100
+    acc.crowdDelta += (rule.crowdDelta ?? 0) * scale;
+    acc.pressurePenalty += (rule.pressurePenalty ?? 0) * scale;
+    acc.offerAppeal += (rule.offerAppeal ?? 0) * scale;
+    acc.opponentPrepBias += (rule.opponentPrepBias ?? 0) * scale;
+    acc.rematchDemandBias += (rule.rematchDemandBias ?? 0) * scale;
+    const note = (rule as { note?: string }).note;
+    acc.notes.push(`${label.label}${note ? `: ${note}` : ''}`);
   }
-  // Clamp to sane ranges so a stacked resume can't run away.
-  acc.crowdDelta = clamp(acc.crowdDelta, -12, 12);
-  acc.pressurePenalty = clamp(acc.pressurePenalty, 0, 0.05);
-  acc.offerAppeal = clamp(acc.offerAppeal, -1, 1);
-  acc.opponentPrepBias = clamp(acc.opponentPrepBias, 0, 1);
-  acc.rematchDemandBias = clamp(acc.rematchDemandBias, 0, 1);
+  acc.crowdDelta = clamp(Math.round(acc.crowdDelta), -12, 12);
+  acc.pressurePenalty = clamp(Math.round(acc.pressurePenalty * 1000) / 1000, 0, 0.05);
+  acc.offerAppeal = clamp(Math.round(acc.offerAppeal * 100) / 100, -1, 1);
+  acc.opponentPrepBias = clamp(Math.round(acc.opponentPrepBias * 100) / 100, 0, 1);
+  acc.rematchDemandBias = clamp(Math.round(acc.rematchDemandBias * 100) / 100, 0, 1);
   return acc;
+}
+
+/** Precomputed on the Reputation (from the FULL label set, before display slice). */
+export function reputationModifiers(rep: Reputation): ReputationModifiers {
+  return rep.modifiers;
 }
 
 function clamp(v: number, lo: number, hi: number): number {
   return Math.max(lo, Math.min(hi, v));
 }
 
+// ── merge: live current-form + stored on-your-record ────────────────────────
+
+function storedToRepLabels(stored: StoredLabel[]): RepLabel[] {
+  const out: RepLabel[] = [];
+  for (const s of stored) {
+    if (s.status !== 'active' || s.heat < RETIRE_AT) continue;
+    const def = LABELS[s.key];
+    if (!def) continue;
+    out.push({
+      key: s.key,
+      label: def.label,
+      tone: s.tone ?? def.tone,
+      reason: def.reason,
+      heat: s.heat,
+      effect: def.effect,
+      provenance: 'stored',
+      tier: s.tier,
+      band: 'record',
+    });
+  }
+  return out;
+}
+
+/** One chip per key: stored wins tier/band/effect, live supplies the current reason, heat = max. */
+function mergeLabels(live: RepLabel[], stored: RepLabel[]): RepLabel[] {
+  const byKey = new Map<string, RepLabel>();
+  for (const l of live) byKey.set(l.key, l);
+  for (const s of stored) {
+    const existing = byKey.get(s.key);
+    if (!existing) {
+      byKey.set(s.key, s);
+    } else {
+      byKey.set(s.key, {
+        ...s,
+        reason: existing.reason, // live current-form reason
+        heat: Math.max(existing.heat, s.heat),
+        provenance: 'both',
+      });
+    }
+  }
+  return Array.from(byKey.values());
+}
+
+/** Exclusive families collapse to the stronger member. */
+function collapseFamilies(labels: RepLabel[]): RepLabel[] {
+  const keys = new Set(labels.map((l) => l.key));
+  const drop = new Set<string>();
+  if (keys.has('choker')) drop.add('sweated_one');
+  if (keys.has('washed')) drop.add('skidding');
+  if (keys.has('body_bag_collector')) drop.add('got_bodies');
+  return labels.filter((l) => !drop.has(l.key));
+}
+
 export function deriveReputation(input: ReputationInput): Reputation {
-  const labels = buildLabels(input);
+  const live = buildLabels(input).map(
+    (l): RepLabel => ({ ...l, provenance: 'live', band: 'current' })
+  );
+  const stored = storedToRepLabels(input.storedLabels ?? []);
+  const all = collapseFamilies(mergeLabels(live, stored));
+
+  // Modifiers from EVERY active label (heat-scaled), BEFORE the display slice —
+  // so gameplay never depends on which chips happen to show.
+  const modifiers = computeModifiers(all);
+
   const recognition = buildRecognition(input);
   const signatureWins = buildSignatureWins(input);
-  const summary = buildSummary(input, labels, recognition);
+  const summary = buildSummary(input, all, recognition);
+
+  // Display: two bands, capped so the panel stays tight.
+  const byHeat = (a: RepLabel, b: RepLabel) => b.heat - a.heat;
+  const record = all.filter((l) => l.band === 'record').sort(byHeat).slice(0, 5);
+  const current = all.filter((l) => l.band === 'current').sort(byHeat).slice(0, 5);
 
   return {
     summary,
-    labels,
+    labels: [...record, ...current],
+    modifiers,
     recognition,
     signatureWins,
     meta: {

@@ -1,6 +1,6 @@
 'use client';
 
-import type { CSSProperties } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import Link from 'next/link';
 import type {
   Reputation,
@@ -77,16 +77,29 @@ export function ReputationPanel({ reputation }: { reputation: Reputation }) {
       </div>
       <p className="text-zinc-300 font-bold uppercase tracking-wide text-sm mb-5">{summary}</p>
 
-      {/* LABELS — the chips that stick */}
-      {labels.length > 0 && (
-        <div className="mb-6">
-          <div className="flex flex-col gap-2">
-            {labels.map((l) => (
-              <LabelChip key={l.key} label={l} />
-            ))}
-          </div>
-        </div>
-      )}
+      {/* LABELS — two bands: what sticks to your name vs how you're moving now */}
+      {(() => {
+        const record = labels.filter((l) => l.band === 'record');
+        const current = labels.filter((l) => l.band !== 'record');
+        return (
+          <>
+            {record.length > 0 && (
+              <LabelBand title="On Your Record" subtitle="what sticks to your name">
+                {record.map((l) => (
+                  <LabelChip key={l.key} label={l} />
+                ))}
+              </LabelBand>
+            )}
+            {current.length > 0 && (
+              <LabelBand title="Current Form" subtitle="how you're moving right now">
+                {current.map((l) => (
+                  <LabelChip key={l.key} label={l} />
+                ))}
+              </LabelBand>
+            )}
+          </>
+        );
+      })()}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* RECOGNITION MAP */}
@@ -144,8 +157,35 @@ export function ReputationPanel({ reputation }: { reputation: Reputation }) {
   );
 }
 
+function LabelBand({
+  title,
+  subtitle,
+  children,
+}: {
+  title: string;
+  subtitle: string;
+  children: ReactNode;
+}) {
+  return (
+    <div className="mb-5">
+      <div className="flex items-baseline justify-between mb-2">
+        <h3 className="text-sm font-display font-black uppercase tracking-wider text-zinc-200">{title}</h3>
+        <span className="font-mono text-[12px] uppercase tracking-wide text-zinc-500">{subtitle}</span>
+      </div>
+      <div className="flex flex-col gap-2">{children}</div>
+    </div>
+  );
+}
+
+const TIER_TAG: Record<string, { text: string; cls: string }> = {
+  permanent: { text: 'PERMANENT', cls: 'text-[#ff6a5e] border-[#ff6a5e]/40' },
+  durable: { text: 'STICKS', cls: 'text-zinc-300 border-white/20' },
+  fresh: { text: 'FADING', cls: 'text-zinc-400 border-white/15' },
+};
+
 function LabelChip({ label }: { label: RepLabel }) {
   const tone = TONE[label.tone];
+  const tier = label.tier ? TIER_TAG[label.tier] : null;
   return (
     <div
       className="relative border-2 border-black px-3.5 py-2.5 backdrop-blur-[3px]"
@@ -158,6 +198,18 @@ function LabelChip({ label }: { label: RepLabel }) {
         <span className="font-mono text-[11px] uppercase tracking-widest text-zinc-400 border border-white/15 bg-black/20 px-1.5 py-px">
           {tone.tag}
         </span>
+        {tier && (
+          <span
+            className={`font-mono text-[11px] uppercase tracking-widest border bg-black/20 px-1.5 py-px ${tier.cls}`}
+          >
+            {tier.text}
+          </span>
+        )}
+        {label.provenance === 'both' && (
+          <span className="font-mono text-[11px] uppercase tracking-widest text-[#ff8c42] border border-[#ff8c42]/50 bg-[#ff8c42]/10 px-1.5 py-px">
+            HOT NOW
+          </span>
+        )}
       </div>
       <p className="text-zinc-200 text-sm leading-snug mt-1">{label.reason}</p>
       {label.effect && (

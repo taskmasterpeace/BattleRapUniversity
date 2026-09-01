@@ -141,12 +141,33 @@ export async function GET(
     const opponentIds = Array.from(
       new Set(battleHistory.map((b: any) => b.opponentId).filter(Boolean))
     );
-    const [{ data: oppRankings }, { data: lifeRows }] = await Promise.all([
+    const [{ data: oppRankings }, { data: lifeRows }, { data: labelRows }] = await Promise.all([
       opponentIds.length
         ? supabase.from('rankings').select('battler_id, rating, tier').in('battler_id', opponentIds)
         : Promise.resolve({ data: [] as any[] }),
       supabase.from('battler_life_events').select('template_code').eq('battler_id', battlerId),
+      // Stored "on your record" labels. If the table isn't migrated yet, Supabase
+      // returns {data:null,error} — we fall back to [] and just show live labels.
+      supabase
+        .from('battler_labels')
+        .select('key, tier, tone, heat, processed_battle_count, evidence_count, qualifying_evidence_count, status, pinned_at, last_reinforced_at, source')
+        .eq('battler_id', battlerId)
+        .eq('status', 'active'),
     ]);
+
+    const storedLabels = (labelRows ?? []).map((r: any) => ({
+      key: r.key,
+      tier: r.tier,
+      tone: r.tone,
+      heat: r.heat,
+      processedBattleCount: r.processed_battle_count ?? 0,
+      evidenceCount: r.evidence_count ?? 0,
+      qualifyingEvidenceCount: r.qualifying_evidence_count ?? 0,
+      status: r.status,
+      pinnedAt: r.pinned_at ?? undefined,
+      lastReinforcedAt: r.last_reinforced_at ?? undefined,
+      source: r.source ?? undefined,
+    }));
     const oppRatingMap = new Map<string, { rating: number; tier: string | null }>(
       (oppRankings ?? []).map((r: any) => [r.battler_id, { rating: r.rating, tier: r.tier ?? null }])
     );
@@ -177,6 +198,7 @@ export async function GET(
       losses: careerStats.losses,
       streak: ranking?.streak ?? 0,
       battles: repBattles,
+      storedLabels,
       lifeEventCodes: (lifeRows ?? []).map((r: any) => r.template_code).filter(Boolean),
       press: (pressRows ?? []).map((p: any) => ({ pos: p.sentiment_positive ?? 0, neg: p.sentiment_negative ?? 0 })),
       avgCrowd: careerStats.avgCrowdReaction,
