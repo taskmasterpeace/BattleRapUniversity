@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient, getUser } from '@/lib/db/server';
+import { deriveReputation, type RepBattle } from '@/lib/game/reputation';
 
 /**
  * Battler Career API Endpoint
@@ -134,6 +135,57 @@ export async function GET(
       };
     });
 
+    // 8. REPUTATION — "respect made concrete": labels that stick, a recognition
+    //    map, and signature wins. Needs opponent ratings (name weight) + the
+    //    battler's life-event history (chokes, crises, callouts, robberies).
+    const opponentIds = Array.from(
+      new Set(battleHistory.map((b: any) => b.opponentId).filter(Boolean))
+    );
+    const [{ data: oppRankings }, { data: lifeRows }] = await Promise.all([
+      opponentIds.length
+        ? supabase.from('rankings').select('battler_id, rating, tier').in('battler_id', opponentIds)
+        : Promise.resolve({ data: [] as any[] }),
+      supabase.from('battler_life_events').select('template_code').eq('battler_id', battlerId),
+    ]);
+    const oppRatingMap = new Map<string, { rating: number; tier: string | null }>(
+      (oppRankings ?? []).map((r: any) => [r.battler_id, { rating: r.rating, tier: r.tier ?? null }])
+    );
+
+    const repBattles: RepBattle[] = battleHistory.map((b: any) => {
+      const opp = oppRatingMap.get(b.opponentId);
+      return {
+        opponentId: b.opponentId,
+        opponentName: b.opponentName,
+        result: b.result,
+        score: b.score,
+        chokedRounds: b.chokedRounds ?? 0,
+        bestPeak: b.bestPeak ?? 0,
+        cityId: b.cityId ?? null,
+        city: b.city ?? null,
+        state: b.state ?? null,
+        opponentRating: opp?.rating,
+        opponentTier: opp?.tier,
+        date: b.date,
+      };
+    });
+
+    const hometownCity = battler.hometown as any;
+    const reputation = deriveReputation({
+      rating: ranking?.rating || 1200,
+      tier: ranking?.tier || null,
+      wins: careerStats.wins,
+      losses: careerStats.losses,
+      streak: ranking?.streak ?? 0,
+      battles: repBattles,
+      lifeEventCodes: (lifeRows ?? []).map((r: any) => r.template_code).filter(Boolean),
+      press: (pressRows ?? []).map((p: any) => ({ pos: p.sentiment_positive ?? 0, neg: p.sentiment_negative ?? 0 })),
+      avgCrowd: careerStats.avgCrowdReaction,
+      homeCityId: (Array.isArray(hometownCity) ? hometownCity[0] : hometownCity)?.id ?? null,
+      homeCity: (Array.isArray(hometownCity) ? hometownCity[0] : hometownCity)?.name ?? battler.region ?? null,
+      homeState: (Array.isArray(hometownCity) ? hometownCity[0] : hometownCity)?.state ?? null,
+      styleTags: Array.isArray(battler.style_tags) ? battler.style_tags : [],
+    });
+
     return NextResponse.json({
       battler: {
         id: battler.id,
@@ -166,6 +218,7 @@ export async function GET(
       wire: wireAccount ?? null,
       press: pressRows ?? [],
       developing,
+      reputation,
     });
 
   } catch (error: any) {
@@ -197,6 +250,8 @@ async function getBattleHistory(supabase: any, battlerId: string) {
       status,
       player_battler:battler_player_id(id, stage_name),
       ai_battler:battler_ai_id(id, stage_name),
+      venue:venue_id ( city:city_id ( id, name, state ) ),
+      league:league_id ( city:city_id ( id, name, state ) ),
       battle_rounds (
         round_index,
         battler_id,
@@ -204,7 +259,8 @@ async function getBattleHistory(supabase: any, battlerId: string) {
         average_score,
         peak_score,
         consistency_score,
-        crowd_reaction
+        crowd_reaction,
+        choked
       )
     `)
     .or(`battler_player_id.eq.${battlerId},battler_ai_id.eq.${battlerId}`)
@@ -229,6 +285,16 @@ async function getBattleHistory(supabase: any, battlerId: string) {
 
     const won = battle.winner_battler_id === battlerId;
 
+    // Where it went down: the booked venue's city, else the league's home city.
+    const venueCity = (Array.isArray(battle.venue) ? battle.venue[0] : battle.venue)?.city;
+    const leagueCity = (Array.isArray(battle.league) ? battle.league[0] : battle.league)?.city;
+    const city = (Array.isArray(venueCity) ? venueCity[0] : venueCity)
+      ?? (Array.isArray(leagueCity) ? leagueCity[0] : leagueCity)
+      ?? null;
+
+    const chokedRounds = myRounds.filter((r: any) => r.choked).length;
+    const bestPeak = myRounds.reduce((m: number, r: any) => Math.max(m, r.peak_score ?? 0), 0);
+
     return {
       battleId: battle.id,
       // When it was FOUGHT, not when it was booked. Battles can sit scheduled for
@@ -241,6 +307,12 @@ async function getBattleHistory(supabase: any, battlerId: string) {
       score: `${myRoundsWon}-${oppRoundsWon}`,
       myCrowdAvg: Math.round(myAvgCrowd),
       oppCrowdAvg: Math.round(oppAvgCrowd),
+      // Reputation inputs (recognition map + labels)
+      cityId: city?.id ?? null,
+      city: city?.name ?? null,
+      state: city?.state ?? null,
+      chokedRounds,
+      bestPeak,
       rounds: myRounds.map((r: any) => ({
         roundIndex: r.round_index,
         won: r.won,

@@ -8,6 +8,8 @@ import { formatDistanceToNow } from 'date-fns';
 import { GrudgeMeter, RematchDemandBar } from '@/components/grudge';
 import ChallengeButton from '@/components/battlers/ChallengeButton';
 import { CharacterSheet } from '@/components/battler/character-sheet';
+import { ReputationPanel } from '@/components/battler/ReputationPanel';
+import type { Reputation } from '@/lib/game/reputation';
 
 /**
  * Relative time for a COMPLETED battle. Battles finished early through the
@@ -147,6 +149,7 @@ interface CareerData {
     subcategory: string | null;
     hint: string;
   }>;
+  reputation?: Reputation;
 }
 
 type TabType = 'overview' | 'battles' | 'rivalries' | 'media';
@@ -440,6 +443,9 @@ function OverviewTab({ data }: { data: CareerData }) {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* REPUTATION — respect made concrete: labels, recognition map, resume names */}
+      {data.reputation && <ReputationPanel reputation={data.reputation} />}
+
       {/* Career Highlights */}
       <div className="lg:col-span-2 bg-[#2d2f35] border-2 border-[#3a3d44] p-6">
         <h2 className="text-2xl font-display font-black uppercase tracking-tighter mb-6 text-[#ff8c42]">Career Highlights</h2>
