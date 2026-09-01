@@ -329,20 +329,30 @@ export const SIMULATION_CONFIG = {
    * Bulk validation v2: 1.20x still creating 90% bodies for huge gaps
    * Bulk validation v5: 1.08x still creating 58% body rate (target: 20-30%)
    *
-   * UPDATED: 1.25 → 1.20 → 1.15 → 1.08 → 1.0 (REMOVED - let variance decide)
+   * UPDATED: 1.25 → 1.20 → 1.15 → 1.08 → 1.0 (removed)
+   * 2026-09-01: RE-ENABLED + scaled up. Owner law: "a god-tier must not lose
+   * to a low tier / less-skilled battler unless they choke." The old body-rate
+   * worry is now handled by the skill-gap CONTENT DAMPING below (content can't
+   * overturn a big skill gap), so favorites can be amplified again. Monte-Carlo
+   * (huge gap, opponent hard-countering): god beats low ~100%, beats mid ~85%.
+   * Tiers: gap>4 HUGE, gap>2.5 LARGE, gap>1.5 MEDIUM.
    */
-  ATTRIBUTE_GAP_HUGE_MULTIPLIER: 1.0,  // DOWN from 1.08 (Phase 2: remove multipliers)
+  ATTRIBUTE_GAP_HUGE_MULTIPLIER: 1.35,   // gap > 4  (e.g. god vs low/mid)
+  ATTRIBUTE_GAP_LARGE_MULTIPLIER: 1.22,  // gap > 2.5 (e.g. top vs mid)
+  ATTRIBUTE_GAP_MEDIUM_MULTIPLIER: 1.10, // gap > 1.5 (adjacent tiers)
 
   /**
-   * Multiplier for battlers with 2 point attribute advantage
-   *
-   * Bulk validation v1: 1.15x contributed to too few debatable battles
-   * Bulk validation v2: 1.12x still creating 53% bodies for medium gaps
-   * Bulk validation v5: 1.04x still creating 58% body rate (target: 20-30%)
-   *
-   * UPDATED: 1.15 → 1.12 → 1.10 → 1.04 → 1.0 (REMOVED - let variance decide)
+   * SKILL-GAP CONTENT DAMPING (2026-09-01). The content multiplier (content ×
+   * crowd × room) can swing a segment hard — great for same-tier fights, but it
+   * must NOT let a less-skilled battler counter their way past a real skill gap.
+   * Effective content = 1 + (finalMultiplier - 1) × influence, where
+   * influence = clamp(1 - |skillGap| × COEF, FLOOR, 1). Same tier (gap ~0) →
+   * influence 1 (content fully decides); huge gap → influence floors out (skill
+   * dominates). Tuned so a god never loses to a low off a counter, while a
+   * same-tier hard counter still wins ~99%.
    */
-  ATTRIBUTE_GAP_MEDIUM_MULTIPLIER: 1.0,  // DOWN from 1.04 (Phase 2: remove multipliers)
+  SKILL_GAP_CONTENT_DAMP_COEF: 0.22,
+  SKILL_GAP_CONTENT_DAMP_FLOOR: 0.30,
 
   // ============================================================================
   // MOMENTUM SYSTEM (NEW - BASED ON PLAYTEST FINDINGS)
@@ -443,8 +453,11 @@ export const SIMULATION_CONFIG = {
    * room-perfect) can compound toward ~2.4× per segment. This keeps a deserved
    * blowout huge without letting one round become a coin-flip on multipliers.
    */
-  FINAL_MULTIPLIER_MIN: 0.45,
-  FINAL_MULTIPLIER_MAX: 1.9,
+  // Narrowed 2026-09-01 (from 0.45/1.9): the wider range let a low-tier counter
+  // overturn a god-tier's skill. A hard counter still hits ~1.4x (content stays
+  // decisive same-tier); the skill-gap damping above stops it overturning tiers.
+  FINAL_MULTIPLIER_MIN: 0.72,
+  FINAL_MULTIPLIER_MAX: 1.42,
 
   // ============================================================================
   // ROUND JUDGING SYSTEM (NEW - FIX FOR TOURNAMENT ISSUES)

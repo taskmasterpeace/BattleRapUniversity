@@ -967,6 +967,21 @@ async function simulateRound(
   const aiPerformancePower =
     (aiAttrs.performance.stage_presence + aiAttrs.performance.crowd_control + aiAttrs.performance.delivery) / 3;
 
+  // SKILL-GAP CONTENT DAMPING (owner law 2026-09-01: a god-tier must not lose to
+  // a less-skilled battler off a content counter). The larger the skill gap, the
+  // less content can swing the segment — raw skill overwhelms a clever counter.
+  // Same tier → full content swing (content decides). Applied to BOTH battlers'
+  // final multipliers so a lopsided matchup dampens content for the whole bout.
+  const playerRelPower = league.writing_weight >= league.performance_weight ? playerWritingPower : playerPerformancePower;
+  const aiRelPower = league.writing_weight >= league.performance_weight ? aiWritingPower : aiPerformancePower;
+  const skillGap = Math.abs(playerRelPower - aiRelPower);
+  const contentInfluence = Math.max(
+    CONFIG.SKILL_GAP_CONTENT_DAMP_FLOOR,
+    Math.min(1, 1 - skillGap * CONFIG.SKILL_GAP_CONTENT_DAMP_COEF)
+  );
+  const dampedPlayerMult = 1 + (playerFinalMultiplier - 1) * contentInfluence;
+  const dampedAiMult = 1 + (aiFinalMultiplier - 1) * contentInfluence;
+
   // Simulate each segment
   for (let segmentIndex = 1; segmentIndex <= segmentsPerRound; segmentIndex++) {
     const playerSegment = simulateSegment(
@@ -1001,11 +1016,11 @@ async function simulateRound(
     // multiplier (<1) can still penalize below the base floor.
     const playerAdjustedScore = Math.min(
       CONFIG.SCORE_CEILING,
-      playerSegment.score * playerFinalMultiplier
+      playerSegment.score * dampedPlayerMult
     );
     const aiAdjustedScore = Math.min(
       CONFIG.SCORE_CEILING,
-      aiSegment.score * aiFinalMultiplier
+      aiSegment.score * dampedAiMult
     );
 
     playerSegmentScores.push(playerAdjustedScore);
@@ -1215,10 +1230,12 @@ export function simulateSegment(
     : performancePower - opponentPerformancePower;  // Main Stage: compare performance
 
   let gapMultiplier = 1.0;
-  if (relevantGap > 3) {
-    gapMultiplier = CONFIG.ATTRIBUTE_GAP_HUGE_MULTIPLIER;  // 1.25x
-  } else if (relevantGap > 2) {
-    gapMultiplier = CONFIG.ATTRIBUTE_GAP_MEDIUM_MULTIPLIER;  // 1.15x
+  if (relevantGap > 4) {
+    gapMultiplier = CONFIG.ATTRIBUTE_GAP_HUGE_MULTIPLIER;   // 1.35x — god vs low/mid
+  } else if (relevantGap > 2.5) {
+    gapMultiplier = CONFIG.ATTRIBUTE_GAP_LARGE_MULTIPLIER;  // 1.22x — top vs mid
+  } else if (relevantGap > 1.5) {
+    gapMultiplier = CONFIG.ATTRIBUTE_GAP_MEDIUM_MULTIPLIER; // 1.10x — adjacent tiers
   }
 
   // Add random variance (modified by badge effects)

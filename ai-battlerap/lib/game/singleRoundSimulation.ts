@@ -217,6 +217,20 @@ export async function simulateSingleRound(
       aiModified.performance.delivery) /
     3;
 
+  // SKILL-GAP CONTENT DAMPING (owner law 2026-09-01): the bigger the skill gap,
+  // the less a content counter can swing it — a god-tier can't be countered out
+  // of a win by a low-tier. Same tier → content fully decides. Mirrors the auto
+  // engine (simulation.ts).
+  const playerRelPower = league.writing_weight >= league.performance_weight ? playerWritingPower : playerPerformancePower;
+  const aiRelPower = league.writing_weight >= league.performance_weight ? aiWritingPower : aiPerformancePower;
+  const skillGap = Math.abs(playerRelPower - aiRelPower);
+  const contentInfluence = Math.max(
+    CONFIG.SKILL_GAP_CONTENT_DAMP_FLOOR,
+    Math.min(1, 1 - skillGap * CONFIG.SKILL_GAP_CONTENT_DAMP_COEF)
+  );
+  const dampedPlayerMult = 1 + (playerForecast.finalMultiplier - 1) * contentInfluence;
+  const dampedAiMult = 1 + (aiForecast.finalMultiplier - 1) * contentInfluence;
+
   // Simulate each segment
   for (let segmentIndex = 1; segmentIndex <= segmentsPerRound; segmentIndex++) {
     const playerSegment = simulateSegment(
@@ -252,11 +266,11 @@ export async function simulateSingleRound(
     // still drag a score below the base floor as an intended penalty.
     const playerAdjustedScore = Math.min(
       CONFIG.SCORE_CEILING,
-      playerSegment.score * playerForecast.finalMultiplier
+      playerSegment.score * dampedPlayerMult
     );
     const aiAdjustedScore = Math.min(
       CONFIG.SCORE_CEILING,
-      aiSegment.score * aiForecast.finalMultiplier
+      aiSegment.score * dampedAiMult
     );
 
     playerSegmentScores.push(playerAdjustedScore);
