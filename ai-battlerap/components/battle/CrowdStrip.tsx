@@ -8,8 +8,39 @@
 import familyRaw from '@/lib/crowd-family.json';
 import { VENUE_MIX, type Venue } from '@/lib/crowd-venue';
 
-type Member = { src: string; mood: string; demo: string; gender: string };
+type Member = {
+  src: string;
+  mood: string;
+  demo: string;
+  gender: string;
+  /** which canvas edges the ART is cut off on (auto-detected at install) —
+      owner law: a body cropped on the right lives at the right end of a row,
+      cropped left lives at the left end, cropped top rides the back row. */
+  crop?: string[];
+};
 const FAMILY = familyRaw as Member[];
+const CROP_BY_SRC = new Map(FAMILY.map((m) => [m.src, m.crop]));
+
+type Slot = { first: boolean; last: boolean; back: boolean; hasNext: boolean };
+
+/** Strict fit: every cut edge sits where the frame (or a covering neighbor) hides it. */
+function fitsSlot(crop: string[] | undefined, s: Slot): boolean {
+  if (!crop?.length) return true;
+  return crop.every(
+    (e) => (e === 'left' && s.first) || (e === 'right' && s.last) || (e === 'top' && s.back)
+  );
+}
+
+/** Soft fit: a cut right edge is also OK when the next head paints over it. */
+function fitsSlotSoft(crop: string[] | undefined, s: Slot): boolean {
+  if (!crop?.length) return true;
+  return crop.every(
+    (e) =>
+      (e === 'left' && s.first) ||
+      (e === 'right' && (s.last || s.hasNext)) ||
+      (e === 'top' && s.back)
+  );
+}
 
 export type { Venue };
 export { venueForLeague } from '@/lib/crowd-venue';
@@ -167,7 +198,7 @@ export default function CrowdStrip({
   /** Front row telegraphs hardest: sharpen weights so its moods read decisive. */
   const used = new Set<string>();
   let lastPick = '';
-  const pick = (sharpen = 1): string => {
+  const pick = (sharpen: number, slot: Slot): string => {
     const w =
       sharpen === 1
         ? weights
@@ -177,6 +208,11 @@ export default function CrowdStrip({
     let candidates = FAMILY.filter((m) => m.mood === mood && m.demo === demo);
     if (candidates.length === 0) candidates = FAMILY.filter((m) => m.mood === mood);
     if (candidates.length === 0) candidates = FAMILY;
+    // Crop pass (owner law): a body cut off on an edge only stands where that
+    // cut is hidden — frame edge, covering neighbor, or the top-cropped back row.
+    const strict = candidates.filter((c) => fitsSlot(c.crop, slot));
+    const soft = candidates.filter((c) => fitsSlotSoft(c.crop, slot));
+    candidates = strict.length > 0 ? strict : soft.length > 0 ? soft : candidates;
     // Variety pass (owner note: "we got two of the same"): prefer bodies not on
     // screen yet, and NEVER the same body twice side by side.
     const fresh = candidates.filter((c) => !used.has(c.src) && c.src !== lastPick);
@@ -224,8 +260,17 @@ export default function CrowdStrip({
         {rows.map((row, ri) => {
           const step = 100 / row.count;
           return Array.from({ length: row.count + 1 }, (_, i) => {
-            const src = pick(row.z === 3 ? 1.6 : 1);
-            const flip = rand() < 0.45;
+            const src = pick(row.z === 3 ? 1.6 : 1, {
+              first: i === 0,
+              last: i === row.count,
+              back: row.z === 1,
+              hasNext: i < row.count,
+            });
+            // Mirroring a side-cropped body would swap which edge is cut and
+            // break the placement law — only clean/top-cropped bodies flip.
+            const flipRoll = rand() < 0.45;
+            const flip =
+              flipRoll && !CROP_BY_SRC.get(src)?.some((e) => e === 'left' || e === 'right');
             const jitter = (rand() - 0.5) * 5; // % of height
             return (
               <img

@@ -15,7 +15,10 @@
     "src": "/sprites/crowd/hype/hype_003.png",
     "mood": "hype",
     "demo": "urban",
-    "gender": "female"
+    "gender": "female",
+    "crop": [
+      "top"
+    ]
   },
   {
     "src": "/sprites/crowd/hype/hype_004.png",
@@ -45,7 +48,10 @@
     "src": "/sprites/crowd/hype/hype_008.png",
     "mood": "hype",
     "demo": "urban",
-    "gender": "female"
+    "gender": "female",
+    "crop": [
+      "top"
+    ]
   },
   {
     "src": "/sprites/crowd/watch/watch_001.png",
@@ -69,7 +75,10 @@
     "src": "/sprites/crowd/unimpressed/unimpressed_001.png",
     "mood": "unimpressed",
     "demo": "urban",
-    "gender": "female"
+    "gender": "female",
+    "crop": [
+      "top"
+    ]
   },
   {
     "src": "/sprites/crowd/unimpressed/unimpressed_002.png",
@@ -81,7 +90,10 @@
     "src": "/sprites/crowd/unimpressed/unimpressed_003.png",
     "mood": "unimpressed",
     "demo": "urban",
-    "gender": "female"
+    "gender": "female",
+    "crop": [
+      "top"
+    ]
   },
   {
     "src": "/sprites/crowd/boo/boo_001.png",
@@ -105,19 +117,29 @@
     "src": "/sprites/crowd/hype/hype_009.png",
     "mood": "hype",
     "demo": "urban",
-    "gender": "female"
+    "gender": "female",
+    "crop": [
+      "left",
+      "top"
+    ]
   },
   {
     "src": "/sprites/crowd/hype/hype_010.png",
     "mood": "hype",
     "demo": "urban",
-    "gender": "female"
+    "gender": "female",
+    "crop": [
+      "left"
+    ]
   },
   {
     "src": "/sprites/crowd/watch/watch_004.png",
     "mood": "watch",
     "demo": "urban",
-    "gender": "male"
+    "gender": "male",
+    "crop": [
+      "top"
+    ]
   },
   {
     "src": "/sprites/crowd/watch/watch_005.png",
@@ -153,7 +175,10 @@
     "src": "/sprites/crowd/watch/watch_006.png",
     "mood": "watch",
     "demo": "non_urban",
-    "gender": "male"
+    "gender": "male",
+    "crop": [
+      "top"
+    ]
   },
   {
     "src": "/sprites/crowd/watch/watch_007.png",
@@ -171,25 +196,37 @@
     "src": "/sprites/crowd/unimpressed/unimpressed_005.png",
     "mood": "unimpressed",
     "demo": "non_urban",
-    "gender": "female"
+    "gender": "female",
+    "crop": [
+      "top"
+    ]
   },
   {
     "src": "/sprites/crowd/hype/hype_015.png",
     "mood": "hype",
     "demo": "foreign",
-    "gender": "male"
+    "gender": "male",
+    "crop": [
+      "left"
+    ]
   },
   {
     "src": "/sprites/crowd/hype/hype_016.png",
     "mood": "hype",
     "demo": "foreign",
-    "gender": "male"
+    "gender": "male",
+    "crop": [
+      "right"
+    ]
   },
   {
     "src": "/sprites/crowd/watch/watch_008.png",
     "mood": "watch",
     "demo": "foreign",
-    "gender": "female"
+    "gender": "female",
+    "crop": [
+      "top"
+    ]
   },
   {
     "src": "/sprites/crowd/watch/watch_009.png",
@@ -201,7 +238,10 @@
     "src": "/sprites/crowd/oooh/oooh_001.png",
     "mood": "oooh",
     "demo": "urban",
-    "gender": "male"
+    "gender": "male",
+    "crop": [
+      "left"
+    ]
   },
   {
     "src": "/sprites/crowd/oooh/oooh_002.png",
@@ -225,7 +265,10 @@
     "src": "/sprites/crowd/oooh/oooh_005.png",
     "mood": "oooh",
     "demo": "urban",
-    "gender": "female"
+    "gender": "female",
+    "crop": [
+      "top"
+    ]
   },
   {
     "src": "/sprites/crowd/oooh/oooh_006.png",
@@ -273,13 +316,20 @@
     "src": "/sprites/crowd/talk/talk_001.png",
     "mood": "talk",
     "demo": "urban",
-    "gender": "mixed"
+    "gender": "mixed",
+    "crop": [
+      "left",
+      "right"
+    ]
   },
   {
     "src": "/sprites/crowd/talk/talk_002.png",
     "mood": "talk",
     "demo": "urban",
-    "gender": "mixed"
+    "gender": "mixed",
+    "crop": [
+      "right"
+    ]
   },
   {
     "src": "/sprites/crowd/dismiss/dismiss_001.png",
@@ -303,7 +353,10 @@
     "src": "/sprites/crowd/nod/nod_006.png",
     "mood": "nod",
     "demo": "non_urban",
-    "gender": "male"
+    "gender": "male",
+    "crop": [
+      "right"
+    ]
   },
   {
     "src": "/sprites/crowd/laugh/laugh_004.png",
@@ -339,19 +392,28 @@
     "src": "/sprites/crowd/talk/talk_004.png",
     "mood": "talk",
     "demo": "non_urban",
-    "gender": "female"
+    "gender": "female",
+    "crop": [
+      "right"
+    ]
   },
   {
     "src": "/sprites/crowd/talk/talk_005.png",
     "mood": "talk",
     "demo": "urban",
-    "gender": "male"
+    "gender": "male",
+    "crop": [
+      "right"
+    ]
   },
   {
     "src": "/sprites/crowd/nod/nod_004.png",
     "mood": "nod",
     "demo": "urban",
-    "gender": "male"
+    "gender": "male",
+    "crop": [
+      "right"
+    ]
   },
   {
     "src": "/sprites/crowd/nod/nod_005.png",
@@ -369,7 +431,11 @@
     "src": "/sprites/crowd/dismiss/dismiss_005.png",
     "mood": "dismiss",
     "demo": "non_urban",
-    "gender": "female"
+    "gender": "female",
+    "crop": [
+      "left",
+      "right"
+    ]
   },
   {
     "src": "/sprites/crowd/boo/boo_004.png",
@@ -381,19 +447,31 @@
     "src": "/sprites/crowd/boo/boo_005.png",
     "mood": "boo",
     "demo": "non_urban",
-    "gender": "male"
+    "gender": "male",
+    "crop": [
+      "left",
+      "right"
+    ]
   },
   {
     "src": "/sprites/crowd/oooh/oooh_007.png",
     "mood": "oooh",
     "demo": "urban",
-    "gender": "male"
+    "gender": "male",
+    "crop": [
+      "left",
+      "right"
+    ]
   },
   {
     "src": "/sprites/crowd/hype/hype_017.png",
     "mood": "hype",
     "demo": "urban",
-    "gender": "male"
+    "gender": "male",
+    "crop": [
+      "left",
+      "right"
+    ]
   },
   {
     "src": "/sprites/crowd/watch/watch_010.png",

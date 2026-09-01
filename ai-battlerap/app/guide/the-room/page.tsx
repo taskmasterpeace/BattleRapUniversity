@@ -4,6 +4,7 @@
 // when it fires, and that the room reacts to WHAT lands, not just how hard.
 import Link from 'next/link';
 import familyRaw from '@/lib/crowd-family.json';
+import SeriesNav from '../SeriesNav';
 
 type Member = { src: string; mood: string; demo: string; gender: string };
 const FAMILY = familyRaw as Member[];
@@ -42,8 +43,8 @@ export default function ReadTheRoomPage() {
   return (
     <div className="fs min-h-screen bg-[#0F0F12] pb-20">
       <div className="max-w-5xl mx-auto px-6 pt-10">
-        <Link href="/dashboard" className="font-mono text-[12px] uppercase tracking-[0.25em] text-zinc-500 hover:text-[#F5731A]">
-          ← Back to dashboard
+        <Link href="/guide" className="font-mono text-[12px] uppercase tracking-[0.25em] text-zinc-500 hover:text-[#F5731A]">
+          ← Guide index
         </Link>
         <div className="mt-4 mb-2 flex items-end justify-between flex-wrap gap-3">
           <h1 style={{ fontFamily: 'var(--font-poster)', fontSize: 54, lineHeight: 1 }} className="text-zinc-100 uppercase">
@@ -121,6 +122,8 @@ export default function ReadTheRoomPage() {
             is judging you.
           </p>
         </div>
+
+        <SeriesNav current="/guide/the-room" />
       </div>
     </div>
   );
