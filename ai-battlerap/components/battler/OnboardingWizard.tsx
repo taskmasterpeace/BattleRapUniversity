@@ -15,6 +15,7 @@ import Tooltip from '@/components/onboarding/Tooltip';
 import { getCityBonus } from '@/lib/game/cityBonuses';
 import { portraitFillStyle } from '@/lib/sprite-crops';
 import spriteMetaRaw from '@/lib/game/characterSpriteMeta.json';
+import { HOMETOWN_OPTIONS } from '@/lib/data/hometownCities';
 
 // Owner ask 2026-08-31: "we gotta identify males or females so they know" —
 // every pool face carries a hand-classified gender tag.
@@ -158,6 +159,10 @@ export default function OnboardingWizard() {
   const [stageName, setStageName] = useState('');
   const [selectedAvatar, setSelectedAvatar] = useState<string | null>(null);
   const [selectedHomeCity, setSelectedHomeCity] = useState<string | null>(null);
+  // Detailed HOMETOWN (identity) — neighborhood-level, searchable. Separate from
+  // the gameplay home city. Stored as `region`. See docs/design/CORE_LOOP_AND_ERAS.md.
+  const [hometownQuery, setHometownQuery] = useState('');
+  const [selectedHometown, setSelectedHometown] = useState<string | null>(null);
   const [selectedLeague, setSelectedLeague] = useState('');
   const [allocatedAttributes, setAllocatedAttributes] = useState<AllocatedAttributes | null>(null);
   const [selectedStyles, setSelectedStyles] = useState<string[]>([]);
@@ -307,6 +312,8 @@ export default function OnboardingWizard() {
           stage_name: stageName,
           avatar_url: selectedAvatar,
           home_city_id: selectedHomeCity,
+          // Detailed hometown identity (neighborhood-level) → stored as region.
+          region: selectedHometown || undefined,
           primary_league_id: selectedLeague,
           style_tags: selectedStyles,
           allocated_attributes: allocatedAttributes,
@@ -563,11 +570,75 @@ export default function OnboardingWizard() {
                 </div>
               </div>
 
-              {/* Home City Selection */}
+              {/* Hometown — the detailed identity (neighborhood-level, searchable) */}
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <label className="block text-xs uppercase tracking-wider text-zinc-500 font-bold">
-                    Claim Your City *
+                    Where You Really From? *
+                  </label>
+                  <Tooltip content="Your hometown — down to the neighborhood. It's your identity on the mic, and the crowd rides different when you're on home turf.">
+                    <span className="text-zinc-500 cursor-help text-xs">ⓘ</span>
+                  </Tooltip>
+                </div>
+                <p className="font-mono text-[13px] uppercase tracking-wider text-zinc-500 mb-3">
+                  TYPE YOUR CITY OR NEIGHBORHOOD — MIAMI GARDENS, BED-STUY, 3RD WARD…
+                </p>
+                {selectedHometown ? (
+                  <div className="flex items-center justify-between bg-[#101114] border-2 border-[#ff8c42] px-4 py-3">
+                    <span className="font-display font-black uppercase tracking-wide text-zinc-100">
+                      {selectedHometown}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => { setSelectedHometown(null); setHometownQuery(''); }}
+                      className="text-xs font-mono uppercase tracking-wider text-zinc-500 hover:text-[#ff8c42]"
+                    >
+                      Change
+                    </button>
+                  </div>
+                ) : (
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={hometownQuery}
+                      onChange={(e) => setHometownQuery(e.target.value)}
+                      placeholder="Start typing your hometown…"
+                      className="w-full bg-[#101114] border-2 border-[#3a3d44] focus:border-[#ff8c42] outline-none px-4 py-3 text-zinc-100 font-display uppercase tracking-wide"
+                    />
+                    {hometownQuery.trim().length >= 2 && (
+                      <div className="absolute z-20 left-0 right-0 mt-1 max-h-64 overflow-y-auto bg-[#101114] border-2 border-[#3a3d44] shadow-[4px_4px_0_rgba(0,0,0,.5)]">
+                        {HOMETOWN_OPTIONS
+                          .filter((o) => o.search.includes(hometownQuery.trim().toLowerCase()))
+                          .slice(0, 40)
+                          .map((o) => (
+                            <button
+                              key={o.label}
+                              type="button"
+                              onClick={() => { setSelectedHometown(o.label); setHometownQuery(''); }}
+                              className="w-full text-left px-4 py-2.5 hover:bg-[#ff8c42]/10 border-b border-[#2E2F35] last:border-0"
+                            >
+                              <span className="text-zinc-100 font-display font-bold uppercase text-sm">
+                                {o.neighborhood ?? o.city}
+                              </span>
+                              {o.neighborhood && (
+                                <span className="text-zinc-500 text-xs ml-2">{o.city}, {o.state}</span>
+                              )}
+                            </button>
+                          ))}
+                        {HOMETOWN_OPTIONS.filter((o) => o.search.includes(hometownQuery.trim().toLowerCase())).length === 0 && (
+                          <p className="px-4 py-3 text-zinc-500 text-sm font-mono uppercase">No match — try the city name</p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Home City Selection — the gameplay city (leagues + venues) */}
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <label className="block text-xs uppercase tracking-wider text-zinc-500 font-bold">
+                    Claim Your Scene *
                   </label>
                   <Tooltip content="Your hometown is your identity. It's where your career starts, who you can recruit, and where the local crowd rides for you.">
                     <span className="text-zinc-500 cursor-help text-xs">ⓘ</span>
