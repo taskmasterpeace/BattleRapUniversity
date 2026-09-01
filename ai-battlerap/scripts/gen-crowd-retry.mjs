@@ -23,13 +23,13 @@ const styleImage = {
 };
 
 async function submit(item) {
-  const description = `battle rap crowd member, waist-up pixel art bust, ${item.desc}, streetwear, vibrant colors, hard black outlines, flat bright green chroma key background, no text`;
+  const description = `zoomed-out pixel art of ONE battle rap crowd member from the waist up, whole head fully visible with empty space above it, torso and both arms in frame, ${item.desc}, hard black outlines, vibrant colors, flat bright green chroma key background, no text, no purple clothing`;
   const res = await fetch(`${BASE}/generate-image-v2`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${API_KEY}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
       description,
-      image_size: { width: 112, height: 128 },
+      image_size: { width: 224, height: 256 },
       style_image: styleImage,
       style_options: { color_palette: true, outline: true, detail: true, shading: true },
     }),
