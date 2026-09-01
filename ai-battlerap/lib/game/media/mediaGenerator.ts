@@ -44,6 +44,10 @@ export interface PodcastEpisode {
   topicIds: string[];
   segments: PodcastSegment[];
   thumbnailConcept: string;
+  /** For the 1:1 episode cover. */
+  story?: MainStory;
+  winnerName?: string;
+  loserName?: string;
 }
 
 export interface VideoCard {
@@ -246,6 +250,9 @@ export function mediaFromBattle(ctx: BattleMediaContext): MediaItem[] {
 
   const where = ctx.venue ? ` — "${ctx.winner.name} vs ${ctx.loser.name}" ${ctx.venue}` : ctx.city ? ` in ${ctx.city}` : '';
   const podcast = composeEpisode({ seed: ctx.battleId, topicIds, subjects, slots, where });
+  podcast.story = ctx.mainStory;
+  podcast.winnerName = ctx.winner.name;
+  podcast.loserName = ctx.loser.name;
 
   const leadTopic = PODCAST_TOPICS[STORY_TO_TOPIC[ctx.mainStory] ?? 'battle_recap'];
   const vidSeconds = 300 + (hash(ctx.battleId + 'v') % 600);

@@ -20,6 +20,7 @@ import {
   BellIcon,
   BookOpenIcon,
   PlayCircleIcon,
+  MicrophoneIcon,
   Cog6ToothIcon,
   Bars3Icon,
   XMarkIcon,
@@ -64,6 +65,7 @@ const DRAWER_GROUPS: { title: string; items: NavItem[] }[] = [
     items: [
       { href: '/wire', label: 'The Wire', icon: BellIcon },
       { href: '/cliphive', label: 'ClipHive', icon: PlayCircleIcon },
+      { href: '/booth', label: 'The Booth', icon: MicrophoneIcon },
       { href: '/watch', label: 'Watch', icon: FireIcon },
       { href: '/leaderboard', label: 'Power Rankings', icon: TrophyIcon },
       { href: '/leagues', label: 'Leagues', icon: TrophyIcon },
