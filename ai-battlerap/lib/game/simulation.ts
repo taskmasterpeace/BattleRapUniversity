@@ -934,12 +934,14 @@ async function simulateRound(
   const playerEffectivenessMultiplier = playerForecast.averageEffectiveness;
   const playerCrowdPreference = playerForecast.crowdPreference;
   const playerContextModifier = playerForecast.contextModifier;
-  const playerFinalMultiplier = playerForecast.finalMultiplier;
+  const clampFinal = (m: number) =>
+    Math.max(CONFIG.FINAL_MULTIPLIER_MIN, Math.min(CONFIG.FINAL_MULTIPLIER_MAX, m));
+  const playerFinalMultiplier = clampFinal(playerForecast.finalMultiplier);
 
   const aiEffectivenessMultiplier = aiForecast.averageEffectiveness;
   const aiCrowdPreference = aiForecast.crowdPreference;
   const aiContextModifier = aiForecast.contextModifier;
-  const aiFinalMultiplier = aiForecast.finalMultiplier;
+  const aiFinalMultiplier = clampFinal(aiForecast.finalMultiplier);
 
   // =====================================================
   // SEGMENT SIMULATION

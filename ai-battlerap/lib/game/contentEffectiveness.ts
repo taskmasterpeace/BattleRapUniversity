@@ -634,9 +634,43 @@ export function getEffectivenessColor(multiplier: EffectivenessMultiplier): stri
   return 'text-zinc-400';
 }
 
+// =====================================================
+// AGGREGATION TUNING (content effectiveness -> round multiplier)
+// =====================================================
+// NOTE: these constants live here rather than in lib/game/config.ts because
+// this file's edit domain excludes config.ts. Good candidates to migrate into
+// CONFIG later (e.g. CONFIG.CONTENT_EDGE_SPREAD).
+//
+// WHY THIS CHANGED: the OLD aggregation took the MEAN of every cross-pair of
+// your ~6 picks vs their ~6 (~36 pairs). One genuine 2.0 counter among 36
+// neutral-ish pairs moved the result only ~+3%, so a "hard counter" was almost
+// invisible and content "barely mattered". The NEW model scores COVERAGE:
+// what fraction of YOUR arsenal actually lands a counter, minus the fraction
+// that walks into a hard counter. A real counter now produces a felt swing,
+// and it stays bounded and clamped.
+export const CONTENT_EDGE_SPREAD = 0.6; // swing away from 1.0 at full coverage
+export const CONTENT_MULT_FLOOR = 0.55; // walked into everything they brought
+export const CONTENT_MULT_CEIL = 1.6; // hard-countered everything they brought
+
 /**
- * Calculate total effectiveness multiplier across multiple content types
- * Used when a battler uses multiple content types in a round
+ * Content effectiveness multiplier for a full round of picks vs the opponent's.
+ *
+ * COVERAGE model (replaces the old full-cross-product mean): for each of YOUR
+ * picks we ask two yes/no questions against their whole set —
+ *   - does it LAND (super-effective 2.0 vs at least one of their picks)?
+ *   - is it EXPOSED (countered 0.5 by at least one of their picks)?
+ * A pick can be both (a wash). We then reward the FRACTION of your arsenal that
+ * lands and penalize the FRACTION that's exposed. Because both terms are
+ * fractions of your own picks they are naturally in [0,1], so the result is
+ * inherently bounded before the explicit clamp.
+ *
+ * Feel (with the tuning above):
+ *   - hard-counter their main style  -> ~1.30-1.55x
+ *   - neutral / mirror mix           -> ~1.00x
+ *   - walk into their counters       -> ~0.60-0.70x
+ *
+ * Signature is preserved so existing callers (simulation, the content API
+ * route, forecasting) keep working — only the math inside changed.
  */
 export function calculateAverageEffectiveness(
   yourContentTypes: (ContentType | DeliveryType | PerformanceType)[],
@@ -646,17 +680,28 @@ export function calculateAverageEffectiveness(
     return 1.0; // Neutral if no content
   }
 
-  let totalMultiplier = 0;
-  let matchupCount = 0;
+  let landingPicks = 0; // your picks that beat at least one of their picks (2.0)
+  let exposedPicks = 0; // your picks countered by at least one of their picks (0.5)
 
   for (const yourContent of yourContentTypes) {
+    let lands = false;
+    let exposed = false;
     for (const oppContent of opponentContentTypes) {
-      totalMultiplier += getEffectiveness(yourContent, oppContent);
-      matchupCount++;
+      const eff = getEffectiveness(yourContent, oppContent);
+      if (eff === 2.0) lands = true;
+      else if (eff === 0.5) exposed = true;
     }
+    if (lands) landingPicks++;
+    if (exposed) exposedPicks++;
   }
 
-  return totalMultiplier / matchupCount;
+  const n = yourContentTypes.length;
+  const offense = landingPicks / n; // 0..1 of your arsenal that lands a counter
+  const defense = exposedPicks / n; // 0..1 of your arsenal that gets countered
+  const edge = offense - defense; // -1..+1 net coverage edge
+
+  const multiplier = 1.0 + edge * CONTENT_EDGE_SPREAD;
+  return Math.max(CONTENT_MULT_FLOOR, Math.min(CONTENT_MULT_CEIL, multiplier));
 }
 
 /**

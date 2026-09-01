@@ -69,6 +69,10 @@ export default function RoundSelectPage() {
   const [battle, setBattle] = useState<BattleWithDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  // After a round is penned we STOP and offer a choice instead of force-marching
+  // into the next round (owner: "don't make me organize it all the second I get
+  // booked — I've got other things going on"). Prep is resumable across days.
+  const [justLocked, setJustLocked] = useState(false);
   const [selection, setSelection] = useState<ContentSelection>({
     contentTypes: [],
     deliveryTypes: [],
@@ -125,13 +129,13 @@ export default function RoundSelectPage() {
       });
 
       if (response.ok) {
-        // Write-first flow: pen all three rounds, THEN take the stage.
         if (roundNum < 3) {
-          router.push(`/battle/${battleId}/round/${roundNum + 1}/select`);
-          // Re-mount state for the next round's blank page.
-          setSelection({ contentTypes: [], deliveryTypes: [], performanceTypes: [] });
+          // Round penned — STOP and let the player choose to keep writing or
+          // come back later. No forced marathon.
+          setJustLocked(true);
           setSubmitting(false);
         } else {
+          // Third round down — all three are on paper, take the stage.
           router.push(`/battle/${battleId}/round/1/results`);
         }
       } else {
@@ -220,6 +224,49 @@ export default function RoundSelectPage() {
     );
   }
 
+  // Round penned — the "keep going or come back later" beat. Prep is resumable,
+  // so writing all three rounds is never a forced single sitting.
+  if (justLocked) {
+    return (
+      <div className="fs min-h-screen bg-[#0F0F12] flex items-center justify-center px-4">
+        <div className="max-w-md w-full bg-[#101114] border-2 border-black shadow-[6px_6px_0_rgba(0,0,0,.55)] p-7" style={{ borderTop: '5px solid #35C46B' }}>
+          <p className="font-mono text-[12px] uppercase tracking-[0.3em] text-[#35C46B]">On paper</p>
+          <h1 style={{ fontFamily: 'var(--font-poster)', fontSize: 34, lineHeight: 1 }} className="text-zinc-100 uppercase mt-1">
+            Round {roundNum} is written
+          </h1>
+          <p className="text-[14px] text-zinc-400 mt-2 mb-6">
+            {roundNum} of 3 rounds penned. Keep writing while it&apos;s flowing, or handle life and
+            come back — your prep is saved and battle night waits until you&apos;re ready.
+          </p>
+          <div className="space-y-3">
+            <button
+              onClick={() => {
+                setSelection({ contentTypes: [], deliveryTypes: [], performanceTypes: [] });
+                setJustLocked(false);
+                router.push(`/battle/${battleId}/round/${roundNum + 1}/select`);
+              }}
+              className="w-full py-3 bg-[#ff8c42] hover:bg-[#ff9d5c] text-black font-display font-black uppercase tracking-wider transition-all"
+            >
+              Write Round {roundNum + 1} now →
+            </button>
+            <Link
+              href={`/battle/${battleId}/prep`}
+              className="block w-full py-3 text-center bg-[#17181C] border-2 border-[#3a3d44] hover:border-zinc-500 text-zinc-200 font-display font-black uppercase tracking-wider transition-all"
+            >
+              Save &amp; come back later
+            </Link>
+          </div>
+          <Link
+            href="/dashboard"
+            className="inline-block mt-4 text-xs text-zinc-500 hover:text-zinc-300 font-display font-bold uppercase tracking-wider"
+          >
+            ← Back to Dashboard
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#18191c]">
       {/* Header — battle-night masthead: you in the red corner, them in the blue */}
@@ -234,7 +281,7 @@ export default function RoundSelectPage() {
             </span>
           </div>
           <h1 className="text-center text-2xl md:text-3xl font-display font-black uppercase tracking-tighter text-white mb-1">
-            THE PEN — WRITE ROUND {roundNum}
+            BATTLE PREP · WRITE ROUND {roundNum}
           </h1>
           <p className="text-center font-mono text-[12px] uppercase tracking-[0.25em] text-zinc-500 mb-4">
             All three rounds go on paper BEFORE the battle · rebuttals get called live

@@ -181,6 +181,13 @@ export async function simulateSingleRound(
     context
   );
 
+  // Rail the combined content multiplier (see FINAL_MULTIPLIER_* in config) so a
+  // perfect-storm forecast is a huge deserved edge, not a runaway coin-flip.
+  const clampFinal = (m: number) =>
+    Math.max(CONFIG.FINAL_MULTIPLIER_MIN, Math.min(CONFIG.FINAL_MULTIPLIER_MAX, m));
+  playerForecast.finalMultiplier = clampFinal(playerForecast.finalMultiplier);
+  aiForecast.finalMultiplier = clampFinal(aiForecast.finalMultiplier);
+
   // Simulate segments
   const segments: any[] = [];
   const playerSegmentScores: number[] = [];

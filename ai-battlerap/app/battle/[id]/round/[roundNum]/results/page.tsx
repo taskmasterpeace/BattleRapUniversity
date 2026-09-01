@@ -158,6 +158,10 @@ export default function RoundResultsPage() {
   // hidden), then a big commit button. Matches the house battle-surface style.
   if (!playerRound || !aiRound) {
     const fmt = (s: string) => s.replace(/_/g, ' ');
+    // Round 1 is different: nothing's been said IN the battle yet, so a round-1
+    // rebuttal answers the PRE-BATTLE CALLOUT (the promo / press / grudge), not a
+    // bar from last round. Rounds 2-3 flip what the opponent actually just said.
+    const isRound1 = roundNum === 1;
     const lockedRows = lockedContent
       ? [
           { label: 'CONTENT', items: lockedContent.content_types },
@@ -267,33 +271,88 @@ export default function RoundResultsPage() {
             </div>
           )}
 
-          {/* What you locked in */}
+          {/* YOUR GAME PLAN — see the round you crafted, as an authored card,
+              before you take it to the stage (owner: "I want to VISUALLY see
+              what I put into a round"). */}
           {lockedRows.length > 0 && (
-            <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-6 mb-8">
-              <div className="text-[13px] text-zinc-500 font-display font-black uppercase tracking-widest mb-4">
-                WHAT YOU'RE WALKING IN WITH
+            <div
+              className="fs bg-[#101114] border-2 border-black p-6 mb-8 shadow-[4px_4px_0_rgba(0,0,0,.45)]"
+              style={{ borderTop: '4px solid #F5731A' }}
+            >
+              <div className="flex items-baseline justify-between gap-2 flex-wrap mb-1">
+                <h2
+                  className="uppercase text-[#ff8c42] leading-none"
+                  style={{ fontFamily: 'var(--font-poster)', fontSize: 30, textShadow: '2px 2px 0 #000' }}
+                >
+                  Your Game Plan
+                </h2>
+                <span className="font-mono text-[11px] uppercase tracking-[0.25em] text-zinc-500">
+                  Round {roundNum} · as written
+                </span>
               </div>
+              <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-zinc-600 mb-5">
+                The round you crafted — this is what you take to the stage
+              </p>
               <div className="space-y-3">
-                {lockedRows.map(({ label, items }) => (
-                  <div key={label} className="flex flex-col sm:flex-row sm:items-center gap-2">
-                    <div className="text-[12px] text-zinc-500 font-display font-black uppercase tracking-widest w-24 shrink-0">
-                      {label}
+                {lockedRows.map(({ label, items }) => {
+                  const edge =
+                    label === 'CONTENT' ? '#F5731A' : label === 'DELIVERY' ? '#E7B23C' : '#35C46B';
+                  return (
+                    <div
+                      key={label}
+                      className="bg-[#17181C] border-2 border-black p-4"
+                      style={{ borderLeft: `5px solid ${edge}` }}
+                    >
+                      <div
+                        className="font-mono text-[11px] uppercase tracking-[0.25em] mb-2.5"
+                        style={{ color: edge }}
+                      >
+                        {label}
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {items!.map((it, idx) => {
+                          // The audible swaps the LAST content slot (see simulate route)
+                          // — strike it so the player SEES which written bar he's flipping.
+                          const flipping =
+                            label === 'CONTENT' && audible !== 'none' && idx === items!.length - 1;
+                          return (
+                            <span
+                              key={it}
+                              className={`px-3 py-1.5 border-2 border-black uppercase shadow-[2px_2px_0_rgba(0,0,0,.35)] ${
+                                flipping ? 'opacity-40 line-through' : ''
+                              }`}
+                              style={{
+                                fontFamily: 'var(--font-poster)',
+                                fontSize: 16,
+                                background: '#0F0F12',
+                                color: '#F4F4F6',
+                              }}
+                            >
+                              {fmt(it)}
+                            </span>
+                          );
+                        })}
+                        {label === 'CONTENT' && audible !== 'none' && (
+                          <span
+                            className="px-3 py-1.5 border-2 uppercase shadow-[2px_2px_0_rgba(0,0,0,.35)]"
+                            style={{
+                              fontFamily: 'var(--font-poster)',
+                              fontSize: 16,
+                              background: 'rgba(231,178,60,.14)',
+                              color: '#E7B23C',
+                              borderColor: '#E7B23C',
+                            }}
+                          >
+                            ⚡ {audible === 'rebuttals' ? 'REBUTTAL' : 'FREESTYLE'}
+                          </span>
+                        )}
+                      </div>
                     </div>
-                    <div className="flex flex-wrap gap-2">
-                      {items!.map((it) => (
-                        <span
-                          key={it}
-                          className="px-2.5 py-1 bg-[#18191c] border border-[#3a3d44] text-zinc-200 text-xs font-display font-bold uppercase tracking-wide"
-                        >
-                          {fmt(it)}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
-              <div className="mt-4 pt-4 border-t border-[#3a3d44] text-[13px] text-zinc-500 font-display font-bold uppercase tracking-wide">
-                {battle.ai_battler?.stage_name}'s cards stay hidden until the reveal.
+              <div className="mt-5 pt-4 border-t-2 border-black font-mono text-[11px] uppercase tracking-[0.15em] text-zinc-500">
+                {battle.ai_battler?.stage_name}&apos;s cards stay hidden until the reveal.
               </div>
             </div>
           )}
@@ -302,14 +361,27 @@ export default function RoundResultsPage() {
           {lockedRows.length > 0 && (
             <div className="fs bg-[#101114] border-2 border-black p-5 mb-8 shadow-[3px_3px_0_rgba(0,0,0,.4)]" style={{ borderTop: '3px solid #E7B23C' }}>
               <div className="font-mono text-[11px] uppercase tracking-[0.25em] text-zinc-500 mb-3">
-                THE AUDIBLE · FLIP THE PEN IN THE MOMENT
+                THE AUDIBLE · {isRound1 ? 'ANSWER THE CALLOUT' : 'CALL IT LIVE'}
               </div>
               <div className="grid grid-cols-3 gap-2">
                 {(
                   [
                     { v: 'none', label: 'STICK TO THE PAPER', hint: 'Perform it as written' },
-                    { v: 'rebuttals', label: 'REBUTTALS', hint: 'Flip what they just said back at them' },
-                    { v: 'freestyles', label: 'FREESTYLE', hint: 'Off the top — show it can’t be written' },
+                    {
+                      v: 'rebuttals',
+                      label: 'REBUTTALS',
+                      // Round 1: there's no "last round" to flip — you answer the build-up.
+                      hint: isRound1
+                        ? 'Answer the callout — flip the build-up back on them'
+                        : 'Flip what they said last round',
+                    },
+                    {
+                      v: 'freestyles',
+                      label: 'FREESTYLE',
+                      hint: isRound1
+                        ? 'Off the top — read the room, not a script'
+                        : 'Off the top — show it can’t be written',
+                    },
                   ] as const
                 ).map((opt) => (
                   <button
@@ -330,9 +402,17 @@ export default function RoundResultsPage() {
                   </button>
                 ))}
               </div>
+              {/* Round 1 build-up framing — makes the round-1 rebuttal coherent */}
+              {isRound1 && (
+                <p className="font-mono text-[10px] uppercase tracking-wide text-zinc-500 mt-3 leading-relaxed">
+                  Round 1 — nothing&apos;s been said in the battle yet. A rebuttal here answers
+                  THE CALLOUT: the promo, the press, the grudge that built this up.
+                </p>
+              )}
               {audible !== 'none' && (
                 <p className="font-mono text-[11px] uppercase tracking-wider text-[#E7B23C] mt-3">
-                  ⚡ One written slot becomes {audible.toUpperCase()} this round
+                  ⚡ One written slot becomes {audible === 'rebuttals' ? 'A REBUTTAL' : 'A FREESTYLE'} this round
+                  {isRound1 && audible === 'rebuttals' ? ' — aimed at the build-up' : ''}
                 </p>
               )}
             </div>

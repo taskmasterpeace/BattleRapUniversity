@@ -16,8 +16,12 @@ export type SpectatorSide = {
 
 export type ReplayRound = {
   roundIndex: number;
-  a: { avg: number; peak: number; crowd: number; choke: boolean; haymaker: boolean };
-  b: { avg: number; peak: number; crowd: number; choke: boolean; haymaker: boolean };
+  // `content` (the round's content types, strongest first) is optional so this
+  // stays backward-compatible — when a caller supplies it, the momentum read names
+  // the approach that drove the round ("took it on PERSONALS"); without it the read
+  // falls back to the stat story (haymaker / room / steadier / choke).
+  a: { avg: number; peak: number; crowd: number; choke: boolean; haymaker: boolean; content?: string[] };
+  b: { avg: number; peak: number; crowd: number; choke: boolean; haymaker: boolean; content?: string[] };
   winner: 'a' | 'b';
 };
 
@@ -42,6 +46,34 @@ export default function SpectatorReplay({
   const bWon = !aWon && !!winnerId;
   const aRounds = rounds.filter((r) => r.winner === 'a').length;
   const bRounds = rounds.length - aRounds;
+
+  // THE READ — teach the tape. Say WHO took each round and HOW, from the same
+  // signals the round carries (haymaker landed, room swung it, steadier bar-for-
+  // bar, or the opponent choked it away). Names the driving content when a caller
+  // passes it. This is what turns a wall of bars into "here's what worked".
+  const readMomentum = (r: ReplayRound): { text: string; edge: string } => {
+    const win = r.winner === 'a' ? r.a : r.b;
+    const lose = r.winner === 'a' ? r.b : r.a;
+    const winName = r.winner === 'a' ? a.name : b.name;
+    const loseName = r.winner === 'a' ? b.name : a.name;
+    const winContent = (r.winner === 'a' ? r.a.content : r.b.content) ?? [];
+    const lead = winContent.length ? winContent[0].replace(/_/g, ' ') : null;
+    const crowdGap = win.crowd - lose.crowd;
+    const edge = r.winner === 'a' ? '#E23A2E' : '#2F7DD1';
+    let text: string;
+    if (win.haymaker) {
+      text = lead ? `${winName} took it on a haymaker off ${lead}` : `${winName} took it on a haymaker`;
+    } else if (lose.choke) {
+      text = `${winName} took it — ${loseName} choked it away`;
+    } else if (crowdGap >= 12) {
+      text = lead ? `${winName} won the room with ${lead}` : `${winName} won the room`;
+    } else if (win.peak <= lose.peak) {
+      text = `${winName} edged it on the steadier round`;
+    } else {
+      text = lead ? `${winName} took it on ${lead}` : `${winName} took it bar-for-bar`;
+    }
+    return { text, edge };
+  };
 
   return (
     <div className="bg-[#101114] border-2 border-[#3a3d44] p-5 md:p-10">
@@ -71,6 +103,7 @@ export default function SpectatorReplay({
           // got topped didn't land. (Chokes show for either battler regardless.)
           const landedHaymaker =
             r.a.haymaker && r.winner === 'a' ? a.name : r.b.haymaker && r.winner === 'b' ? b.name : null;
+          const read = readMomentum(r);
           return (
             <div key={r.roundIndex} className="animate-fade-in" style={{ animationDelay: `${i * 1500}ms` }}>
               <div className="flex justify-between items-center mb-1 gap-2 flex-wrap">
@@ -95,6 +128,16 @@ export default function SpectatorReplay({
                     </span>
                   )}
                 </div>
+              </div>
+              {/* THE READ — who took the round and how (teaches what worked) */}
+              <div className="mb-2 flex items-center gap-2 flex-wrap">
+                <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-zinc-600">The Read</span>
+                <span
+                  className="inline-flex items-center px-2.5 py-1 border-2 border-black bg-[#0F0F12] shadow-[2px_2px_0_rgba(0,0,0,.4)] font-display font-black text-[13px] uppercase tracking-wide text-zinc-100"
+                  style={{ borderLeft: `4px solid ${read.edge}` }}
+                >
+                  {read.text}
+                </span>
               </div>
               <div className="flex items-center gap-2 mb-1">
                 <span className="w-20 md:w-28 font-mono text-[12px] uppercase truncate text-[#ff6a5e]">{a.name}</span>

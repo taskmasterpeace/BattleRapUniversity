@@ -161,7 +161,7 @@ export default function BattleControlPage() {
           {/* Camp readout */}
           <div className="fs mt-5 bg-[#17181C] border-2 border-black px-5 py-4">
             <p className="font-mono text-[11px] text-zinc-500 uppercase tracking-[0.3em] mb-2.5">
-              ◤ CAMP YOU'RE WALKING IN WITH
+              ◤ THE PREP YOU BANKED
             </p>
             <div className="flex gap-5 flex-wrap">
               {(['research', 'writing', 'performance', 'life', 'rest'] as const).map((focus) => (
@@ -274,7 +274,7 @@ export default function BattleControlPage() {
               <Icon name="bolt" size={36} className="text-zinc-300 mb-3" />
               <h3 className="text-2xl font-display font-black uppercase tracking-tight mb-2">AUTO</h3>
               <p className="text-sm text-zinc-400 font-display font-bold uppercase tracking-wide">
-                Trust the camp — your prep and badges call the shots
+                Trust your prep — your banked days and badges call the shots
               </p>
             </div>
 

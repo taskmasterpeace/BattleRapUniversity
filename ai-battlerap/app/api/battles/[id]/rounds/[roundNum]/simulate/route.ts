@@ -258,6 +258,51 @@ export async function POST(
     });
   }
 
+  // ROUND-1 REBUTTAL ANSWERS THE CALLOUT (owner insight, 2026-09-01: "if you
+  // rebuttal the first round, you're rebutting something that happened BEFORE the
+  // battle"). Nothing's been said in the battle yet, so a round-1 rebuttal draws
+  // its juice from the PRE-BATTLE build-up — the grudge intensity and any promo/
+  // press — instead of a prior round's bars. We can't touch the sim's angle math
+  // from here, so the callout lands through the pressure channel we already own:
+  // the callback pops the room (player crowd up) and rattles the opponent hearing
+  // their own build-up flipped (their stress/stumble up), scaled by how heated it
+  // was. Rounds 2-3 keep the plain audible (they flip what was actually just said).
+  let calloutApplied: { strength: number; grudge: number; promo: number } | null = null;
+  if (roundIndex === 1 && audible === 'rebuttals') {
+    // battler_relationships is keyed by the sorted battler pair (CHECK a_id < b_id).
+    const [aId, bId] =
+      battle.battler_player_id < battle.battler_ai_id
+        ? [battle.battler_player_id, battle.battler_ai_id]
+        : [battle.battler_ai_id, battle.battler_player_id];
+    const [{ data: rel }, { data: promo }] = await Promise.all([
+      supabase
+        .from('battler_relationships')
+        .select('intensity')
+        .eq('battler_a_id', aId)
+        .eq('battler_b_id', bId)
+        .maybeSingle(),
+      supabase
+        .from('promotion_events')
+        .select('crowd_perception_delta')
+        .eq('battle_id', battleId),
+    ]);
+
+    const grudge = Math.max(0, Math.min(100, Number(rel?.intensity ?? 0)));
+    // How much promo actually happened for this battle (sum of the sway it moved).
+    const promoHeat = Math.min(
+      100,
+      (promo ?? []).reduce((sum: number, p: any) => sum + Math.abs(Number(p.crowd_perception_delta ?? 0)), 0)
+    );
+    // There's ALWAYS some build-up (the challenge itself), so floor it — a round-1
+    // rebuttal is never inert, just weaker when there's no real beef to flip.
+    const calloutStrength = Math.max(20, grudge, promoHeat); // 0-100
+
+    pressure.playerCrowdDelta += Math.round(calloutStrength * 0.1); // up to +10 — the callback lands
+    pressure.aiStressDelta += Math.round(calloutStrength * 0.08); // up to +8 — their own words, flipped
+    pressure.aiStumbleDelta += Number((calloutStrength * 0.0003).toFixed(4)); // up to +0.03 stumble
+    calloutApplied = { strength: calloutStrength, grudge, promo: promoHeat };
+  }
+
   // Simulate the round
   try {
     const result = await simulateSingleRound(
@@ -282,6 +327,8 @@ export async function POST(
         pressureMove,
         bumpResponse: bumpResponse ?? null,
         audible: audible ?? null,
+        // Round-1 rebuttal → build-up ammo (grudge/promo). Null otherwise.
+        callout: calloutApplied,
         player: {
           avg: result.playerRound?.average_score,
           peak: result.playerRound?.peak_score,

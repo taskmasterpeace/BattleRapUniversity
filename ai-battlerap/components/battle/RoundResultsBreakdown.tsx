@@ -15,6 +15,28 @@ import {
 
 const RED = '#E23A2E';
 const BLUE = '#2F7DD1';
+const GOLD = '#E7B23C';
+
+// battle_segments carries the per-segment content the sim actually assigned
+// (primary_content_type / delivery_type / content_effectiveness / crowd_reaction).
+// Those columns come back on SELECT * but aren't declared on the BattleSegment
+// type — read them here to tell the player which of THEIR picks drove the tape.
+type SegmentWithContent = BattleSegment & {
+  primary_content_type?: string | null;
+  secondary_content_type?: string | null;
+  delivery_type?: string | null;
+  performance_type?: string | null;
+  content_effectiveness?: number | null;
+  crowd_reaction?: number | null;
+};
+
+type LandedTone = 'haymaker' | 'room' | 'flat';
+interface LandedRead {
+  tone: LandedTone;
+  content: string; // raw content-type id
+  headline: string;
+  metric: string;
+}
 
 interface RoundResultsBreakdownProps {
   playerRound: BattleRound & {
@@ -249,6 +271,80 @@ export function RoundResultsBreakdown({
 
   const playerWonRound = winner === 'player';
 
+  // WHAT LANDED — tie the tape back to the content the player brought. Reads the
+  // per-segment content the sim assigned so the player SEES his picks pay off (or
+  // not): which beat landed the haymaker, which one won the room, which fell off.
+  const readWhatLanded = (
+    segs: SegmentWithContent[],
+    oppSegs: SegmentWithContent[]
+  ): LandedRead[] => {
+    if (!segs.some((s) => s.primary_content_type)) return [];
+    const reads: LandedRead[] = [];
+
+    // Biggest moment — highest-scoring segment. It "landed" as a haymaker only if
+    // the peak roll also topped the opponent's same segment (a peak that got
+    // answered didn't land — same rule the replay uses).
+    const peak = [...segs].sort((a, b) => b.segment_score - a.segment_score)[0];
+    if (peak?.primary_content_type) {
+      const peakOpp = oppSegs.find((s) => s.segment_index === peak.segment_index);
+      const landed =
+        (peak.event_flags?.includes('haymaker') ?? false) &&
+        (!peakOpp || peak.segment_score >= peakOpp.segment_score);
+      reads.push({
+        tone: 'haymaker',
+        content: peak.primary_content_type,
+        headline: landed ? 'Landed the haymaker' : 'Your biggest moment',
+        metric: `${peak.segment_score.toFixed(1)} · segment ${peak.segment_index}`,
+      });
+    }
+
+    // Won the room — loudest crowd segment, when it's a different beat than the peak.
+    const room = [...segs].sort((a, b) => (b.crowd_reaction ?? 0) - (a.crowd_reaction ?? 0))[0];
+    if (
+      room?.primary_content_type &&
+      (room.crowd_reaction ?? 0) >= 55 &&
+      room.segment_index !== peak?.segment_index
+    ) {
+      reads.push({
+        tone: 'room',
+        content: room.primary_content_type,
+        headline: 'Won the room',
+        metric: `${Math.round(room.crowd_reaction ?? 0)}% crowd · segment ${room.segment_index}`,
+      });
+    }
+
+    // Fell off — the choke/stumble beat, and what he was on when it happened.
+    const flat =
+      segs.find((s) => s.event_flags?.includes('choke') && s.primary_content_type) ??
+      segs.find((s) => s.event_flags?.includes('stumble') && s.primary_content_type);
+    if (flat?.primary_content_type) {
+      const isChoke = flat.event_flags?.includes('choke');
+      reads.push({
+        tone: 'flat',
+        content: flat.primary_content_type,
+        headline: isChoke ? 'Choked it off' : 'Stumbled on it',
+        metric: `segment ${flat.segment_index}`,
+      });
+    }
+
+    return reads;
+  };
+
+  const playerLanded = readWhatLanded(
+    playerSegments as SegmentWithContent[],
+    aiSegments as SegmentWithContent[]
+  );
+  const aiPeakSeg = [...(aiSegments as SegmentWithContent[])].sort(
+    (a, b) => b.segment_score - a.segment_score
+  )[0];
+
+  const landedTone = (tone: LandedTone) =>
+    tone === 'haymaker'
+      ? { edge: GOLD, glyph: '★', label: 'HAYMAKER' }
+      : tone === 'room'
+        ? { edge: '#F5731A', glyph: '◆', label: 'THE ROOM' }
+        : { edge: RED, glyph: '✗', label: 'FELL OFF' };
+
   return (
     <div className="fs space-y-8">
       {/* Verdict stamp */}
@@ -378,6 +474,81 @@ export function RoundResultsBreakdown({
           })}
         </div>
       </div>
+
+      {/* WHAT LANDED — the player's picks, told back to him on the tape */}
+      {playerLanded.length > 0 && (
+        <div
+          className="fs bg-[#101114] border-2 border-black p-6 shadow-[4px_4px_0_rgba(0,0,0,.45)]"
+          style={{ borderTop: `4px solid ${GOLD}` }}
+        >
+          <div className="flex items-baseline justify-between mb-1 gap-2 flex-wrap">
+            <h3 className="text-2xl font-display font-black uppercase tracking-tighter text-[#ff8c42]">
+              What Landed
+            </h3>
+            <span className="font-mono text-[11px] uppercase tracking-[0.25em] text-zinc-500">
+              {playerName}&apos;s picks on the tape
+            </span>
+          </div>
+          <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-zinc-600 mb-5">
+            Which of the content you brought actually drove the round
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {playerLanded.map((r, i) => {
+              const t = landedTone(r.tone);
+              return (
+                <div
+                  key={i}
+                  className="bg-[#17181C] border-2 border-black p-4 shadow-[2px_2px_0_rgba(0,0,0,.4)]"
+                  style={{ borderLeft: `5px solid ${t.edge}` }}
+                >
+                  <div className="flex items-center gap-2 mb-2.5">
+                    <span style={{ color: t.edge, fontFamily: 'var(--font-poster)', fontSize: 18 }}>
+                      {t.glyph}
+                    </span>
+                    <span
+                      className="font-mono text-[10px] uppercase tracking-[0.22em]"
+                      style={{ color: t.edge }}
+                    >
+                      {t.label}
+                    </span>
+                  </div>
+                  <div
+                    className="uppercase leading-none text-zinc-100"
+                    style={{ fontFamily: 'var(--font-poster)', fontSize: 24, textShadow: '1px 1px 0 #000' }}
+                  >
+                    {formatTypeName(r.content)}
+                  </div>
+                  <div className="font-display font-black uppercase tracking-wide text-sm text-zinc-300 mt-2">
+                    {r.headline}
+                  </div>
+                  <div className="font-mono text-[11px] uppercase tracking-wide text-zinc-500 mt-1">
+                    {r.metric}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          {aiPeakSeg?.primary_content_type && (
+            <div className="mt-4 pt-4 border-t-2 border-black flex items-center gap-2 flex-wrap">
+              <span
+                className="font-mono text-[11px] uppercase tracking-[0.22em]"
+                style={{ color: BLUE }}
+              >
+                {aiName} leaned on
+              </span>
+              <span
+                className="uppercase text-zinc-200"
+                style={{ fontFamily: 'var(--font-poster)', fontSize: 18 }}
+              >
+                {formatTypeName(aiPeakSeg.primary_content_type)}
+              </span>
+              <span className="font-mono text-[11px] uppercase tracking-wide text-zinc-500">
+                — their peak {aiPeakSeg.segment_score.toFixed(1)}
+              </span>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Stat plates */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

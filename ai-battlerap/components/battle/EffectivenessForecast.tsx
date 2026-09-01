@@ -35,6 +35,25 @@ const CONTEXT_LABELS: Record<ScoringContext, string> = {
   on_cam: 'On Cam',
 };
 
+// Flyer palette (no purple — banned hues 270-320 never appear here).
+const PALETTE = {
+  charcoal: '#0F0F12',
+  charcoal2: '#17181C',
+  orange: '#F5731A',
+  green: '#35C46B',
+  red: '#E23A2E',
+};
+
+// Tone a multiplier by how far it sits from neutral (1.0). Green = it helps,
+// red = it hurts, and a calm charcoal-grey for an even trade.
+function toneFor(value: number): { text: string; bg: string; border: string } {
+  if (value >= 1.25) return { text: PALETTE.green, bg: 'rgba(53,196,107,0.15)', border: 'rgba(53,196,107,0.50)' };
+  if (value >= 1.08) return { text: PALETTE.green, bg: 'rgba(53,196,107,0.09)', border: 'rgba(53,196,107,0.30)' };
+  if (value > 0.92) return { text: '#D8DAE0', bg: 'rgba(255,255,255,0.05)', border: 'rgba(255,255,255,0.16)' };
+  if (value > 0.75) return { text: PALETTE.orange, bg: 'rgba(245,115,26,0.13)', border: 'rgba(245,115,26,0.45)' };
+  return { text: PALETTE.red, bg: 'rgba(226,58,46,0.15)', border: 'rgba(226,58,46,0.50)' };
+}
+
 export function EffectivenessForecast({
   yourSelection,
   opponentSelection,
@@ -48,22 +67,6 @@ export function EffectivenessForecast({
     leagueName,
     context
   );
-
-  const getMultiplierColor = (value: number) => {
-    if (value >= 1.5) return 'text-green-500';
-    if (value >= 1.2) return 'text-green-400';
-    if (value >= 0.9) return 'text-zinc-300';
-    if (value >= 0.7) return 'text-orange-400';
-    return 'text-red-500';
-  };
-
-  const getMultiplierBg = (value: number) => {
-    if (value >= 1.5) return 'bg-green-900/30 border-green-600';
-    if (value >= 1.2) return 'bg-green-900/20 border-green-700';
-    if (value >= 0.9) return 'bg-zinc-800 border-[#3a3d44]';
-    if (value >= 0.7) return 'bg-orange-900/20 border-orange-700';
-    return 'bg-red-900/30 border-red-600';
-  };
 
   const formatTypeName = (type: ContentType | DeliveryType | PerformanceType): string => {
     // Try each type getter
@@ -106,73 +109,115 @@ export function EffectivenessForecast({
     );
   }
 
+  // The three DISTINCT levers, in the order they multiply together.
+  const levers = [
+    {
+      key: 'picks',
+      label: 'Your picks vs theirs',
+      value: forecast.averageEffectiveness,
+      blurb: 'above 1x = you countered their style',
+    },
+    {
+      key: 'crowd',
+      label: 'This crowd',
+      value: forecast.crowdPreference,
+      blurb: `how hard the ${leagueName} crowd rides for your style`,
+    },
+    {
+      key: 'room',
+      label: 'The room',
+      value: forecast.contextModifier,
+      blurb: `${CONTEXT_LABELS[context] ?? context} — does your material travel here`,
+    },
+  ];
+
+  const finalTone = toneFor(forecast.finalMultiplier);
+
   return (
     <div className={`${glass} p-6`}>
       <h3 className="text-lg font-display font-black uppercase tracking-wider text-white mb-1">
         How tonight hits
       </h3>
       <p className="text-[13px] text-zinc-400 mb-4">
-        The read on this round — your picks, this crowd, this room.
+        Three separate reads on this round — they multiply into one number.
       </p>
 
-      {/* Multiplier Stats */}
-      <div className="grid grid-cols-2 gap-4 mb-6">
-        {/* Average Effectiveness */}
-        <div className={`p-4 border-2 backdrop-blur-sm ${getMultiplierBg(forecast.averageEffectiveness)}`}>
-          <div className="text-[12px] text-zinc-300 font-bold uppercase tracking-wider mb-1">Your picks vs theirs</div>
-          <div className={`text-3xl font-black ${getMultiplierColor(forecast.averageEffectiveness)}`}>
-            {forecast.averageEffectiveness.toFixed(2)}x
-          </div>
-          <div className="text-[12px] text-zinc-400 mt-1">above 1x = you countered their style</div>
-        </div>
+      {/* THREE DISTINCT LEVERS */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+        {levers.map((lever) => {
+          const tone = toneFor(lever.value);
+          return (
+            <div
+              key={lever.key}
+              className="p-4 backdrop-blur-sm rounded-[10px]"
+              style={{ backgroundColor: tone.bg, border: `1px solid ${tone.border}` }}
+            >
+              <div className="text-[11px] text-zinc-300 font-bold uppercase tracking-wider mb-1">
+                {lever.label}
+              </div>
+              <div className="text-3xl font-black" style={{ color: tone.text }}>
+                {lever.value.toFixed(2)}x
+              </div>
+              <div className="text-[12px] text-zinc-400 mt-1 leading-snug">{lever.blurb}</div>
+            </div>
+          );
+        })}
+      </div>
 
-        {/* Crowd Preference */}
-        <div className={`p-4 border-2 backdrop-blur-sm ${getMultiplierBg(forecast.crowdPreference)}`}>
-          <div className="text-[12px] text-zinc-300 font-bold uppercase tracking-wider mb-1">This crowd</div>
-          <div className={`text-3xl font-black ${getMultiplierColor(forecast.crowdPreference)}`}>
-            {forecast.crowdPreference.toFixed(2)}x
+      {/* THE COMBINED FINAL — shown as the actual multiplication so it's never a
+          mystery where the number came from. */}
+      <div
+        className="p-4 rounded-[10px] backdrop-blur-sm"
+        style={{ backgroundColor: finalTone.bg, border: `1px solid ${finalTone.border}` }}
+      >
+        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+          <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 font-mono text-sm text-zinc-300">
+            {levers.map((lever, i) => (
+              <span key={lever.key} className="flex items-baseline gap-2">
+                {i > 0 && <span className="text-zinc-500">×</span>}
+                <span style={{ color: toneFor(lever.value).text }} className="font-bold">
+                  {lever.value.toFixed(2)}
+                </span>
+              </span>
+            ))}
+            <span className="text-zinc-500">=</span>
           </div>
-          <div className="text-[12px] text-zinc-400 mt-1">how hard the {leagueName} crowd rides for your style</div>
+          <div className="flex items-baseline gap-3">
+            <span className="text-[11px] text-zinc-300 font-bold uppercase tracking-wider">
+              Tonight you hit at
+            </span>
+            <span className="text-4xl font-black leading-none" style={{ color: finalTone.text }}>
+              {forecast.finalMultiplier.toFixed(2)}x
+            </span>
+          </div>
         </div>
-
-        {/* Context Modifier */}
-        <div className={`p-4 border-2 backdrop-blur-sm ${getMultiplierBg(forecast.contextModifier)}`}>
-          <div className="text-[12px] text-zinc-300 font-bold uppercase tracking-wider mb-1">The room</div>
-          <div className={`text-3xl font-black ${getMultiplierColor(forecast.contextModifier)}`}>
-            {forecast.contextModifier.toFixed(2)}x
-          </div>
-          <div className="text-[12px] text-zinc-400 mt-1">
-            {CONTEXT_LABELS[context] ?? context} — does your material travel here
-          </div>
-        </div>
-
-        {/* Final Multiplier */}
-        <div className={`p-4 border-2 backdrop-blur-sm ${getMultiplierBg(forecast.finalMultiplier)}`}>
-          <div className="text-[12px] text-zinc-300 font-bold uppercase tracking-wider mb-1">Tonight you hit at</div>
-          <div className={`text-4xl font-black ${getMultiplierColor(forecast.finalMultiplier)}`}>
-            {forecast.finalMultiplier.toFixed(2)}x
-          </div>
-          <div className="text-[12px] text-zinc-400 mt-1">all three combined</div>
+        <div className="text-[12px] text-zinc-400 mt-2">
+          your picks × this crowd × the room = how hard your whole round lands
         </div>
       </div>
 
       {/* Matchup Analysis */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
         {/* Strong Against */}
         {forecast.strongAgainst.length > 0 && (
-          <div className="bg-green-950/20 border-2 border-green-800/30 p-4">
+          <div
+            className="p-4 rounded-[10px]"
+            style={{ backgroundColor: 'rgba(53,196,107,0.10)', border: '1px solid rgba(53,196,107,0.30)' }}
+          >
             <div className="flex items-center gap-2 mb-2">
-              <span className="text-lg">✓</span>
-              <span className="text-sm font-bold uppercase tracking-wide text-green-400">You caught them slipping</span>
+              <span className="text-lg" style={{ color: PALETTE.green }}>✓</span>
+              <span className="text-sm font-bold uppercase tracking-wide" style={{ color: PALETTE.green }}>
+                You caught them slipping
+              </span>
             </div>
             <div className="space-y-1">
               {forecast.strongAgainst.slice(0, 3).map((type, idx) => (
-                <div key={idx} className="text-xs text-green-300">
+                <div key={idx} className="text-xs text-zinc-200">
                   • {formatTypeName(type)}
                 </div>
               ))}
               {forecast.strongAgainst.length > 3 && (
-                <div className="text-xs text-green-400/70">
+                <div className="text-xs text-zinc-400">
                   +{forecast.strongAgainst.length - 3} more
                 </div>
               )}
@@ -182,19 +227,24 @@ export function EffectivenessForecast({
 
         {/* Weak Against */}
         {forecast.weakAgainst.length > 0 && (
-          <div className="bg-red-950/20 border-2 border-red-800/30 p-4">
+          <div
+            className="p-4 rounded-[10px]"
+            style={{ backgroundColor: 'rgba(226,58,46,0.10)', border: '1px solid rgba(226,58,46,0.32)' }}
+          >
             <div className="flex items-center gap-2 mb-2">
-              <span className="text-lg">✗</span>
-              <span className="text-sm font-bold uppercase tracking-wide text-red-400">You&apos;re walking into theirs</span>
+              <span className="text-lg" style={{ color: PALETTE.red }}>✗</span>
+              <span className="text-sm font-bold uppercase tracking-wide" style={{ color: PALETTE.red }}>
+                You&apos;re walking into theirs
+              </span>
             </div>
             <div className="space-y-1">
               {forecast.weakAgainst.slice(0, 3).map((type, idx) => (
-                <div key={idx} className="text-xs text-red-300">
+                <div key={idx} className="text-xs text-zinc-200">
                   • {formatTypeName(type)}
                 </div>
               ))}
               {forecast.weakAgainst.length > 3 && (
-                <div className="text-xs text-red-400/70">
+                <div className="text-xs text-zinc-400">
                   +{forecast.weakAgainst.length - 3} more
                 </div>
               )}
@@ -204,7 +254,7 @@ export function EffectivenessForecast({
 
         {/* Neutral Message */}
         {forecast.strongAgainst.length === 0 && forecast.weakAgainst.length === 0 && (
-          <div className="col-span-2 bg-white/[0.04] backdrop-blur-sm border border-white/10 p-4 text-center">
+          <div className="sm:col-span-2 bg-white/[0.04] backdrop-blur-sm border border-white/10 p-4 text-center rounded-[10px]">
             <span className="text-sm text-zinc-300 font-display font-bold uppercase tracking-wide">
               Even matchup — nobody caught nobody slipping
             </span>
@@ -213,11 +263,14 @@ export function EffectivenessForecast({
       </div>
 
       {/* Explanation */}
-      <div className="mt-4 p-3 bg-white/[0.04] backdrop-blur-sm border border-white/10">
+      <div className="mt-4 p-3 bg-white/[0.04] backdrop-blur-sm border border-white/10 rounded-[10px]">
         <p className="text-[13px] text-zinc-300">
-          <strong className="text-orange-400">Read it like this:</strong> green means you counter
-          what they brought (2x = you caught them slipping), gray is an even trade, red means you
-          walked into their lane. The big number is how hard your whole round hits tonight.
+          <strong style={{ color: PALETTE.orange }}>Read it like this:</strong> the three
+          reads are separate — <em className="not-italic text-zinc-100">your picks vs theirs</em>,{' '}
+          <em className="not-italic text-zinc-100">this crowd&apos;s taste</em>, and{' '}
+          <em className="not-italic text-zinc-100">whether it travels in this room</em>. Green helps
+          you, red hurts you, grey is an even trade. Multiply the three and you get how hard your
+          whole round lands tonight.
         </p>
       </div>
     </div>

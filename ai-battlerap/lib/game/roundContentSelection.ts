@@ -21,6 +21,7 @@ import {
 
 import {
   calculateCrowdPreference,
+  calculateAverageCrowdPreference,
   getDominantDemographic,
 } from './crowdDemographics';
 
@@ -353,16 +354,22 @@ export function calculateEffectivenessForecast(
     ...opponentSelection.performanceTypes,
   ];
 
-  // Calculate average effectiveness
+  // LEVER 1 — Effectiveness: your picks vs theirs. Coverage model (see
+  // contentEffectiveness.calculateAverageEffectiveness): rewards the fraction of
+  // your arsenal that lands a hard counter, penalizes what walks into theirs.
   const averageEffectiveness = calculateAverageEffectiveness(allYourTypes, allOpponentTypes);
 
-  // Calculate crowd preference
-  const crowdPreference = calculateAverageContextModifier(allYourTypes, context, leagueName);
+  // LEVER 2 — This crowd: does THIS league's crowd ride for your styles? Derived
+  // from the league's crowd demographics / profile. (Previously this box was a
+  // BUG: it re-ran the CONTEXT modifier, so finalMultiplier squared context and
+  // the real crowd system was never used.)
+  const crowdPreference = calculateAverageCrowdPreference(allYourTypes, leagueName);
 
-  // Calculate context modifier
-  const contextModifier = calculateAverageContextModifier(allYourTypes, context);
+  // LEVER 3 — The room: does your material travel in this venue (in-building vs
+  // PPV vs on-cam), including any league-specific room adjustment?
+  const contextModifier = calculateAverageContextModifier(allYourTypes, context, leagueName);
 
-  // Final multiplier
+  // Three DISTINCT levers combine into the round's content multiplier.
   const finalMultiplier = averageEffectiveness * crowdPreference * contextModifier;
 
   // Find strong and weak matchups

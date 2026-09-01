@@ -436,6 +436,16 @@ export const SIMULATION_CONFIG = {
    */
   SCORE_CEILING: 11.0,  // NEW - May adjust based on bulk testing
 
+  /**
+   * Rail on the combined content forecast multiplier (content × crowd × room)
+   * after the 2026-09-01 "make content matter" rework. The individual terms are
+   * already clamped, but a perfect storm (hard-counter + crowd-perfect +
+   * room-perfect) can compound toward ~2.4× per segment. This keeps a deserved
+   * blowout huge without letting one round become a coin-flip on multipliers.
+   */
+  FINAL_MULTIPLIER_MIN: 0.45,
+  FINAL_MULTIPLIER_MAX: 1.9,
+
   // ============================================================================
   // ROUND JUDGING SYSTEM (NEW - FIX FOR TOURNAMENT ISSUES)
   // ============================================================================

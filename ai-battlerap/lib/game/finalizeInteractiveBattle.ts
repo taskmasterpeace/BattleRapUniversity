@@ -229,6 +229,84 @@ export async function finalizeInteractiveBattle(
     console.error('Post-battle career effects failed (interactive):', careerError);
   }
 
+  // 6b. Life events — fire the WORKING System A (lib/game/lifeEvents.ts), the
+  // SAME path auto battles use in simulation.ts (~L1672). Interactive finalize
+  // previously only ran the DEAD System B (applyPostBattleCareerEffects →
+  // evaluatePostBattleEvents, which queries an `event_type` column + a
+  // `prep_pattern_tracking` table no migration ever creates), so "Locked In"
+  // battles fired ZERO of these battle_result life events. Added alongside — not
+  // replacing — System B, so both modes now behave identically. Logging must
+  // never break finalize, so the whole block is guarded.
+  try {
+    const { triggerLifeEventsForBattle } = await import('@/lib/game/lifeEvents');
+
+    const { data: attrRows } = await supabase
+      .from('battler_attributes')
+      .select('*')
+      .in('battler_id', [battle.battler_player_id, battle.battler_ai_id]);
+    const playerAttributes =
+      attrRows?.find((a: any) => a.battler_id === battle.battler_player_id) || {};
+    const aiAttributes =
+      attrRows?.find((a: any) => a.battler_id === battle.battler_ai_id) || {};
+
+    const playerChoked = playerRounds.some((r: any) => r.choked);
+    const aiChoked = aiRounds.some((r: any) => r.choked);
+    const playerAvgCrowdReaction =
+      playerRounds.length > 0
+        ? playerRounds.reduce((s: number, r: any) => s + (r.crowd_reaction || 0), 0) /
+          playerRounds.length
+        : 0;
+    const aiAvgCrowdReaction =
+      aiRounds.length > 0
+        ? aiRounds.reduce((s: number, r: any) => s + (r.crowd_reaction || 0), 0) /
+          aiRounds.length
+        : 0;
+
+    await triggerLifeEventsForBattle(
+      supabase,
+      {
+        battleId,
+        winnerId,
+        playerBattlerId: battle.battler_player_id,
+        aiBattlerId: battle.battler_ai_id,
+        playerRoundsWon,
+        aiRoundsWon,
+        playerChoked,
+        aiChoked,
+        playerAvgCrowdReaction,
+        aiAvgCrowdReaction,
+      },
+      {
+        battlerId: battle.battler_player_id,
+        rating: playerRanking.rating,
+        wins: playerWon ? playerRanking.wins + 1 : playerRanking.wins,
+        losses: playerWon ? playerRanking.losses : playerRanking.losses + 1,
+        streak: playerWon
+          ? Math.max(0, playerRanking.streak) + 1
+          : Math.min(0, playerRanking.streak) - 1,
+        attributes: playerAttributes,
+        publicKnowledge: playerAttributes.public_knowledge ?? 0,
+      },
+      {
+        battlerId: battle.battler_ai_id,
+        rating: aiRanking.rating,
+        wins: !playerWon ? aiRanking.wins + 1 : aiRanking.wins,
+        losses: !playerWon ? aiRanking.losses : aiRanking.losses + 1,
+        streak: !playerWon
+          ? Math.max(0, aiRanking.streak) + 1
+          : Math.min(0, aiRanking.streak) - 1,
+        attributes: aiAttributes,
+        publicKnowledge: aiAttributes.public_knowledge ?? 0,
+      }
+    );
+  } catch (lifeEventError) {
+    console.error(
+      'Failed to trigger life events (interactive) for battle',
+      battleId,
+      lifeEventError
+    );
+  }
+
   // 7. Tournament bracket — mirror the auto engine. Without this, a tournament
   // battle played through the interactive round-by-round flow left its bracket
   // row 'scheduled' with no winner: the bracket never showed who won, the player's
@@ -244,6 +322,11 @@ export async function finalizeInteractiveBattle(
       console.error('Failed to update tournament bracket for interactive battle', battleId, err);
     }
   }
+
+  // NOTE: the career clock is advanced inside applyPostBattleCareerEffects
+  // (runBattle.ts), which BOTH this interactive finalizer (step 6) and the auto
+  // engine call — so the game_day tick happens exactly once per battle in both
+  // modes. Do NOT advance again here or interactive battles double-count.
 
   const { logGameEvent } = await import('@/lib/log/gameLog');
   await logGameEvent(

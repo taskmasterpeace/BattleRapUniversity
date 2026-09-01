@@ -59,13 +59,13 @@ export default function TheCampPage() {
         </Link>
         <div className="mt-4 mb-2 flex items-end justify-between flex-wrap gap-3">
           <h1 style={{ fontFamily: 'var(--font-poster)', fontSize: 54, lineHeight: 1 }} className="text-zinc-100 uppercase">
-            The Camp
+            Battle Prep
           </h1>
           <span className="font-mono text-[12px] uppercase tracking-[0.3em] text-[#F5731A]">How to play · 02</span>
         </div>
         <p className="text-[15px] text-zinc-400 max-w-2xl mb-10">
           From the day you accept to the day prep LOCKS, every day is a choice. Paint your days across five
-          lanes — the battle you perform is the camp you ran.
+          lanes — the battle you perform is the prep you put in.
         </p>
 
         {/* THE FIVE LANES */}

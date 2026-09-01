@@ -232,7 +232,7 @@ export default function BattleAnalysis({
     } else if (totalPrepDays <= 3) {
       points.push(
         playerWon
-          ? `You pulled it off on light prep (${totalPrepDays} days) — imagine with a full camp.`
+          ? `You pulled it off on light prep (${totalPrepDays} days) — imagine with a full prep run.`
           : `Limited prep (${totalPrepDays} days) left performance on the table.`
       );
     }

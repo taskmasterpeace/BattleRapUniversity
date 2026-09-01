@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 export const GUIDE_SERIES = [
   { href: '/guide/the-room', num: '01', title: 'READ THE ROOM' },
-  { href: '/guide/the-camp', num: '02', title: 'THE CAMP' },
+  { href: '/guide/the-camp', num: '02', title: 'BATTLE PREP' },
   { href: '/guide/battle-night', num: '03', title: 'BATTLE NIGHT' },
   { href: '/guide/the-rooms', num: '04', title: 'THE ROOMS' },
 ] as const;

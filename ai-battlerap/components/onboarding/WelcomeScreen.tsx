@@ -22,7 +22,7 @@ const PILLARS = [
   {
     icon: 'brain' as const,
     title: 'STRATEGY, NOT TYPING',
-    body: 'You never write bars. You build the battler, run the camp, and call the shots — the engine fights the fight.',
+    body: 'You never write bars. You build the battler, run your prep, and call the shots — the engine fights the fight.',
   },
   {
     icon: 'target' as const,
@@ -38,8 +38,8 @@ const PILLARS = [
 
 const MECHANICS: { icon: React.ComponentProps<typeof Icon>['name']; strong: string; rest: string }[] = [
   { icon: 'swords', strong: 'Battle offers', rest: 'promoters come to you — pick your fights' },
-  { icon: 'pen', strong: 'Training camp', rest: 'paint your prep days: research, writing, performance, rest' },
-  { icon: 'mic', strong: 'Battle night', rest: 'call every round yourself or trust the camp' },
+  { icon: 'pen', strong: 'Battle prep', rest: 'paint your prep days: research, writing, performance, rest' },
+  { icon: 'mic', strong: 'Battle night', rest: 'call every round yourself or trust your prep' },
   { icon: 'chart', strong: 'Progression', rest: 'attributes grow from real performance' },
   { icon: 'flame', strong: 'Life & beef', rest: 'events and rivalries shape the story' },
   { icon: 'cash', strong: 'The bag', rest: 'purses, crew payroll, travel money' },

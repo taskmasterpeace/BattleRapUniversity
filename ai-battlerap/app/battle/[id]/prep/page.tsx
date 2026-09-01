@@ -439,12 +439,12 @@ export default function PrepPage({ params }: { params: Promise<{ id: string }> }
         {/* Scouting Report — research days unlock opponent intel */}
         <ScoutingReport battleId={id} refreshKey={scoutRefresh} />
 
-        {/* THE CAMP PIPELINE — how a battle actually gets built (research →
+        {/* BATTLE PREP PIPELINE — how a battle actually gets built (research →
             write → memorize → practice), with the real mechanics under each
             phase. The calendar below paints days into these phases. */}
         <div className="bg-[#101114] border-2 border-[#3a3d44] p-5 md:p-6 mb-6 md:mb-8">
           <h3 className="font-display font-black text-sm uppercase tracking-[0.25em] text-zinc-500 mb-4">
-            ◤ THE CAMP — HOW A BATTLE GETS BUILT
+            ◤ BATTLE PREP — HOW A BATTLE GETS BUILT
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
             {[
@@ -490,7 +490,7 @@ export default function PrepPage({ params }: { params: Promise<{ id: string }> }
         <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-6 md:p-8 mb-6 md:mb-8">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-2">
             <h3 className="font-display font-black text-xl uppercase tracking-wider text-zinc-300">
-              TRAINING CAMP — {totalPrepDays} DAY{totalPrepDays === 1 ? '' : 'S'}
+              BATTLE PREP — {totalPrepDays} DAY{totalPrepDays === 1 ? '' : 'S'}
             </h3>
             {!isLocked && (
               <div className="flex gap-2">
@@ -535,7 +535,7 @@ export default function PrepPage({ params }: { params: Promise<{ id: string }> }
 
           {/* Day chips — the canvas */}
           <p className="text-xs text-zinc-500 font-display font-black uppercase tracking-wider mb-3">
-            {isLocked ? 'THE CAMP YOU RAN' : '2 · PAINT YOUR DAYS'}
+            {isLocked ? 'THE PREP YOU RAN' : '2 · PAINT YOUR DAYS'}
           </p>
           <div className="grid grid-cols-4 sm:grid-cols-7 gap-2 mb-2">
             {daysArray.map((dayIndex) => {

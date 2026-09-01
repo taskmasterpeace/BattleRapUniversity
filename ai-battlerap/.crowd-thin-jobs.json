@@ -1,0 +1,155 @@
+[
+  {
+    "file": "laugh_004",
+    "mood": "laugh",
+    "demo": "urban",
+    "gender": "male",
+    "desc": "Black man with long dreads doubled over laughing hard, one hand pointing at the stage, the other slapping his knee, big open grin",
+    "jobId": "194403fc-04ab-4caa-80c4-1bd9181a914e",
+    "status": "completed"
+  },
+  {
+    "file": "laugh_005",
+    "mood": "laugh",
+    "demo": "urban",
+    "gender": "female",
+    "desc": "Black woman cracking up, head thrown back cackling, hand flat on her chest, hoop earrings",
+    "jobId": "5f135ca3-f46c-4932-a99b-a95ffaa8db61",
+    "status": "completed"
+  },
+  {
+    "file": "laugh_006",
+    "mood": "laugh",
+    "demo": "non_urban",
+    "gender": "male",
+    "desc": "white man in flannel and a backwards baseball cap crying laughing, wiping a tear from his eye with one finger, shoulders shaking",
+    "jobId": "810e6374-8837-4eb3-8517-3a605921d0e2",
+    "status": "completed"
+  },
+  {
+    "file": "laugh_007",
+    "mood": "laugh",
+    "demo": "foreign",
+    "gender": "female",
+    "desc": "woman in a football scarf laughing loud, bent slightly forward, hand over her mouth mid-burst",
+    "jobId": "650812d1-b63a-42d2-acc7-c97a9e1bbb2f",
+    "status": "completed"
+  },
+  {
+    "file": "talk_003",
+    "mood": "talk",
+    "demo": "urban",
+    "gender": "male",
+    "desc": "two Black men turned toward each other mid-argument about the round, one with short dreads pointing at the stage, the other in a baseball cap waving him off",
+    "jobId": "22ead4a4-661e-4b94-b7a4-dd7d5f2bd301",
+    "status": "completed"
+  },
+  {
+    "file": "talk_004",
+    "mood": "talk",
+    "demo": "non_urban",
+    "gender": "female",
+    "desc": "two women side by side debating, one leaning to whisper loud in the other ear, the listener frowning skeptical",
+    "jobId": "13bda9b1-c143-408c-9b84-97a54460de3f",
+    "status": "completed"
+  },
+  {
+    "file": "talk_005",
+    "mood": "talk",
+    "demo": "urban",
+    "gender": "male",
+    "desc": "Black man turned to his friend holding up two fingers making his case, friend holding a water bottle shaking his head no",
+    "jobId": "1f702d1d-e9c3-4b24-adc1-75caf29c89cf",
+    "status": "completed"
+  },
+  {
+    "file": "nod_004",
+    "mood": "nod",
+    "demo": "urban",
+    "gender": "male",
+    "desc": "Black man with dreads tied up nodding hard with eyes closed, fist pressed to his mouth, feeling the bar land",
+    "jobId": "cfc24604-5a12-4c4a-b6cb-6063524b8267",
+    "status": "completed"
+  },
+  {
+    "file": "nod_005",
+    "mood": "nod",
+    "demo": "urban",
+    "gender": "female",
+    "desc": "Black woman nodding slow with respect, one finger pointing up at the stage, impressed face",
+    "jobId": "bd3cbeb8-5f15-40ac-b7a2-de78abad3bfb",
+    "status": "completed"
+  },
+  {
+    "file": "dismiss_004",
+    "mood": "dismiss",
+    "demo": "urban",
+    "gender": "male",
+    "desc": "Black man in a backwards baseball cap waving one hand dismissively turning his face away, get-outta-here expression",
+    "jobId": "aeab4fa5-ed62-4e4a-ad9b-b29b8ddf1d79",
+    "status": "completed"
+  },
+  {
+    "file": "dismiss_005",
+    "mood": "dismiss",
+    "demo": "non_urban",
+    "gender": "female",
+    "desc": "woman with arms half-raised pushing both palms out, nah gesture, unimpressed scowl",
+    "jobId": "87b451da-ab78-4a2a-bfa1-e7b2b070ab1a",
+    "status": "completed"
+  },
+  {
+    "file": "boo_004",
+    "mood": "boo",
+    "demo": "urban",
+    "gender": "female",
+    "desc": "Black woman booing loud with both hands cupped around her mouth, angry jeering face",
+    "jobId": "9473b585-afa3-4119-bfee-60a548872d48",
+    "status": "completed"
+  },
+  {
+    "file": "boo_005",
+    "mood": "boo",
+    "demo": "non_urban",
+    "gender": "male",
+    "desc": "man in a red and cream letterman varsity jacket and a backwards baseball cap jeering with both thumbs pointed down, mouth open booing",
+    "jobId": "a35f9baf-8231-41c3-a4e1-b99ad926d4ab",
+    "status": "completed"
+  },
+  {
+    "file": "oooh_007",
+    "mood": "oooh",
+    "demo": "urban",
+    "gender": "male",
+    "desc": "Black man with shoulder-length dreads, both hands on top of his head, mouth wide open in shock, the OOOH face",
+    "jobId": "035324b8-bece-4aa4-9041-6a902a310f08",
+    "status": "completed"
+  },
+  {
+    "file": "hype_017",
+    "mood": "hype",
+    "demo": "urban",
+    "gender": "male",
+    "desc": "Black man in a backwards baseball cap jumping with both fists up screaming in celebration",
+    "jobId": "bca88146-efd8-4ac2-94c7-37f595f36bea",
+    "status": "completed"
+  },
+  {
+    "file": "watch_010",
+    "mood": "watch",
+    "demo": "urban",
+    "gender": "male",
+    "desc": "Black man standing locked in watching, sipping from a plastic water bottle, judging face",
+    "jobId": "2423f538-12f6-4050-8450-937120d8b94e",
+    "status": "completed"
+  },
+  {
+    "file": "watch_011",
+    "mood": "watch",
+    "demo": "urban",
+    "gender": "female",
+    "desc": "Black woman with long dreads arms crossed watching hard, one eyebrow raised, show-me face",
+    "jobId": "dd648a4d-7861-4975-875f-873e7f67bf30",
+    "status": "completed"
+  }
+]

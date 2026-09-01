@@ -410,6 +410,27 @@ export async function applyPostBattleCareerEffects(
     console.error('Error updating stress after battle:', stressError);
   }
 
+  // Advance the action-based career clock by the prep days spent (min 1), the
+  // same tick the interactive finalizer applies — both modes age a career
+  // identically. Additive; never blocks the battle.
+  try {
+    const { advanceGameDay } = await import('@/lib/game/time/gameTime');
+    const { count: prepDays } = await supabase
+      .from('prep_blocks')
+      .select('id', { count: 'exact', head: true })
+      .eq('battle_id', battle.id)
+      .eq('battler_id', battle.battler_player_id);
+    await advanceGameDay(
+      supabase,
+      battle.battler_player_id,
+      'battle',
+      `Auto battle ${battle.id}`,
+      Math.max(1, prepDays ?? 1)
+    );
+  } catch (clockError) {
+    console.error('Error advancing game_day after battle:', clockError);
+  }
+
   // ONE follow-up offer after the battle, not a flooded inbox (owner note,
   // 2026-09-01: "as soon as the battle was over I got all these battles in my
   // box — I haven't even went through any days"). A win gets promoters
