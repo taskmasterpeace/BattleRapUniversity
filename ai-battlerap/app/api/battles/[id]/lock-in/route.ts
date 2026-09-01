@@ -119,6 +119,14 @@ export async function POST(
       );
     }
 
+    const { logGameEvent } = await import('@/lib/log/gameLog');
+    await logGameEvent(
+      supabase,
+      'battle.mode_chosen',
+      { battleId, battlerId: battle.battler_player_id, userId: user.id },
+      { mode: 'locked_in', context }
+    );
+
     return NextResponse.json({
       battle: updatedBattle,
       message: 'Locked In mode activated. Select your content for Round 1.',
@@ -180,6 +188,16 @@ export async function POST(
     .from('battles')
     .update({ player_locked_in: false, context })
     .eq('id', battleId);
+
+  {
+    const { logGameEvent } = await import('@/lib/log/gameLog');
+    await logGameEvent(
+      supabase,
+      'battle.mode_chosen',
+      { battleId, battlerId: battle.battler_player_id, userId: user.id },
+      { mode: 'auto', context }
+    );
+  }
 
   try {
     await runBattleSimulation(battle, supabase);

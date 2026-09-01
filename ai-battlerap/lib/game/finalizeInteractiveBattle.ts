@@ -245,5 +245,13 @@ export async function finalizeInteractiveBattle(
     }
   }
 
+  const { logGameEvent } = await import('@/lib/log/gameLog');
+  await logGameEvent(
+    supabase,
+    'battle.finalized',
+    { battleId, battlerId: battle.battler_player_id },
+    { verdict, winnerId, decisionType, playerWon: winnerId === battle.battler_player_id }
+  );
+
   return { winnerId, verdict, decisionType };
 }

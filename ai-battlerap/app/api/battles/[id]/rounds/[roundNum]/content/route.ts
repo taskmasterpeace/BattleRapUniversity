@@ -199,6 +199,27 @@ export async function POST(
     );
   }
 
+  // Capture the pen work for post-hoc examination (owner: "logs captured").
+  const { logGameEvent } = await import('@/lib/log/gameLog');
+  await logGameEvent(
+    supabase,
+    'pen.round_written',
+    { battleId, battlerId: battle.battler_player_id, userId: user.id },
+    {
+      round: roundIndex,
+      content: playerSelection.contentTypes,
+      delivery: playerSelection.deliveryTypes,
+      performance: playerSelection.performanceTypes,
+      forecast: {
+        vsTheirs: forecast.averageEffectiveness,
+        crowd: forecast.crowdPreference,
+        room: forecast.contextModifier,
+        final: forecast.finalMultiplier,
+      },
+      battleStatusAtWrite: battle.status,
+    }
+  );
+
   // Return player's selection and forecast
   const playerInsertedSelection = insertedSelections.find(
     (s) => s.battler_id === battle.battler_player_id

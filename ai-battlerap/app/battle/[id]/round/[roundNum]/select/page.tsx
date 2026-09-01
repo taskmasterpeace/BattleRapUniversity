@@ -320,7 +320,18 @@ export default function RoundSelectPage() {
 
         {/* Selection Interface */}
         <div className="mb-6">
-          <h2 className="text-xl font-display font-black uppercase tracking-wider text-white mb-4">SELECT YOUR CONTENT</h2>
+          <div className="mb-4">
+            <h2 className="text-xl font-display font-black uppercase tracking-wider text-white">BUILD THE ROUND</h2>
+            <p className="text-[13px] text-zinc-400 mt-1">
+              Three calls, in order: <span className="text-zinc-200 font-bold">WHAT you say</span> (the material),{' '}
+              <span className="text-zinc-200 font-bold">HOW it sounds</span> (the voice), and{' '}
+              <span className="text-zinc-200 font-bold">HOW you sell it</span> (the stage). Green tags = you
+              counter what they&apos;re predicted to bring.{' '}
+              <Link href="/guide/battle-night" className="text-[#ff8c42] hover:text-[#ff9d5c] font-bold uppercase">
+                Full playbook →
+              </Link>
+            </p>
+          </div>
           <RoundContentSelector
             onSelectionChange={setSelection}
             initialSelection={selection}
@@ -339,6 +350,26 @@ export default function RoundSelectPage() {
             />
           </div>
         )}
+
+        {/* THE ROUND, SAID BACK — you always know what you just built */}
+        <div className="fs bg-[#101114] border-2 border-black p-4 mb-4 mt-6 shadow-[3px_3px_0_rgba(0,0,0,.4)]" style={{ borderLeft: '4px solid #F5731A' }}>
+          <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-zinc-500 mb-1.5">
+            Round {roundNum}, said back
+          </p>
+          <p className="text-[15px] text-zinc-100 font-display font-bold uppercase tracking-wide leading-relaxed">
+            {selection.contentTypes.length > 0 ? (
+              <>You&apos;re saying <span className="text-[#ff8c42]">{selection.contentTypes.map((t) => t.replace(/_/g, ' ')).join(' + ')}</span></>
+            ) : (
+              <span className="text-zinc-500">Pick your material…</span>
+            )}
+            {selection.deliveryTypes.length > 0 && (
+              <> — sounding <span className="text-[#ff8c42]">{selection.deliveryTypes.map((t) => t.replace(/_/g, ' ')).join(' + ')}</span></>
+            )}
+            {selection.performanceTypes.length > 0 && (
+              <> — sold with <span className="text-[#ff8c42]">{selection.performanceTypes.map((t) => t.replace(/_/g, ' ')).join(' + ')}</span></>
+            )}
+          </p>
+        </div>
 
         {/* Confirm Button */}
         <div className="flex items-center justify-between bg-[#2d2f35] border-2 border-[#3a3d44] p-6">

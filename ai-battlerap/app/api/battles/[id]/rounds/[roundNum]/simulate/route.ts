@@ -270,6 +270,33 @@ export async function POST(
       pressure
     );
 
+    // Capture the performed round — scores, choices, and consequences — so a
+    // whole battle can be replayed from the log (owner: "logs captured").
+    const { logGameEvent } = await import('@/lib/log/gameLog');
+    await logGameEvent(
+      supabase,
+      'battle.round_performed',
+      { battleId, battlerId: battle.battler_player_id, userId: user.id },
+      {
+        round: roundIndex,
+        pressureMove,
+        bumpResponse: bumpResponse ?? null,
+        audible: audible ?? null,
+        player: {
+          avg: result.playerRound?.average_score,
+          peak: result.playerRound?.peak_score,
+          crowd: result.playerRound?.crowd_reaction,
+          choke: result.playerRound?.choked ?? false,
+        },
+        ai: {
+          avg: result.aiRound?.average_score,
+          peak: result.aiRound?.peak_score,
+          crowd: result.aiRound?.crowd_reaction,
+          choke: result.aiRound?.choked ?? false,
+        },
+      }
+    );
+
     // Determine next status based on round
     let nextStatus: string;
     if (roundIndex === 1) {
@@ -322,6 +349,13 @@ export async function POST(
     });
   } catch (error) {
     console.error('Error simulating round:', error);
+    const { logGameEvent } = await import('@/lib/log/gameLog');
+    await logGameEvent(
+      supabase,
+      'error',
+      { battleId, battlerId: battle.battler_player_id, userId: user.id },
+      { where: 'simulate', round: roundIndex, message: String((error as any)?.message ?? error) }
+    );
     return NextResponse.json(
       { error: 'Failed to simulate round' },
       { status: 500 }

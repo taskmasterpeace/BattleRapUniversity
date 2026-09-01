@@ -124,9 +124,9 @@ export function RoundContentSelector({
       {/* Content Types Column */}
       <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-6">
         <div className="mb-4">
-          <h3 className="text-lg font-bold text-white mb-1">Content Types</h3>
+          <h3 className="text-lg font-display font-black uppercase tracking-wider text-white mb-1">1 · What you say</h3>
           <div className="flex items-center justify-between">
-            <p className="text-sm text-zinc-400">Select 3-4 types</p>
+            <p className="text-sm text-zinc-400">The MATERIAL — a round holds 3-4 lanes of it</p>
             <div
               className={`text-sm font-semibold ${
                 isContentValid ? 'text-green-500' : 'text-[#ff8c42]'
@@ -186,9 +186,9 @@ export function RoundContentSelector({
       {/* Delivery Types Column */}
       <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-6">
         <div className="mb-4">
-          <h3 className="text-lg font-bold text-white mb-1">Delivery Types</h3>
+          <h3 className="text-lg font-display font-black uppercase tracking-wider text-white mb-1">2 · How it sounds</h3>
           <div className="flex items-center justify-between">
-            <p className="text-sm text-zinc-400">Select 1-2 types</p>
+            <p className="text-sm text-zinc-400">The VOICE it comes out in — lean on 1-2</p>
             <div
               className={`text-sm font-semibold ${
                 isDeliveryValid ? 'text-green-500' : 'text-[#ff8c42]'
@@ -233,9 +233,9 @@ export function RoundContentSelector({
       {/* Performance Types Column */}
       <div className="bg-[#2d2f35] border-2 border-[#3a3d44] p-6">
         <div className="mb-4">
-          <h3 className="text-lg font-bold text-white mb-1">Performance Types</h3>
+          <h3 className="text-lg font-display font-black uppercase tracking-wider text-white mb-1">3 · How you sell it</h3>
           <div className="flex items-center justify-between">
-            <p className="text-sm text-zinc-400">Select 1-2 types</p>
+            <p className="text-sm text-zinc-400">What the BODY does on stage — 1-2 tools</p>
             <div
               className={`text-sm font-semibold ${
                 isPerformanceValid ? 'text-green-500' : 'text-[#ff8c42]'
