@@ -155,7 +155,15 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json();
-  const { stage_name, region, primary_league_id, style_tags, allocated_attributes, avatar_url, home_city_id } = body;
+  const { stage_name, region, primary_league_id, style_tags, allocated_attributes, avatar_url, home_city_id, origin } = body;
+
+  // Origin path (how the battler came up) → bakes a permanent identity label
+  // (text_forums → PEN FIRST, app_camera → INTERNET BATTLER, crew → CIRCLE
+  // TESTED). Optional: legacy callers omit it, so anything not one of the three
+  // lanes is ignored rather than rejected.
+  const VALID_ORIGINS = ['text_forums', 'app_camera', 'crew'];
+  const originValue: string | null =
+    typeof origin === 'string' && VALID_ORIGINS.includes(origin) ? origin : null;
 
   // Validation
   if (!stage_name || typeof stage_name !== 'string') {
@@ -406,11 +414,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Failed to create ranking' }, { status: 500 });
   }
 
-  // Bake generation labels (CITY MADE from the hometown) — the "on your record"
-  // layer starts with where you're from. Non-fatal.
+  // Bake generation labels — the "on your record" layer starts with where
+  // you're from (CITY MADE) and how you came up (origin → PEN FIRST / INTERNET
+  // BATTLER / CIRCLE TESTED). Non-fatal.
   try {
     const { applyGenerationLabels } = await import('@/lib/game/labels/persistence');
     await applyGenerationLabels(supabase, battler.id, {
+      origin: originValue,
       cityId: homeCityId,
       cityName: effectiveRegion,
       cityStyle: homeCityCulture?.culture_style ?? null,

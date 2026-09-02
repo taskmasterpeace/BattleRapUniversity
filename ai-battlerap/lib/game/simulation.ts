@@ -1796,9 +1796,16 @@ async function saveBattleResults(
   }
 
   // Advance/decay sticky reputation labels + pin whatever the life events fired.
+  // Run for BOTH battlers so the whole roster develops a reputation over time,
+  // not just the player.
   try {
     const { applyBattleLabels } = await import('@/lib/game/labels/persistence');
-    await applyBattleLabels(supabase, playerBattlerId, battleId, { choked: playerChoked });
+    // playerChoked/aiChoked live inside the life-event try above — recompute from
+    // `rounds` (outer scope) so this can't throw a ReferenceError.
+    const pChoked = rounds.some((r: any) => r.battler_id === playerBattlerId && r.choked);
+    const aChoked = rounds.some((r: any) => r.battler_id === aiBattlerId && r.choked);
+    await applyBattleLabels(supabase, playerBattlerId, battleId, { choked: pChoked });
+    await applyBattleLabels(supabase, aiBattlerId, battleId, { choked: aChoked });
   } catch (err) {
     console.error('Failed to apply battle labels for battle', battleId, err);
   }

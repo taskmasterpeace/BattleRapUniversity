@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import Icon from '@/components/ui/Icon';
+import Icon, { type IconName } from '@/components/ui/Icon';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { createClient } from '@/lib/db/client';
@@ -70,6 +70,20 @@ const STYLE_TAGS = [
   { value: 'gun_bars', label: 'Gun Bars', description: 'Violent imagery' },
   { value: 'wordplay', label: 'Wordplay', description: 'Word manipulation' },
   { value: 'freestyle', label: 'Freestyle', description: 'Improvisation' },
+];
+
+// Origin path — how you came up. Baked at creation into a permanent identity
+// label (PEN FIRST / INTERNET BATTLER / CIRCLE TESTED). See lib/game/labels.
+const ORIGIN_OPTIONS: {
+  value: 'text_forums' | 'app_camera' | 'crew';
+  label: string;
+  lane: string;
+  icon: IconName;
+  description: string;
+}[] = [
+  { value: 'text_forums', label: 'Text Forums', lane: 'Writer', icon: 'pen', description: 'Came up on the boards — pen and schemes before any stage.' },
+  { value: 'app_camera', label: 'App Camera', lane: 'Performer', icon: 'film', description: 'Made your name through the phone — bars straight to the feed.' },
+  { value: 'crew', label: 'Crew', lane: 'Street', icon: 'users', description: 'Forged in a crew — street-rooted, co-signed from day one.' },
 ];
 
 // Map leagues to venue backgrounds and atmosphere
@@ -163,6 +177,8 @@ export default function OnboardingWizard() {
   // the gameplay home city. Stored as `region`. See docs/design/CORE_LOOP_AND_ERAS.md.
   const [hometownQuery, setHometownQuery] = useState('');
   const [selectedHometown, setSelectedHometown] = useState<string | null>(null);
+  // Origin path (how you came up) — bakes a permanent identity label at creation.
+  const [selectedOrigin, setSelectedOrigin] = useState<'text_forums' | 'app_camera' | 'crew' | null>(null);
   const [selectedLeague, setSelectedLeague] = useState('');
   const [allocatedAttributes, setAllocatedAttributes] = useState<AllocatedAttributes | null>(null);
   const [selectedStyles, setSelectedStyles] = useState<string[]>([]);
@@ -196,6 +212,7 @@ export default function OnboardingWizard() {
         if (parsed.stageName) setStageName(parsed.stageName);
         if (parsed.selectedAvatar) setSelectedAvatar(parsed.selectedAvatar);
         if (parsed.selectedHomeCity) setSelectedHomeCity(parsed.selectedHomeCity);
+        if (parsed.selectedOrigin) setSelectedOrigin(parsed.selectedOrigin);
         if (parsed.selectedLeague) setSelectedLeague(parsed.selectedLeague);
         if (parsed.allocatedAttributes) setAllocatedAttributes(parsed.allocatedAttributes);
         if (parsed.selectedStyles) setSelectedStyles(parsed.selectedStyles);
@@ -214,13 +231,14 @@ export default function OnboardingWizard() {
         stageName,
         selectedAvatar,
         selectedHomeCity,
+        selectedOrigin,
         selectedLeague,
         allocatedAttributes,
         selectedStyles,
       };
       localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
     }
-  }, [step, stageName, selectedAvatar, selectedHomeCity, selectedLeague, allocatedAttributes, selectedStyles]);
+  }, [step, stageName, selectedAvatar, selectedHomeCity, selectedOrigin, selectedLeague, allocatedAttributes, selectedStyles]);
 
   useEffect(() => {
     const fetchLeagues = async () => {
@@ -314,6 +332,8 @@ export default function OnboardingWizard() {
           home_city_id: selectedHomeCity,
           // Detailed hometown identity (neighborhood-level) → stored as region.
           region: selectedHometown || undefined,
+          // Origin path (how you came up) → pins a permanent identity label.
+          origin: selectedOrigin || undefined,
           primary_league_id: selectedLeague,
           style_tags: selectedStyles,
           allocated_attributes: allocatedAttributes,
@@ -570,6 +590,56 @@ export default function OnboardingWizard() {
                 </div>
               </div>
 
+              {/* Origin — how you came up. Bakes a PERMANENT identity label. */}
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <label className="block text-xs uppercase tracking-wider text-zinc-500 font-bold">
+                    How You Came Up *
+                  </label>
+                  <Tooltip content="Your origin story. It bakes a permanent label on your record — PEN FIRST, INTERNET BATTLER, or CIRCLE TESTED — and it never comes off. Pick the lane you really started in.">
+                    <span className="text-zinc-500 cursor-help text-xs">ⓘ</span>
+                  </Tooltip>
+                </div>
+                <p className="font-mono text-[13px] uppercase tracking-wider text-zinc-500 mb-3">
+                  EVERYBODY STARTED SOMEWHERE — THIS ONE STICKS FOR GOOD
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {ORIGIN_OPTIONS.map((o) => {
+                    const isSelected = selectedOrigin === o.value;
+                    return (
+                      <button
+                        key={o.value}
+                        type="button"
+                        data-origin={o.value}
+                        onClick={() => setSelectedOrigin(o.value)}
+                        className={`relative flex flex-col text-left cursor-pointer p-4 border-2 transition min-h-[132px] ${
+                          isSelected
+                            ? 'border-[#ff8c42] bg-[#ff8c42]/10 shadow-[0_0_15px_rgba(255,140,66,0.4)]'
+                            : 'border-[#3a3d44] bg-[#2d2f35] hover:border-zinc-600'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 mb-2">
+                          <Icon name={o.icon} size={20} className={isSelected ? 'text-[#ff8c42]' : 'text-zinc-300'} />
+                          <h4 className="font-display font-black uppercase tracking-tight text-sm text-white">
+                            {o.label}
+                          </h4>
+                        </div>
+                        <span
+                          className={`self-start mb-2 px-1.5 py-0.5 font-mono text-[11px] uppercase tracking-wider border ${
+                            isSelected
+                              ? 'bg-[#ff8c42]/20 border-[#ff8c42]/50 text-[#ff8c42]'
+                              : 'bg-black/30 border-[#3a3d44] text-zinc-400'
+                          }`}
+                        >
+                          {o.lane}
+                        </span>
+                        <p className="text-xs text-zinc-400 leading-snug">{o.description}</p>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
               {/* Hometown — the detailed identity (neighborhood-level, searchable) */}
               <div>
                 <div className="flex items-center gap-2 mb-1">
@@ -704,7 +774,7 @@ export default function OnboardingWizard() {
 
               <button
                 onClick={() => setStep(3)}
-                disabled={!stageName.trim() || !selectedAvatar || !selectedHomeCity}
+                disabled={!stageName.trim() || !selectedAvatar || !selectedOrigin || !selectedHomeCity}
                 className="w-full py-4 bg-[#ff8c42] hover:bg-[#ff9d5c] text-black font-black uppercase tracking-wider transition disabled:opacity-30 disabled:cursor-not-allowed"
               >
                 NEXT

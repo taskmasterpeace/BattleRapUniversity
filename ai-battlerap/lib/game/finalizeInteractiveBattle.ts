@@ -310,7 +310,13 @@ export async function finalizeInteractiveBattle(
   // Advance/decay sticky reputation labels + pin whatever the life events fired.
   try {
     const { applyBattleLabels } = await import('@/lib/game/labels/persistence');
-    await applyBattleLabels(supabase, battle.battler_player_id, battleId, { choked: playerChoked });
+    // playerChoked is scoped inside the life-event try above — recompute from the
+    // function-scoped rounds so this can't throw a ReferenceError. Run for both
+    // battlers so the AI opponent develops a reputation too.
+    const pChoked = playerRounds.some((r: any) => r.choked);
+    const aChoked = allRounds.some((r: any) => r.battler_id === battle.battler_ai_id && r.choked);
+    await applyBattleLabels(supabase, battle.battler_player_id, battleId, { choked: pChoked });
+    await applyBattleLabels(supabase, battle.battler_ai_id, battleId, { choked: aChoked });
   } catch (labelError) {
     console.error('Failed to apply battle labels (interactive) for battle', battleId, labelError);
   }
