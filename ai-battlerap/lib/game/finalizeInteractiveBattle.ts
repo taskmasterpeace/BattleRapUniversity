@@ -204,13 +204,8 @@ export async function finalizeInteractiveBattle(
     })
     .eq('battler_id', battle.battler_ai_id);
 
-  // 5. Press coverage — the world talks about interactive battles too.
-  try {
-    const { createBattleRecapAndEvents } = await import('@/lib/services/newsGenerator');
-    await createBattleRecapAndEvents(battleId, supabase);
-  } catch (err) {
-    console.error('Failed to create recap/news for interactive battle', battleId, err);
-  }
+  // 5. Press coverage runs LATER — after life events fire and labels pin — so the
+  //    grudge inside it sees a freshly-earned ROBBED. See below, past the labels step.
 
   // 6. Career effects — progression, slots, loyalty, life events, stress,
   // fresh offers. Full prep credit: interactive players hand-planned if none
@@ -319,6 +314,15 @@ export async function finalizeInteractiveBattle(
     await applyBattleLabels(supabase, battle.battler_ai_id, battleId, { choked: aChoked });
   } catch (labelError) {
     console.error('Failed to apply battle labels (interactive) for battle', battleId, labelError);
+  }
+
+  // Press coverage (deferred from step 5): labels are pinned, so the grudge sees a
+  // fresh ROBBED and the recap can reference who you've become.
+  try {
+    const { createBattleRecapAndEvents } = await import('@/lib/services/newsGenerator');
+    await createBattleRecapAndEvents(battleId, supabase);
+  } catch (err) {
+    console.error('Failed to create recap/news for interactive battle', battleId, err);
   }
 
   // Persist ClipHive video + Booth episode for this battle (durable media archive).

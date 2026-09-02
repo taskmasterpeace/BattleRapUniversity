@@ -1720,22 +1720,10 @@ async function saveBattleResults(
     })
     .eq('battler_id', aiBattlerId);
 
-  // Phase 6: Generate news article and life events
-  try {
-    const { createBattleRecapAndEvents } = await import('@/lib/services/newsGenerator');
-    await createBattleRecapAndEvents(battleId, supabase);
-  } catch (err) {
-    console.error('Failed to create recap/news for battle', battleId, err);
-  }
-
-  // The Wire reacts: fans, bloggers, the league, and the winner fan the
-  // result out into the in-world social feed (deterministic, idempotent).
-  try {
-    const { emitWirePostsForBattle } = await import('@/lib/game/wire/engine');
-    await emitWirePostsForBattle(battleId, supabase);
-  } catch (err) {
-    console.error('Failed to emit Wire posts for battle', battleId, err);
-  }
+  // Phase 6: reputation FIRST (life events → sticky labels), THEN the narrative
+  // that reflects it (news, grudge, Wire). The grudge reads the loser's
+  // rematchDemandBias, so a ROBBED pinned this battle must exist before it runs —
+  // otherwise the get-back demand it creates would miss the battle that caused it.
 
   // Trigger life events based on battle outcome
   try {
@@ -1808,6 +1796,24 @@ async function saveBattleResults(
     await applyBattleLabels(supabase, aiBattlerId, battleId, { choked: aChoked });
   } catch (err) {
     console.error('Failed to apply battle labels for battle', battleId, err);
+  }
+
+  // Now the narrative — labels are pinned, so the grudge sees a fresh ROBBED and the
+  // recap/Wire can reference who you've become.
+  try {
+    const { createBattleRecapAndEvents } = await import('@/lib/services/newsGenerator');
+    await createBattleRecapAndEvents(battleId, supabase);
+  } catch (err) {
+    console.error('Failed to create recap/news for battle', battleId, err);
+  }
+
+  // The Wire reacts: fans, bloggers, the league, and the winner fan the
+  // result out into the in-world social feed (deterministic, idempotent).
+  try {
+    const { emitWirePostsForBattle } = await import('@/lib/game/wire/engine');
+    await emitWirePostsForBattle(battleId, supabase);
+  } catch (err) {
+    console.error('Failed to emit Wire posts for battle', battleId, err);
   }
 
   // Persist ClipHive video + Booth episode for this battle (durable media archive).
