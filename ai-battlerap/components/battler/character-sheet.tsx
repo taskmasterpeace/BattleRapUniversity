@@ -273,9 +273,7 @@ export function CharacterSheet({
               />
             )}
             {cityName && <span className="fs-cityback">{cityName}</span>}
-            <img className="fs-pf" src={shownPortrait} alt={name} style={portraitFillStyle(shownPortrait, { fit: "width", targetW: 0.96 })} />
-          </div>
-          <div className="fs-cap">
+            <img className="fs-pf" src={shownPortrait} alt={name} style={portraitFillStyle(shownPortrait, { fit: "coverTop", targetW: 1.0 })} />
             {variants.length > 0 && (
               <div className="fs-variants">
                 {variants.map((v, i) => (
@@ -285,14 +283,16 @@ export function CharacterSheet({
                     onClick={() => setActivePortrait(i)}
                     title={i === 0 ? "Primary" : `Profile ${i + 1}`}
                   >
-                    <img src={v} alt="" style={portraitFillStyle(v, { targetH: 1.15 })} />
+                    <img src={v} alt="" style={portraitFillStyle(v, { fit: "coverTop", targetW: 1.0 })} />
                   </button>
                 ))}
                 <span className="lab">
-                  PROFILE {activePortrait + 1}/{variants.length}
+                  {activePortrait + 1}/{variants.length}
                 </span>
               </div>
             )}
+          </div>
+          <div className="fs-cap">
             <h2 className="nm">{name}</h2>
             <div className="fs-idplates">
               {tierLabel && (

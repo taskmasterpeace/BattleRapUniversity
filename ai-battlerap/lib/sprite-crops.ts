@@ -22,12 +22,26 @@ export function getSpriteBox(url?: string): SpriteBox | null {
  */
 export function portraitFillStyle(
   url?: string,
-  opts: { targetH?: number; maxScale?: number; fit?: "height" | "width"; targetW?: number } = {},
+  opts: { targetH?: number; maxScale?: number; fit?: "height" | "width" | "coverTop"; targetW?: number } = {},
 ): CSSProperties {
   const { targetH = 1.0, maxScale = 1.9, fit = "height", targetW = 0.94 } = opts
   const box = getSpriteBox(url)
 
   if (!box) {
+    // coverTop: anchor the TOP so the top of the head is always shown; the bottom
+    // overflows (meant to be faded). Others: bottom-anchored bust.
+    if (fit === "coverTop") {
+      return {
+        position: "absolute",
+        left: "50%",
+        top: 0,
+        width: "116%",
+        height: "auto",
+        maxWidth: "none",
+        transform: "translateX(-50%)",
+        imageRendering: "pixelated",
+      }
+    }
     return {
       position: "absolute",
       left: "50%",
@@ -48,6 +62,24 @@ export function portraitFillStyle(
   const heightScale = Math.min(maxScale, targetH / Math.max(0.15, box.h))
   const txFor = (s: number) => -(cx - 0.5) * s * 100 // re-centre content horizontally
   const tyFor = (s: number) => (1 - (box.y + box.h)) * s * 100 // content bottom -> frame bottom
+
+  if (fit === "coverTop") {
+    // Fill the frame WIDTH and pin the CONTENT TOP to the frame top — the very top
+    // of the head is always visible; the bottom (shoulders) overflows and is faded.
+    // translateY(-box.y) lifts any transparent top margin out so real content sits
+    // flush at the top. Width-driven, so translateY% is relative to the image height.
+    const widthPct = Math.min(maxScale, targetW / Math.max(0.15, box.w)) * 100
+    return {
+      position: "absolute",
+      left: "50%",
+      top: 0,
+      width: `${widthPct.toFixed(1)}%`,
+      height: "auto",
+      maxWidth: "none",
+      transform: `translateX(-50%) translateX(${txFor(1).toFixed(2)}%) translateY(${(-box.y * 100).toFixed(2)}%)`,
+      imageRendering: "pixelated",
+    }
+  }
 
   if (fit === "width") {
     // width-driven: content spans targetW of the frame width regardless of frame height —
