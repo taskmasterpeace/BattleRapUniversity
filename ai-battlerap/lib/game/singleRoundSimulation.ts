@@ -406,9 +406,13 @@ export async function simulateSingleRound(
     );
   }
 
-  // REPUTATION: the "word on you" warms or cools the room. Presentational in the
-  // lock-in path (the winner is average-based, not crowd) — but the player should
-  // still SEE the room react to who they are.
+  // REPUTATION teeth — the same ones the auto-sim applies, so a fearsome rep bites
+  // in the player's OWN battles too, not just other people's:
+  //  · crowdDelta  → the room warms/cools to who you are (presentational).
+  //  · opponentPrepBias → a notable opponent makes BOTH battlers sharpen; lands on
+  //    average_score, which DECIDES the lock-in winner (score·(1+bias·0.06), matching
+  //    simulation.ts). This is what makes the tooth competitive here, not cosmetic.
+  //  · pressurePenalty → target-on-your-back nerves → a shakier showing (consistency).
   try {
     const { loadReputationModifiers } = await import('@/lib/game/reputationLoader');
     const [pMods, aMods] = await Promise.all([
@@ -417,8 +421,18 @@ export async function simulateSingleRound(
     ]);
     playerRound.crowd_reaction = Math.min(100, Math.max(0, playerRound.crowd_reaction + Math.round(pMods.crowdDelta)));
     aiRound.crowd_reaction = Math.min(100, Math.max(0, aiRound.crowd_reaction + Math.round(aMods.crowdDelta)));
+
+    const clamp10 = (n: number) => Math.min(10, Math.max(0, n));
+    // Player sharpens vs a notable AI; AI sharpens vs a notable player (bias comes
+    // from the OTHER battler, exactly as repTeeth.playerPrepBoost/aiPrepBoost do).
+    playerRound.average_score = Number(clamp10(playerRound.average_score * (1 + aMods.opponentPrepBias * 0.06)).toFixed(3));
+    aiRound.average_score = Number(clamp10(aiRound.average_score * (1 + pMods.opponentPrepBias * 0.06)).toFixed(3));
+    if (playerRound.consistency_score != null)
+      playerRound.consistency_score = Math.max(0, Math.round(playerRound.consistency_score - pMods.pressurePenalty * 40));
+    if (aiRound.consistency_score != null)
+      aiRound.consistency_score = Math.max(0, Math.round(aiRound.consistency_score - aMods.pressurePenalty * 40));
   } catch (repErr) {
-    console.error('[reputation] interactive crowd load failed (non-fatal):', repErr);
+    console.error('[reputation] interactive teeth load failed (non-fatal):', repErr);
   }
 
   // Determine round winner
