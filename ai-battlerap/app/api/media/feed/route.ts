@@ -34,7 +34,7 @@ async function assembleRecentBattles(supabase: any): Promise<BattleMediaContext[
   const { data: battles } = await supabase
     .from('battles')
     .select(`
-      id, winner_battler_id, battler_player_id, battler_ai_id, completed_at,
+      id, winner_battler_id, battler_player_id, battler_ai_id, completed_at, verdict, decision_type,
       player:battler_player_id ( id, stage_name, hometown:hometown_city_id ( name, culture_style ) ),
       ai:battler_ai_id ( id, stage_name, hometown:hometown_city_id ( name, culture_style ) ),
       venue:venue_id ( city:city_id ( name ) ),
@@ -42,6 +42,8 @@ async function assembleRecentBattles(supabase: any): Promise<BattleMediaContext[
       battle_rounds ( battler_id, won, choked )
     `)
     .eq('status', 'completed')
+    .not('winner_battler_id', 'is', null)
+    .neq('verdict', 'no_contest')
     .order('completed_at', { ascending: false })
     .limit(18);
 
@@ -51,7 +53,7 @@ async function assembleRecentBattles(supabase: any): Promise<BattleMediaContext[
   const ids = Array.from(
     new Set(battles.flatMap((b: any) => [b.battler_player_id, b.battler_ai_id]).filter(Boolean))
   );
-  const { data: ranks } = await supabase.from('rankings').select('battler_id, wins, losses, streak, tier').in('battler_id', ids);
+  const { data: ranks } = await supabase.from('rankings').select('battler_id, wins, losses, streak, tier, rating').in('battler_id', ids);
   const rankMap = new Map<string, any>((ranks ?? []).map((r: any) => [r.battler_id, r]));
 
   const first = (x: any) => (Array.isArray(x) ? x[0] : x);
@@ -65,13 +67,23 @@ async function assembleRecentBattles(supabase: any): Promise<BattleMediaContext[
       const w = winnerIsPlayer ? player : ai;
       const l = winnerIsPlayer ? ai : player;
 
-      const myRounds = (b.battle_rounds ?? []).filter((r: any) => r.battler_id === w.id);
       const oppRounds = (b.battle_rounds ?? []).filter((r: any) => r.battler_id === l.id);
-      const wWon = myRounds.filter((r: any) => r.won).length;
-      const lWon = oppRounds.filter((r: any) => r.won).length;
       const loserChoked = oppRounds.some((r: any) => r.choked);
-      const score = `${wWon}-${lWon}`;
-      const mainStory = loserChoked ? 'choke' : wWon >= 3 && lWon === 0 ? 'dominant' : 'standard';
+
+      // Prefer the recorded verdict/decision over recomputing from rounds.
+      const wRating = rankMap.get(w.id)?.rating ?? 1200;
+      const lRating = rankMap.get(l.id)?.rating ?? 1200;
+      const dt = b.decision_type as string | null;
+      const score = (b.verdict as string) || '2-1';
+      const mainStory: BattleMediaContext['mainStory'] = loserChoked
+        ? 'choke'
+        : dt === 'classic'
+          ? 'classic'
+          : wRating <= lRating - 60
+            ? 'upset'
+            : dt === 'bodybag' || dt === 'clean_sweep' || dt === 'gentlemans_30'
+              ? 'dominant'
+              : 'standard';
 
       const city = first(first(b.venue)?.city)?.name ?? first(first(b.league)?.city)?.name ?? null;
       const dossier = (bt: any): MediaBattler => {
