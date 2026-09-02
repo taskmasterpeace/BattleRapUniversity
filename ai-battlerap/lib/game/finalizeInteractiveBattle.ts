@@ -307,6 +307,14 @@ export async function finalizeInteractiveBattle(
     );
   }
 
+  // Advance/decay sticky reputation labels + pin whatever the life events fired.
+  try {
+    const { applyBattleLabels } = await import('@/lib/game/labels/persistence');
+    await applyBattleLabels(supabase, battle.battler_player_id, battleId, { choked: playerChoked });
+  } catch (labelError) {
+    console.error('Failed to apply battle labels (interactive) for battle', battleId, labelError);
+  }
+
   // 7. Tournament bracket — mirror the auto engine. Without this, a tournament
   // battle played through the interactive round-by-round flow left its bracket
   // row 'scheduled' with no winner: the bracket never showed who won, the player's

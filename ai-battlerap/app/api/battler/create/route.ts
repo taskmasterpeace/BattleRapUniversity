@@ -406,6 +406,19 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Failed to create ranking' }, { status: 500 });
   }
 
+  // Bake generation labels (CITY MADE from the hometown) — the "on your record"
+  // layer starts with where you're from. Non-fatal.
+  try {
+    const { applyGenerationLabels } = await import('@/lib/game/labels/persistence');
+    await applyGenerationLabels(supabase, battler.id, {
+      cityId: homeCityId,
+      cityName: effectiveRegion,
+      cityStyle: homeCityCulture?.culture_style ?? null,
+    });
+  } catch (labelError) {
+    console.error('Generation labels failed (non-fatal):', labelError);
+  }
+
   // First battle offers, ready before the player even reaches the dashboard —
   // a new battler should never stare at an empty inbox.
   try {

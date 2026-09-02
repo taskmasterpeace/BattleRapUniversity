@@ -1744,6 +1744,14 @@ async function saveBattleResults(
     console.error('Failed to trigger life events for battle', battleId, err);
   }
 
+  // Advance/decay sticky reputation labels + pin whatever the life events fired.
+  try {
+    const { applyBattleLabels } = await import('@/lib/game/labels/persistence');
+    await applyBattleLabels(supabase, playerBattlerId, battleId, { choked: playerChoked });
+  } catch (err) {
+    console.error('Failed to apply battle labels for battle', battleId, err);
+  }
+
   // Apply attribute progression based on battle performance
   try {
     const { applyAttributeProgression } = await import('@/lib/game/progression');
