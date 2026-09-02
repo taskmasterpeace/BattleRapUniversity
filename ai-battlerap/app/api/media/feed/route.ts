@@ -1,117 +1,39 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { mediaFromBattle, type BattleMediaContext, type MediaItem, type MediaBattler } from '@/lib/game/media/mediaGenerator';
+import { mediaFromBattle, type BattleMediaContext } from '@/lib/game/media/mediaGenerator';
+import { loadPersistedMedia, backfillMedia } from '@/lib/game/media/mediaPersistence';
 
 /**
- * ClipHive + podcast feed. Composes media items from recent completed battles
- * (rich dossiers + head-to-head). Falls back to a deterministic DEMO feed when
- * there's no data yet (or Supabase is unreachable) so the platform always renders.
+ * ClipHive + Booth feed — reads the PERSISTED media_items rail (composed once when
+ * a battle completes). On first run it backfills recent battles; if there's still
+ * nothing (fresh DB) it returns a deterministic DEMO feed so the platform always
+ * renders. Service-role read (never the cookie client — that hangs on a stale
+ * session when the DB is unreachable).
  *
  * GET /api/media/feed  → { items: MediaItem[], isDemo: boolean }
  */
 
 export async function GET() {
   try {
-    // Public feed — service-role read, NOT the cookie/session client (which would
-    // hang trying to refresh a stale auth session when the DB is unreachable).
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
     if (!url || !key) throw new Error('no supabase env');
     const supabase = createClient(url, key, { auth: { autoRefreshToken: false, persistSession: false } });
-    const contexts = await assembleRecentBattles(supabase);
-    const source = contexts.length >= 3 ? contexts : DEMO_BATTLES;
-    const items = source.flatMap((c) => mediaFromBattle(c));
-    return NextResponse.json({ items, isDemo: source === DEMO_BATTLES });
+
+    let items = await loadPersistedMedia(supabase, { limit: 48 });
+    if (items.length === 0) {
+      // No persisted media yet (pre-persistence battles) — backfill then re-read.
+      await backfillMedia(supabase, 30);
+      items = await loadPersistedMedia(supabase, { limit: 48 });
+    }
+    if (items.length >= 3) {
+      return NextResponse.json({ items, isDemo: false });
+    }
+    // Fresh DB with no real battles → showcase.
+    return NextResponse.json({ items: DEMO_BATTLES.flatMap((c) => mediaFromBattle(c)), isDemo: true });
   } catch (e) {
-    const items = DEMO_BATTLES.flatMap((c) => mediaFromBattle(c));
-    return NextResponse.json({ items, isDemo: true });
+    return NextResponse.json({ items: DEMO_BATTLES.flatMap((c) => mediaFromBattle(c)), isDemo: true });
   }
-}
-
-// ── real battles → media contexts (best-effort; defensive) ──────────────────
-
-async function assembleRecentBattles(supabase: any): Promise<BattleMediaContext[]> {
-  const { data: battles } = await supabase
-    .from('battles')
-    .select(`
-      id, winner_battler_id, battler_player_id, battler_ai_id, completed_at, verdict, decision_type,
-      player:battler_player_id ( id, stage_name, hometown:hometown_city_id ( name, culture_style ) ),
-      ai:battler_ai_id ( id, stage_name, hometown:hometown_city_id ( name, culture_style ) ),
-      venue:venue_id ( city:city_id ( name ) ),
-      league:league_id ( city:city_id ( name ) ),
-      battle_rounds ( battler_id, won, choked )
-    `)
-    .eq('status', 'completed')
-    .not('winner_battler_id', 'is', null)
-    .neq('verdict', 'no_contest')
-    .order('completed_at', { ascending: false })
-    .limit(18);
-
-  if (!battles || battles.length === 0) return [];
-
-  // Batch dossier data: rankings for everyone involved.
-  const ids = Array.from(
-    new Set(battles.flatMap((b: any) => [b.battler_player_id, b.battler_ai_id]).filter(Boolean))
-  );
-  const { data: ranks } = await supabase.from('rankings').select('battler_id, wins, losses, streak, tier, rating').in('battler_id', ids);
-  const rankMap = new Map<string, any>((ranks ?? []).map((r: any) => [r.battler_id, r]));
-
-  const first = (x: any) => (Array.isArray(x) ? x[0] : x);
-
-  return battles
-    .map((b: any): BattleMediaContext | null => {
-      const player = first(b.player);
-      const ai = first(b.ai);
-      if (!player || !ai) return null;
-      const winnerIsPlayer = b.winner_battler_id === b.battler_player_id;
-      const w = winnerIsPlayer ? player : ai;
-      const l = winnerIsPlayer ? ai : player;
-
-      const oppRounds = (b.battle_rounds ?? []).filter((r: any) => r.battler_id === l.id);
-      const loserChoked = oppRounds.some((r: any) => r.choked);
-
-      // Prefer the recorded verdict/decision over recomputing from rounds.
-      const wRating = rankMap.get(w.id)?.rating ?? 1200;
-      const lRating = rankMap.get(l.id)?.rating ?? 1200;
-      const dt = b.decision_type as string | null;
-      const score = (b.verdict as string) || '2-1';
-      const mainStory: BattleMediaContext['mainStory'] = loserChoked
-        ? 'choke'
-        : dt === 'classic'
-          ? 'classic'
-          : wRating <= lRating - 60
-            ? 'upset'
-            : dt === 'bodybag' || dt === 'clean_sweep' || dt === 'gentlemans_30'
-              ? 'dominant'
-              : 'standard';
-
-      const city = first(first(b.venue)?.city)?.name ?? first(first(b.league)?.city)?.name ?? null;
-      const dossier = (bt: any): MediaBattler => {
-        const home = first(bt.hometown);
-        const rk = rankMap.get(bt.id);
-        return {
-          battlerId: bt.id,
-          name: bt.stage_name,
-          hometownCity: home?.name ?? null,
-          scene: home?.culture_style ?? null,
-          wins: rk?.wins,
-          losses: rk?.losses,
-          streak: rk?.streak,
-          tier: rk?.tier ?? null,
-        };
-      };
-
-      return {
-        battleId: b.id,
-        winner: { ...dossier(w), role: 'winner' },
-        loser: { ...dossier(l), role: 'loser' },
-        score,
-        mainStory: mainStory as BattleMediaContext['mainStory'],
-        city,
-        bigMoment: mainStory === 'dominant',
-      };
-    })
-    .filter(Boolean) as BattleMediaContext[];
 }
 
 // ── demo feed (renders when there's no data / DB is down) ───────────────────

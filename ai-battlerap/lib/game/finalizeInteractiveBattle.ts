@@ -315,6 +315,14 @@ export async function finalizeInteractiveBattle(
     console.error('Failed to apply battle labels (interactive) for battle', battleId, labelError);
   }
 
+  // Persist ClipHive video + Booth episode for this battle (durable media archive).
+  try {
+    const { persistBattleMedia } = await import('@/lib/game/media/mediaPersistence');
+    await persistBattleMedia(supabase, battleId);
+  } catch (mediaError) {
+    console.error('Failed to persist media (interactive) for battle', battleId, mediaError);
+  }
+
   // 7. Tournament bracket — mirror the auto engine. Without this, a tournament
   // battle played through the interactive round-by-round flow left its bracket
   // row 'scheduled' with no winner: the bracket never showed who won, the player's

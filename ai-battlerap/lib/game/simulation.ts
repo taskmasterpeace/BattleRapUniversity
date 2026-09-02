@@ -1803,6 +1803,14 @@ async function saveBattleResults(
     console.error('Failed to apply battle labels for battle', battleId, err);
   }
 
+  // Persist ClipHive video + Booth episode for this battle (durable media archive).
+  try {
+    const { persistBattleMedia } = await import('@/lib/game/media/mediaPersistence');
+    await persistBattleMedia(supabase, battleId);
+  } catch (err) {
+    console.error('Failed to persist media for battle', battleId, err);
+  }
+
   // Apply attribute progression based on battle performance
   try {
     const { applyAttributeProgression } = await import('@/lib/game/progression');
