@@ -130,11 +130,20 @@ function advanceOne(label: StoredLabel, battlesCompleted: number, ctx: AdvanceCo
   let qualifyingEvidenceCount = label.qualifyingEvidenceCount;
 
   // Counter-evidence: CHOKER's clean-battle recovery (the reference durable gate).
+  // Recovery must be CONSECUTIVE — "5 straight battles with zero chokes." A choke
+  // anywhere in this span breaks the streak and resets progress to zero, structurally
+  // (not only when a CHOKE life-event happens to re-pin — which never fires for AI).
   if (label.key === 'choker') {
     const clean = Math.min(ctx.cleanBattles ?? 0, battles);
-    evidenceCount += clean;
-    qualifyingEvidenceCount += Math.min(ctx.cleanQualifying ?? 0, clean);
-    heat += -10 * clean; // extra counter-evidence on top of decay
+    if (clean < battles) {
+      // At least one choke in the span — streak broken, start the count over.
+      evidenceCount = 0;
+      qualifyingEvidenceCount = 0;
+    } else {
+      evidenceCount += clean;
+      qualifyingEvidenceCount += Math.min(ctx.cleanQualifying ?? 0, clean);
+      heat += -10 * clean; // extra counter-evidence on top of decay
+    }
   }
 
   if (label.tier === 'permanent') {
