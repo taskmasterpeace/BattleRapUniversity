@@ -10,6 +10,7 @@
 import {
   LABELS,
   ALLEGATION_STAGES,
+  TIER_DECAY,
   PERMANENT_FLOOR,
   RETIRE_AT,
   type LabelDef,
@@ -125,7 +126,11 @@ function advanceOne(label: StoredLabel, battlesCompleted: number, ctx: AdvanceCo
   const battles = battlesCompleted - label.processedBattleCount;
   if (battles <= 0) return label;
 
-  let heat = label.heat + def.decayPerBattle * battles;
+  // Decay by the label's CURRENT tier, not the registry default — an allegation
+  // pinned as a rumor is stored tier 'fresh' and must fade at the fresh rate (-15),
+  // even though its default (corroborated) tier is 'permanent' (-2). Using the
+  // default let an unproven rumor stick ~6× too long.
+  let heat = label.heat + TIER_DECAY[label.tier] * battles;
   let evidenceCount = label.evidenceCount;
   let qualifyingEvidenceCount = label.qualifyingEvidenceCount;
 
