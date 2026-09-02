@@ -97,20 +97,22 @@ export async function applyBattleLabels(
     const clean = opts.choked ? 0 : 1;
     stored = advanceLabels(stored, completedCount, { cleanBattles: clean, cleanQualifying: clean });
 
-    // Pin from the life events that fired this battle.
+    // Pin from the life events that fired this battle. At finalize the event is still
+    // PENDING — `chosen_option` is null and there is no publicity column — so choice
+    // and publicity aren't known yet. Intrinsically-public labels (CAREER_CRISIS→WASHED,
+    // CHOKE_IN_BIG_BATTLE→CHOKER, ROBBED…) pin here from template_code alone; the
+    // choice/publicity-gated ones (taking_any_check, battling_hurt, own/hide choke
+    // variants) belong to a resolve-time pin path (not built yet — see reputation memo).
     const { data: events } = await supabase
       .from('battler_life_events')
-      .select('template_code, details_json')
+      .select('template_code, chosen_option')
       .eq('battler_id', battlerId)
       .eq('battle_id', battleId);
     const now = new Date().toISOString();
     for (const e of events ?? []) {
       const pin: PinRequest | null = mapEventToPin(e.template_code, {
-        // Choice/publicity come from the event itself, not a blanket flag — so a
-        // private FINANCIAL_CRISIS doesn't become a public label, and an intrinsically
-        // public CAREER_CRISIS still pins (its mapping treats undefined as public).
-        choice: e.details_json?.choice ?? e.details_json?.chosen_option,
-        isPublic: e.details_json?.public,
+        choice: e.chosen_option ?? undefined, // top-level column; null until resolved
+        isPublic: undefined,                  // no publicity signal exists at finalize
       });
       if (!pin) continue;
       pin.source = { ...(pin.source ?? {}), battleId };

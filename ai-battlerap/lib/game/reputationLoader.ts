@@ -26,9 +26,13 @@ export async function loadReputation(supabase: any, battlerId: string): Promise<
     .maybeSingle();
   if (!battler) return null;
 
+  // NOTE: `rankings` has NO `tier` column (tier lives on `battlers`). Selecting it
+  // made PostgREST reject the whole query → ranking null → rating defaulted to 1200
+  // and streak to 0 on EVERY load, so streak labels (ON A RUN / SKIDDING) never fired
+  // and every rep read the sim/offers/media consumed was degraded. Do not re-add tier.
   const { data: ranking } = await supabase
     .from('rankings')
-    .select('rating, tier, wins, losses, streak')
+    .select('rating, wins, losses, streak')
     .eq('battler_id', battlerId)
     .maybeSingle();
 
@@ -52,7 +56,7 @@ export async function loadReputation(supabase: any, battlerId: string): Promise<
     new Set(rows.map((b: any) => (b.battler_player_id === battlerId ? b.battler_ai_id : b.battler_player_id)).filter(Boolean))
   );
   const { data: oppRanks } = opponentIds.length
-    ? await supabase.from('rankings').select('battler_id, rating, tier').in('battler_id', opponentIds)
+    ? await supabase.from('rankings').select('battler_id, rating').in('battler_id', opponentIds)
     : { data: [] as any[] };
   const oppMap = new Map<string, { rating: number; tier: string | null }>(
     (oppRanks ?? []).map((r: any) => [r.battler_id, { rating: r.rating, tier: r.tier ?? null }])

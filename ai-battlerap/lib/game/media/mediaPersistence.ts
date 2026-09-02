@@ -43,7 +43,9 @@ export async function assembleBattleContext(
 
   const { data: ranks } = await supabase
     .from('rankings')
-    .select('battler_id, wins, losses, streak, tier, rating')
+    // No `tier` column on rankings (it errors the whole query → empty rankMap →
+    // dossiers with no W/L/streak). tier lives on `battlers`; dossier tier stays null.
+    .select('battler_id, wins, losses, streak, rating')
     .in('battler_id', [w.id, l.id]);
   const rankMap = new Map<string, any>((ranks ?? []).map((r: any) => [r.battler_id, r]));
 

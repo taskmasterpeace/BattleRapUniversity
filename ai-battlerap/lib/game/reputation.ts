@@ -114,7 +114,7 @@ export interface ReputationInput {
 export interface Reputation {
   /** One-line "word on you" for headers. */
   summary: string;
-  /** Display slice (top 6 by heat), each tagged band: current | record. */
+  /** Display slice (top 5 per band by heat), each tagged band: current | record. */
   labels: RepLabel[];
   /** Gameplay deltas from ALL active labels (computed before the display slice). */
   modifiers: ReputationModifiers;

@@ -143,7 +143,7 @@ export async function GET(
     );
     const [{ data: oppRankings }, { data: lifeRows }, { data: labelRows }] = await Promise.all([
       opponentIds.length
-        ? supabase.from('rankings').select('battler_id, rating, tier').in('battler_id', opponentIds)
+        ? supabase.from('rankings').select('battler_id, rating').in('battler_id', opponentIds)
         : Promise.resolve({ data: [] as any[] }),
       supabase.from('battler_life_events').select('template_code').eq('battler_id', battlerId),
       // Stored "on your record" labels. If the table isn't migrated yet, Supabase
