@@ -167,7 +167,7 @@ function EpisodeRow({ e, you }: { e: PodcastEpisode; you: boolean }) {
   );
   return (
     <Link
-      href={`/watch/${battleId}`}
+      href={`/booth/${battleId}`}
       className="group flex gap-4 border-2 border-black p-3 transition-colors hover:border-[#E7B23C]"
       style={{ background: 'linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.01)), #141418' }}
     >
