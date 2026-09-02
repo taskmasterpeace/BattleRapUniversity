@@ -26,10 +26,10 @@ export async function GET() {
       await backfillMedia(supabase, 30);
       items = await loadPersistedMedia(supabase, { limit: 48 });
     }
-    if (items.length >= 3) {
+    if (items.length >= 1) {
       return NextResponse.json({ items, isDemo: false });
     }
-    // Fresh DB with no real battles → showcase.
+    // Fresh DB with no real battles at all → showcase.
     return NextResponse.json({ items: DEMO_BATTLES.flatMap((c) => mediaFromBattle(c)), isDemo: true });
   } catch (e) {
     return NextResponse.json({ items: DEMO_BATTLES.flatMap((c) => mediaFromBattle(c)), isDemo: true });

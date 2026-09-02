@@ -10,6 +10,7 @@ import {
   mediaFromBattle, type BattleMediaContext, type MediaBattler, type MediaItem,
 } from './mediaGenerator';
 import type { HeadToHead } from './types';
+import { labelDef } from '../labels/registry';
 
 const first = (x: any) => (Array.isArray(x) ? x[0] : x);
 
@@ -26,7 +27,7 @@ export async function assembleBattleContext(
       ai:battler_ai_id ( id, stage_name, hometown:hometown_city_id ( name, culture_style ) ),
       venue:venue_id ( city:city_id ( name ) ),
       league:league_id ( city:city_id ( name ) ),
-      battle_rounds ( battler_id, choked )
+      battle_rounds ( battler_id, choked, crowd_reaction, average_score )
     `)
     .eq('id', battleId)
     .maybeSingle();
@@ -46,19 +47,55 @@ export async function assembleBattleContext(
     .in('battler_id', [w.id, l.id]);
   const rankMap = new Map<string, any>((ranks ?? []).map((r: any) => [r.battler_id, r]));
 
-  const loserChoked = (b.battle_rounds ?? []).filter((r: any) => r.battler_id === l.id).some((r: any) => r.choked);
+  const rounds = (b.battle_rounds ?? []) as any[];
+  const loserChoked = rounds.filter((r) => r.battler_id === l.id).some((r) => r.choked);
   const wRating = rankMap.get(w.id)?.rating ?? 1200;
   const lRating = rankMap.get(l.id)?.rating ?? 1200;
   const dt = b.decision_type as string | null;
+
+  // Robbery read: a CLOSE decision (2-1 / split) where the LOSER actually won the
+  // room — the crowd was with the person who lost the card. That's the argument
+  // the blogs have all week. (A 3-0 or a choke is never a robbery.)
+  const roundAvg = (id: string, field: 'crowd_reaction' | 'average_score') => {
+    const rs = rounds.filter((r) => r.battler_id === id && r[field] != null);
+    return rs.length ? rs.reduce((s, r) => s + (r[field] ?? 0), 0) / rs.length : 0;
+  };
+  const verdict = (b.verdict as string) || '2-1';
+  const closeCard = verdict === '2-1' || dt === 'split' || dt === 'classic';
+  // Two independent robbery signals: won the ROOM (crowd) but lost the card, OR
+  // outscored the winner on the round average yet still lost it. Either is the
+  // "he got robbed" argument. (Crowd follows the winner in the auto-sim, so the
+  // score signal is what surfaces most auto-sim robberies.)
+  const loserWonRoom = roundAvg(l.id, 'crowd_reaction') >= roundAvg(w.id, 'crowd_reaction') + 6;
+  const loserOutscored = roundAvg(l.id, 'average_score') > roundAvg(w.id, 'average_score') + 0.15;
+
   const mainStory: BattleMediaContext['mainStory'] = loserChoked
     ? 'choke'
-    : dt === 'classic'
-      ? 'classic'
-      : wRating <= lRating - 60
-        ? 'upset'
-        : dt === 'bodybag' || dt === 'clean_sweep' || dt === 'gentlemans_30'
-          ? 'dominant'
-          : 'standard';
+    : closeCard && (loserWonRoom || loserOutscored)
+      ? 'robbery'
+      : dt === 'classic'
+        ? 'classic'
+        : wRating <= lRating - 60
+          ? 'upset'
+          : dt === 'bodybag' || dt === 'clean_sweep' || dt === 'gentlemans_30'
+            ? 'dominant'
+            : 'standard';
+
+  // Active sticky labels (the brands that drive rep-topic podcast/video blocks:
+  // WASHED TALK, THE PAPERWORK, etc.). Displayed names, mapped from the DB keys.
+  const { data: labelRows } = await supabase
+    .from('battler_labels')
+    .select('battler_id, key')
+    .in('battler_id', [w.id, l.id])
+    .eq('status', 'active');
+  const labelMap = new Map<string, string[]>();
+  for (const row of (labelRows ?? []) as any[]) {
+    const disp = labelDef(row.key)?.label;
+    if (!disp) continue;
+    const arr = labelMap.get(row.battler_id) ?? [];
+    arr.push(disp);
+    labelMap.set(row.battler_id, arr);
+  }
 
   const city = first(first(b.venue)?.city)?.name ?? first(first(b.league)?.city)?.name ?? null;
   const dossier = (bt: any): MediaBattler => {
@@ -68,6 +105,7 @@ export async function assembleBattleContext(
       battlerId: bt.id, name: bt.stage_name,
       hometownCity: home?.name ?? null, scene: home?.culture_style ?? null,
       wins: rk?.wins, losses: rk?.losses, streak: rk?.streak, tier: rk?.tier ?? null,
+      labels: labelMap.get(bt.id) ?? [],
     };
   };
 
@@ -78,10 +116,10 @@ export async function assembleBattleContext(
       battleId: b.id,
       winner: { ...dossier(w), role: 'winner' },
       loser: { ...dossier(l), role: 'loser' },
-      score: (b.verdict as string) || '2-1',
+      score: verdict,
       mainStory,
       city,
-      bigMoment: mainStory === 'dominant',
+      bigMoment: mainStory === 'dominant' || mainStory === 'robbery',
       headToHead,
     },
     completedAt: b.completed_at ?? null,
