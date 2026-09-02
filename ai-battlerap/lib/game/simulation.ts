@@ -171,19 +171,33 @@ export async function simulateBattle(
     console.log(`[AUTHENTICITY] ${authenticityModifiers.narrative}`);
   }
 
-  // REPUTATION crowd: your "word on you" warms/cools the room before you spit.
-  // Both battlers' sticky+live labels feed a crowdDelta (~-12..+12) that lands
-  // on every round's crowd_reaction — which weighs into the round winner.
-  let reputationCrowd = { playerDelta: 0, aiDelta: 0 };
+  // REPUTATION teeth: the "word on you" changes the battle before a bar is said.
+  //  - crowdDelta (~-12..+12) warms/cools the room → each round's crowd_reaction.
+  //  - opponentPrepBias: opponents prep HARDER for a Problem, so each battler is
+  //    sharpened by the OTHER's prep-bias (a small score boost to your opponent).
+  //  - pressurePenalty: target-on-your-back / legal nerves make YOU a touch less
+  //    consistent. (The Known Choker BADGE still owns actual choke probability.)
+  let repTeeth = {
+    playerDelta: 0, aiDelta: 0,
+    playerPrepBoost: 0, aiPrepBoost: 0, // boost from facing a high-prep-bias opponent
+    playerPressure: 0, aiPressure: 0,
+  };
   try {
     const { loadReputationModifiers } = await import('@/lib/game/reputationLoader');
     const [pMods, aMods] = await Promise.all([
       loadReputationModifiers(supabase, battle.battler_player_id),
       loadReputationModifiers(supabase, battle.battler_ai_id),
     ]);
-    reputationCrowd = { playerDelta: pMods.crowdDelta, aiDelta: aMods.crowdDelta };
+    repTeeth = {
+      playerDelta: pMods.crowdDelta,
+      aiDelta: aMods.crowdDelta,
+      playerPrepBoost: aMods.opponentPrepBias, // player sharpens vs a Problem AI
+      aiPrepBoost: pMods.opponentPrepBias,     // AI sharpens vs a Problem player
+      playerPressure: pMods.pressurePenalty,
+      aiPressure: aMods.pressurePenalty,
+    };
   } catch (repErr) {
-    console.error('[reputation] crowd load failed (non-fatal):', repErr);
+    console.error('[reputation] teeth load failed (non-fatal):', repErr);
   }
 
   // 6. Simulate all 3 rounds with momentum system
@@ -268,7 +282,7 @@ export async function simulateBattle(
       aiBattler,
       crowdModifiers,
       authenticityModifiers,
-      reputationCrowd
+      repTeeth
     );
 
     allSegments.push(...roundResult.segments);
@@ -882,7 +896,11 @@ async function simulateRound(
   aiBattler: Battler,
   crowdModifiers: { playerBonus: number; aiBonus: number; narrative: string },
   authenticityModifiers: { playerPenalty: number; aiPenalty: number; narrative: string },
-  reputationCrowd: { playerDelta: number; aiDelta: number } = { playerDelta: 0, aiDelta: 0 }
+  repTeeth: {
+    playerDelta: number; aiDelta: number;
+    playerPrepBoost: number; aiPrepBoost: number;
+    playerPressure: number; aiPressure: number;
+  } = { playerDelta: 0, aiDelta: 0, playerPrepBoost: 0, aiPrepBoost: 0, playerPressure: 0, aiPressure: 0 }
 ) {
   // =====================================================
   // CONTENT SELECTION LOADING (Phase 2C Integration)
@@ -1031,13 +1049,15 @@ async function simulateRound(
     // so a battler at the ceiling could exceed it (11 × >1 = out of scale). Re-clamp
     // the ceiling. Floor is intentionally left un-reapplied so a weak-matchup
     // multiplier (<1) can still penalize below the base floor.
+    // REPUTATION: opponents prep harder for a Problem — each battler is sharpened
+    // by facing a high-prep-bias opponent (small, capped boost; prepBoost is 0..1).
     const playerAdjustedScore = Math.min(
       CONFIG.SCORE_CEILING,
-      playerSegment.score * dampedPlayerMult
+      playerSegment.score * dampedPlayerMult * (1 + repTeeth.playerPrepBoost * 0.06)
     );
     const aiAdjustedScore = Math.min(
       CONFIG.SCORE_CEILING,
-      aiSegment.score * dampedAiMult
+      aiSegment.score * dampedAiMult * (1 + repTeeth.aiPrepBoost * 0.06)
     );
 
     playerSegmentScores.push(playerAdjustedScore);
@@ -1148,7 +1168,8 @@ async function simulateRound(
     playerFinalMultiplier,
     crowdModifiers.playerBonus,
     authenticityModifiers.playerPenalty,
-    reputationCrowd.playerDelta
+    repTeeth.playerDelta,
+    repTeeth.playerPressure
   );
   const aiRound = calculateRoundSummary(
     aiBattlerId,
@@ -1167,7 +1188,8 @@ async function simulateRound(
     aiFinalMultiplier,
     crowdModifiers.aiBonus,
     authenticityModifiers.aiPenalty,
-    reputationCrowd.aiDelta
+    repTeeth.aiDelta,
+    repTeeth.aiPressure
   );
 
   // Determine round winner using weighted composite score
@@ -1452,7 +1474,8 @@ function calculateRoundSummary(
   finalMultiplier?: number,
   crowdPerceptionBonus: number = 0,
   authenticityPenalty: number = 0,
-  reputationCrowdDelta: number = 0
+  reputationCrowdDelta: number = 0,
+  reputationPressure: number = 0
 ) {
   const average_score = segmentScores.length > 0
     ? segmentScores.reduce((a, b) => a + b, 0) / segmentScores.length
@@ -1465,6 +1488,9 @@ function calculateRoundSummary(
   let consistency_score = 10 - standardDeviation(segmentScores);
   consistency_score += badgeEffects.consistencyBonus;
   consistency_score -= badgeEffects.consistencyPenalty;
+  // REPUTATION: target-on-your-back / legal-cloud nerves make you a touch shakier.
+  // (The Known Choker BADGE owns actual choke probability; this is separate.)
+  consistency_score -= reputationPressure * 40;
   consistency_score = Math.max(0, Math.min(10, consistency_score));
 
   // BUG FIX: Check for actual 'choke' events, not segment scores < 3

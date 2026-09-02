@@ -406,6 +406,21 @@ export async function simulateSingleRound(
     );
   }
 
+  // REPUTATION: the "word on you" warms or cools the room. Presentational in the
+  // lock-in path (the winner is average-based, not crowd) — but the player should
+  // still SEE the room react to who they are.
+  try {
+    const { loadReputationModifiers } = await import('@/lib/game/reputationLoader');
+    const [pMods, aMods] = await Promise.all([
+      loadReputationModifiers(supabase, battle.battler_player_id),
+      loadReputationModifiers(supabase, battle.battler_ai_id),
+    ]);
+    playerRound.crowd_reaction = Math.min(100, Math.max(0, playerRound.crowd_reaction + Math.round(pMods.crowdDelta)));
+    aiRound.crowd_reaction = Math.min(100, Math.max(0, aiRound.crowd_reaction + Math.round(aMods.crowdDelta)));
+  } catch (repErr) {
+    console.error('[reputation] interactive crowd load failed (non-fatal):', repErr);
+  }
+
   // Determine round winner
   const playerWon =
     playerRound.average_score > aiRound.average_score ||

@@ -16,6 +16,7 @@
  */
 
 import { createClient } from '@supabase/supabase-js';
+import { loadReputationModifiers } from './reputationLoader';
 
 /**
  * Grudge writes are SYSTEM operations (fired from the simulation engine for
@@ -154,7 +155,21 @@ export async function analyzeAndCreateGrudge(
   const intensity = calculateIntensity(primaryTrigger, battleResult);
 
   // Calculate rematch demand
-  const rematchDemand = calculateRematchDemand(primaryTrigger, battleResult);
+  let rematchDemand = calculateRematchDemand(primaryTrigger, battleResult);
+
+  // REPUTATION TEETH: beef/sympathy labels inflate fan demand for the run-back.
+  // The loser is the one who wants it back, so their rematchDemandBias (0..1) —
+  // fed by labels like ROBBED, STARTS SMOKE, DUCKING — nudges demand up by up to
+  // +25. A modest bump, not a takeover. loadReputationModifiers never throws
+  // (returns zeroed modifiers on any error); guard the id so a bad payload can't crash.
+  const loserId =
+    battleResult.winnerId === battleResult.battlerA.id
+      ? battleResult.battlerB.id
+      : battleResult.battlerA.id;
+  if (loserId) {
+    const { rematchDemandBias } = await loadReputationModifiers(supabase, loserId);
+    rematchDemand = Math.min(100, rematchDemand + Math.round(rematchDemandBias * 25));
+  }
 
   // Generate origin story
   const originStory = generateOriginStory(primaryTrigger, battleResult);
