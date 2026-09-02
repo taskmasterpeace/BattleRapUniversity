@@ -171,6 +171,21 @@ export async function simulateBattle(
     console.log(`[AUTHENTICITY] ${authenticityModifiers.narrative}`);
   }
 
+  // REPUTATION crowd: your "word on you" warms/cools the room before you spit.
+  // Both battlers' sticky+live labels feed a crowdDelta (~-12..+12) that lands
+  // on every round's crowd_reaction — which weighs into the round winner.
+  let reputationCrowd = { playerDelta: 0, aiDelta: 0 };
+  try {
+    const { loadReputationModifiers } = await import('@/lib/game/reputationLoader');
+    const [pMods, aMods] = await Promise.all([
+      loadReputationModifiers(supabase, battle.battler_player_id),
+      loadReputationModifiers(supabase, battle.battler_ai_id),
+    ]);
+    reputationCrowd = { playerDelta: pMods.crowdDelta, aiDelta: aMods.crowdDelta };
+  } catch (repErr) {
+    console.error('[reputation] crowd load failed (non-fatal):', repErr);
+  }
+
   // 6. Simulate all 3 rounds with momentum system
   const allSegments: any[] = [];
   const allRounds: any[] = [];
@@ -252,7 +267,8 @@ export async function simulateBattle(
       playerBattler,
       aiBattler,
       crowdModifiers,
-      authenticityModifiers
+      authenticityModifiers,
+      reputationCrowd
     );
 
     allSegments.push(...roundResult.segments);
@@ -865,7 +881,8 @@ async function simulateRound(
   playerBattler: Battler,
   aiBattler: Battler,
   crowdModifiers: { playerBonus: number; aiBonus: number; narrative: string },
-  authenticityModifiers: { playerPenalty: number; aiPenalty: number; narrative: string }
+  authenticityModifiers: { playerPenalty: number; aiPenalty: number; narrative: string },
+  reputationCrowd: { playerDelta: number; aiDelta: number } = { playerDelta: 0, aiDelta: 0 }
 ) {
   // =====================================================
   // CONTENT SELECTION LOADING (Phase 2C Integration)
@@ -1130,7 +1147,8 @@ async function simulateRound(
     playerContextModifier,
     playerFinalMultiplier,
     crowdModifiers.playerBonus,
-    authenticityModifiers.playerPenalty
+    authenticityModifiers.playerPenalty,
+    reputationCrowd.playerDelta
   );
   const aiRound = calculateRoundSummary(
     aiBattlerId,
@@ -1148,7 +1166,8 @@ async function simulateRound(
     aiContextModifier,
     aiFinalMultiplier,
     crowdModifiers.aiBonus,
-    authenticityModifiers.aiPenalty
+    authenticityModifiers.aiPenalty,
+    reputationCrowd.aiDelta
   );
 
   // Determine round winner using weighted composite score
@@ -1432,7 +1451,8 @@ function calculateRoundSummary(
   contextModifier?: number,
   finalMultiplier?: number,
   crowdPerceptionBonus: number = 0,
-  authenticityPenalty: number = 0
+  authenticityPenalty: number = 0,
+  reputationCrowdDelta: number = 0
 ) {
   const average_score = segmentScores.length > 0
     ? segmentScores.reduce((a, b) => a + b, 0) / segmentScores.length
@@ -1475,6 +1495,11 @@ function calculateRoundSummary(
   // Penalty is 0 to -50 points (based on how damaged authenticity is)
   const authenticityPenaltyPoints = Math.round(authenticityPenalty * 100);
   crowd_reaction -= authenticityPenaltyPoints;
+
+  // REPUTATION: the "word on you" warms or cools the room before you spit — a
+  // Body Bag Collector / Hometown Hero rides in hot; a Washed / Villain / snitch
+  // rap gets a colder room. (crowdDelta ≈ -12..+12)
+  crowd_reaction += Math.round(reputationCrowdDelta);
 
   // Clamp to 0-100
   crowd_reaction = Math.min(100, Math.max(0, crowd_reaction));

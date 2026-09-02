@@ -5,6 +5,7 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { contextForLeague } from '@/lib/game/contextModifiers';
+import { loadReputationModifiers } from '@/lib/game/reputationLoader';
 
 interface League {
   id: string;
@@ -90,7 +91,13 @@ export async function generateOffersForPlayer(
   // Formula: opponent_rating = player_rating + (player_reputation - 5) * 0.5
   // Higher reputation = tougher opponents
   const reputationAdjustment = (playerReputation - 5) * 50;
-  const targetRating = playerRating + reputationAdjustment;
+
+  // Reputation LABELS (the sticky/live "word on you") also shape who books you:
+  // an Untouchable/Problem draws bigger names; a Washed battler gets booked as
+  // somebody's get-back. offerAppeal is -1..+1.
+  const repMods = await loadReputationModifiers(supabase, battler.id);
+  const appealAdjustment = Math.round(repMods.offerAppeal * 120);
+  const targetRating = playerRating + reputationAdjustment + appealAdjustment;
 
   // PHASE 3: Check for existing rivalries that should be prioritized
   const { data: relationships } = await supabase
