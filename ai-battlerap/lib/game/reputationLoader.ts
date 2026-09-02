@@ -106,10 +106,13 @@ export async function loadReputation(supabase: any, battlerId: string): Promise<
     .eq('entity_id', battlerId)
     .limit(8);
 
-  // Record from the battle history (matches the career page). Deriving from
-  // rankings risked a null read defaulting losses→0 → a false UNTOUCHABLE.
-  const wins = repBattles.filter((b) => b.result === 'W').length;
-  const losses = repBattles.filter((b) => b.result === 'L').length;
+  // Record: prefer rankings (LIFETIME) so the 60-battle history cap can't turn a
+  // 61-1 vet into a false UNTOUCHABLE. Fall back to the (capped) battle count only
+  // when the ranking row is missing — which is what caused the earlier false read.
+  const battleWins = repBattles.filter((b) => b.result === 'W').length;
+  const battleLosses = repBattles.filter((b) => b.result === 'L').length;
+  const wins = ranking?.wins ?? battleWins;
+  const losses = ranking?.losses ?? battleLosses;
 
   const home = first(battler.hometown);
   return deriveReputation({

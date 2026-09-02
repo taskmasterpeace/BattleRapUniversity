@@ -93,14 +93,14 @@ async function loadHeadToHead(
 ): Promise<HeadToHead | null> {
   const { data } = await supabase
     .from('head_to_head_records')
-    .select('battler_a_id, battler_b_id, battler_a_wins, battler_b_wins, total_battles, last_winner_id')
+    .select('battler_a_id, battler_b_id, battler_a_wins, battler_b_wins, last_battle_winner_id')
     .or(`and(battler_a_id.eq.${wId},battler_b_id.eq.${lId}),and(battler_a_id.eq.${lId},battler_b_id.eq.${wId})`)
     .maybeSingle();
   if (!data) return null;
   const wIsA = data.battler_a_id === wId;
   const winnerWins = wIsA ? data.battler_a_wins : data.battler_b_wins;
   const loserWins = wIsA ? data.battler_b_wins : data.battler_a_wins;
-  const total = data.total_battles ?? winnerWins + loserWins;
+  const total = winnerWins + loserWins;
   // The h2h already includes this battle. Proxy the "revenge" read: the winner
   // had lost to this loser before iff the loser has a win in the series.
   const isRevenge = loserWins >= 1 && total >= 2;

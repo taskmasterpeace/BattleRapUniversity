@@ -91,7 +91,7 @@ export async function applyBattleLabels(
     const completedCount = count ?? 0;
 
     const { data: rows } = await supabase.from('battler_labels').select('*').eq('battler_id', battlerId);
-    let stored = (rows ?? []).map(rowToStored);
+    let stored: StoredLabel[] = (rows ?? []).map(rowToStored);
 
     // Advance: a clean (no-choke) battle feeds CHOKER recovery.
     const clean = opts.choked ? 0 : 1;
@@ -106,11 +106,25 @@ export async function applyBattleLabels(
     const now = new Date().toISOString();
     for (const e of events ?? []) {
       const pin: PinRequest | null = mapEventToPin(e.template_code, {
-        choice: e.details_json?.choice,
-        isPublic: true,
+        // Choice/publicity come from the event itself, not a blanket flag — so a
+        // private FINANCIAL_CRISIS doesn't become a public label, and an intrinsically
+        // public CAREER_CRISIS still pins (its mapping treats undefined as public).
+        choice: e.details_json?.choice ?? e.details_json?.chosen_option,
+        isPublic: e.details_json?.public,
       });
-      if (pin) stored = pinOrReinforce(stored, pin, now);
+      if (!pin) continue;
+      pin.source = { ...(pin.source ?? {}), battleId };
+      // Idempotent per (battle, label): re-running this battle can't re-reinforce
+      // a label it already pinned (which would inflate heat + reset recovery).
+      const existing = stored.find((l) => l.key === pin.key);
+      if (existing && (existing.source as any)?.battleId === battleId) continue;
+      stored = pinOrReinforce(stored, pin, now);
     }
+
+    // Every label is now "as of" this completed-battle count. Set it on all of
+    // them so a freshly-pinned label (pbc 0) doesn't take an entire career's decay
+    // on the next battle.
+    stored = stored.map((s) => ({ ...s, processedBattleCount: completedCount }));
 
     await upsertLabels(supabase, battlerId, stored);
   } catch (e: any) {

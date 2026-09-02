@@ -197,7 +197,7 @@ function buildRecognition(input: ReputationInput): RecognitionEntry[] {
       } as RecognitionEntry);
 
     cur.battles += 1;
-    let gain = REC.PER_BATTLE;
+    let gain: number = REC.PER_BATTLE;
     if (b.result === 'W') {
       cur.wins += 1;
       gain += REC.WIN_BONUS;
@@ -488,7 +488,10 @@ function buildLabels(input: ReputationInput): RepLabel[] {
     });
   }
 
-  return out.sort((a, b) => b.heat - a.heat).slice(0, 6);
+  // Return ALL live labels (sorted) — modifiers are computed from every label in
+  // deriveReputation BEFORE the per-band display slice, so a 7th label still has
+  // gameplay effect. The display cap happens later, per band.
+  return out.sort((a, b) => b.heat - a.heat);
 }
 
 function styleIdentity(tags: string[]): RepLabel | null {
@@ -543,7 +546,8 @@ function buildSummary(input: ReputationInput, labels: RepLabel[], rec: Recogniti
 export interface ReputationModifiers {
   /** Added to crowd reaction, roughly -12..+12. */
   crowdDelta: number;
-  /** Added to per-segment choke chance from nerves/target-on-back, 0..~0.05. */
+  /** Target-on-your-back / legal nerves, 0..~0.05. Wired to CONSISTENCY (a
+   *  shakier showing), NOT choke probability — the Known Choker badge owns choke. */
   pressurePenalty: number;
   /** How attractive you are to book, -1..+1 (bigger names, better cards). */
   offerAppeal: number;
